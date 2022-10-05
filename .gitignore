@@ -274,3 +274,12 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+.DS_Store
+archive/bealover.sty
+source/beanover.hd
+source/beanover.ins
+source/beanover.sty
+source/current.tex
+source/example1.tex
+source/TEST/test.pdf
+source/TEST/test.tex
