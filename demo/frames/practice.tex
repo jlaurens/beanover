@@ -1,0 +1,104 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX root = ../demo.tex
+\setlength{\tabcolsep}{0mm}
+\renewcommand\arraystretch{0}%
+\begin{tabular}{p{0.333\textwidth}p{0.667\textwidth}}
+%%
+\only<?(X1.range)>{%
+  \begin{itemize} [<?(W1++)->]
+    \item Octopus
+    \item Starfish
+    \item Picasso \rlap{fish}
+  \end{itemize}
+}%
+%
+\only<?(X2.range)>{%
+  {
+  \setbeamercovered{transparent=30}
+  \begin{itemize} [<?(W2++)>]
+    \item Octopus
+    \item Starfish
+    \item Picasso \rlap{fish}
+  \end{itemize}%
+}%
+}
+&
+\begin{myCodeBox}[baseline=5.5\baselineskip]{l}%
+    \backslash Beanoves\{\\
+     \ \ {\color{MyGreen}\bfseries Water = 1 :: 3,}\\
+    \}\\
+    \backslash begin\{frame\}\\
+    \alt<?(X1.range)>{%
+\phantom{\backslash setbeamercovered\{ transparent = 30 \}}\\
+      \backslash begin\{itemize\} [ <{\color{MyGreen}\bfseries
+        \tikz [remember picture, baseline=(O.base),inner xsep=0mm] {
+          \node (O) {?(Water++)};
+          \only<?(Sticky1a.2)>{
+            \begin{pgfinterruptboundingbox}
+            \node [draw,shape=ellipse,thick,] at (O) {\phantom{\hspace{0.5ex}(Water++)\hspace{0.5ex}}};
+            \end{pgfinterruptboundingbox}
+          }
+        }}-> ]\\
+      \only<?(W1.reset++)> {\color{MyGreen}\bfseries}%
+      \phantom{xx}\backslash item Octopus\\
+      \only<?(W1++)>{\color{MyGreen}\bfseries}%
+      \phantom{xx}\backslash item Starfish\\
+      \only<?(W1++)>{\color{MyGreen}\bfseries}%
+      \phantom{xx}\backslash item Picasso fish\\
+    } {%
+      {\only<?(Sticky2a.2)->{\color{MyGreen}\bfseries}%
+      \backslash setbeamercovered\{ transparent = 30 \}}%
+      \tikz[remember picture, overlay]{\coordinate (Pixies) at (0,0);}\\
+      \backslash begin\{itemize\} [ <{\only<?(Sticky2a.2)->{\color{MyGreen}\bfseries}?(Water++)}> ]\\
+      \phantom{xx}\backslash item
+      {\only<?(W2.reset++)>{\bfseries\color{MyRed}}Octopus}\\
+      \phantom{xx}\backslash item
+      {\only<?(W2++)>{\bfseries\color{MyRed}}Starfish}\\
+      \phantom{xx}\backslash item
+      {\only<?(W2++)>{\bfseries\color{MyRed}}Picasso fish}\\
+    }%
+    \backslash end\{itemize\}\\
+    \backslash end\{frame\}
+  \end{myCodeBox}
+\end{tabular}
+\Sticky<?(Sticky1a.range)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
+\begin{minipage}{0.75\textwidth}
+%\vspace{-0.5\baselineskip}%
+\begin{itemize}
+\item[\myBulb]To uncover items one at a time,
+\visible<?(Sticky1a.2)->{we use beamer's
+%\only<?(Sticky1a)>{\smash{\tikz[overlay,remember picture]{
+%  \path[my arrow](0.1,0.1) edge [out=45, in=-45] ($(O)+0.75*(1.5,-1)$);
+%}}}%
+advanced overlay specifications.
+}
+\end{itemize}
+\end{minipage}
+}%
+\Sticky<?(Sticky1b.range)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
+\begin{minipage}{0.7\textwidth}
+\begin{itemize}
+\item[\myBulb]Notice how the lines of code are hilighted\\at the same time the items are uncovered...
+\end{itemize}
+\end{minipage}
+}%
+%\transpush<?(Sticky2a.1)>[direction=90]
+\Sticky<?(Sticky2a.range)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{minipage}{0.75\textwidth}%
+\begin{itemize}
+\item[\myBulb]Managing transparency is straightforward
+\visible<?(Sticky2a.2)>{we use
+%\smash{\tikz[overlay,remember picture]{
+%  \path[my arrow](0.1,0.1) edge [out=45, in=-45] ($(Pixies)+0.3*(1,-1.4)$);
+%}}%
+beamer's facilities.%
+}%
+\end{itemize}
+\end{minipage}}%
+\Sticky<?(Sticky2b.range)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{minipage}{0.7\textwidth}%
+\begin{itemize}
+\item[\myBulb]Once again the code is properly hilighted to\\illustrate the behavior of the itemized list...
+\end{itemize}
+\end{minipage}
+}%
+

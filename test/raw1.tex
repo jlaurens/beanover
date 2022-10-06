@@ -1,0 +1,129 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX proot = ...
+
+\documentclass{beamer}
+\RequirePackage{xcolor}
+\RequirePackage{beanoves-debug}
+\begin{document}
+\begin{frame}
+{Test}
+{1}
+1
+\end{frame}
+\Beanoves {
+  Air      = 1 :: Gannet.last,
+  Chameleo = Air.2:1,
+  Gannet   = Chameleo.next:1,
+  Water   = Air.next :: Picasso.last,
+  Octopus = Water.2:1,
+  Starfish = Octopus.next:1,
+  StickyStarfish = Starfish.1,
+  Picasso = Starfish.next:1,
+  PicassoTrans = 1 :: Picasso.previous,
+  Summary  = Water.next:1,
+}
+\begin{frame}
+{Bealover example: Uncovered items + images}
+{Slide \insertslidenumber}
+\begin{itemize}
+\item
+Air
+\begin{itemize}
+\item
+\only<-?(Chameleo.0)>{ \color{red}}
+Chameleo
+\item
+\only<-?(Gannet.0)>{ \color{red}}
+Gannet
+\end{itemize}
+\item
+\only<-?(Water.0)>{ \color{red}}
+Water
+\begin{itemize}
+\item
+\only<-?(Octopus.0)>{ \color{red}}
+Octopus
+\item
+\only<-?(Starfish.0)>{ \color{red}}
+Starfish
+\item
+\only<?(PicassoTrans.range)>{ \color{red}}
+Picasso fish
+\end{itemize}
+\end{itemize}
+\vbox to 0pt{\hbox{%
+\only<?(Air.range)> {%
+      \visible<?(Chameleo.1)->{%
+        \only<?(Gannet.1)->{ \color{red}}
+        includegraphics[width=textwidth]{img/Air/Chameleon02}%
+      }%
+      \visible<?(Gannet.1)->{%
+        includegraphics[width=textwidth]{img/Air/Morus-bassanus-adu}%
+      }%
+}
+}}%
+\end{frame}
+\end{document}
+
+
+X\BeanovesEval{Air.range}Y
+
+\vbox to 0pt{\hbox{%
+\only<?(Water.range)> {%
+\begin{itemize}
+\item
+      \visible<?(Octopus.1)->{%
+        \only<?(Starfish.1)->{ \color{red}}
+        includegraphics[width=textwidth]{img/Water/Octopus-marginatus}%
+      }%
+\item
+      \visible<?(Starfish.1)->{%
+        \only<?(Picasso.range)>{ \color{red}}
+        includegraphics[width=textwidth]{img/Water/Oreasteridae---Choriaster-granulatus}%
+        \hspace{2\baselineskip}%
+      }%
+\item
+      \visible<?(Picasso.range)>{%
+        includegraphics[width=textwidth]{img/Water/Picasso.triggerfish.arp}%
+      }%
+
+\end{itemize}
+}
+\only<?(Summary.range)> {%
+\begin{itemize}
+\item
+      \visible<?(Chameleo.1)->{%
+        includegraphics[width=textwidth]{img/Air/Chameleon02}%
+      }%
+\item
+        \visible<?(Gannet.1)->{%
+          includegraphics[width=textwidth]{img/Air/Morus-bassanus-adu}%
+          \hspace{6\baselineskip}%
+        }%
+\item
+      \visible<?(Octopus.1)->{%
+        includegraphics[width=textwidth]{img/Water/Octopus-marginatus}%
+        \hspace{0\baselineskip}%
+      }%
+\item
+        \visible<?(Starfish.1)->{%
+          includegraphics[width=textwidth]{img/Water/Oreasteridae---Choriaster-granulatus}% 
+          \hspace{6\baselineskip}%
+        }%
+\item
+      \visible<?(Picasso.1)->{%
+        includegraphics[width=textwidth]{img/Water/Picasso.triggerfish.arp}%
+      }%
+\end{itemize}
+%
+}%
+}}%
+\begin{itemize}
+\item <?(Air.last)> {\bfseries
+  Notice how the chameleon image is transparent%
+}
+\item<?(StickyStarfish.range)>{\bfseries Overlap allows for larger images}
+\end{itemize}
+\end{frame}
+\end{document}

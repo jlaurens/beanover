@@ -1,0 +1,208 @@
+% !TeX encoding = UTF-8
+% !TeX root = ...
+
+\NeedsTeXFormat{LaTeX2e}[2020/01/01]
+\ProvidesExplPackage
+  {sticky}
+  {2021/09/20}
+  {0.3}
+  {Stickies}
+
+\ExplSyntaxOff
+
+\RequirePackage{fontspec}  
+\IfFontExistsTF {Noteworthy} {
+  \newfontfamily {\StickyDefaultFont} {Noteworthy} % [Scale = 0.85]
+} {
+  \let \StickyDefaultFont \relax
+}
+
+\RequirePackage{xcolor}
+\definecolor{StickyColorBG}{RGB}{242,245,151}
+\colorlet{StickyColorFG}{black}
+
+\RequirePackage{tikz}
+\usetikzlibrary{
+  shadows.blur,
+  math,
+}
+\usepgfmodule {nonlineartransformations}
+
+\DeclareHookRule{shipout/foreground}{textpos}{before}{sticky}
+
+\pgfkeys {
+  /Sticky/.style=/Sticky/.cd,
+  /Sticky,
+  rotate/.initial = 2,
+  Paper/.style = {%
+    draw = none,
+    fill = StickyColorBG,
+  },
+  Shadow/.style = {
+    draw=none,
+    blur shadow = {%
+      shadow xshift=1.25pt,
+      shadow yshift=-2pt,
+      shadow opacity=15,
+      shadow blur extra rounding,
+    },
+  },
+  Note/.style = {
+    font = \StickyDefaultFont\bfseries,
+    inner xsep = 0.25\baselineskip,
+    inner ysep = 0.5\baselineskip,
+    text = StickyColorFG,
+  },
+  yshift/.initial = 0.375\baselineskip,
+}
+
+\ExplSyntaxOn
+\newcommand \PGFValueForStyleKey [2] {
+  \group_begin:
+  \pgfkeys{
+    .unknown/.code=,
+    #2/.initial,
+    #1,
+    #2/.get = \l_tmpa_tl
+  }
+  \exp_args:NNV
+  \group_end:
+  \use:n \l_tmpa_tl
+}
+\DeclareTextFontCommand
+  {\StickyText}
+  {\PGFValueForStyleKey{/Sticky/Note}{font}}
+\cs_new:Npn \StickySet #1 {
+  \pgfkeys {/Sticky, #1 }
+}
+\cs_new:Npn \StickyNoteSet #1 {
+  \pgfkeys {/Sticky/Note/.append style = {#1} }
+}
+\cs_new:Npn \StickyShadowSet #1 {
+  \pgfkeys {/Sticky/Shadow/.append style = {#1} }
+}
+\cs_new:Npn \StickyPaperSet #1 {
+  \pgfkeys {/Sticky/Shadow/.append style = {#1} }
+}
+\makeatletter
+\box_new:N \@StickyBox
+\AddToHook { shipout/foreground } {
+%  \put(\strip@pt\dimexpr2in,-\strip@pt\dimexpr2in){
+  \put(0,0){
+    \box_use:N \@StickyBox
+    \box_gclear:N \@StickyBox
+  }
+}
+\NewDocumentCommand \StickyStack { m } {
+  \group_begin:
+  \vbox_set_to_ht:Nnn \l_tmpa_box {0mm} {
+    \hbox_to_wd:nn {0mm} {
+      #1\hss
+    }
+    \vss
+  }
+  \vbox_gset:Nn \@StickyBox {
+    \unvbox \@StickyBox
+    \box_use:N \l_tmpa_box
+  }
+  \group_end:
+  \ignorespaces
+}
+
+\let \@beamerExistTF \cs_if_exist:NTF
+\ExplSyntaxOff
+
+\NewDocumentCommand \Sticky { d<> O{} r() O{} m } {
+  \IfNoValueTF {#1} {
+    \StickyStack {
+      \StickyNote{#2}{#3}{#4}{#5}
+    }
+  } {
+    \@beamerExistTF \only {
+      \only <#1> {
+        \StickyStack {
+          \StickyNote{#2}{#3}{#4}{#5}
+        }
+      }
+    } {
+      \StickyStack {
+        \StickyNote{#2}{#3}{#4}{#5}
+      }
+    }
+  }
+%  \ifvmode
+%    \group_begin:
+%    \skip_set_eq:NN\l_tmpa_skip\lastskip
+%    \vskip-\lastskip
+%    \vskip-\baselineskip
+%    \vbox to 0pt{\hbox{\StickyNote{#1}{#2}{#3}{#4}}}%
+%    \exp_last_unbraced:NNo
+%    \group_end:
+%    \vskip{\skip_use:N\l_tmpa_skip}
+%  \else
+%    \StickyNote{#1}{#2}{#3}{#4}%
+%  \fi
+}
+\ExplSyntaxOn
+\cs_generate_variant:Nn \exp_args:Nnnx { Nxnx}
+\let \StickyTrim@n \tl_trim_spaces:n
+\newcommand\StickyNote[4] {
+  \exp_args:Nxnx
+  \@StickyNote{\tl_trim_spaces:n {#1}}{#2}{\tl_trim_spaces:n {#3}}{#4}
+}
+\ExplSyntaxOff
+
+\newcommand\@StickyNote[4] {%
+  \bgroup
+  \sbox\@StickyBox{%
+    \tikz[baseline=(A.base)]\node[/Sticky/Note,#3](A){#4};%
+  }%
+  \begin{tikzpicture} [
+    overlay,
+    remember picture,
+  ]
+    \pgfkeys{
+      /Sticky/rotate/.get = \myA,
+      /Sticky/yshift/.get = \myB,
+    }
+    \node [
+      inner sep = 0,
+      rotate=\myA,
+      #1,
+    ] (C) at (#2)
+      {\phantom{\usebox{\@StickyBox}}};
+    \path (C);
+    \pgfgetlastxy{\XMiddle}{\YMiddle};
+    \path (C.north east);
+    \pgfgetlastxy{\XMax}{\YMax};
+    \tikzmath {
+      \myXMax = \XMax-\XMiddle;
+      \myYShift = \myB*(\myXMax/\textwidth);
+      \myXMore = \myXMax + \myYShift / 8;
+    }
+    \begin{scope}[rotate=\myA]
+      \def\@StickyDown{%
+        \pgfmathsetmacro{\myX}{(\pgf@x-\XMiddle)/\myXMax}
+        \pgfmathsetmacro{\myY}{-\myYShift*\myX*\myX+\pgf@y-\myYShift/2}
+        \setlength{\pgf@y}{\myY pt}
+        \pgfmathsetmacro{\myX}{\XMiddle + \myX * \myXMore}
+        \setlength{\pgf@x}{\myX pt}
+      }
+      \pgftransformnonlinear{\@StickyDown}%
+      \draw [/Sticky/Shadow,] (C.south west) rectangle (C.north east);
+      \def\@StickyUp{%
+        \pgfmathsetmacro{\myX}{(\pgf@x-\XMiddle)/\myXMax}
+        \pgfmathsetmacro{\myY}{\myYShift*\myX*\myX+\pgf@y-\myYShift/2}
+        \setlength{\pgf@y}{\myY pt}
+      }
+      \pgftransformnonlinear{\@StickyUp}%
+      \draw [/Sticky/Paper,] (C.south west) rectangle (C.north east);
+    \end{scope}
+    \node [
+      inner sep = 0mm,
+      rotate=\myA,
+    ] at (C) {\usebox{\@StickyBox}};  
+  \end{tikzpicture}%
+  \egroup
+}%
+\makeatother

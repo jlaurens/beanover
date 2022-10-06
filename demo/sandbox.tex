@@ -1,0 +1,24 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX proot = ...
+
+\documentclass{beamer}
+
+\RequirePackage{demo}
+\CatchFileDef{\useMyStepII}{frames/step2}{}
+
+\begin{document}
+\Beanoves {
+  Sticky1 = 5:1,
+  Sticky2 = Sticky1.next:1,
+  Sticky3 = Sticky2.next : 3,
+  Sticky4 = Sticky3.next : 3,
+}
+\begin{frame}
+{Beanoves example: Uncovered items}
+{Slide \insertslidenumber}
+\transpush[direction=180]
+\useMyStepII
+\end{frame}
+
+\end{document}

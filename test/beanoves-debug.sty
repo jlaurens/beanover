@@ -1,0 +1,2794 @@
+%%
+%% This is file `beanoves-debug.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% beanoves.dtx  (with options: `package,debug')
+%% 
+\NeedsTeXFormat{LaTeX2e}[2020/01/01]
+\ProvidesExplPackage
+  {beanoves-debug}
+  {2022/10/28}
+  {1.0}
+  {Named overlay specifications for beamer}
+\msg_new:nnn { beanoves } { :n } { #1 }
+\msg_new:nnn { beanoves } { :nn } { #1~(#2) }
+\cs_new:Npn \__bnvs_warning:n {
+  \msg_warning:nnn { beanoves } { :n }
+}
+\cs_new:Npn \__bnvs_error:n {
+  \msg_error:nnn { beanoves } { :n }
+}
+\cs_new:Npn \__bnvs_error:x {
+  \msg_error:nnx { beanoves } { :n }
+}
+\cs_new:Npn \__bnvs_fatal:n {
+  \msg_fatal:nnn { beanoves } { :n }
+}
+\cs_new:Npn \__bnvs_fatal:x {
+  \msg_fatal:nnx { beanoves } { :n }
+}
+
+\cs_set:Npn \__bnvs_log_gprop:n #1 {
+  \int_compare:nNnT { \prop_count:N \g__bnvs_prop } < {
+    \tl_if_empty:nTF { #1 } { 20 } { #1 }
+  } {
+    \prop_map_inline:Nn \g__bnvs_prop {
+      \__bnvs_DEBUG:n { ##1 -> ##2 }
+    }
+  }
+  \__bnvs_log_n_gprop:n {#1}
+}
+\NewDocumentCommand\BeanovesLogGProp {O{20}} { \__bnvs_log_gprop:n {#1} }
+\cs_set:Npn \__bnvs_log_n_gprop:n #1 {
+  \int_compare:nNnT { \prop_count:N \g__bnvs_n_prop } < {
+    \tl_if_empty:nTF { #1 } { 20 } { #1 }
+  } {
+    \prop_map_inline:Nn \g__bnvs_n_prop {
+      \__bnvs_DEBUG:n { n: ##1 -> ##2 }
+    }
+  }
+}
+\NewDocumentCommand\BeanovesLogNProp {O{20}} { \__bnvs_log_n_gprop:n {#1} }
+\cs_set:Npn \__bnvs_DEBUG_a:nn #1 #2 {
+  \msg_term:nnn { beanoves } { :n } { #1~#2 }
+}
+\cs_generate_variant:Nn \__bnvs_DEBUG_a:nn { xn }
+\cs_new:Npn \__bnvs_DEBUG_on: {
+  \cs_set:Npn \__bnvs_DEBUG:n {
+    \__bnvs_DEBUG_a:xn
+    { ▃▃ \prg_replicate:nn {\l__bnvs_group_int} {▁▃} \space }
+  }
+}
+\cs_new:Npn \__bnvs_DEBUG_off: {
+  \cs_set:Npn \__bnvs_DEBUG:n { \use_none:n }
+}
+\cs_new:Npn \__bnvs_DEBUG_off_wrong: {
+  \cs_set_eq:NN \__bnvs_DEBUG:n \use_none:n
+}
+\__bnvs_DEBUG_off:
+\cs_generate_variant:Nn \__bnvs_DEBUG:n { x, V }
+\int_zero_new:N \l__bnvs_group_int
+\cs_set:Npn \__bnvs_group_begin: {
+  \group_begin:
+  \int_incr:N \l__bnvs_group_int
+}
+\cs_set_eq:NN \__bnvs_group_end: \group_end:
+\cs_new:Npn \__bnvs_DEBUG_b:nn #1 #2 {
+  \__bnvs_DEBUG:x { #1~#2 }
+}
+\bool_new:N \l__bnvs_test_ignore_bool
+\bool_set_false:N \l__bnvs_test_ignore_bool
+\cs_new:Npn \__bnvs_DEBUG:nn #1 {
+  \exp_args:Nx
+  \__bnvs_DEBUG_b:nn
+  { ▄▄ \prg_replicate:nn {\l__bnvs_group_int + 1} {#1} }
+}
+\cs_generate_variant:Nn \__bnvs_DEBUG:nn { nx, nV }
+\ProvideDocumentEnvironment {beanoves.failure} {} {} {}
+\tl_new:N \l__bnvs_test_done_tl
+\int_new:N \l__bnvs_test_group_int
+\NewDocumentEnvironment{bnvs.test} {} {
+  \color{red}\bfseries\ExplSyntaxOn
+  \debug_on:n { check-declarations }
+  \__bnvs_gclear:
+  \int_gset:Nn \g__bnvs_call_int { 128 }
+  \int_set_eq:NN \l__bnvs_test_group_int \l__bnvs_group_int
+  \__bnvs_test:n
+} {
+  \assert_equal:xxn {
+    \int_use:N \l__bnvs_group_int
+  } {
+    \int_use:N \l__bnvs_test_group_int
+  } { Bad~group~nesting }
+  \tl_use:N \l__bnvs_test_done_tl
+  \__bnvs_gclear:\ExplSyntaxOff\ignorespacesafterend
+}
+\keys_define:nn { bnvs.test } {
+  banner .tl_set:N = \l__bnvs_banner_tl,
+  debug .code:n = \__bnvs_DEBUG_on:,
+  reset .code:n = \reset:n { #1 },
+  ignore .bool_set:N = \l__bnvs_test_ignore_bool,
+  ignore .default:n = true,
+  noigre .code:n = {},
+}
+\cs_new:Npn \__bnvs_test:n #1 {
+  \cs_set:Npn \reset:n ##1 {
+    \__bnvs_group_begin:
+    \__bnvs_DEBUG_off:
+    \tl_if_empty:nF { ##1 } {
+      \prop_gclear:N \g__bnvs_prop
+      \prop_gclear:N \g__bnvs_n_prop
+    }
+    \Beanoves { FIRST = 220+2, LENGTH = 440+5, LAST = 660+6 }
+    \__bnvs_group_end:
+  }
+  \cs_set:Npn \reset_X: {
+    \reset:n { YES }
+    \__bnvs_group_begin:
+    \__bnvs_DEBUG_off:
+    \Beanoves {
+      X1  = FIRST,
+      X2  = LAST-LENGTH+1,
+      A1  = FIRST:,
+      A2  = LAST-LENGTH+1:,
+      AA1 = FIRST::,
+      AA2 = LAST-LENGTH+1::,
+      Z1  = ::LAST,
+      Z2  = ::FIRST+LENGTH-1,
+      AL11 = FIRST:LENGTH,
+      AL12 = FIRST:LAST-FIRST+1,
+      AL21 = LAST-LENGTH+1:LENGTH,
+      AL22 = LAST-LENGTH+1:LAST-FIRST+1,
+      AZ11 = FIRST::LAST,
+      AZ12 = FIRST::FIRST+LENGTH-1,
+      AZ21 = LAST-LENGTH+1::LAST,
+      AZ22 = LAST-LENGTH+1::FIRST+LENGTH-1,
+      LZ11 = :LENGTH::LAST,
+      LZ12 = :LENGTH::FIRST+LENGTH-1,
+      LZ21 = :LAST-FIRST+1::LAST,
+      LZ22 = :LAST-FIRST+1::FIRST+LENGTH-1,
+      ZL11 = ::LAST:LENGTH,
+      ZL12 = ::LAST:LAST-FIRST+1,
+      ZL21 = ::FIRST+LENGTH-1:LENGTH,
+      ZL22 = ::FIRST+LENGTH-1:LAST-FIRST+1,
+    }
+    \__bnvs_group_end:
+  }
+  \tl_if_empty:nF { #1 } { \keys_set_known:nn {bnvs.test} {#1} }
+  \bool_if:NTF \l__bnvs_test_ignore_bool {
+    \tl_clear:N \l__bnvs_test_done_tl
+    \RenewDocumentEnvironment{bnvs.test}{+b}{
+      \cs_set:Npn \end: {
+        \cs_set:Npn \end: { }
+        \end{bnvs.test}
+      }
+    } {
+      \end:
+    }
+    \begin{bnvs.test}
+  } {
+    \cs_set:Npn \banner:n ##1 {
+      \__bnvs_call_greset:
+      \__bnvs_DEBUG_a:xn { ▶︎▶︎▶︎▶︎▶︎~TEST~##1~/~line:~\the\inputlineno} {}
+    }
+    \RenewDocumentEnvironment{beanoves.failure}{}
+      {\begin{list}{\llap{\emoji{no-entry}\hspace{1em}}}{%
+         \setlength{\itemindent}{0pt}%
+         \setlength{\leftmargin}{0pt}%
+         \setlength{\labelwidth}{0pt}%
+         \addtolength{\topsep}{-0.5\parskip}%
+         \listparindent \parindent
+         \setlength{\parsep}{\parskip}}}
+      {\end{list}}
+    \cs_set_eq:NN \test_extract:nnnn \__bnvs_test_extract:nnnn
+    \cs_set_eq:NN \test_extract:Nnnn \__bnvs_test_extract:Nnnn
+    \cs_set_eq:NN \test_split:Nnnn \__bnvs_test_split:Nnnn
+    \cs_set_eq:NN \assert_equal:nnn \__bnvs_assert_equal:nnn
+    \cs_set_eq:NN \test_fail:n \__bnvs_test_fail:n
+    \cs_generate_variant:Nn \assert_equal:nnn { xxn }
+    \cs_set:Npn \preflight:n ##1 {
+      \banner:n { ##1 }
+      \__bnvs_group_begin:
+      \int_set_eq:NN \l__bnvs_test_group_int \l__bnvs_group_int
+      \tl_clear:N \l__bnvs_ans_tl
+    }
+    \cs_set:Npn \preflight:nn ##1 ##2 {
+      \banner:n { ##2~/~##1 }
+      \tl_if_empty:nF { ##1 } {
+        \group_begin:
+        \__bnvs_DEBUG_off:
+        \regex_match:nnTF { ^X } { ##1 } {
+          \Beanoves { ##1 }
+        } {
+          \Beanoves { X = ##1 }
+        }
+        \group_end:
+        \__bnvs_log_gprop:n {}
+      }
+      \__bnvs_group_begin:
+      \int_set_eq:NN \l__bnvs_test_group_int \l__bnvs_group_int
+      \tl_clear:N \l__bnvs_ans_tl
+    }
+    \cs_set:Npn \preflight:nnn ##1 ##2 ##3 {
+      \tl_if_empty:nTF { ##1 } {
+        \banner:n { ##2~/~##3~/ }
+      } {
+        \banner:n { ##2~/~X=##1=>##2~/ }
+        \group_begin:
+        \__bnvs_DEBUG_off:
+        \regex_match:nnTF { ^X } { ##1 } {
+          \Beanoves { ##1 }
+        } {
+          \Beanoves { X = ##1 }
+        }
+        \group_end:
+        \__bnvs_log_gprop:n {}
+      }
+      \__bnvs_group_begin:
+      \int_set_eq:NN \l__bnvs_test_group_int \l__bnvs_group_int
+      \tl_clear:N \l__bnvs_ans_tl
+    }
+    \cs_set:Npn \postflight: {
+      \assert_equal:xxn {
+        \int_use:N \l__bnvs_group_int
+      } {
+        \int_use:N \l__bnvs_test_group_int
+      } { Bad~group~nesting }
+      \__bnvs_group_end:
+    }
+    \cs_set:Npn \flight:nT ##1 ##2 {
+      \bool_if:NF \l__bnvs_test_ignore_bool {
+        \preflight:n { ##1 }
+        ##2
+        \postflight:
+      }
+    }
+    \cs_set:Npn \flight:nnT ##1 ##2 ##3 {
+      \bool_if:NF \l__bnvs_test_ignore_bool {
+        \preflight:nn { ##1 } { ##2 }
+        ##3
+        \postflight:
+      }
+    }
+    \cs_set:Npn \flight:nnnT ##1 ##2 ##3 ##4 {
+      \bool_if:NF \l__bnvs_test_ignore_bool {
+        \preflight:nnn { ##1 } { ##2 } { ##3 }
+        ##4
+        \postflight:
+      }
+    }
+    \cs_set:Npn \Test_resolve_x:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+      \flight:nnT { ##1 } { ##6 } {
+        \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+        \tl_set:Nx \l__bnvs_name_tl { \l__bnvs_id_tl ##2 }
+        \seq_set_split:Nnn \l__bnvs_path_seq {.} { ##3 }
+        \seq_remove_all:Nn \l__bnvs_path_seq { }
+        \__bnvs_resolve_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+          \assert_equal:xxn { \l__bnvs_id_tl } { ?! } { ##6-id }
+          \exp_args:NNV
+          \regex_match:NnTF \c__bnvs_A_key_Z_regex \l__bnvs_name_tl {
+            \assert_equal:xxn { \l__bnvs_name_tl } { ?!##4 } { ##6-name }
+          } {
+            \assert_equal:xxn { \l__bnvs_name_tl } { ##4 } { ##6-target }
+          }
+          \assert_equal:xxn { \seq_use:Nn \l__bnvs_path_seq . } { ##5 } { ##6-path }
+        } {
+          \test_fail:n { ##6-CALL }
+        }
+        \__bnvs_gclear:
+      }
+    }
+    \cs_set:Npn \Test_resolve_n:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+      \flight:nnT { ##1 } { ##6 } {
+        \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+        \tl_set:Nx \l__bnvs_name_tl { \l__bnvs_id_tl ##2 }
+        \seq_set_split:Nnn \l__bnvs_path_seq {.} { ##3 }
+        \seq_remove_all:Nn \l__bnvs_path_seq { }
+        \__bnvs_resolve_n:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+          \assert_equal:xxn { \l__bnvs_id_tl } { ?! } { ##6-id }
+          \assert_equal:xxn { \l__bnvs_name_tl } { ?!##4 } { ##6-name }
+          \assert_equal:xxn { \seq_use:Nn \l__bnvs_path_seq . } { ##5 } { ##6-path }
+        } {
+          \test_fail:n { ##6-CALL }
+        }
+      }
+    }
+    \cs_set:Npn \Test_raw:nnn ##1 ##2 ##3 {
+      \flight:nnT { } { ##2 } {
+        \cs_if_exist:cTF { __bnvs_raw_##1:nNTF } {
+          \use:c { __bnvs_raw_##1:nNTF } { ?!##2 } \l__bnvs_ans_tl {
+            \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##2-b }
+          } {
+            \test_fail:n { ##2-a }
+          }
+        } {
+          \test_fail:n { ##2-BAD~##1 }
+        }
+      }
+    }
+    \cs_set:Npn \Test_raw:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnT { ##2 } { ##4 } {
+        \cs_if_exist:cTF { __bnvs_raw_##1:nNTF } {
+          \use:c { __bnvs_raw_##1:nNTF } { ?!X } \l__bnvs_ans_tl {
+            \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-b }
+          } {
+            \test_fail:n { ##4-a }
+          }
+        } {
+          \test_fail:n { ##4-BAD~##1 }
+        }
+      }
+    }
+    \cs_set:Npn \Test_if_nN:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnT { ##2 } { ##4 } {
+        \cs_if_exist:cTF { __bnvs_if_##1:nNTF } {
+          \tl_clear:N \l__bnvs_ans_tl
+          \use:c { __bnvs_if_##1:nNTF } { ?!X } \l__bnvs_ans_tl {
+            \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-a }
+          } {
+            \test_fail:n { ##4-c }
+          }
+        } {
+          \test_fail:n { ##4-BAD~__bnvs_if_##1:nNTF }
+        }
+      }
+    }
+    \cs_set:Npn \Test_index:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnT { ##1 } { ##4 } {
+        \__bnvs_if_index:nnNTF { ?!X } { ##2 } \l__bnvs_ans_tl {
+          \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-a }
+        } {
+          \test_fail:n { ##4-b }
+        }
+      }
+    }
+    \cs_set:Npn \Test_raw_first:nnn {
+      \Test_generic:Nnnn \__bnvs_raw_first:nNTF
+    }
+    \cs_set:Npn \Test_generic:Nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnT { ##2 } { ##4 } {
+        ##1 { ?!X } \l__bnvs_ans_tl {
+          \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-b }
+        } {
+          \test_fail:n { ##4-a }
+        }
+      }
+    }
+    \cs_set:Npn \Test_n_value:nnn {
+      \Test_generic:Nnnn \__bnvs_if_n_value:nNTF
+    }
+    \cs_set:Npn \Test_n_value:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnnT { ##1 } { ##4 } { ##2==##3 } {
+        \__bnvs_if_n_value:nNTF { ##2 } \l__bnvs_ans_tl {
+          \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-a }
+        } {
+          \test_fail:n { ##4-b }
+        }
+      }
+    }
+    \cs_set:Npn \Test_n_index:nnn {
+      \Test_generic:Nnnn \__bnvs_if_n_index:nNTF
+    }
+    \cs_set:Npn \Test_n:nnn {
+      \Test_generic:Nnnn \__bnvs_n_get:nNTF
+    }
+    \cs_set:Npn \Test_generic:Nnnnn ##1 ##2 ##3 ##4 ##5 {
+      \flight:nnnT { ##2 } { ##5 } { ##2~/~##3 } {
+        \__bnvs_raw_value:nNTF { ?!X } \l__bnvs_ans_tl {
+          \tl_clear:N \l__bnvs_ans_tl
+          ##1 { ?!X } { ##3 } \l__bnvs_ans_tl {
+            \assert_equal:xxn { \l__bnvs_ans_tl } { ##4 } { ##5-b }
+          } {
+            \test_fail:n { ##5-c }
+          }
+        } {
+          \test_fail:n { ##5-d }
+        }
+      }
+    }
+    \cs_set:Npn \Test_incr:nnnn {
+      \Test_generic:Nnnnn \__bnvs_if_incr:nnNTF
+    }
+    \cs_set:Npn \Test_n_incr:nnnn {
+      \Test_generic:Nnnnn \__bnvs_if_n_incr:nnNTF
+    }
+    \cs_set:Npn \Test_post:nnnn {
+      \Test_generic:Nnnnn \__bnvs_if_post:nnNTF
+    }
+    \cs_set:Npn \Test_range:nnn {
+      \Test_generic:Nnnn \__bnvs_if_range:nNTF
+    }
+    \cs_set:Npn \Test_append:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnnT { ##1 } { ##4 }  { ##2==##3 } {
+        \__bnvs_if_append:nNTF { ##2 } \l__bnvs_ans_tl {
+          \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-a }
+        } {
+          \test_fail:n { ##4-b }
+        }
+      }
+    }
+    \cs_set:Npn \Test_regex:nnnn ##1 {
+      \bool_if:NTF \l__bnvs_test_ignore_bool {
+        \use_none:nnn
+      } {
+        \tl_if_exist:cTF { c__bnvs_##1_regex } {
+          \__bnvs_test_extract:cnnn { c__bnvs_##1_regex }
+        } {
+          \test_fail:n { Bad~name:~##1}
+          \use_none:nnn
+        }
+      }
+    }
+    \cs_set:Npn \Test_query:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnnT { ##1 } { ##4 } { ##2==##3 } {
+        \tl_clear:N \l_tmpa_tl
+        \tl_set:Nn \l_tmpb_tl { FAILURE }
+        \__bnvs_if_eval_query:nNTF { ##2 } \l_tmpa_tl {
+          \assert_equal:xxn { \l_tmpa_tl } { ##3 } {
+            Test~\cs{__bnvs_eval_query:nN}:~##4-a
+          }
+        } {
+          \test_fail:n { ##4-CALL }
+        }
+      }
+    }
+    \cs_set:Npn \Test_eval:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnT { ##1 } { ##4 } {
+        \BeanovesEval[\l__bnvs_ans_tl]{ ##2 }
+        \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4 }
+      }
+    }
+    \__bnvs_DEBUG_a:nn {▶︎▶︎▶︎▶︎▶︎▶︎▶︎▶︎▶︎▶︎} {}
+    \__bnvs_DEBUG_a:xn {TEST~\l__bnvs_banner_tl\space file:~\BeanovesCurrentTestFile, line:~\the\inputlineno} {}
+    \tl_set:Nn \l__bnvs_test_done_tl {
+  \__bnvs_DEBUG_a:xn { TEST~\l__bnvs_banner_tl...~DONE} {}
+  \__bnvs_DEBUG_a:nn {◀︎◀︎◀︎◀︎◀︎◀︎◀︎◀︎◀︎◀} {}
+}
+  }
+}
+
+\cs_new:Npn \BeanovesCurrentTestFile {
+  \tl_if_empty:VF \CurrentFilePath { \CurrentFilePath / }
+  \CurrentFile
+}
+\cs_set:Npn \__bnvs_test_extract:nnnn #1 #2 #3 #4 {
+  \__bnvs_group_begin:
+  \tl_if_empty:nT { #3 } {
+    \regex_extract_once:nnNT { #1 } { #2 } \l__bnvs_match_seq {
+      \test_fail:n { #4-a }
+    }
+  } {
+    \regex_extract_once:nnNTF { #1 } { #2 } \l__bnvs_match_seq {
+      \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_match_seq , }
+      \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
+      \seq_pop_left:NNT \l__bnvs_match_seq \l__bnvs_b_tl {
+        \tl_if_empty:NTF \l__bnvs_b_tl {
+          \seq_put_left:Nn \l__bnvs_match_seq { #2 }
+        } {
+          \seq_put_left:NV \l__bnvs_match_seq \l__bnvs_b_tl
+        }
+      }
+      \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_split_seq , }
+      \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
+    } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \__bnvs_group_end:
+}
+\cs_set:Npn \__bnvs_test_extract:Nnnn #1 #2 #3 #4 {
+  \__bnvs_group_begin:
+  \regex_extract_once:NnNTF #1 { #2 } \l__bnvs_match_seq {
+    \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_match_seq , }
+    \seq_set_from_clist:Nn \l__bnvs_match_seq { #3 }
+    \seq_pop_left:NNT \l__bnvs_match_seq \l__bnvs_b_tl {
+      \tl_if_empty:NTF \l__bnvs_b_tl {
+        \seq_put_left:Nn \l__bnvs_match_seq { #2 }
+      } {
+        \seq_put_left:NV \l__bnvs_match_seq \l__bnvs_b_tl
+      }
+    }
+    \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_match_seq , }
+    \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
+  } {
+    \tl_if_empty:nF { #3 } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \__bnvs_group_end:
+}
+\cs_generate_variant:Nn
+  \__bnvs_test_extract:Nnnn { cnnn }
+\cs_set:Npn \__bnvs_test_split:Nnnn #1 #2 #3 #4 {
+  \__bnvs_group_begin:
+  \regex_split:NnNTF #1 { #2 } \l__bnvs_split_seq {
+    \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_split_seq , }
+    \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
+    \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_split_seq , }
+    \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
+  } {
+    \tl_if_empty:nF { #3 } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \__bnvs_group_end:
+}
+\cs_generate_variant:Nn \msg_error:nnnn { nnnx }
+\cs_set:Npn \__bnvs_assert_equal:nnn #1 #2 #3 {
+  \tl_if_eq:nnF { #1 } { #2 } {
+    \msg_error:nnnx { beanoves } { :nn } { FAILED~`#1'!=`#2' } { \BeanovesCurrentTestFile :\the\inputlineno :#3}
+    \begin{beanoves.failure}
+    \item FAILURE~`#1'!=`#2'~(\BeanovesCurrentTestFile :\the\inputlineno)
+    \item #3
+    \end{beanoves.failure}
+  }
+}
+\cs_set:Npn \__bnvs_test_fail:n #1 {
+  \msg_error:nnnx { beanoves } { :nn } { TEST~FAILED } { \BeanovesCurrentTestFile :\the\inputlineno :#1~(\int_use:N \g__bnvs_call_int)}
+  \begin{beanoves.failure}
+  \item FAILURE~unexpected~branch~(\BeanovesCurrentTestFile :\the\inputlineno)
+  \item #1
+  \end{beanoves.failure}
+}
+\cs_generate_variant:Nn \__bnvs_assert_equal:nnn { xxn }
+\tl_new:N \l__bnvs_id_last_tl
+\tl_set:Nn \l__bnvs_id_last_tl { ?! }
+\tl_new:N \l__bnvs_a_tl
+\tl_new:N \l__bnvs_b_tl
+\tl_new:N \l__bnvs_c_tl
+\tl_new:N \l__bnvs_id_tl
+\tl_new:N \l__bnvs_ans_tl
+\tl_new:N \l__bnvs_name_tl
+\tl_new:N \l__bnvs_path_tl
+\tl_new:N \l__bnvs_group_tl
+\tl_new:N \l__bnvs_query_tl
+\tl_new:N \l__bnvs_token_tl
+\tl_new:N \l__bnvs_root_tl
+\int_new:N \g__bnvs_call_int
+\int_new:N \l__bnvs_int
+\seq_new:N \g__bnvs_def_seq
+\seq_new:N \l__bnvs_a_seq
+\seq_new:N \l__bnvs_b_seq
+\seq_new:N \l__bnvs_ans_seq
+\seq_new:N \l__bnvs_match_seq
+\seq_new:N \l__bnvs_split_seq
+\seq_new:N \l__bnvs_path_seq
+\seq_new:N \l__bnvs_query_seq
+\seq_new:N \l__bnvs_token_seq
+\bool_new:N \l__bnvs_in_frame_bool
+\bool_new:N \l__bnvs_parse_bool
+\bool_set_false:N \l__bnvs_in_frame_bool
+\int_const:Nn \c__bnvs_max_call_int { 2048 }
+\cs_set:Npn  \__bnvs_call_greset: {
+  \int_gset:Nn \g__bnvs_call_int { \c__bnvs_max_call_int }
+}
+\prg_new_conditional:Npnn  \__bnvs_call: { T, F, TF } {
+  \int_gdecr:N \g__bnvs_call_int
+  \int_compare:nNnTF \g__bnvs_call_int > 0 {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\prop_new:N \g__bnvs_prop
+\cs_new:Npn \__bnvs_gput:nnn #1 #2 {
+  \prop_gput:Nnn \g__bnvs_prop { #2 / #1 }
+}
+\cs_set:Npn \__bnvs_gput:nnn #1 #2 #3 {
+  \prop_gput:Nnn \g__bnvs_prop { #2 / #1 } { #3 }
+\__bnvs_DEBUG:x { \string \__bnvs_gput:nnn }
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #3 } / }
+\__bnvs_log_gprop:n {}
+}
+\cs_new:Npn \__bnvs_gprovide:nnn #1 #2 #3 {
+  \prop_if_in:NnF \g__bnvs_prop { #2 / #1 } {
+    \prop_gput:Nnn \g__bnvs_prop { #2 / #1 } { #3 }
+  }
+\__bnvs_DEBUG:x {\string\__bnvs_gprovide:nnn}
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #3 } / }
+\__bnvs_log_gprop:n {}
+}
+\cs_new:Npn \__bnvs_item:nn #1 #2 {
+  \prop_item:Nn \g__bnvs_prop { #2 / #1 }
+}
+\cs_new:Npn \__bnvs_gremove:nn  #1 #2 {
+  \prop_gremove:Nn \g__bnvs_prop { #2 / #1 }
+\__bnvs_DEBUG:x {\string\__bnvs_gremove:nn}
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_log_gprop:n {}
+}
+\cs_new:Npn \__bnvs_gclear:n #1 {
+  \__bnvs_gremove:nn {} { #1 }
+  \clist_map_inline:nn { A, L, Z, V, n } {
+    \__bnvs_gremove:nn { ##1 } { #1 }
+  }
+  \__bnvs_gclear_cache:n { #1 }
+\__bnvs_DEBUG:x {\string\__bnvs_gclear:n}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_log_gprop:n {}
+}
+\cs_new:Npn \__bnvs_gclear: {
+  \prop_gclear:N \g__bnvs_prop
+\__bnvs_DEBUG:x {\string\__bnvs_gclear:}
+\__bnvs_log_gprop:n {}
+}
+\cs_generate_variant:Nn \__bnvs_gput:nnn { nnV }
+\prg_new_conditional:Npnn \__bnvs_if_in:nn #1 #2 { p, T, F, TF } {
+  \prop_if_in:NnTF \g__bnvs_prop { #2 / #1 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_in:nn {nV} { p, T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_get:nnN #1 #2 #3 { p, T, F, TF } {
+  \prop_get:NnNTF \g__bnvs_prop { #2 / #1 } #3 {
+\__bnvs_DEBUG:x { \string\__bnvs_get:nnNTF...TRUE }
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:V #3 }
+    \prg_return_true:
+  } {
+\__bnvs_DEBUG:x { \string\__bnvs_get:nnNTF...FALSE }
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:V #3 }
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_get:nnN {nV} { p, T, F, TF }
+\cs_new:Npn \__bnvs_gput_cache:nnn #1 {
+  \__bnvs_gput:nnn { / #1 }
+}
+\cs_new:Npn \__bnvs_item_cache:nn #1 #2 {
+  \prop_item:Nn \g__bnvs_prop { #2 / / #1 }
+}
+\cs_new:Npn \__bnvs_gremove_cache:nn  #1 {
+  \__bnvs_gremove:nn { / #1 }
+}
+\cs_new:Npn \__bnvs_gclear_cache:n #1 {
+  \clist_map_inline:nn { {}, A, L, Z, P, N, V } {
+    \__bnvs_gremove_cache:nn { ##1 } { #1 }
+  }
+}
+\cs_generate_variant:Nn \__bnvs_gput_cache:nnn { nnV }
+\prg_new_conditional:Npnn \__bnvs_if_in_cache:nn #1 #2 { p, T, F, TF } {
+  \__bnvs_if_in:nnTF { / #1 } { #2 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_in_cache:nn {nV} { p, T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_get_cache:nnN #1 #2 #3 { p, T, F, TF } {
+  \__bnvs_get:nnNTF { / #1 } { #2 } #3 {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_get_cache:nnN {nV} { p, T, F, TF }
+\prop_new:N \g__bnvs_n_prop
+\cs_new:Npn \__bnvs_n_gput:nn {
+  \prop_gput:Nnn \g__bnvs_n_prop
+}
+\cs_set:Npn \__bnvs_n_gput:nn #1 #2 {
+  \prop_gput:Nnn \g__bnvs_n_prop { #1 } { #2 }
+\__bnvs_DEBUG:x { \string\__bnvs_n_gput:nn...}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
+\__bnvs_log_gprop:n {}
+}
+\cs_generate_variant:Nn \__bnvs_n_gput:nn { nV }
+\cs_new:Npn \__bnvs_n_item:n #1 {
+  \prop_item:Nn \g__bnvs_n_prop { #1 }
+}
+\cs_set:Npn \__bnvs_n_item:n #1 {
+  \prop_item:Nn \g__bnvs_n_prop { #1 }
+}
+\cs_new:Npn \__bnvs_n_gremove:n {
+  \prop_gremove:Nn \g__bnvs_n_prop
+}
+\cs_set:Npn \__bnvs_n_gremove:n #1 {
+  \prop_gremove:Nn \g__bnvs_n_prop { #1 }
+\__bnvs_DEBUG:x { \string \__bnvs_n_gremove:n}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_log_gprop:n {}
+}
+\cs_new:Npn \__bnvs_n_gclear: {
+  \prop_gclear:N \g__bnvs_n_prop
+\__bnvs_DEBUG:x { \string \__bnvs_n_gclear:}
+\__bnvs_log_gprop:n {}
+}
+\prg_new_conditional:Npnn \__bnvs_n_get:nN #1 #2 { T, F, TF } {
+  \prop_get:NnNTF \g__bnvs_n_prop { #1 } #2 {
+\__bnvs_DEBUG:x { \string\__bnvs_n_get:nNTF...TRUE }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { /\string#2 = / \tl_to_str:V #2 / }
+    \prg_return_true:
+  } {
+\__bnvs_DEBUG:x { \string\__bnvs_n_get:nNTF...FALSE }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { /\string#2 = / \tl_to_str:V #2 / }
+    \prg_return_false:
+  }
+}
+
+\regex_const:Nn \c__bnvs_name_regex {
+  [[:alpha:]_][[:alnum:]_]*
+}
+\regex_const:Nn \c__bnvs_id_regex {
+  (?: \ur{c__bnvs_name_regex} | [?] )? !
+}
+\regex_const:Nn \c__bnvs_path_regex {
+  (?: \. \ur{c__bnvs_name_regex} | \. [-+]? \d+ )*
+}
+\regex_const:Nn \c__bnvs_A_key_Z_regex {
+  \A ( ( \ur{c__bnvs_id_regex} ? ) \ur{c__bnvs_name_regex} )
+  ( \ur{c__bnvs_path_regex} ) \Z
+}
+\regex_const:Nn \c__bnvs_colons_regex { :(:+)? }
+\regex_const:Nn \c__bnvs_split_regex {
+  \s* ( ? :
+      \+\+
+    ( ( \ur{c__bnvs_id_regex}? ) \ur{c__bnvs_name_regex} )
+    ( \ur{c__bnvs_path_regex} )
+    | ( ( \ur{c__bnvs_id_regex}? ) \ur{c__bnvs_name_regex} )
+      ( \ur{c__bnvs_path_regex} )
+      (?: \.(\+)\+n
+      |  \s* \+= \s* ( \S+ )
+      | (\+)\+
+    )?
+  ) \s*
+}
+\RequirePackage{keyval}
+\define@key{beamerframe}{beanoves~id}[]{
+  \tl_set:Nx \l__bnvs_id_last_tl { #1 ! }
+  \__bnvs_DEBUG_on:
+  \__bnvs_DEBUG:x {THIS_IS_KEY}
+  \__bnvs_DEBUG_off:
+}
+\AddToHook{env/beamer@frameslide/before}{
+  \__bnvs_n_gclear:
+  \bool_set_true:N \l__bnvs_in_frame_bool
+  \__bnvs_DEBUG_a:nn {THIS_IS_BEFORE} {}
+}
+\AddToHook{env/beamer@frameslide/after}{
+  \bool_set_false:N \l__bnvs_in_frame_bool
+  \__bnvs_DEBUG_a:nn {THIS_IS_AFTER} {}
+}
+\cs_new:Npn \__bnvs_range:nnnn #1 {
+\__bnvs_DEBUG:x { \string\__bnvs_range:nnnn }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_log_gprop:n {}
+  \bool_if:NTF \l__bnvs_parse_bool {
+    \__bnvs_n_gremove:n { #1 }
+    \__bnvs_gclear:n { #1 }
+    \__bnvs_do_range:nnnn { #1 }
+  } {
+    \__bnvs_if_in:nnTF A { #1 } {
+      \use_none:nnn
+    } {
+      \__bnvs_if_in:nnTF L { #1 } {
+        \use_none:nnn
+      } {
+        \__bnvs_if_in:nnTF Z { #1 } {
+          \use_none:nnn
+        } {
+          \__bnvs_do_range:nnnn { #1 }
+        }
+      }
+    }
+  }
+}
+\cs_generate_variant:Nn \__bnvs_range:nnnn { nVVV }
+\cs_new:Npn \__bnvs_do_range:nnnn #1 #2 #3 #4 {
+\__bnvs_DEBUG:x { \string\__bnvs_do_range:nnnn... }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { FIRST = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { LENGTH = / \tl_to_str:n { #3 } / }
+\__bnvs_DEBUG:x { LAST = / \tl_to_str:n { #4 } / }
+\__bnvs_log_gprop:n {}
+  \tl_if_empty:nTF { #3 } {
+    \tl_if_empty:nTF { #2 } {
+      \tl_if_empty:nTF { #4 } {
+        \__bnvs_error:n { Not~a~range:~:~#1 }
+      } {
+        \__bnvs_gput:nnn Z { #1 } { #4 }
+        \__bnvs_gput:nnn V { #1 } { \q_nil }
+      }
+    } {
+      \__bnvs_gput:nnn A { #1 } { #2 }
+      \__bnvs_gput:nnn V { #1 } { \q_nil }
+      \tl_if_empty:nF { #4 } {
+        \__bnvs_gput:nnn Z { #1 } { #4 }
+        \__bnvs_gput:nnn L { #1 } { \q_nil }
+      }
+    }
+  } {
+    \tl_if_empty:nTF { #2 } {
+      \__bnvs_gput:nnn L { #1 } { #3 }
+      \tl_if_empty:nF { #4 } {
+        \__bnvs_gput:nnn Z { #1 } { #4 }
+        \__bnvs_gput:nnn A { #1 } { \q_nil }
+        \__bnvs_gput:nnn V { #1 } { \q_nil }
+      }
+    } {
+      \__bnvs_gput:nnn A { #1 } { #2 }
+      \__bnvs_gput:nnn L { #1 } { #3 }
+      \__bnvs_gput:nnn Z { #1 } { \q_nil }
+      \__bnvs_gput:nnn V { #1 } { \q_nil }
+    }
+  }
+\__bnvs_DEBUG:x { ...\string \__bnvs_do_range:Nnnnn }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { FIRST = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { LENGTH = / \tl_to_str:n { #3 } / }
+\__bnvs_DEBUG:x { LAST = / \tl_to_str:n { #4 } / }
+\__bnvs_log_gprop:n {}
+}
+\cs_new:Npn \__bnvs_parse:n #1 {
+\__bnvs_DEBUG:x { \string \__bnvs_parse:n... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+  \peek_catcode_ignore_spaces:NTF \c_group_begin_token {
+    \tl_if_empty:NTF \l__bnvs_root_tl {
+      \__bnvs_error:n { Unexpected~list~at~top~level. }
+    }
+    \__bnvs_group_begin:
+    \int_incr:N \l__bnvs_int
+    \tl_set:Nx \l__bnvs_root_tl { \int_use:N \l__bnvs_int . }
+    \cs_set:Npn \bnvs:nw ####1 ####2 \s_stop  {
+      \regex_match:nnT { \S* } { ####2 } {
+        \__bnvs_error:n { Unexpected~####2 }
+      }
+      \keyval_parse:nnn {
+        \__bnvs_parse:n
+      } {
+        \__bnvs_parse:nn
+      } { ####1 }
+      \__bnvs_group_end:
+    }
+    \bnvs:nw
+  } {
+    \tl_if_empty:NTF \l__bnvs_root_tl {
+      \__bnvs_id_name_set:nNNTF { #1 } \l__bnvs_id_tl \l__bnvs_name_tl {
+        \__bnvs_parse_record:V \l__bnvs_name_tl
+\__bnvs_DEBUG:x { ...\string \__bnvs_parse:n...Complete }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+      } {
+        \__bnvs_error:n { Unexpected~key:~#1 }
+      }
+    } {
+      \int_incr:N \l__bnvs_int
+      \__bnvs_parse_record:xn {
+        \l__bnvs_root_tl . \int_use:N \l__bnvs_int
+      } { #1 }
+    }
+    \use_none_delimit_by_s_stop:w
+  }
+  #1 \s_stop
+\__bnvs_DEBUG:x { ...\string \__bnvs_parse:n }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+}
+\exp_args_generate:n { VVV }
+\prg_new_conditional:Npnn \__bnvs_range_set:NNNn #1 #2 #3 #4 { T, F, TF } {
+  \__bnvs_group_begin:
+\__bnvs_DEBUG:x {\string\__bnvs_range_set:NNNnTF...}
+\__bnvs_DEBUG:x {/\string#1/\string#2/\string#3/}
+\__bnvs_DEBUG:x {IN = / \tl_to_str:n { #4 } / }
+  \tl_clear:N \l__bnvs_a_tl
+  \tl_clear:N \l__bnvs_b_tl
+  \tl_clear:N \l__bnvs_c_tl
+  \regex_split:NnNTF \c__bnvs_colons_regex { #4 } \l__bnvs_split_seq {
+    \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_a_tl {
+      \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_b_tl {
+        \tl_if_empty:NTF \l__bnvs_b_tl {
+          \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_b_tl
+          \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_c_tl {
+            \tl_if_empty:NTF \l__bnvs_c_tl {
+              \__bnvs_error:n { Invalid~range~expression(1):~#4 }
+            } {
+              \int_compare:nNnT { \tl_count:N \l__bnvs_c_tl } > { 1 } {
+                \__bnvs_error:n { Invalid~range~expression(2):~#4 }
+              }
+              \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_c_tl
+              \seq_if_empty:NF \l__bnvs_split_seq {
+                \__bnvs_error:n { Invalid~range~expression(3):~#4 }
+              }
+            }
+          }
+        } {
+          \int_compare:nNnT { \tl_count:N \l__bnvs_b_tl } > { 1 } {
+            \__bnvs_error:n { Invalid~range~expression(4):~#4 }
+          }
+          \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_c_tl
+          \seq_pop_left:NNTF \l__bnvs_split_seq \l__bnvs_b_tl {
+            \tl_if_empty:NTF \l__bnvs_b_tl {
+              \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_b_tl
+              \seq_if_empty:NF \l__bnvs_split_seq {
+                \__bnvs_error:n { Invalid~range~expression(5):~#4 }
+              }
+            } {
+              \__bnvs_error:n { Invalid~range~expression(6):~#4 }
+            }
+          } {
+            \tl_clear:N \l__bnvs_b_tl
+          }
+        }
+      }
+    }
+    \bool_if:nF {
+      \tl_if_empty_p:N \l__bnvs_a_tl
+      || \tl_if_empty_p:N \l__bnvs_b_tl
+      || \tl_if_empty_p:N \l__bnvs_c_tl
+    } {
+      \__bnvs_error:n { Invalid~range~expression(7):~#3 }
+    }
+    \cs_set:Npn \:nnn ##1 ##2 ##3 {
+      \__bnvs_group_end:
+      \tl_set:Nn #1 { ##1 }
+      \tl_set:Nn #2 { ##2 }
+      \tl_set:Nn #3 { ##3 }
+    }
+    \exp_args:NVVV \:nnn \l__bnvs_a_tl \l__bnvs_b_tl \l__bnvs_c_tl
+\__bnvs_DEBUG:x {...\string\__bnvs_range_set:NNNnTF...TRUE }
+\__bnvs_DEBUG:x { \string #1 => \tl_to_str:N #1 }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+\__bnvs_DEBUG:x {IN = / \tl_to_str:n { #4 } / }
+    \prg_return_true:
+  } {
+\__bnvs_DEBUG:x {...\string\__bnvs_range_set:NNNnTF...FALSE }
+\__bnvs_DEBUG:x {/\string#1/\string#2/\string#3/}
+\__bnvs_DEBUG:x {IN = / \tl_to_str:n { #4 } / }
+    \__bnvs_group_end:
+    \prg_return_false:
+  }
+}
+\cs_generate_variant:Nn \tl_if_empty:nTF { xTF }
+\cs_new:Npn \__bnvs_parse_record:n #1 {
+\__bnvs_DEBUG:x { \string\__bnvs_parse_record:n... }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+  \bool_if:NTF \l__bnvs_parse_bool {
+    \__bnvs_gclear:n { #1 }
+    \__bnvs_gput:nnn V  { #1 } { 1 }
+    \__bnvs_gput:nnn {} { #1 } { 1 }
+  } {
+    \__bnvs_gprovide:nnn V  { #1 } { 1 }
+    \__bnvs_gprovide:nnn {} { #1 } { 1 }
+  }
+\__bnvs_DEBUG:x { ...\string\__bnvs_parse_record:n }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+}
+\cs_generate_variant:Nn \__bnvs_parse_record:n { V }
+\cs_new:Npn \__bnvs_parse_record:nn #1 #2 {
+\__bnvs_DEBUG:x { \string\__bnvs_parse_record:nn... }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
+  \__bnvs_range_set:NNNnTF \l__bnvs_a_tl \l__bnvs_b_tl \l__bnvs_c_tl { #2 } {
+    \__bnvs_range:nVVV { #1 } \l__bnvs_a_tl \l__bnvs_b_tl \l__bnvs_c_tl
+\__bnvs_DEBUG:x { ...\string\__bnvs_parse_record:nn...RANGE }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
+  } {
+    \bool_if:NTF \l__bnvs_parse_bool {
+      \__bnvs_gclear:n { #1 }
+      \__bnvs_gput:nnn V  { #1 } { #2 }
+      \__bnvs_gput:nnn {} { #1 } { #2 }
+    } {
+      \__bnvs_gprovide:nnn V  { #1 } { #2 }
+      \__bnvs_gprovide:nnn {} { #1 } { #2 }
+    }
+\__bnvs_DEBUG:x { ...\string\__bnvs_parse_record:nn...VALUE }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
+  }
+}
+\cs_generate_variant:Nn \__bnvs_parse_record:nn { xn, Vn }
+\prg_new_conditional:Npnn \__bnvs_id_name_set:nNN #1 #2 #3 { T, F, TF } {
+  \__bnvs_group_begin:
+  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_regex {
+    #1
+  } \l__bnvs_match_seq {
+    \tl_set:Nx #2 { \seq_item:Nn \l__bnvs_match_seq 3 }
+    \tl_if_empty:NTF #2 {
+      \exp_args:NNNx
+      \__bnvs_group_end:
+      \tl_set:Nn #3 { \l__bnvs_id_last_tl #1 }
+      \tl_set_eq:NN #2 \l__bnvs_id_last_tl
+    } {
+      \cs_set:Npn \:n ##1 {
+        \__bnvs_group_end:
+        \tl_set:Nn #2 { ##1 }
+        \tl_set:Nn \l__bnvs_id_last_tl { ##1 }
+      }
+      \exp_args:NV
+      \:n #2
+      \tl_set:Nn #3 { #1 }
+    }
+\__bnvs_DEBUG:x { \string \__bnvs_id_name_set:nNNTF...TRUE }
+\__bnvs_DEBUG:x { IN = / #1/ }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:V #3 }
+\__bnvs_DEBUG:x { \string\l__bnvs_id_last_tl => \l__bnvs_id_last_tl }
+    \prg_return_true:
+  } {
+    \__bnvs_group_end:
+\__bnvs_DEBUG:x { \string \__bnvs_id_name_set:nNNTF...FALSE }
+\__bnvs_DEBUG:x { IN = / #1/ }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:V #3 }
+    \prg_return_false:
+  }
+}
+\cs_new:Npn \__bnvs_parse:nn #1 #2 {
+\__bnvs_DEBUG:x { \string\__bnvs_parse:nn... }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
+  \__bnvs_group_begin:
+  \tl_set:Nn \l__bnvs_a_tl { #1 }
+  \tl_put_left:NV \l__bnvs_a_tl \l__bnvs_root_tl
+  \exp_args:NV
+  \__bnvs_id_name_set:nNNTF \l__bnvs_a_tl \l__bnvs_id_tl \l__bnvs_name_tl {
+\__bnvs_DEBUG:x { ...\string \__bnvs_parse:nn... }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { ID = / \tl_to_str:V \l__bnvs_id_tl / }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:V \l__bnvs_name_tl / }
+    \regex_match:nnTF { \S } { #2 } {
+      \peek_catcode_ignore_spaces:NTF \c_group_begin_token {
+        \__bnvs_group_begin:
+        \tl_set:NV \l__bnvs_root_tl \l__bnvs_name_tl
+        \int_set:Nn \l__bnvs_int { 0 }
+        \cs_set:Npn \bnvs:nn ##1 ##2 \s_stop {
+          \regex_match:nnT { \S } { ##2 } {
+            \__bnvs_error:n { Unexpected~value~#2 }
+          }
+          \keyval_parse:nnn {
+            \__bnvs_parse:n
+          } {
+            \__bnvs_parse:nn
+          } { ##1 }
+          \__bnvs_group_end:
+        }
+        \bnvs:nn
+      } {
+        \__bnvs_parse_record:Vn \l__bnvs_name_tl { #2 }
+        \use_none_delimit_by_s_stop:w
+      } #2 \s_stop
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_parse:nn...REMOVE... }
+\__bnvs_DEBUG:x { NAME: = / \l__bnvs_name_tl / }
+      \exp_args:NV
+      \__bnvs_gclear:n \l__bnvs_name_tl
+      \exp_args:NV
+      \__bnvs_n_gremove:n \l__bnvs_name_tl
+    }
+  } {
+    \__bnvs_error:n { Invalid~key:~#2 }
+  }
+\__bnvs_DEBUG:x { ...\string \__bnvs_parse:nn }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { ID = / \l__bnvs_id_tl / }
+\__bnvs_DEBUG:x { NAME: = / \l__bnvs_name_tl / }
+  \exp_args:NNNV
+  \__bnvs_group_end:
+  \tl_set:Nn \l__bnvs_id_last_tl \l__bnvs_id_last_tl
+}
+\cs_new:Npn \__bnvs_parse_prepare:N #1 {
+  \tl_set:Nx #1 #1
+  \bool_set_false:N \l__bnvs_parse_bool
+  \bool_do_until:Nn \l__bnvs_parse_bool {
+    \tl_if_in:NnTF #1 {%---[
+    ]} {
+      \regex_replace_all:nnNF { \[ ([^\]]*) \] } { { { \1 } } } #1 {
+        \bool_set_true:N \l__bnvs_parse_bool
+      }
+    } {
+      \bool_set_true:N \l__bnvs_parse_bool
+    }
+  }
+  \tl_if_in:NnTF #1 {%---[
+  ]} {
+    \__bnvs_error:n { Unbalanced~%---[
+    ]}
+  } {
+    \tl_if_in:NnT #1 { [%---]
+    } {
+      \__bnvs_error:n { Unbalanced~[ %---]
+      }
+    }
+  }
+}
+\NewDocumentCommand \Beanoves { sm } {
+\__bnvs_DEBUG:x { \string \Beanoves \IfBooleanT {#1} { * }... }
+\__bnvs_DEBUG:x { IN = / \tl_to_str:n { #2 } / }
+  \tl_if_empty:NTF \@currenvir {
+    \seq_gput_right:Nn \g__bnvs_def_seq { #2 }
+  } {
+    \tl_if_eq:NnT \@currenvir { document } {
+      \__bnvs_gclear:
+    }
+    \__bnvs_group_begin:
+    \tl_clear:N \l__bnvs_root_tl
+    \int_zero:N \l__bnvs_int
+    \tl_set:Nn \l__bnvs_a_tl { #2 }
+    \tl_if_eq:NnT \@currenvir { document } {
+      \seq_if_empty:NF \g__bnvs_def_seq {
+        \tl_put_left:Nx \l__bnvs_a_tl {
+          \seq_use:Nn \g__bnvs_def_seq , ,
+        }
+      }
+    }
+    \__bnvs_parse_prepare:N \l__bnvs_a_tl
+\__bnvs_DEBUG:x { ...\string \Beanoves \IfBooleanT {#1} { * }... }
+\__bnvs_DEBUG:x { \string \l__bnvs_a_tl => \tl_to_str:V \l__bnvs_a_tl }
+    \IfBooleanTF {#1} {
+      \bool_set_false:N \l__bnvs_parse_bool
+    } {
+      \bool_set_true:N \l__bnvs_parse_bool
+    }
+    \exp_args:NnnV
+    \keyval_parse:nnn { \__bnvs_parse:n } { \__bnvs_parse:nn } \l__bnvs_a_tl
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_set:Nn \l__bnvs_id_last_tl \l__bnvs_id_last_tl
+    \ignorespaces
+  }
+}
+\define@key{beamerframe}{beanoves}{\Beanoves*{#1}}
+\cs_set_eq:NN \__bnvs_beamer@frame \beamer@frame
+\cs_set:Npn \beamer@frame < #1 > {
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_scan:nNN { #1 } \__bnvs_eval:nN \l__bnvs_ans_tl
+  \exp_args:NNNV
+  \__bnvs_group_end:
+  \__bnvs_beamer@frame < \l__bnvs_ans_tl >
+}
+\cs_set_eq:NN \__bnvs_beamer@masterdecode \beamer@masterdecode
+\cs_set:Npn \beamer@masterdecode #1 {
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_scan:nNN { #1 } \__bnvs_eval:nN \l__bnvs_ans_tl
+  \exp_args:NNV
+  \__bnvs_group_end:
+  \__bnvs_beamer@masterdecode \l__bnvs_ans_tl
+}
+\cs_new:Npn \__bnvs_scan:nNN #1 #2 #3 {
+\__bnvs_DEBUG:x { \string\__bnvs_scan:nNN... }
+\__bnvs_DEBUG:x { WHAT = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { CMD == \string #2 }
+\__bnvs_DEBUG:x { \string #3 = / \tl_to_str:V #3 / }
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_ans_tl
+  \seq_clear:N \l__bnvs_token_seq
+  \regex_split:nnN {} { #1 } \l__bnvs_token_seq
+  \cs_set:Npn \scan_question: {
+\__bnvs_DEBUG:x { \string\scan_question: }
+\__bnvs_DEBUG:x { \string\l__bnvs_ans_tl :~\l__bnvs_ans_tl / }
+    \seq_pop_left:NNT \l__bnvs_token_seq \l__bnvs_token_tl {
+      \tl_if_eq:NnTF \l__bnvs_token_tl { ? } {
+        \require_open:
+      } {
+        \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_token_tl
+        \scan_question:
+      }
+    }
+  }
+  \cs_set:Npn \require_open: {
+\__bnvs_DEBUG:x { \string\require_open: }
+\__bnvs_DEBUG:x { \string\l__bnvs_ans_tl :~\l__bnvs_ans_tl/}
+    \seq_pop_left:NNTF \l__bnvs_token_seq \l__bnvs_token_tl {
+      \tl_if_eq:NnTF \l__bnvs_token_tl { ( %)
+      } {
+        \int_set:Nn \l__bnvs_int { 1 }
+        \tl_clear:N \l__bnvs_query_tl
+        \require_close:
+      } {
+        \require_open:
+      }
+    } {
+      \__bnvs_fatal:x {Missing~'('%---)
+        ~after~a~?:~#1}
+    }
+  }
+  \cs_set:Npn \require_close: {
+\__bnvs_DEBUG:x { \string\require_close: }
+\__bnvs_DEBUG:x { \string\l__bnvs_query_tl :~\l__bnvs_query_tl/}
+    \seq_pop_left:NNTF \l__bnvs_token_seq \l__bnvs_token_tl {
+      \tl_if_eq:NnTF \l__bnvs_token_tl { ( %---)
+      } {
+        \int_incr:N \l__bnvs_int
+        \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
+        \require_close:
+      } {
+        \tl_if_eq:NnTF \l__bnvs_token_tl { %(---
+          )
+        } {
+          \int_decr:N \l__bnvs_int
+          \int_compare:nNnTF \l__bnvs_int = 0 {
+            \exp_args:NV #2 \l__bnvs_query_tl \l__bnvs_ans_tl
+            \scan_question:
+          } {
+            \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
+            \require_close:
+          }
+        } {
+          \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
+          \require_close:
+        }
+      }
+    } {
+      \__bnvs_error:x {Missing~%(---
+        `)':~#1 }
+      \tl_put_right:Nx \l__bnvs_query_tl {
+        \prg_replicate:nn { \l__bnvs_int } {%(---
+        )}
+      }
+      \exp_args:NV #2 \l__bnvs_query_tl \l__bnvs_ans_tl
+    }
+  }
+  \scan_question:
+  \exp_args:NNNV
+  \__bnvs_group_end:
+  \tl_put_right:Nn #3 \l__bnvs_ans_tl
+\__bnvs_DEBUG:x { ...\string\__bnvs_scan:nNN }
+\__bnvs_DEBUG:x { WHAT = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { CMD == \string #2 }
+\__bnvs_DEBUG:x { \string #3 = / \tl_to_str:V #3 / }
+}
+\exp_args_generate:n { VVx }
+\prg_new_conditional:Npnn \__bnvs_inp:NNN
+    #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_inp:NNNTF...}
+\__bnvs_DEBUG:x { \string #1 = / \tl_to_str:V #1 / }
+\__bnvs_DEBUG:x { \string #2 = / \tl_to_str:V #2 / }
+\__bnvs_DEBUG:x { \string #3 = / \seq_use:Nn #3 . / }
+  \__bnvs_group_begin:
+  \exp_args:NNV
+  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_regex #2 \l__bnvs_match_seq {
+    \exp_args:Nx
+    \tl_if_empty:nT { \seq_item:Nn \l__bnvs_match_seq 3 } {
+      \tl_put_left:NV #2 { #1 }
+\__bnvs_DEBUG:x { ...\string \__bnvs_inp:NNNTF...ID...}
+\__bnvs_DEBUG:x { \string#2 = / \tl_to_str:V #2 / }
+    }
+    \exp_args:NNnx
+    \seq_set_split:Nnn \l__bnvs_split_seq . {
+      \seq_item:Nn \l__bnvs_match_seq 4
+    }
+    \seq_remove_all:Nn \l__bnvs_split_seq { }
+    \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_a_tl
+    \seq_if_empty:NTF \l__bnvs_split_seq {
+      \cs_set:Npn \:nn ##1 ##2 {
+        \__bnvs_group_end:
+        \tl_set:Nn #1 { ##1 }
+        \tl_set:Nn #2 { ##2 }
+      }
+      \exp_args:NVV \:nn #1 #2
+\__bnvs_DEBUG:x { ...\string \__bnvs_inp:NNNTF...}
+\__bnvs_DEBUG:x { \string #1 = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = / #2 / }
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_inp:NNNTF...SPLIT...}
+\__bnvs_DEBUG:x { \string \l__bnvs_split_seq: \seq_use:Nn \l__bnvs_split_seq . /}
+      \cs_set:Npn \:nnn ##1 ##2 ##3 {
+        \__bnvs_group_end:
+        \tl_set:Nn #1 { ##1 }
+        \tl_set:Nn #2 { ##2 }
+        \seq_set_split:Nnn #3 . { ##3 }
+        \seq_remove_all:Nn #3 { }
+      }
+      \exp_args:NVVx
+      \:nnn #1 #2 {
+        \seq_use:Nn \l__bnvs_split_seq . . \seq_use:Nn #3 .
+      }
+    }
+\__bnvs_DEBUG:x { ...\string \__bnvs_inp:NNNTF...TRUE}
+\__bnvs_DEBUG:x { \string #1 = / \tl_to_str:V #1 / }
+\__bnvs_DEBUG:x { \string #2 = / \tl_to_str:V #2 / }
+\__bnvs_DEBUG:x { \string #3 = / \seq_use:Nn #3 . / }
+    \prg_return_true:
+  } {
+    \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_inp:NNNTF...FALSE}
+\__bnvs_DEBUG:x { \string #1 = / \tl_to_str:V #1 / }
+\__bnvs_DEBUG:x { \string #2 = / \tl_to_str:V #2 / }
+\__bnvs_DEBUG:x { \string #3 = / \seq_use:Nn #3 . / }
+    \prg_return_false:
+  }
+}
+\cs_new:Npn \__bnvs_resolve_x:TFF #1 #2 {
+  \__bnvs_resolve_x:NNNTF
+  \l__bnvs_id_tl
+  \l__bnvs_name_tl
+  \l__bnvs_path_seq {
+    \seq_if_empty:NTF \l__bnvs_path_seq { #1 } { #2 }
+  }
+}
+\prg_new_conditional:Npnn \__bnvs_resolve_x:NNN
+    #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_resolve_x:NNNTF... }
+\__bnvs_DEBUG:x { \string #1 = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = / #2 / }
+\__bnvs_DEBUG:x { \string #3 = / \seq_use:Nn #3. / }
+  \__bnvs_group_begin:
+  \seq_set_eq:NN \l__bnvs_a_seq #3
+  \seq_clear:N \l__bnvs_b_seq
+  \cs_set:Npn \loop: {
+    \__bnvs_call:TF {
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_x:NNNTF...LOOP... }
+\__bnvs_DEBUG:x { \string#2 = / #2 / }
+\__bnvs_DEBUG:x { \string \l__bnvs_a_seq = / \seq_use:Nn \l__bnvs_a_seq . / }
+      \tl_set_eq:NN \l__bnvs_a_tl #2
+      \seq_if_empty:NTF \l__bnvs_a_seq {
+        \__bnvs_get:nVNTF L \l__bnvs_a_tl \l__bnvs_b_tl {
+          \cs_set:Nn \loop: { \return_true: }
+        } {
+          \resolve:F {
+            \cs_set:Nn \loop: { \return_true: }
+          }
+        }
+      } {
+        \tl_put_right:Nx \l__bnvs_a_tl { . \seq_use:Nn \l__bnvs_a_seq . }
+        \resolve:F {
+          \seq_pop_right:NNT \l__bnvs_a_seq \l__bnvs_c_tl {
+            \seq_put_left:NV \l__bnvs_b_seq \l__bnvs_c_tl
+          }
+        }
+      }
+      \loop:
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_x:NNNTF...TOO~MANY~CALLS }
+\__bnvs_DEBUG:x { \string #1 => \tl_to_str:N #1 }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+\__bnvs_DEBUG:x { \string #3 = / \seq_use:Nn #3 . / }
+      \__bnvs_group_end:
+      \prg_return_false:
+    }
+  }
+  \cs_set:Npn \resolve:F ##1 {
+    \__bnvs_get:nVNTF A \l__bnvs_a_tl \l__bnvs_b_tl {
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_x:NNNTF...RESOLUTION~A }
+\__bnvs_DEBUG:x { \tl_to_str:N \l__bnvs_a_tl / A => \tl_to_str:N \l__bnvs_b_tl }
+      \__bnvs_inp:NNNTF #1 \l__bnvs_b_tl \l__bnvs_b_seq {
+        \tl_set_eq:NN #2 \l__bnvs_b_tl
+        \seq_set_eq:NN #3 \l__bnvs_b_seq
+        \seq_set_eq:NN \l__bnvs_a_seq \l__bnvs_b_seq
+        \seq_clear:N \l__bnvs_b_seq
+      } {
+        \seq_if_empty:NTF \l__bnvs_b_seq {
+          \tl_set_eq:NN #2 \l__bnvs_b_tl
+          \seq_clear:N #3
+          \seq_clear:N \l__bnvs_a_seq
+        } {
+          ##1
+        }
+      }
+    } {
+    \__bnvs_get:nVNTF V \l__bnvs_a_tl \l__bnvs_b_tl {
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_x:NNNTF...RESOLUTION~V }
+\__bnvs_DEBUG:x { \tl_to_str:N \l__bnvs_a_tl / V => \tl_to_str:N \l__bnvs_b_tl }
+      \__bnvs_inp:NNNTF #1 \l__bnvs_b_tl \l__bnvs_b_seq {
+        \tl_set_eq:NN #2 \l__bnvs_b_tl
+        \seq_set_eq:NN #3 \l__bnvs_b_seq
+        \seq_set_eq:NN \l__bnvs_a_seq \l__bnvs_b_seq
+        \seq_clear:N \l__bnvs_b_seq
+      } {
+        \seq_if_empty:NTF \l__bnvs_b_seq {
+          \tl_set_eq:NN #2 \l__bnvs_b_tl
+          \seq_clear:N #3
+          \seq_clear:N \l__bnvs_a_seq
+        } {
+          ##1
+        }
+      }
+    } { ##1 }
+  }
+  }
+  \cs_set:Npn \return_true: {
+    \seq_pop_left:NNTF #3 \l__bnvs_a_tl {
+      \seq_if_empty:NTF #3 {
+        \tl_clear:N \l__bnvs_b_tl
+        \__bnvs_can_index:VTF #2 {
+          \__bnvs_if_index:VVNTF #2 \l__bnvs_a_tl \l__bnvs_b_tl {
+            \tl_set:NV #2 \l__bnvs_b_tl
+          } {
+            \tl_set:NV #2 \l__bnvs_a_tl
+          }
+        } {
+          \tl_set:NV #2 \l__bnvs_a_tl
+        }
+      } {
+        \__bnvs_error:x { Path~too~long:~#2.\l__bnvs_a_tl
+          .\seq_use:Nn\l__bnvs_path_seq .}
+      }
+    } {
+      \tl_clear:N \l__bnvs_b_tl
+      \__bnvs_raw_value:VNT #2 \l__bnvs_b_tl {
+        \tl_set:NV #2 \l__bnvs_b_tl
+      }
+    }
+    \cs_set:Npn \:nnn ####1 ####2 ####3 {
+      \__bnvs_group_end:
+      \tl_set:Nn #1 { ####1 }
+      \tl_set:Nn #2 { ####2 }
+      \seq_set_split:Nnn #3 . { ####3 }
+      \seq_remove_all:Nn #3 { }
+    }
+    \exp_args:NVVx
+    \:nnn #1 #2 {
+      \seq_use:Nn #3 .
+    }
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_x:NNNTF...TRUE }
+\__bnvs_DEBUG:x { \string#1 = / #1 / }
+\__bnvs_DEBUG:x { \string#2 = / #2 / }
+\__bnvs_DEBUG:x { \string#3 = / \seq_use:Nn #3 . / }
+    \prg_return_true:
+  }
+  \loop:
+}
+\cs_new:Npn \__bnvs_resolve_n:TFF #1 #2 {
+  \__bnvs_resolve_n:NNNTF
+  \l__bnvs_id_tl
+  \l__bnvs_name_tl
+  \l__bnvs_path_seq {
+    \seq_if_empty:NTF \l__bnvs_path_seq { #1 } { #2 }
+  }
+}
+\prg_new_conditional:Npnn \__bnvs_resolve_n: { T, F, TF } {
+  \__bnvs_resolve_n:NNNTF
+  \l__bnvs_name_tl
+  \l__bnvs_id_tl
+  \l__bnvs_path_seq {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\prg_new_conditional:Npnn \__bnvs_resolve_n_old:NNN
+    #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_resolve_n:NNNTF... }
+\__bnvs_DEBUG:x { \string#1 = / #1 / }
+\__bnvs_DEBUG:x { \string#2 = / #2 / }
+\__bnvs_DEBUG:x { \string#3 = / \seq_use:Nn #3. / }
+  \__bnvs_group_begin:
+  \seq_set_eq:NN \l__bnvs_a_seq #3
+  \seq_clear:N \l__bnvs_b_seq
+  \cs_set:Npn \loop: {
+    \__bnvs_call:TF {
+      \tl_set_eq:NN \l__bnvs_a_tl #2
+      \seq_if_empty:NTF \l__bnvs_a_seq {
+        \__bnvs_get:nVNTF L \l__bnvs_a_tl \l__bnvs_b_tl {
+          \cs_set:Npn \loop: { \return_true: }
+        } {
+          \seq_if_empty:NTF \l__bnvs_b_seq {
+            \cs_set:Npn \loop: { \return_true: }
+          } {
+            \:F {
+              \cs_set:Npn \loop: { \return_true: }
+            }
+          }
+        }
+      } {
+        \tl_put_right:Nx \l__bnvs_a_tl { . \seq_use:Nn \l__bnvs_a_seq . }
+        \:F {
+          \seq_pop_right:NNT \l__bnvs_a_seq \l__bnvs_c_tl {
+            \seq_put_left:NV \l__bnvs_b_seq \l__bnvs_c_tl
+          }
+        }
+      }
+      \loop:
+    } {
+\__bnvs_DEBUG:x { \string\__bnvs_resolve_n:NNNTF...TOO~MANY~CALLS }
+\__bnvs_DEBUG:x { \string#1 = / #1 / }
+\__bnvs_DEBUG:x { \string#2 = / #2 / }
+\__bnvs_DEBUG:x { \string#3 = / \seq_use:Nn #3. / }
+      \__bnvs_group_end:
+      \prg_return_false:
+    }
+  }
+  \cs_set:Npn \:F ##1 {
+    \__bnvs_get:nVNTF A \l__bnvs_a_tl \l__bnvs_b_tl {
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_n:NNNTF...RESOLUTION... }
+\__bnvs_DEBUG:x { \l__bnvs_a_tl / A=>\l__bnvs_b_tl}
+      \__bnvs_inp:NNNTF #1 \l__bnvs_b_tl \l__bnvs_b_seq {
+        \tl_set_eq:NN #2 \l__bnvs_b_tl
+        \seq_set_eq:NN #3 \l__bnvs_b_seq
+        \seq_set_eq:NN \l__bnvs_a_seq \l__bnvs_b_seq
+        \seq_clear:N \l__bnvs_b_seq
+      } { ##1 }
+    } { ##1 }
+  }
+  \cs_set:Npn \return_true: {
+    \cs_set:Npn \:nnn ####1 ####2 ####3 {
+      \__bnvs_group_end:
+      \tl_set:Nn #1 { ####1 }
+      \tl_set:Nn #2 { ####2 }
+      \seq_set_split:Nnn #3 . { ####3 }
+      \seq_remove_all:Nn #3 { }
+    }
+    \exp_args:NVVx
+    \:nnn #1 #2 { \seq_use:Nn #3 . }
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_n:NNNTF...TRUE }
+\__bnvs_DEBUG:x { \string#1 = / \tl_to_str:V #1 / }
+\__bnvs_DEBUG:x { \string#2 = / \tl_to_str:V #2 / }
+\__bnvs_DEBUG:x { \string#3 = / \seq_use:Nn #3. / }
+    \prg_return_true:
+  }
+  \loop:
+}
+\prg_new_conditional:Npnn \__bnvs_resolve_n:NNN
+    #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_resolve_n:NNNTF... }
+\__bnvs_DEBUG:x { \string#1 = / #1 / }
+\__bnvs_DEBUG:x { \string#2 = / #2 / }
+\__bnvs_DEBUG:x { \string#3 = / \seq_use:Nn #3. / }
+  \__bnvs_group_begin:
+  \tl_set_eq:NN \l__bnvs_id_tl #1
+  \tl_set_eq:NN \l__bnvs_name_tl #2
+  \seq_set_eq:NN \l__bnvs_path_seq #3
+  \seq_set_eq:NN \l__bnvs_a_seq #3
+  \seq_clear:N \l__bnvs_b_seq
+  \cs_set:Npn \loop: {
+    \__bnvs_call:TF {
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_n:NNNTF...LOOP... }
+      \tl_set_eq:NN \l__bnvs_a_tl \l__bnvs_name_tl
+      \seq_if_empty:NTF \l__bnvs_a_seq {
+        \seq_if_empty:NTF \l__bnvs_b_seq {
+          \group_end_return_true:
+        } {
+          \resolve:nF A {
+            \resolve:nF V {
+              \may_loop:
+            }
+          }
+        }
+      } {
+        \tl_put_right:Nx \l__bnvs_a_tl { . \seq_use:Nn \l__bnvs_a_seq . }
+        \resolve:nF A {
+          \resolve:nF V {
+            \may_loop:
+          }
+        }
+      }
+    } {
+      \__bnvs_group_end:
+\__bnvs_DEBUG:x { \string\__bnvs_resolve_n:NNNTF...TOO~MANY~CALLS }
+\__bnvs_DEBUG:x { \string#1 = / #1 / }
+\__bnvs_DEBUG:x { \string#2 = / #2 / }
+\__bnvs_DEBUG:x { \string#3 = / \seq_use:Nn #3. / }
+      \prg_return_false:
+    }
+  }
+  \cs_set:Npn \may_loop: {
+     \seq_pop_right:NNTF \l__bnvs_a_seq \l__bnvs_c_tl {
+       \seq_put_left:NV \l__bnvs_b_seq \l__bnvs_c_tl
+       \loop:
+    } {
+\__bnvs_DEBUG:x { \string\__bnvs_resolve_n:NNNTF...Unknown~key }
+\__bnvs_DEBUG:x { \string\l__bnvs_a_tl = / \tl_to_str:V \l__bnvs_a_tl / }
+       \group_end_return_true:
+    }
+  }
+  \cs_set:Npn \resolve:nF ##1 ##2 {
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_n:NNNTF...RESOLUTION~##1... }
+    \__bnvs_get:nVNTF ##1 \l__bnvs_a_tl \l__bnvs_b_tl {
+      \__bnvs_inp:NNNTF \l__bnvs_id_tl \l__bnvs_b_tl \l__bnvs_b_seq {
+        \tl_set_eq:NN \l__bnvs_name_tl \l__bnvs_b_tl
+        \seq_set_eq:NN \l__bnvs_path_seq \l__bnvs_b_seq
+        \seq_set_eq:NN \l__bnvs_a_seq \l__bnvs_b_seq
+        \seq_clear:N \l__bnvs_b_seq
+        \loop:
+      } {
+        \may_loop:
+      }
+    } {
+      ##2
+    }
+  }
+  \cs_set:Npn \group_end_return_true: {
+    \cs_set:Npn \:nnn ####1 ####2 ####3 {
+      \__bnvs_group_end:
+      \tl_set:Nn #1 { ####1 }
+      \tl_set:Nn #2 { ####2 }
+      \seq_set_split:Nnn #3 . { ####3 }
+      \seq_remove_all:Nn #3 { }
+    }
+    \exp_args:NVVx
+    \:nnn \l__bnvs_id_tl \l__bnvs_name_tl { \seq_use:Nn \l__bnvs_path_seq . }
+\__bnvs_DEBUG:x { ...\string \__bnvs_resolve_n:NNNTF...TRUE }
+\__bnvs_DEBUG:x { \string#1 = / \tl_to_str:V #1 / }
+\__bnvs_DEBUG:x { \string#2 = / \tl_to_str:V #2 / }
+\__bnvs_DEBUG:x { \string#3 = / \seq_use:Nn #3. / }
+    \prg_return_true:
+  }
+  \loop:
+}
+\cs_new:Npn \__bnvs_round:nN #1 #2 {
+\__bnvs_DEBUG:x { \string\__bnvs_round:nN }
+\__bnvs_DEBUG:x { IN:~\tl_to_str:n{#1} }
+  \tl_if_empty:nTF { #1 } {
+    \tl_put_right:Nn #2 { 0 }
+\__bnvs_DEBUG:x { EMPTY }
+  } {
+    \tl_put_right:Nx #2 { \fp_eval:n { round(#1) } }
+  }
+\__bnvs_DEBUG:x { OUT:~\string#2=>\tl_to_str:V #2 }
+}
+\cs_new:Npn \__bnvs_round:N #1 {
+\__bnvs_DEBUG:x { \string\l__bnvs_round:N }
+\__bnvs_DEBUG:x { IN:\string#1=>\tl_to_str:N #1 }
+  \tl_if_empty:VTF #1 {
+    \tl_set:Nn #1 { 0 }
+\__bnvs_DEBUG:x { EMPTY }
+  } {
+    \tl_set:Nx #1 { \fp_eval:n { round(#1) } }
+  }
+\__bnvs_DEBUG:x { OUT:\string#1=>\tl_to_str:N #1 }
+}
+\cs_set:Npn \__bnvs_group_end_return_true:nnN #1 #2 #3 {
+  \tl_if_empty:NTF \l__bnvs_ans_tl {
+    \__bnvs_group_end:
+\__bnvs_DEBUG:n { ...FALSE }
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:n { EMPTY }
+    \__bnvs_gremove_cache:nn { #1 } { #2 }
+    \prg_return_false:
+  } {
+    \__bnvs_round:N \l__bnvs_ans_tl
+    \__bnvs_gput_cache:nnV { #1 } { #2 } \l__bnvs_ans_tl
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_put_right:Nn #3 \l__bnvs_ans_tl
+\__bnvs_DEBUG:n { ...TRUE }
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:V #3 }
+    \prg_return_true:
+  }
+}
+\cs_set:Npn \__bnvs_group_end_return_false:nn #1 #2 {
+\__bnvs_DEBUG:n { ...FALSE }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { SUBKEY = / \tl_to_str:n { #1 } / }
+  \__bnvs_group_end:
+  \__bnvs_gremove_cache:nn { #1 } { #2 }
+  \prg_return_false:
+}
+\prg_new_conditional:Npnn \__bnvs_raw_first:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_raw_first:nNTF...}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string#2 => \tl_to_str:N #2 }
+  \__bnvs_group_begin:
+  \__bnvs_get_cache:nnNTF A { #1 } #2 {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_put_right:Nn #2 #2
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_first:nNTF...CACHED~TRUE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string#2 => \tl_to_str:N #2 }
+    \prg_return_true:
+  } {
+    \__bnvs_get:nnNTF A { #1 } \l__bnvs_a_tl {
+      \tl_clear:N \l__bnvs_ans_tl
+      \quark_if_nil:NTF \l__bnvs_a_tl {
+        \__bnvs_gput:nnn A { #1 } { \q_no_value }
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_first:nNTF...BUILD~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+        \__bnvs_raw_last:nNTF { #1 } \l__bnvs_ans_tl {
+          \tl_put_right:Nn \l__bnvs_ans_tl { - }
+          \tl_clear:N \l__bnvs_a_tl
+          \__bnvs_raw_length:nNTF { #1 } \l__bnvs_a_tl {
+            \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_a_tl
+            \tl_put_right:Nn \l__bnvs_ans_tl { + 1 }
+            \__bnvs_group_end_return_true:nnN A { #1 } #2
+          } {
+            \__bnvs_error:n { Unavailable~length~for~#1~(\__bnvs_raw_first:nNTF/2) }
+            \__bnvs_group_end_return_false:nn A { #1 }
+          }
+        } {
+          \__bnvs_error:n { Unavailable~last~for~#1~(\__bnvs_raw_first:nNTF/1) }
+          \__bnvs_group_end_return_false:nn A { #1 }
+        }
+      } {
+        \quark_if_no_value:NTF \l__bnvs_a_tl {
+          \__bnvs_fatal:n {Circular~definition:~#1}
+        } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_first:nNTF...NOT~CACHED~RETURN...}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+          \__bnvs_if_append:VNTF \l__bnvs_a_tl \l__bnvs_ans_tl {
+            \__bnvs_group_end_return_true:nnN A { #1 } #2
+          } {
+            \__bnvs_group_end_return_false:nn A { #1 }
+          }
+        }
+      }
+    } {
+\BeanovesLogGProp
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_first:nNTF... }
+\__bnvs_DEBUG:x { Unknown~KEY = / #1 / A / }
+      \__bnvs_group_end_return_false:nn A { #1 }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_raw_first:nN { VN, xN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_raw_length:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_raw_length:nNTF... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+  \__bnvs_group_begin:
+  \__bnvs_get_cache:nnNTF L { #1 } #2 {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_put_right:Nn #2 #2
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_length:nNTF...CACHED~TRUE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+    \prg_return_true:
+  } {
+    \__bnvs_get:nnNTF L { #1 } \l__bnvs_a_tl {
+      \tl_clear:N \l__bnvs_ans_tl
+      \quark_if_nil:NTF \l__bnvs_a_tl {
+        \__bnvs_gput:nnn L { #1 } { \q_no_value }
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_length:nNTF...BUILD~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+        \__bnvs_raw_last:nNTF { #1 } \l__bnvs_ans_tl {
+          \tl_put_right:Nn \l__bnvs_ans_tl { - }
+          \tl_clear:N \l__bnvs_a_tl
+          \__bnvs_raw_first:nNTF { #1 } \l__bnvs_a_tl {
+            \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_a_tl
+            \tl_put_right:Nn \l__bnvs_ans_tl { + 1 }
+            \__bnvs_group_end_return_true:nnN L { #1 } #2
+          } {
+            \__bnvs_error:n { Unavailable~first~for~#1~(\__bnvs_raw_length:nNTF/2) }
+            \__bnvs_group_end_return_false:nn L { #1 }
+          }
+        } {
+          \__bnvs_error:n { Unavailable~last~for~#1~(\__bnvs_raw_length:nNTF/1) }
+          \__bnvs_group_end_return_false:nn L { #1 }
+        }
+      } {
+        \quark_if_no_value:NTF \l__bnvs_a_tl {
+          \__bnvs_fatal:n {Circular~definition:~#1}
+        } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_length:nNTF...NOT~CACHED~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+          \__bnvs_if_append:VNTF \l__bnvs_a_tl \l__bnvs_ans_tl {
+            \__bnvs_group_end_return_true:nnN L { #1 } #2
+          } {
+            \__bnvs_group_end_return_false:nn L { #1 }
+          }
+        }
+      }
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_length:nNTF...FALSE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+      \__bnvs_group_end_return_false:nn L { #1 }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_raw_length:nN { VN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_raw_last:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_raw_last:nNTF... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+  \__bnvs_group_begin:
+  \__bnvs_get_cache:nnNTF Z { #1 } #2 {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_put_right:Nn #2 #2
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_last:nNTF...CACHED~TRUE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+    \prg_return_true:
+  }  {
+    \__bnvs_get:nnNTF Z { #1 } \l__bnvs_a_tl {
+      \tl_clear:N \l__bnvs_ans_tl
+      \quark_if_nil:NTF \l__bnvs_a_tl {
+        \__bnvs_gput:nnn Z { #1 } { \q_no_value }
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_last:nNTF...BUILD~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+        \tl_clear:N \l__bnvs_a_tl
+        \__bnvs_raw_first:nNTF { #1 } \l__bnvs_ans_tl {
+          \tl_put_right:Nn \l__bnvs_ans_tl { + }
+          \tl_clear:N \l__bnvs_b_tl
+          \__bnvs_raw_length:nNTF { #1 } \l__bnvs_b_tl {
+            \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_b_tl
+            \tl_put_right:Nn \l__bnvs_ans_tl { - 1 }
+            \__bnvs_group_end_return_true:nnN Z { #1 } #2
+          } {
+            \__bnvs_error:n { Unavailable~length~for~#1~(\__bnvs_raw_last:nNTF/1) }
+            \__bnvs_group_end_return_false:nn Z { #1 }
+          }
+        } {
+          \__bnvs_error:n { Unavailable~start~for~#1~(\__bnvs_raw_last:nNTF/1) }
+          \__bnvs_group_end_return_false:nn Z { #1 }
+        }
+      } {
+        \quark_if_no_value:NTF \l__bnvs_a_tl {
+          \__bnvs_fatal:n {Circular~definition:~#1}
+        } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_last:nNTF...NOT~CACHED~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+          \__bnvs_if_append:VNTF \l__bnvs_a_tl \l__bnvs_ans_tl {
+            \__bnvs_group_end_return_true:nnN Z { #1 } #2
+          } {
+            \__bnvs_group_end_return_false:nn Z { #1 }
+          }
+        }
+      }
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_last:nNTF...FALSE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+      \__bnvs_group_end_return_false:nn Z { #1 }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_raw_last:nN { VN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_range:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string \__bnvs_if_range:nNTF...}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_a_tl
+  \tl_clear:N \l__bnvs_b_tl
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_raw_first:nNTF { #1 } \l__bnvs_a_tl {
+    \int_compare:nNnT { \l__bnvs_a_tl } < 0 {
+      \tl_set:Nn \l__bnvs_a_tl { 0 }
+    }
+    \__bnvs_raw_last:nNTF { #1 } \l__bnvs_b_tl {
+      \int_compare:nNnT { \l__bnvs_b_tl } < 0 {
+        \tl_set:Nn \l__bnvs_b_tl { 0 }
+      }
+      \exp_args:NNNx
+      \__bnvs_group_end:
+      \tl_put_right:Nn #2 { \l__bnvs_a_tl - \l__bnvs_b_tl }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_range:nNTF...TRUE~A-Z}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+      \prg_return_true:
+    } {
+      \exp_args:NNNV
+      \__bnvs_group_end:
+      \tl_put_right:Nn #2 \l__bnvs_a_tl
+      \tl_put_right:Nn #2 { - }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_range:nNTF...TRUE~A-}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+      \prg_return_true:
+    }
+  } {
+    \__bnvs_raw_last:nNTF { #1 } \l__bnvs_b_tl {
+      \int_compare:nNnT { \l__bnvs_b_tl } < 0 {
+        \tl_set:Nn \l__bnvs_b_tl { 0 }
+      }
+      \exp_args:NNNx
+      \__bnvs_group_end:
+      \tl_put_right:Nn #2 { - \l__bnvs_b_tl }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_range:nNTF...TRUE~-Z}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+      \prg_return_true:
+    } {
+      \__bnvs_raw_value:nNTF { #1 } \l__bnvs_b_tl {
+        \exp_args:NNNx
+        \__bnvs_group_end:
+        \tl_put_right:Nn #2 { - }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_range:nNTF...TRUE~-}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+        \prg_return_true:
+      } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_range:nNTF...FALSE}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+        \__bnvs_group_end:
+        \prg_return_false:
+      }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_range:nN { VN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_previous:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_previous:nNTF... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = / \tl_to_str:V #2 / }
+  \__bnvs_group_begin:
+  \__bnvs_get_cache:nnNTF P { #1 } #2 {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_put_right:Nn #2 #2
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_previous:nNTF...CACHED~TRUE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+    \prg_return_true:
+  } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_previous:nNTF...NOT~CACHED~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = \tl_to_str:V #2 }
+    \tl_clear:N \l__bnvs_ans_tl
+    \__bnvs_raw_first:nNTF { #1 } \l__bnvs_ans_tl {
+      \tl_put_right:Nn \l__bnvs_ans_tl { -1 }
+      \__bnvs_group_end_return_true:nnN P { #1 } #2
+    } {
+      \__bnvs_group_end_return_false:nn P { #1 }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_previous:nN { VN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_next:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_next:nNTF... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = / \tl_to_str:V #2 / }
+  \__bnvs_group_begin:
+  \__bnvs_get_cache:nnNTF N { #1 } #2 {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_put_right:Nn #2 #2
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_next:nNTF...CACHED~TRUE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+    \prg_return_true:
+  } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_next:nNTF...NOT~CACHED~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+    \tl_clear:N \l__bnvs_ans_tl
+    \__bnvs_raw_last:nNTF { #1 } \l__bnvs_ans_tl {
+      \tl_put_right:Nn \l__bnvs_ans_tl { +1 }
+      \__bnvs_group_end_return_true:nnN P { #1 } #2
+    } {
+      \__bnvs_group_end_return_false:nn P { #1 }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_next:nN { VN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_raw_value:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_raw_value:nNTF...}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string#2 => \tl_to_str:N #2 }
+  \__bnvs_group_begin:
+  \__bnvs_get_cache:nnNTF V { #1 } #2 {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_put_right:Nn #2 #2
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_value:nNTF...CACHED~TRUE }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string#2 => \tl_to_str:N #2 }
+    \prg_return_true:
+  } {
+    \__bnvs_get:nnNTF V { #1 } \l__bnvs_a_tl {
+      \tl_clear:N \l__bnvs_ans_tl
+      \quark_if_nil:NTF \l__bnvs_a_tl {
+        \__bnvs_gput:nnn V { #1 } { \q_no_value }
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_value:nNTF...BUILD~RETURN... }
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+        \__bnvs_raw_first:nNTF { #1 } \l__bnvs_ans_tl {
+          \__bnvs_group_end_return_true:nnN V { #1 } #2
+        } {
+          \__bnvs_raw_last:nNTF { #1 } \l__bnvs_ans_tl {
+            \__bnvs_group_end_return_true:nnN V { #1 } #2
+          } {
+            \__bnvs_group_end_return_false:nn V { #1 }
+          }
+        }
+      } {
+        \quark_if_no_value:NTF \l__bnvs_a_tl {
+          \__bnvs_fatal:n {Circular~definition:~#1}
+        } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_value:nNTF...NOT~CACHED~RETURN...}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+          \__bnvs_if_append:VNTF \l__bnvs_a_tl \l__bnvs_ans_tl {
+            \__bnvs_group_end_return_true:nnN V { #1 } #2
+          } {
+            \__bnvs_group_end_return_false:nn V { #1 }
+          }
+        }
+      }
+    } {
+\BeanovesLogGProp
+\__bnvs_DEBUG:x { ...\string \__bnvs_raw_value:nNTF... }
+\__bnvs_DEBUG:x { Unknown~KEY = / #1 / V / }
+      \__bnvs_group_end_return_false:nn V { #1 }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_raw_value:nN{ V } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_can_index:n #1 { p, T, F, TF } {
+  \bool_if:nTF {
+       \__bnvs_if_in_p:nn A { #1 }
+    || \__bnvs_if_in_p:nn Z { #1 }
+    || \__bnvs_if_in_p:nn V { #1 }
+  } {
+\__bnvs_DEBUG:x { \string\__bnvs_can_index:nTF...TRUE}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+    \prg_return_true:
+  } {
+\__bnvs_DEBUG:x { \string\__bnvs_can_index:nTF...FALSE}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_can_index:n { V } { p, T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_index:nnN #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_index:nnNTF...}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { INDEX = / #2 / }
+\__bnvs_DEBUG:x { \string#3 => \tl_to_str:N #3 }
+  \__bnvs_group_begin:
+  \cs_set:Npn \group_end_return_true:n ##1 {
+    \tl_put_right:Nn \l__bnvs_ans_tl { + #2 - 1 }
+    \exp_args:NNV
+    \__bnvs_group_end:
+  \__bnvs_round:nN \l__bnvs_ans_tl #3
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_index:nnNTF...TRUE~##1}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { INDEX = / #2 / }
+\__bnvs_DEBUG:x { \string#3 => \tl_to_str:N #3 }
+    \prg_return_true:
+  }
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_raw_first:nNTF { #1 } \l__bnvs_ans_tl {
+    \group_end_return_true:n { A }
+  } {
+    \__bnvs_raw_last:nNTF { #1 } \l__bnvs_ans_tl {
+      \group_end_return_true:n { Z }
+    } {
+      \__bnvs_raw_value:nNTF { #1 } \l__bnvs_ans_tl {
+        \group_end_return_true:n { V }
+      } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_index:nnNTF...FALSE}
+\__bnvs_DEBUG:x { KEY = / #1 / }
+\__bnvs_DEBUG:x { INDEX = / #2 / }
+\__bnvs_DEBUG:x { \string#3 => \tl_to_str:N #3 }
+        \__bnvs_group_end:
+        \prg_return_false:
+      }
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_index:nnN { VVN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_n_value:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_n_value:nNTF...}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n{#1} / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+  \__bnvs_n_get:nNF { #1 } #2 {
+    \tl_set:Nn #2 { 1 }
+    \__bnvs_n_gput:nn { #1 } { 1 }
+  }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_value:nNTF...TRUE}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n{#1} / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+  \prg_return_true:
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_n_value:nN { VN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_n_index:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_n_index:nNTF...}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n{#1} / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+  \__bnvs_group_begin:
+  \__bnvs_if_n_value:nNF { #1 } \l__bnvs_a_tl { }
+  \exp_args:NNnV
+  \__bnvs_group_end:
+  \__bnvs_if_index:nnNTF { #1 } \l__bnvs_a_tl #2 {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_index:nNTF...TRUE}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n{#1} / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+    \prg_return_true:
+  } {
+    \__bnvs_group_begin:
+    \__bnvs_raw_value:nNTF {#1} \l__bnvs_ans_tl {
+      \tl_put_right:Nn \l__bnvs_ans_tl { + #2 - 1 }
+      \exp_args:NNV
+      \__bnvs_group_end:
+      \__bnvs_round:Nn \l__bnvs_ans_tl
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_index:nNTF...TRUE}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n{#1} / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+      \prg_return_true:
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_index:nNTF...FALSE}
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n{#1} / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+      \__bnvs_group_end:
+      \prg_return_false:
+    }
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_n_index:nN { VN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_incr:nn #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_incr:nnTF... }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_if_append:nNTF { #2 } \l__bnvs_ans_tl {
+    \int_compare:nNnTF \l__bnvs_ans_tl = 0 {
+      \tl_clear:N \l__bnvs_ans_tl
+      \__bnvs_raw_value:nNTF { #1 } \l__bnvs_ans_tl {
+        \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...TRUE(1) }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+        \prg_return_true:
+      } {
+        \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...FALSE(1) }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+        \prg_return_false:
+      }
+    } {
+      \tl_put_right:Nn \l__bnvs_ans_tl { + }
+      \__bnvs_raw_value:nNTF { #1 } \l__bnvs_ans_tl {
+        \__bnvs_round:N \l__bnvs_ans_tl
+        \__bnvs_gput_cache:nnV V { #1 } \l__bnvs_ans_tl
+        \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...TRUE(2) }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+        \prg_return_true:
+      } {
+        \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...FALSE(2) }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+        \prg_return_false:
+      }
+    }
+  } {
+    \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...FALSE(3) }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+    \prg_return_false:
+  }
+}
+\prg_new_conditional:Npnn \__bnvs_if_incr:nnN #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_incr:nnNTF... }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+  \__bnvs_if_incr:nnTF { #1 } { #2 } {
+    \__bnvs_raw_value:nNTF { #1 } #3 {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...TRUE }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+      \prg_return_true:
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...FALSE(1) }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+      \prg_return_false:
+    }
+  } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_incr:nnTF...FALSE(2) }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_incr:nnN { VnN, VVN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_n_incr:nn #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_n_incr:nnTF... }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_n_get:nNF { #1 } \l__bnvs_ans_tl {
+    \tl_set:Nn \l__bnvs_ans_tl { 1 }
+  }
+  \tl_clear:N \l__bnvs_a_tl
+  \__bnvs_if_append:nNTF { #2 } \l__bnvs_a_tl {
+    \tl_put_right:Nn \l__bnvs_ans_tl { + }
+    \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_a_tl
+    \__bnvs_round:N \l__bnvs_ans_tl
+    \__bnvs_n_gput:nV { #1 } \l__bnvs_ans_tl
+    \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_incr:nnTF...TRUE }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+    \prg_return_true:
+  } {
+    \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_incr:nnTF...FALSE }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+    \prg_return_false:
+  }
+}
+\prg_new_conditional:Npnn \__bnvs_if_n_incr:nnN #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_n_incr:nnNTF... }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+  \__bnvs_if_n_incr:nnTF { #1 } { #2 } {
+    \__bnvs_n_get:nNTF { #1 } #3 {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_incr:nnNTF...TRUE }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+      \prg_return_true:
+    } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_incr:nnNTF...FALSE(1) }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+      \prg_return_false:
+    }
+  } {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_n_incr:nnNTF...FALSE(2) }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_n_incr:nnN { VnN, VVN } { T, F, TF }
+\prg_new_conditional:Npnn \__bnvs_if_post:nnN #1 #2 #3 { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_post:nnNTF... }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_raw_value:nNTF { #1 } \l__bnvs_ans_tl {
+    \__bnvs_if_incr:nnTF { #1 } { #2 } {
+      \exp_args:NNNV
+      \__bnvs_group_end:
+      \tl_put_right:Nn #3 \l__bnvs_ans_tl
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_post:nnNTF\space TRUE }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+      \prg_return_true:
+    } {
+      \__bnvs_group_end:
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_post:nnNTF\space FALSE(1) }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+      \prg_return_false:
+    }
+  } {
+    \__bnvs_group_end:
+\__bnvs_DEBUG:x { ... \string\__bnvs_if_post:nnNTF\space FALSE(2) }
+\__bnvs_DEBUG:x { NAME = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { INCR = / \tl_to_str:n { #2 } / }
+\__bnvs_DEBUG:x { \string #3 => \tl_to_str:N #3 }
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_post:nnN { VnN, VVN } { T, F, TF }
+\int_new:N \l__bnvs_split_int
+\prg_new_conditional:Nnn \__bnvs_if_append:nN { T, F, TF } {
+\__bnvs_DEBUG:x { \string\__bnvs_if_append:nNTF...}
+\__bnvs_DEBUG:x { what= / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+  \__bnvs_call:TF {
+    \__bnvs_group_begin:
+    \int_zero:N  \l__bnvs_split_int
+    \seq_clear:N \l__bnvs_split_seq
+    \tl_clear:N  \l__bnvs_id_tl
+    \tl_clear:N  \l__bnvs_name_tl
+    \tl_clear:N  \l__bnvs_path_tl
+    \tl_clear:N  \l__bnvs_group_tl
+    \tl_clear:N  \l__bnvs_ans_tl
+    \tl_clear:N  \l__bnvs_a_tl
+    \regex_split:NnN \c__bnvs_split_regex { #1 } \l__bnvs_split_seq
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF...}
+\__bnvs_DEBUG:x { \#\string \l__bnvs_split_seq => \seq_count:N \l__bnvs_split_seq }
+\__bnvs_DEBUG:x { \string \l__bnvs_split_seq => \seq_use:Nn \l__bnvs_split_seq / }
+    \int_set:Nn \l__bnvs_split_int { 1 }
+    \tl_set:Nx \l__bnvs_ans_tl {
+      \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
+    }
+\__bnvs_DEBUG:x { START~ANS: \l__bnvs_ans_tl }
+    \cs_set:Npn \switch:nNTF ##1 ##2 ##3 ##4 {
+      \tl_set:Nx ##2 {
+        \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int + ##1 }
+      }
+      \tl_if_empty:NTF ##2 {
+        ##4 } {
+        ##3
+      }
+    }
+    \cs_set:Npn \fp_round: {
+      \__bnvs_round:N \l__bnvs_ans_tl
+    }
+    \cs_set:Npn \group_end_return_false: {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF...FALSE}
+\__bnvs_DEBUG:x { what=\tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 }
+      \cs_set:Npn \loop: {
+        \__bnvs_group_end:
+        \prg_return_false:
+      }
+    }
+    \cs_set:Npn \group_end_return_false:x ##1 {
+      \__bnvs_error:x { ##1 }
+      \group_end_return_false:
+    }
+    \cs_set:Npn \resolve_n:T ##1 {
+      \__bnvs_resolve_n:TFF {
+        ##1
+      } {
+        \group_end_return_false:x { Too~many~dotted~components:~#1 }
+      } {
+        \group_end_return_false:x { Unknown~dotted~path:~#1 }
+      }
+    }
+    \cs_set:Npn \resolve_x:T ##1 {
+      \__bnvs_resolve_x:TFF {
+        ##1
+      } {
+        \group_end_return_false:x { Too~many~dotted~components:~#1 }
+      } {
+        \group_end_return_false:x { Unknown~dotted~path:~#1 }
+      }
+    }
+    \cs_set:Npn \:nn ##1 ##2 {
+      \switch:nNTF { ##1 } \l__bnvs_id_tl { } {
+        \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+        \tl_put_left:NV \l__bnvs_name_tl \l__bnvs_id_tl
+      }
+      \switch:nNTF { ##2 } \l__bnvs_path_tl {
+        \seq_set_split:NnV \l__bnvs_path_seq { . } \l__bnvs_path_tl
+        \seq_remove_all:Nn \l__bnvs_path_seq { }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF...}
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+      } {
+        \seq_clear:N \l__bnvs_path_seq
+      }
+    }
+    \cs_set:cpn {.n?:TF} ##1 ##2 {
+      \seq_get_right:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
+        \exp_args:NV
+        \str_if_eq:nnTF \l__bnvs_b_tl { n } {
+          \seq_pop_right:NN \l__bnvs_path_seq \l__bnvs_b_tl
+          ##1
+        } { ##2 }
+      } { ##2 }
+    }
+    \cs_set:cpn {...++n:} {
+      \__bnvs_group_begin:
+      \__bnvs_resolve_n:TFF {
+        \tl_clear:N \l__bnvs_b_tl
+        \__bnvs_if_n_incr:VnNTF \l__bnvs_name_tl { 1 } \l__bnvs_b_tl {
+          \exp_args:NNNV
+          \__bnvs_group_end:
+          \tl_set:Nn \l__bnvs_b_tl \l__bnvs_b_tl
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF... }
+\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:V \l__bnvs_b_tl }
+          \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
+          \resolve_x:T {
+            \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
+          }
+        } {
+          \__bnvs_group_end:
+        }
+      } {
+        \__bnvs_group_end:
+        \group_end_return_false:x { Too~many~dotted~components:~#1 }
+      } {
+        \__bnvs_group_end:
+        \group_end_return_false:
+      }
+    }
+    \cs_set:Npn \loop: {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF... }
+\__bnvs_DEBUG:x { LOOP = / \int_use:N\l__bnvs_split_int /
+  \seq_count:N \l__bnvs_split_seq /
+}
+      \int_compare:nNnTF {
+        \l__bnvs_split_int } < { \seq_count:N \l__bnvs_split_seq
+      } {
+        \switch:nNTF { 1 } \l__bnvs_name_tl {
+          \:nn { 2 } { 3 }
+          \use:c {.n?:TF} {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~++...n }
+            \use:c { ...++n: }
+          } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~++... }
+            \resolve_n:T {
+              \tl_clear:N \l__bnvs_ans_tl
+              \__bnvs_if_incr:VnNF \l__bnvs_name_tl 1 \l__bnvs_ans_tl {
+                \group_end_return_false:
+              }
+            }
+          }
+        } {
+          \switch:nNTF 4 \l__bnvs_name_tl {
+            \:nn { 5 } { 6 }
+            \switch:nNTF 7 \l__bnvs_a_tl {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...++n }
+              \use:c { ...++n: }
+            } {
+              \switch:nNTF 8 \l__bnvs_a_tl {
+                \use:c { .n?:TF } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n+=... }
+\__bnvs_group_begin:
+\__bnvs_resolve_n:TFF {
+  \tl_clear:N \l__bnvs_b_tl
+  \__bnvs_if_n_incr:VVNTF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_b_tl {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_set:Nn \l__bnvs_b_tl \l__bnvs_b_tl
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF... }
+\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:N \l__bnvs_b_tl }
+    \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
+    \resolve_x:T {
+      \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
+    }
+  } {
+    \__bnvs_group_end:
+  }
+} {
+    \__bnvs_group_end:
+    \group_end_return_false:x { Too~many~dotted~components:~#1 }
+} {
+  \__bnvs_group_end:
+  \group_end_return_false:x { Unknown~dotted~path:~#1 }
+}
+                } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...+=... }
+\resolve_n:T {
+  \__bnvs_if_incr:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
+    \group_end_return_false:
+  }
+}
+                }
+              } {
+                \switch:nNTF 9 \l__bnvs_a_tl {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...++ }
+\resolve_n:T {
+  \__bnvs_if_post:VnNF \l__bnvs_name_tl { 1 } \l__bnvs_ans_tl {
+    \return_false:
+  }
+}
+                } {
+\seq_pop_right:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
+  \exp_args:NV
+  \str_case:nnF \l__bnvs_b_tl {
+    { n } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n }
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+      \__bnvs_group_begin:
+      \resolve_n:T {
+        \exp_args:NNV
+        \__bnvs_group_end:
+        \__bnvs_if_n_value:nNTF \l__bnvs_name_tl \l__bnvs_b_tl {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF... }
+\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:N \l__bnvs_b_tl }
+          \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
+          \resolve_x:T {
+            \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
+          }
+        } {
+\group_end_return_false:x { Undefined~dotted~path:~#1 }
+        }
+      }
+    }
+    { length } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...length }
+      \resolve_n:T {
+        \__bnvs_raw_length:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+          \group_end_return_false:
+        }
+      }
+    }
+    { last } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...last }
+      \resolve_n:T {
+        \__bnvs_raw_last:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+          \group_end_return_false:
+        }
+      }
+    }
+    { range } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...range }
+      \resolve_n:T {
+        \__bnvs_if_range:VNTF \l__bnvs_name_tl \l__bnvs_ans_tl {
+          \cs_set_eq:NN \fp_round: \prg_do_nothing:
+        } {
+          \group_end_return_false:
+        }
+      }
+    }
+    { previous } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...previous }
+      \resolve_n:T {
+        \__bnvs_if_previous:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+          \group_end_return_false:
+        }
+      }
+    }
+    { next } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...next }
+      \resolve_n:T {
+        \__bnvs_if_next:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+          \group_end_return_false:
+        }
+      }
+    }
+  } {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...<integer> }
+    \resolve_n:T {
+      \__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_b_tl \l__bnvs_ans_tl {
+        \group_end_return_false:
+      }
+    }
+  }
+} {
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~... }
+  \resolve_n:T {
+    \__bnvs_raw_value:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+      \group_end_return_false:
+    }
+  }
+}
+                }
+              }
+            }
+          } {
+          }
+        }
+        \int_add:Nn \l__bnvs_split_int { 10 }
+        \tl_put_right:Nx \l__bnvs_ans_tl {
+          \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
+        }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF...POOL...}
+\__bnvs_DEBUG:x { \string \l__bnvs_ans_tl => \tl_to_str:V \l__bnvs_ans_tl }
+        \loop:
+      } {
+        \fp_round:
+        \exp_args:NNNV
+        \__bnvs_group_end:
+        \tl_put_right:Nn #2 \l__bnvs_ans_tl
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_append:nNTF...TRUE}
+\__bnvs_DEBUG:x { WHAT = /\tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:V #2 }
+        \prg_return_true:
+      }
+    }
+    \loop:
+  } {
+    \__bnvs_error:x { Too~many~calls:~ #1 }
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \__bnvs_if_append:nN { VN } { T, F, TF }
+\regex_const:Nn \c__bnvs_A_cln_Z_regex {
+  \A \s* (?:
+      ( [^:]* ) \s* :
+      (:)? \s*
+      ( [^:]* )
+    | ( [^:]+ )
+  ) \s* \Z
+}
+\prg_new_conditional:Npnn \__bnvs_if_eval_query:nN #1 #2 { T, F, TF } {
+\__bnvs_DEBUG:x { \string \__bnvs_if_eval_query:nNTF... }
+\__bnvs_DEBUG:x { query = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = \tl_to_str:N #2 }
+  \__bnvs_call_greset:
+  \cs_set:Npn \return_true: {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_eval_query:nNTF...TRUE }
+\__bnvs_DEBUG:x { query = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = \tl_to_str:N #2 }
+    \prg_return_true:
+  }
+  \cs_set:Npn \return_false: {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_eval_query:nNTF...FALSE }
+\__bnvs_DEBUG:x { query = / #1 / }
+\__bnvs_DEBUG:x { \string #2 = \tl_to_str:N #2 }
+    \prg_return_false:
+  }
+  \regex_extract_once:NnNTF \c__bnvs_A_cln_Z_regex {
+    #1
+  } \l__bnvs_match_seq {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_eval_query:nNTF...MATCH... }
+\__bnvs_DEBUG:x { query = / #1 / }
+\__bnvs_DEBUG:x { \string\l__bnvs_match_seq/\seq_use:Nn \l__bnvs_match_seq // }
+    \cs_set:Npn \switch:nNTF ##1 ##2 ##3 ##4 {
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_eval_query:nNTF... }
+\__bnvs_DEBUG:x { switch = / ##1 / }
+      \tl_set:Nx ##2 {
+        \seq_item:Nn \l__bnvs_match_seq { ##1 }
+      }
+\__bnvs_DEBUG:x { ...\string \__bnvs_if_eval_query:nNTF... }
+\__bnvs_DEBUG:x { \string ##2 = / \tl_to_str:N ##2 / }
+      \tl_if_empty:NTF ##2 { ##4 } { ##3 }
+    }
+    \switch:nNTF 5 \l__bnvs_a_tl {
+      \__bnvs_if_append:VNTF \l__bnvs_a_tl #2 {
+        \return_true:
+      } {
+        \return_false:
+      }
+    } {
+      \switch:nNTF 2 \l__bnvs_a_tl {
+        \switch:nNTF 4 \l__bnvs_b_tl {
+          \switch:nNTF 3 \l__bnvs_c_tl {
+            \__bnvs_if_append:VNTF \l__bnvs_a_tl #2 {
+              \tl_put_right:Nn #2 { - }
+              \__bnvs_if_append:VNTF \l__bnvs_b_tl #2 {
+                \return_true:
+              } {
+                \return_false:
+              }
+            } {
+              \return_false:
+            }
+          } {
+            \__bnvs_if_append:VNTF \l__bnvs_a_tl #2 {
+              \tl_put_right:Nx #2 { - }
+              \tl_put_right:Nx \l__bnvs_a_tl { + ( \l__bnvs_b_tl ) - 1}
+              \__bnvs_if_append:VNTF \l__bnvs_a_tl #2 {
+                \return_true:
+              } {
+                \return_false:
+              }
+            } {
+              \return_false:
+            }
+          }
+        } {
+          \__bnvs_if_append:VNTF \l__bnvs_a_tl #2 {
+            \tl_put_right:Nn #2 { - }
+            \return_true:
+          } {
+            \return_false:
+          }
+        }
+      } {
+        \switch:nNTF 4 \l__bnvs_b_tl {
+          \switch:nNTF 3 \l__bnvs_c_tl {
+            \tl_put_right:Nn #2 { - }
+            \__bnvs_if_append:VNTF \l__bnvs_a_tl #2 {
+              \return_true:
+            } {
+              \return_false:
+            }
+          } {
+            \__bnvs_error:x { Syntax~error(Missing~first):~#1 }
+          }
+        } {
+          \seq_put_right:Nn #2 { - }
+        }
+      }
+    }
+  } {
+    \__bnvs_error:n { Syntax~error:~#1 }
+    \return_false:
+  }
+}
+\regex_const:Nn \c__bnvs_comma_regex { \s* , \s* }
+\cs_new:Npn \__bnvs_eval:nN #1 #2 {
+\__bnvs_DEBUG:x {\string\__bnvs_eval:nN:\tl_to_str:n{#1}/
+  \string#2=\tl_to_str:V #2
+}
+  \__bnvs_group_begin:
+  \seq_clear:N \l__bnvs_query_seq
+  \seq_clear:N \l__bnvs_ans_seq
+  \regex_split:NnN \c__bnvs_comma_regex { #1 } \l__bnvs_query_seq
+  \seq_map_inline:Nn \l__bnvs_query_seq {
+    \tl_clear:N \l__bnvs_ans_tl
+    \__bnvs_if_eval_query:nNTF { ##1 } \l__bnvs_ans_tl {
+      \seq_put_right:NV \l__bnvs_ans_seq \l__bnvs_ans_tl
+    } {
+      \seq_map_break:n {
+        \__bnvs_fatal:n { Circular/Undefined~dependency~in~#1}
+      }
+    }
+  }
+  \exp_args:NNNx
+  \__bnvs_group_end:
+  \tl_put_right:Nn #2 { \seq_use:Nn \l__bnvs_ans_seq , }
+}
+\cs_generate_variant:Nn \__bnvs_eval:nN { VN, xN }
+\NewDocumentCommand \BeanovesEval { o m } {
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_ans_tl
+  \__bnvs_eval:nN { #2 } \l__bnvs_ans_tl
+  \IfValueTF { #1 } {
+    \exp_args:NNNV
+    \__bnvs_group_end:
+    \tl_set:Nn #1 \l__bnvs_ans_tl
+  } {
+    \exp_args:NV
+    \__bnvs_group_end: \l__bnvs_ans_tl
+  }
+}
+\NewDocumentCommand \BeanovesReset { s O{1} m } {
+  \IfBooleanTF { #1 } {
+    \__bnvs_reset_all:nn
+  } {
+    \__bnvs_reset:nn
+  }
+                     { #2 } { #3 }
+  \ignorespaces
+}
+\cs_new:Npn \__bnvs_reset_all:nn #1 #2 {
+  \bool_if:nTF {
+       \__bnvs_if_in_p:nn A { #2 }
+    || \__bnvs_if_in_p:nn Z { #2 }
+    || \__bnvs_if_in_p:nn V { #2 }
+  } {
+    \__bnvs_gremove_cache:nn A { #2 }
+    \__bnvs_gremove_cache:nn L { #2 }
+    \__bnvs_gremove_cache:nn Z { #2 }
+    \__bnvs_gremove_cache:nn P { #2 }
+    \__bnvs_gremove_cache:nn N { #2 }
+    \__bnvs_gremove:nn V { #2 }
+    \__bnvs_gput_cache:nnn V { #2 } { #1 }
+  } {
+    \__bnvs_warning:n { Unknown~name:~#2 }
+  }
+}
+\cs_new:Npn \__bnvs_reset:nn #1 #2 {
+  \__bnvs_if_in:nnTF V { #2 } {
+    \__bnvs_gremove:nn V { #2 }
+    \__bnvs_gput_cache:nnn V { #2 } { #1 }
+  } {
+    \__bnvs_warning:n { Unknown~name:~#2 }
+  }
+}
+\makeatother
+\ExplSyntaxOff
+%% 
+%% beanoves --- beamer named overlay specifications
+%% 
+%% Copyright (C) 2022 by Jérôme LAURENS <jerome.laurens@u-bourgogne.fr>
+%% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License (LPPL), either
+%% version 1.3c of this license or (at your option) any later
+%% version.  The latest version of this license is in the file:
+%% 
+%% https://www.latex-project.org/lppl.txt
+%% 
+%% This work is "maintained" (as per LPPL maintenance status) by
+%% Jérôme LAURENS.
+%% 
+%% This work consists of the file  beanoves.dtx
+%% and the derived files           beanoves.ins,
+%%                                 beanoves.pdf,
+%%                                 beanoves.sty and
+%%                                 beanoves-debug.sty.
+%% 
+%%
+%% End of file `beanoves-debug.sty'.

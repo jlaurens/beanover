@@ -1,6 +1,5 @@
-%% File: beanover.dtx
 ----------------------------------------------------------------
-beanover --- beamer named overlay ranges
+beanoves --- beamer named overlay specifications
 E-mail: jerome.laurens@u-bourgogne.fr
 Released under the LaTeX Project Public License v1.3c or later
 See https://www.latex-project.org/lppl.txt
