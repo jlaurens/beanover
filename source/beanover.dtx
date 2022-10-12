@@ -1,5 +1,5 @@
 % \iffalse meta-comment
-% !TEX program  = pdfLaTeX
+% !TEX program  = LuaLaTeX
 %
 %% File: beanover.dtx
 %
@@ -43,15 +43,10 @@ Time lines are very handy both during edition and to manage complex and variable
 \keepsilent
 \askforoverwritefalse
 \preamble
-----------------------------------------------------------------
-beanover --- beamer named overlay ranges
-E-mail: jerome.laurens@u-bourgogne.fr
-Released under the LaTeX Project Public License v1.3c or later
-See https://www.latex-project.org/lppl.txt
-----------------------------------------------------------------
-
 \endpreamble
 \postamble
+
+beanover --- beamer named overlay ranges
 
 Copyright (C) 2022 by Jérôme LAURENS <jerome.laurens@u-bourgogne.fr>
 
@@ -108,13 +103,17 @@ and the derived files           beanover.ins,
 \RequirePackage{hyperref}
 \RequirePackage{multirow}
 \RequirePackage{tcolorbox}
+\RequirePackage{unicode}
+\RequirePackage{unicode-math}
+\RequirePackage{emoji}
 \tcbuselibrary{minted}
+\RequirePackage{beanover}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
-\GetFileInfo{beanover.sty}
 \title{\pkg{beamer} named overlay ranges with \pkg{beanover}}
 \author{Jérôme Laurens}
+\GetFileInfo{beanover.sty}
 \date{\fileversion \qquad \filedate}
 \begin{document}
 \maketitle
@@ -180,27 +179,34 @@ thus each \texttt{?(B.last)} is replaced by 5.
 The next slide after time line `B' has number 6
 which is also the first slide of the third time line
 due to line 10.
-\section{What is a named slide range?}
+\section{Named slide ranges}
+\subsection{Presentation}
 Within a frame, there are different slides that appear in turn.
 The main slide range covers all the slide numbers, from one to the total amount of slides.
 In general, a slide range is a range of positive integers identified by a unique name.
 The main practical interest is that time lines may be defined relative to one another.
 Moreover we can specify overlay specifications based on time lines.
+Finally we can have lists of slide ranges.
 %
-\section{Defining named slide ranges}
+\subsection{Definition}
 %
 \begin{function}{\Beanover}
   \begin{syntax}
     \cs{Beanover}\marg{key--value list}
   \end{syntax}
 \end{function}
-The keys are the slide ranges names, they must contain no spaces nor dots.
+The keys are the slide ranges names, they are case sensitive and must contain no spaces nor `|/|' character.
 When the same key is used multiple times, only the last is taken into account.
-The possible values are \meta{start}, \meta{start}:\meta{length}, \meta{start}::\meta{end} or \meta{start}! where \meta{start}, \meta{end} and \meta{length} are algebraic expression involving any named overlay specification when an integer.
+The possible values are the \emph{range specifiers} \meta{start},
+\meta{start}:\meta{length}, \meta{start}::\meta{end}
+where \meta{start}, \meta{end} and \meta{length} are algebraic expression involving any named overlay specification when an integer.
+
+A comma separated list of such specifiers is also allowed, which results in a \emph{list of named slide ranges}.
 %
 \section{Named overlay specifications}
 %
-The named overlay specifications are detailled in the tables below together with
+\subsection{Named slide ranges}
+For named slide ranges, the named overlay specifications are detailled in the tables below together with
 their replacement meaning value as beamer standard overlay specification.
 
 %
@@ -209,7 +215,7 @@ their replacement meaning value as beamer standard overlay specification.
 \hline
 \bfseries \textrm{syntax} & \bfseries \textrm{meaning} 
 \\\hline
-\multicolumn{2}{c}{\ttfamily \meta{name} = \{\(i\), \(i+1\), \(i+2\),...\}}
+\multicolumn{2}{c}{\ttfamily \meta{name} = [\(i\), \(i+1\), \(i+2\),...]}
 \\\hline
 \meta{name}.1 & \(i\)\\
 \meta{name}.2 & \(i+1\) \\
@@ -234,13 +240,13 @@ It is mainly used for debugging and testing purposes.
  \end{frame}
  \end{tcblisting}
 %
-For finite time lines, we also have
+When the slide range has been given a length, we also have
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l|l|l}
 \hline
-\bfseries \textrm{syntax} & \bfseries \textrm{meaning} & \bfseries \textrm{output}
+\bfseries \textrm{syntax} & \bfseries \textrm{meaning} & & \bfseries \textrm{output}
 \\\hline
-\multicolumn{2}{c|}{\ttfamily \meta{name} = \{\(i\), \(i+1\),..., \(j\)\}}
+\multicolumn{2}{c|}{\ttfamily \meta{name} = [\(i\), \(i+1\),..., \(j\)]}
 \\\hline
 \meta{name}.length & \(j-i+1\) & A.length & 6\\
 \meta{name}.last & \(j\) & A.last & 8\\
@@ -266,24 +272,49 @@ For finite time lines, we also have
 %
 Using these specification on unfinite time lines is unsupported.
 %
-Finally each time line has a dedicated cursor \texttt{\meta{name}.n} that we can use and increment.
+Finally each time line has a dedicated cursor \texttt{\meta{name}} that we can use and increment.
 \begin{description}
 \item[\ttfamily\meta{name}]: use the position of the cursor 
-\item[\ttfamily\meta{name}.n+=\meta{integer}]: advance the cursor by \meta{integer} and use the new position
-\item[\ttfamily++\meta{name}.n]: advance the cursor by 1 and use the new position
+\item[\ttfamily\meta{name}+=\meta{integer}]: advance the cursor by \meta{integer} and use the new position
+\item[\ttfamily++\meta{name}]: advance the cursor by 1 and use the new position
 \end{description}
+%
+\subsection{Named list of slide ranges}
+The declaration
+|\Beanover{A=[|\meta{spec_1}|,|\meta{spec_2}|,...,|\meta{spec_n}|]}|
+is a convenient shortcut for
+|\Beanover{A.1=|\meta{spec_1}|, A.2=|\meta{spec_2}|,..., A.n=|\meta{spec_n}|}|.
+The rule of the previous section can apply.
 %
 \section{\texttt{?(...)} expressions}
 \pkg{beamer} defines \meta{overlay specifications} included between pointed brackets. Before they are processed by the \pkg{beamer} class,
 the \pkg{beanover} package scans the \meta{overlay specifications} for any occurrence of `\texttt{?(\meta{queries})}'. Each of them is then evaluated and replaced by its static counterpart.
 The overall result is finally forwarded to \pkg{beamer}.
 
-The \meta{queries} argument is a comma separated list of individual \meta{query}'s.
-Each \meta{query} may be one of `\texttt{\meta{start}}', `\texttt{\meta{start}:\meta{length}}' or `\texttt{\meta{start}::\meta{last}}', where \meta{start}, \meta{length} and \meta{end} both denote algebraic expressions possibly involving 
-named overlay specifications.
+The \meta{queries} argument is a comma separated list of individual \meta{query}'s of next table.
+\begin{center}
+\begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l|>{ \ttfamily }l}
+\hline
+\bfseries \textrm{query} & \bfseries \textrm{static value} & \bfseries \textrm{limitation}
+\\\hline
+|:| & `-'\\
+|::| & `-'\\
+\meta{start expr} & \meta{start}\\
+\meta{start expr}|:| & \meta{start} `-' & no \texttt{ \meta{name}.range }\\
+\meta{start expr}|::| & \meta{start} `-' & no \texttt{ \meta{name}.range }\\
+\meta{start expr}|:|\meta{length expr} & \meta{start} `-' \meta{end} & no \texttt{ \meta{name}.range }\\
+\meta{start expr}|:|\meta{end expr} & \meta{start} `-' \meta{end}  & no \texttt{ \meta{name}.range }\\
+\hline
+\end{tabular}
+\end{center}
+Here \meta{start expr}, \meta{length expr} and \meta{end expr}
+both denote algebraic expressions possibly involving named overlay specifications and cursors.
+As integers, they respectively evaluate to \meta{start}, \meta{length} and \meta{end}.
+
 For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been defined with a length.
+
 \end{documentation}
-  \DocInput{beanover.dtx}
+\DocInput{beanover.dtx}
 \end{document}
 %</driver>
 % \fi
@@ -317,6 +348,81 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 %
 % \begin{implementation}
 %
+% \NewDocumentEnvironment{test}{}
+%   {\color{red}\bfseries\ExplSyntaxOn}
+%   {\ExplSyntaxOff}
+%
+% \NewDocumentEnvironment{myFailure}{}
+%   {\begin{list}{\llap{\emoji{no-entry}\quad}}{%
+%      \setlength{\itemindent}{0pt}%
+%      \setlength{\leftmargin}{0pt}%
+%      \setlength{\labelwidth}{-1\parindent}%
+%      \addtolength{\topsep}{-0.5\parskip}%
+%      \listparindent \parindent
+%      \setlength{\parsep}{\parskip}}}
+%   {\end{list}}
+%
+% \NewDocumentEnvironment{myList}{}
+%   {\begin{list}{•}{%
+%      \setlength{\itemindent}{0pt}%
+%      \setlength{\leftmargin}{0pt}%
+%      \setlength{\labelwidth}{-1\parindent}%
+%      \addtolength{\topsep}{-0.5\parskip}%
+%      \listparindent \parindent
+%      \setlength{\parsep}{\parskip}}}
+%   {\end{list}}
+%
+% \begin{test}
+% \cs_gset:Npn \__beanover_test_extract:nnnn #1 #2 #3 #4 {
+%   \regex_extract_once:nnNTF { #1 } { #2 } \l_match_seq {
+%     \tl_set:Nx \l_a_tl { \seq_use:Nn \l_match_seq , }
+%     \seq_set_from_clist:Nn \l_split_seq { #3 }
+%     \tl_set:Nx \l_b_tl { \seq_use:Nn \l_split_seq , }
+%     \exp_args:Nxx \tl_if_eq:nnF { \l_a_tl } { \l_b_tl } {
+%       \begin{myFailure}
+%       \item FAILURE~\l_a_tl!=\l_b_tl
+%       \item #4~(#2)
+%       \end{myFailure}
+%     }
+%   } {
+%     \begin{myFailure}{}
+%     \item FAILURE~NO~MATCH
+%     \item #4~(#2)
+%     \end{myFailure}
+%   }
+% }
+% \cs_gset:Npn \__beanover_test_extract:Nnnn #1 #2 #3 #4 {
+%   \regex_extract_once:NnNTF #1 { #2 } \l_match_seq {
+%     \tl_set:Nx \l_a_tl { \seq_use:Nn \l_match_seq , }
+%     \seq_set_from_clist:Nn \l_split_seq { #3 }
+%     \tl_set:Nx \l_b_tl { \seq_use:Nn \l_split_seq , }
+%     \exp_args:Nxx \tl_if_eq:nnF { \l_a_tl } { \l_b_tl } {
+%       \begin{myFailure}
+%       \item FAILURE~\l_a_tl!=\l_b_tl
+%       \item #4~(#2)
+%       \end{myFailure}
+%     }
+%   } {
+%     \begin{myFailure}
+%     \item FAILURE~NO~MATCH
+%     \item #4~(#2)
+%     \end{myFailure}
+%   }
+% }
+% \cs_gset:Npn \__beanover_test_split:Nnnn #1 #2 #3 #4 {
+%   \regex_split:NnN #1 { #2 } \l_match_seq
+%   \tl_set:Nx \l_a_tl { \seq_use:Nn \l_match_seq , }
+%   \seq_set_from_clist:Nn \l_split_seq { #3 }
+%   \tl_set:Nx \l_b_tl { \seq_use:Nn \l_split_seq , }
+%   \exp_args:Nxx \tl_if_eq:nnF { \l_a_tl } { \l_b_tl } {
+%     \begin{myFailure}
+%     \item FAILURE~\l_a_tl!=\l_b_tl
+%     \item #4~(#2)
+%     \end{myFailure}
+%   }
+% }
+% \end{test}
+%
 % \subsection{Local variables}
 % We make heavy use of local variables and function scopes.
 % Many functions are executed within a \TeX\ group,
@@ -324,7 +430,7 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % In that case, variables need not follow exactly the \LaTeX3\ naming convention:
 % we do not specialize with the module name.
 %    \begin{macrocode}
-\bgroup_begin:
+\group_begin:
 \tl_clear_new:N  \l_a_tl
 \tl_clear_new:N  \l_b_tl
 \tl_clear_new:N  \l_ans_tl
@@ -338,7 +444,9 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 \tl_clear_new:N  \l_group_tl
 \tl_clear_new:N  \l_query_tl
 \seq_clear_new:N \l_query_seq
-\bgroup_end:
+\flag_clear_new:n { no_cursor }
+\flag_clear_new:n { no_range }
+\group_end:
 %    \end{macrocode}
 %
 % \subsection{Overlay specification}
@@ -347,23 +455,22 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % \meta{key}--\meta{value} property list to store the slide ranges.
 % The basic keys are, assuming \meta{name} is a slide range identifier,
 % \begin{description}
-% \item [\texttt{\meta{name}.1}] for the start index
-% \item [\texttt{\meta{name}.l}] for the length when provided
-% \item [\texttt{\meta{name}.n}] for the cursor value, when used
-% \item [\texttt{\meta{name}.c}] for initial value of the cursor (when reset)
+% \item [\texttt{\meta{name}/1}] for the start index
+% \item [\texttt{\meta{name}/L}] for the length when provided
+% \item [\texttt{\meta{name}/c}] for the cursor value, when used
+% \item [\texttt{\meta{name}/C}] for initial value of the cursor (when reset)
 % \end{description}
 % Other keys are eventually used to cache results when some attributes
-% are defined from other slide ranges.
+% are defined from other slide ranges. They are characterized by a `|//|.
 % \begin{description}
-% \item [\texttt{\meta{name}.A}] for the cached start index
-% \item [\texttt{\meta{name}.L}] for the cached length
+% \item [\texttt{\meta{name}//A}] for the cached static value of the start index
 % \end{description}
 % And in case a length has been given
 % \begin{description}
-% \item [\texttt{\meta{name}.N}] for the cached next index
-% \item [\texttt{\meta{name}.Z}] for the cached last index
+% \item [\texttt{\meta{name}//L}] for the cached static value of the length
+% \item [\texttt{\meta{name}//Z}] for the cached static value of the last index
+% \item [\texttt{\meta{name}//N}] for the cached static value of the next index
 % \end{description}
-% We definitely use the fact that \meta{name} contains no `.' character.
 %    \begin{macrocode}
 \prop_new:N \g_@@_prop
 %    \end{macrocode}
@@ -373,24 +480,387 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 \msg_new:nnn { @@ } { :n } { #1 }
 %    \end{macrocode}
 %
-% \subsubsection{Defining named slide ranges}
-% \begin{function}{\Beanover}
-%   \begin{syntax}
-%     \cs{Beanover} \marg{key--value list}
-%   \end{syntax}
-%   The keys are the slide range names.
-% We do not accept key only items, they are managed by \cs{@@_error:n}.
-% \meta{key--value} items are parsed by \cs{@@_parse:nn}.
-% A group is open.
+% \subsubsection{Regular expressions}
+%
+% \begin{variable}{\c@@_name_regex}
+% The name of a slide range consists of a list of alphanumerical characters and
+% underscore, but with no leading digit.
 %    \begin{macrocode}
-\NewDocumentCommand \Beanover { m } {
-  \group_begin:
-  \keyval_parse:NNn \@@_error:n \@@_parse:nn { #1 }
-  \group_end:
-  \ignorespaces
+\regex_const:Nn \c@@_name_regex {
+  [[:alpha:]_][[:alnum:]_]*
 }
 %    \end{macrocode}
-% \end{function}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_name_regex {A} {A} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_name_regex {_A1} {_A1} {Test~2}
+% \end{test}
+% \end{variable}
+% \begin{variable}{\c@@_key_regex, \c@@_A_key_Z_regex}
+% A key is the name of a slide range possibly followed by positive integer attributes
+% using a dot syntax.
+% The `|A_key_Z|' variant matches the whole string.
+%    \begin{macrocode}
+\regex_const:Nn \c@@_key_regex {
+  \ur{c@@_name_regex} (?: \. \d+ )*
+}
+\regex_const:Nn \c@@_A_key_Z_regex { 
+  \A \ur{c@@_key_regex} \Z
+}
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_key_regex {A} {A} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_key_regex {_A1} {_A1} {Test~2}
+% \__beanover_test_extract:Nnnn \c__beanover_key_regex {A.1} {A.1} {Test~3}
+% \__beanover_test_extract:Nnnn \c__beanover_key_regex {_A1.1} {_A1.1} {Test~4}
+% \__beanover_test_extract:Nnnn \c__beanover_key_regex {_A1.1.2} {_A1.1.2} {Test~5}
+% \__beanover_test_extract:Nnnn \c__beanover_key_regex {(_A1.1.2)} {_A1.1.2} {Test~6}
+% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {A} {A} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {_A1} {_A1} {Test~2}
+% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {A.1} {A.1} {Test~3}
+% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {_A1.1} {_A1.1} {Test~4}
+% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {_A1.1.2} {_A1.1.2} {Test~5}
+% \end{test}
+% \end{variable}
+%
+% \begin{variable}{\c@@_dotted_regex}
+% A specifier is the name of a slide range possibly followed by attributes
+% using a dot syntax.
+% This is a poor man version to save computations.
+%    \begin{macrocode}
+\regex_const:Nn \c@@_dotted_regex {
+  \A \ur{c@@_name_regex} (?: \. [^.]+ )* \Z
+}
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {A} {A} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1} {_A1} {Test~2}
+% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {A.1} {A.1} {Test~3}
+% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1.-1} {_A1.-1} {Test~4}
+% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1.-1.2} {_A1.-1.2} {Test~5}
+% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1.range} {_A1.range} {Test~6}
+% \end{test}
+% \end{variable}
+%
+% \begin{variable}{\c@@_range_regex}
+% For ranges defined by a colon syntax.
+% Capture groups:
+%    \begin{macrocode}
+\regex_const:Nn \c@@_range_regex {
+  \A \s* 
+%    \end{macrocode}
+% • 2: the \meta{start} of the slide range
+%    \begin{macrocode}
+  ([^:]+?) \s*
+  (?: \: 
+%    \end{macrocode}
+% • 3: the second colon
+%    \begin{macrocode}
+    (\:)? \s*
+%    \end{macrocode}
+% • 4: the \meta{length} or the \meta{end} of the range
+%    \begin{macrocode}
+    ( .*? ) \s*
+  )? \Z
+}
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+%   {A:B} {A:B,{A},{},{B}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+% {A} {A,{A},{},{}} {Test~2}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+%   {A::B} {A::B,{A},{:},{B}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+%   {A:} {A:,{A},{},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+%   {A::} {A::,{A},{:},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+%   {::B} {::B,{},:,B} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+%   {::} {::,{},:,{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_range_regex
+%   {:} {:,{},{},{}} {Test~1}
+% \end{test}
+% \end{variable}
+
+% \begin{variable}{\c_@@_colon_regex}
+% Used to parse slide range overlay specifications.
+% Next are the capture groups.
+% \end{variable}
+%    \begin{macrocode}
+\regex_const:Nn \c@@_colon_regex {
+  \A \s* (?:
+%    \end{macrocode}
+% • 2: \meta{start}
+%    \begin{macrocode}
+      ( [^\:]* ) \s* \:
+%    \end{macrocode}
+% • 3: second optional colon
+%    \begin{macrocode}
+      (\:)? \s*
+%    \end{macrocode}
+% • 4: \meta{length}
+%    \begin{macrocode}
+      ( [^\:]* )
+%    \end{macrocode}
+% • 5: standalone \meta{start}
+%    \begin{macrocode}
+    | ( [^\:]+ )
+  ) \s* \Z
+}
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {A:B} {A:B,{A},{},{B},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+% {A} {A,{},{},{},A} {Test~2}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {A:B} {A:B,{A},{},{B},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {A::B} {A::B,{A},{:},{B},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {A:} {A:,{A},{},{},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {A::} {A::,{A},{:},{},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {::B} {::B,{},:,B,{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {::} {::,{},:,{},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_colon_regex
+%   {:} {:,{},{},{},{}} {Test~1}
+% \end{test}
+%
+% \begin{variable}{\c@@_int_regex}
+% A decimal integer with an eventual sign.
+%    \begin{macrocode}
+\regex_const:Nn \c@@_int_regex {
+  (?:[-+]\s*)?[0-9]+
+}
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_int_regex
+%   {421} {421} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_int_regex
+%   {+421} {+421} {Test~2}
+% \__beanover_test_extract:Nnnn \c__beanover_int_regex
+%   {-421} {-421} {Test~3}
+% \end{test}
+% \end{variable}
+%
+% \begin{variable}{\c@@_list_regex}
+% A comma separated list between square brackets.
+% Capture groups:
+%    \begin{macrocode}
+\regex_const:Nn \c@@_list_regex {
+  \A \[ \s*
+%    \end{macrocode}
+% • 2: the content between the brackets, outer spaces trimmed out
+%    \begin{macrocode}
+    ( [^\]]*? )
+  \s* \] \Z
+}
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_list_regex
+%   {[]} {[],{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_list_regex
+%   {[x]} {[x], x} {Test~2}
+% \__beanover_test_extract:Nnnn \c__beanover_list_regex
+%   {[~x~]} {[~x~],{x}} {Test~3}
+% \end{test}
+% \end{variable}
+%
+% \begin{variable}{\c@@_split_regex}
+% Used to parse slide ranges overlay specifications.
+% Next are the 7 capture groups.
+% Group numbers are 1 based because it is used in splitting contexts
+% where only capture groups are considered.
+%    \begin{macrocode}
+\regex_const:Nn \c@@_split_regex {
+  \s* ( ? :
+%    \end{macrocode}
+% We start with `|+=|' instrussions\footnote{At the same time an instruction an an expression... synonym of exprection}.
+%   \begin{myList}
+%   \item 1: \meta{name} of a cursor
+%    \begin{macrocode}
+    ( \ur{c@@_name_regex} )
+%    \end{macrocode}
+%   \item 2: optionally followed by positive integers attributes
+%    \begin{macrocode}
+    ( (?: \. \d+ )* ) \s*
+    \+= \s*
+%    \end{macrocode}
+%   \item 3: the poor man integer expression after `|+=|'.
+%   When it contains no parenthesis, it is an algebraic expression involving
+%   integers and \meta{key}'s.
+%   Otherwise it starts with a parenthesis and ends with the first parenthesis
+%   followed by a white space or the end of the text.
+%   This tricky definition allows quite any algebraic expression involving parenthesis.
+%   The problems arise when dealing with nested expressions.
+%    \begin{macrocode}
+      ( (?: \ur{c@@_int_regex} | \ur{c@@_key_regex} )
+        (?: [+\-*/] (?: \d+ | \ur{c@@_key_regex}) )*
+      | \( \S+ \) (?: \Z | \s )
+      )
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ABC += 421 } {{ABC += 421},{ABC},{},{421},{},{},{},{}} {Test~`+='~1}
+% \__beanover_test_extract:Nnnn \c__beanover_key_regex
+%   { P.1 } {P.1} {Test~`+='~2}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ABC += 1+P.1 } {{ABC += 1+P.1},{ABC},{},{1+P.1},{},{},{},{}} {Test~`+='~2}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ABC += 1+P.1X } {{ABC += 1+P.1},ABC, {},{1+P.1},{},{},{},{}} {Test~`+='~3}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ABC += (P.1+1)~~) } {{ABC += (P.1+1)~},ABC, {},{(P.1+1)~},{},{},{},{}} {Test~`+='~4}
+% \end{test}
+%   \item 4: \meta{name} of a slide range...
+%    \begin{macrocode}
+  | \+\+ ( \ur{c@@_name_regex} )
+%    \end{macrocode}
+%   \item 5: eventually followed by positive integer attributes.
+%    \begin{macrocode}
+    ( (?: \. \d+ )* )
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ++ABC } {{++ABC},{},{},{},{ABC},{},{},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ++ABC.1.2~~ } {{++ABC.1.2~~},{},{},{},{ABC},{.1.2},{},{}} {Test~1}
+% \end{test}
+%   \item 6: \meta{name} of a slide range...
+%    \begin{macrocode}
+  | ( \ur{c@@_name_regex} )
+%    \end{macrocode}
+%   \item 7: optionally followed by attributes.
+% In the correct syntax nonnegative integer attributes must come first.
+% Here they are allowed everywhere and there is below
+% an explicit error management with a dedicated error message.
+%    \begin{macrocode}
+    ( (?: \. [^.]+ )* )
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ABC } {{ABC},{},{},{},{},{},{ABC},{}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ABC.1 } {{ABC.1},{},{},{},{},{},{ABC},{.1}} {Test~1}
+% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+%   { ABC.1.range } {{ABC.1.range},{},{},{},{},{},{ABC},{.1.range}} {Test~1}
+% \end{test}
+% \end{myList}
+%    \begin{macrocode}
+  ) \s*
+}
+%    \end{macrocode}
+% \end{variable}
+%
+%    \begin{macrocode}
+\regex_const:Nn \c@@_attr_regex {
+%    \end{macrocode}
+%   • 1: \meta{integer} attribute
+%    \begin{macrocode}
+    ( \ur{c@@_int_regex} )
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attr_regex
+%   { 123 } {{123},{123},{},{},{},{}} {Test~1}
+% \end{test}
+%   • 2: the \meta{length} attribute
+%    \begin{macrocode}
+  |  l(e)ngth
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attr_regex
+%   { length } {{length},{},{e},{},{},{}} {Test~2}
+% \end{test}
+%   • 3: the \meta{last} attribute
+%    \begin{macrocode}
+  |  l(a)st
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attr_regex
+%   { last } {{last},{},{},{a},{},{}} {Test~3}
+% \end{test}
+%   • 4: the \meta{next} attribute
+%    \begin{macrocode}
+  |  (n)ext
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attr_regex
+%   { next } {{next},{},{},{},{n},{}} {Test~4}
+% \end{test}
+%   • 5: the \meta{range} attribute
+%    \begin{macrocode}
+  |  (r)ange
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attr_regex
+%   { range } {{range},{},{},{},{},{r}} {Test~5}
+% \end{test}
+%    \begin{macrocode}
+}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\regex_const:Nn \c@@_attrs_regex {
+  \. (?:
+%    \end{macrocode}
+%   • 1: \meta{integer} attribute
+%    \begin{macrocode}
+    ( \ur{c@@_int_regex} )
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attrs_regex
+%   { .123 } {{.123},{123},{},{},{},{},{}} {Test~1}
+% \end{test}
+%   • 2: the \meta{length} attribute
+%    \begin{macrocode}
+  |  l(e)ngth
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attrs_regex
+%   { .length } {{.length},{},{e},{},{},{},{}} {Test~2}
+% \end{test}
+%   • 3: the \meta{last} attribute
+%    \begin{macrocode}
+  |  l(a)st
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attrs_regex
+%   { .last } {{.last},{},{},{a},{},{},{}} {Test~3}
+% \end{test}
+%   • 4: the \meta{next} attribute
+%    \begin{macrocode}
+  |  (n)ext
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attrs_regex
+%   { .next } {{.next},{},{},{},{n},{},{}} {Test~4}
+% \end{test}
+%   • 5: the \meta{range} attribute
+%    \begin{macrocode}
+  |  (r)ange
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attrs_regex
+%   { .range } {{.range},{},{},{},{},{r},{}} {Test~5}
+% \end{test}
+%   • 6: other attribute
+%    \begin{macrocode}
+  |  ([^.]+)
+%    \end{macrocode}
+% \begin{test}
+% \__beanover_test_extract:Nnnn \c__beanover_attrs_regex
+%   { .OTHER } {{.OTHER},{},{},{},{},{},{OTHER}} {Test~6}
+% \end{test}
+%    \begin{macrocode}
+  ) \b
+}
+%    \end{macrocode}
+%
+% \subsubsection{Defining named slide ranges}
+%
 % \begin{function}{\@@_error:n}
 % Prints an error message when a key only item is used.
 %    \begin{macrocode}
@@ -408,77 +878,8 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % \begin{variable}{\l_match_seq}
 % Local storage for the match result.
 % \end{variable}
-% \begin{variable}{\c@@_key_regex}
-% The name of a slide range consists of an alphabetical character
-% eventually followed by any alphanumerical character.
-% A leading underscore may be used for aliases. Under development.
-%    \begin{macrocode}
-\regex_const:Nn \c@@_id_regex {
-  [[:alpha:]][[:alnum:]_]*
-}
-%    \end{macrocode}
-%    \begin{macrocode}
-\regex_const:Nn \c@@_key_regex {
-  \A (_)? \ur{c@@_id_regex} \Z
-}
-%    \end{macrocode}
-% \end{variable}
-%
-% \begin{variable}{\c@@_range_regex}
-% Capture groups:
-% \begin{description}
-% \item [2:] the start of the slide range
-% \item [3:] the second colon
-% \item [4:] the length or the end of the range
-% \end{description}
-%    \begin{macrocode}
-\regex_const:Nn \c@@_range_regex {
-  \A \s* ([^:]+?) \s* (?: \: (\:)? \s * ( .*? ) \s* )? \Z
-}
-%    \end{macrocode}
-% \end{variable}
 % \end{function}
 %
-%    \begin{macrocode}
-\cs_new:Npn \@@_parse:nn #1 #2 {
-  \regex_extract_once:NnNTF \c@@_key_regex { #1 } \l_match_seq {
-%    \end{macrocode}
-% We got a valid key.
-%    \begin{macrocode}
-    \exp_args:Nx
-    \tl_if_empty:nTF { \seq_item:Nn \l_match_seq 2 } {
-\regex_extract_once:NnNTF \c@@_range_regex { #2 } \l_match_seq {
-        \exp_args:Nx
-        \tl_if_empty:nTF { \seq_item:Nn \l_match_seq 3 } {
-%    \end{macrocode}
-% This is not a \texttt{\meta{start}::\meta{end}} value.
-%    \begin{macrocode}
-          \exp_args:Neee   
-          \@@_l:nnn
-            { #1 }
-            { \seq_item:Nn \l_match_seq { 2 } }
-            { \seq_item:Nn \l_match_seq { 4 } }
-        } {
-          \exp_args:Neee   
-          \@@_n:nnn
-            { #1 }
-            { \seq_item:Nn \l_match_seq { 2 } }
-            { \seq_item:Nn \l_match_seq { 4 } }
-        }
-      } {
-        \msg_error:nnn { @@ } { :n } { Invalid~declaration:~#2 }
-      }
-    } {
-%    \end{macrocode}
-% This is an alias.
-%    \begin{macrocode}
-      \prop_gput:Nnn \g_@@_prop { #1 } { #2 }
-    }
-  } {
-    \msg_error:nnn { @@ } { :n } { Invalid~declaration:~#1 }
-  }
-}
-%    \end{macrocode}
 % \begin{function}{\@@_l:nnn}
 %   \begin{syntax}
 %     \cs{@@_l:nnn} \marg{name} \marg{start} \marg{length}
@@ -494,6 +895,15 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
   }
 }
 %    \end{macrocode}%
+% \begin{test}
+% \__beanover_l:nnn { A } { 421 } { }
+% \exp_args:Nxx \tl_if_eq:nnF { \prop_item:Nn \g__beanover_prop {A.1}} {421} {
+%  \textcolor{red}{\bfseries FAILURE (A = 421)}
+% }
+% \prop_if_in:NnT \g__beanover_prop { A.l } {
+%  \textcolor{red}{\bfseries FAILURE (A = 421)}
+% }
+% \end{test}
 % \end{function}
 %
 % \begin{function}{\@@_n:nnn}
@@ -508,6 +918,69 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
   \tl_if_empty:nF { #3 } {
     \prop_gput:Nnn \g_@@_prop { #1.l } { #3 - #1.0 }
   }
+}
+%    \end{macrocode}
+% \end{function}
+%
+%    \begin{macrocode}
+\cs_new:Npn \@@_parse:nn #1 #2 {
+  \regex_match:NnTF \c@@_A_key_Z_regex { #1 } {
+%    \end{macrocode}
+% We got a valid key.
+%    \begin{macrocode}
+    \regex_extract_once:NnNTF \c@@_range_regex { #2 } \l_match_seq {
+      \exp_args:Nx
+      \tl_if_empty:nTF { \seq_item:Nn \l_match_seq 3 } {
+%    \end{macrocode}
+% This is not a \texttt{\meta{start}::\meta{end}} value.
+%    \begin{macrocode}
+        \exp_args:Neee   
+        \@@_l:nnn
+          { #1 }
+          { \seq_item:Nn \l_match_seq { 2 } }
+          { \seq_item:Nn \l_match_seq { 4 } }
+      } {
+        \exp_args:Neee   
+        \@@_n:nnn
+          { #1 }
+          { \seq_item:Nn \l_match_seq { 2 } }
+          { \seq_item:Nn \l_match_seq { 4 } }
+      }
+    } {
+%    \end{macrocode}
+% This is a list of specifications, go recursive if the syntax is correct.
+%    \begin{macrocode}
+      \regex_extract_once:NnNTF \c@@_list_regex { #2 } \l_match_seq {
+        \exp_args:NNx
+        \seq_set_from_clist:Nn \l_match_seq { \seq_item:Nn \l_match_seq { 2 } }
+        \seq_map_indexed_inline:Nn \l_split_seq {
+          \group_begin:
+          \@@_parse:nn { #1.##1 } { ##2 }
+          \group_end:
+        }
+      } {
+        \msg_error:nnn { @@ } { :n } { Invalid~value:~#2 }
+      }
+    }
+  } {
+    \msg_error:nnn { @@ } { :n } { Invalid~key:~#1 }
+  }
+}
+%    \end{macrocode}
+% \begin{function}{\Beanover}
+%   \begin{syntax}
+%     \cs{Beanover} \marg{key--value list}
+%   \end{syntax}
+%   The keys are the slide range specifiers.
+% We do not accept key only items, they are managed by \cs{@@_error:n}.
+% \meta{key--value} items are parsed by \cs{@@_parse:nn}.
+% A group is open.
+%    \begin{macrocode}
+\NewDocumentCommand \Beanover { m } {
+  \group_begin:
+  \keyval_parse:NNn \@@_error:n \@@_parse:nn { #1 }
+  \group_end:
+  \ignorespaces
 }
 %    \end{macrocode}
 % \end{function}
@@ -687,8 +1160,7 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % We can append the evaluated slide ranges token list to \cs{l_ans_tl}
 % and stop the inner loop.
 %    \begin{macrocode}
-  \exp_args:NNNV
-  \@@_eval:NNn \c_false_bool \l_ans_tl \l_query_tl
+  \@@_eval:NV \l_ans_tl \l_query_tl
   \bool_set_false:N \l@@_query_bool
                       } {
 %    \end{macrocode}
@@ -760,664 +1232,51 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
   { \prop_gclear:N \g_@@_prop }
 %    \end{macrocode}
 %
-% \subsubsection{Evaluation}
-% \begin{function}{\BeanoverEval}
-%   \begin{syntax}
-%     \cs{BeanoverEval} \oarg{tl variable} \marg{overlay queries}
-%   \end{syntax}
-% \meta{overlay queries} is the argument of |?(...)| instructions.
-% This is a comma separated list of single \meta{overlay query}'s.
+% \subsubsection{Evaluation bricks}
 %
-% This function evaluates the \meta{overlay queries} and store the result in the \meta{tl variable} when provided
-% or leave the result in the input stream. Forwards to \cs{@@_eval:NNn}
-% within a group. \cs{l_ans_tl} is used to store the result.
-% \end{function}
-%    \begin{macrocode}
-\NewExpandableDocumentCommand \BeanoverEval { s o m } {
-  \group_begin:
-  \tl_clear:N \l_ans_tl
-  \exp_args:Nx \@@_eval:NNn {
-      \IfBooleanTF { #1 } { \c_true_bool } { \c_false_bool }
-    }
-    \l_ans_tl { #3 }
-  \IfValueTF { #2 } {
-    \exp_args:NNNV
-    \group_end:
-    \tl_set:Nn #2 \l_ans_tl
-  } {
-    \exp_args:NV
-    \group_end: \l_ans_tl
-  }
-}
-%    \end{macrocode}
 %
-% \begin{function}{\@@_eval:NNn}
-% \begin{syntax}
-% \cs{@@_eval:NNn} \meta{bool variable} \meta{tl variable} \marg{overlay queries}
-% \end{syntax}
-% Evaluates the \meta{overlay queries},
-% replacing all the named overlay specifications and integer expressions
-% by their static counterparts, then append the result to
-% the right of the \meta{tl variable}.
-% If the \meta{bool variable} is true then
-% the cursor is not available (more explanation required).
-% This is executed within a local group.
-% Below are local variables and constants.
-% \begin{variable}{\l_query_seq}
-% Storage for a sequence of queries.
-% \end{variable}
-% \begin{variable}{\l_ans_seq}
-% Storage of the evaluated result.
-% \end{variable}
-% \begin{variable}{\c@@_comma_regex}
-% Used to parse slide range overlay specifications.
-%    \begin{macrocode}
-\regex_const:Nn \c@@_comma_regex { \s* ,  \s* }
-%    \end{macrocode}
-% \end{variable}
-% No other variable is used.
-% \end{function}
-% \begin{variable}{\c@@_eval_regex}
-% Used to parse slide range overlay specifications.
-%    \begin{macrocode}
-\regex_const:Nn \c@@_eval_regex { \s* ( ?: (,) | (:) | :: ) \s* }
-%    \end{macrocode}
-% \end{variable}
-%    \begin{macrocode}
-\cs_new:Npn \@@_eval:NNn #1 #2 #3 {
-  \group_begin:
-  \regex_split:NnN \c@@_eval_regex { #3 } \l_split_seq
-  \int_zero:N \l_split_int
-  \cs_set:Npn \top: {
-    \seq_pop_left:NN \l_split_seq \l_token_tl
-    \exp_args:NV \quark_if_no_value:nTF \l_token_tl {
-      \cs_set:Npn \next: { \prg_do_nothing: }
-    } {
-      \seq_pop_left:NN \l_split_seq \l_a_tl
-      \exp_args:NV \quark_if_no_value:nTF \l_a_tl {
-        \exp_args:NnV
-        \use:nn {
-          \@@_static:NNNn \c_true_bool #1 \l_ans_tl 
-        } \l_token_tl
-        \cs_set:Npn \next: { }
-      } {
-        \seq_pop_left:NN \l_split_seq \l_b_tl
-        \tl_if_empty:NTF \l_a_tl {
-%    \end{macrocode}
-% This is a range
-%    \begin{macrocode}        
-          \exp_args:NnV
-          \use:nn {
-            \@@_static:NNNn \c_true_bool #1 \l_ans_tl 
-          } \l_group_tl
-          \seq_pop_left:NN \l_split_seq \l_group_tl
-          \exp_args:NnV
-          \use:nn {
-            \@@_static:NNNn \c_true_bool #1 \l_ans_tl 
-          } \l_group_tl
-          \cs_set:Npn \next: { \comma: }          
-          \tl_if_empty:NTF \l_b_tl {
-            
-          } {
-          }
-        } {
-        }
-      
-      }
-      
-    }
-  }
-  \cs_set:Npn \loop: {
-    \seq_pop_left:NN \l_split_seq \l_token_tl
-    \exp_args:NV \quark_if_no_value:nTF \l_token_tl {
-      \cs_set:Npn \loop: { \prg_do_nothing: }
-    } {
-      \seq_pop_left:NN \l_split_seq \l_a_tl
-      \exp_args:NV \quark_if_no_value:nTF \l_a_tl {
-        \exp_args:NnV
-        \use:nn {
-          \@@_eval_query:NNNn \c_true_bool #1 \l_ans_seq 
-        } \l_token_tl
-        \cs_set:Npn \loop: { \prg_do_nothing: }
-      } {
-      
-      
-      }
-      
-    }
-    \main:
-  }
-  \cs_set:Npn \main: {
-    \seq_pop_left:NN \l_split_seq \l_token_tl
-    \exp_args:NV \quark_if_no_value:nTF \l_token_tl {
-      \cs_set:Npn \main: {
-        \last:
-      }
-    } {
-      \current:
-    }
-    \main:
-  }
-
-}
-%    \end{macrocode}
-%    \begin{macrocode}
-\cs_new:Npn \@@_eval_a:NNn #1 #2 #3 {
-  \group_begin:
-%    \end{macrocode}
-% Local variables declaration
-%    \begin{macrocode}
-  \tl_clear:N  \l_a_tl
-  \tl_clear:N  \l_b_tl
-  \tl_clear:N  \l_ans_tl
-  \seq_clear:N \l_ans_seq
-  \seq_clear:N \l_query_seq
-%    \end{macrocode}
-% In this main evaluation step, we evaluate the integer expression and put
-% the result in a variable which content will be copied after the group is closed.
-% We authorize comma separated expressions
-% and \texttt{\meta{start}::\meta{end}} range expressions as well.
-% We first split the expression around commas, into \cs{l_query_seq}.
-%    \begin{macrocode}
-  \@@_eval_static:NNn #1 \l_ans_tl { #3 }
-  \exp_args:NNV
-  \regex_split:NnN \c@@_comma_regex \l_ans_tl \l_query_seq
-%    \end{macrocode}
-% Then each component is evaluated and the result is stored in \cs{l_seq}
-% that we must clear before use.
-%    \begin{macrocode}
-  \seq_map_tokens:Nn \l_query_seq {
-    \@@_eval_query:NNn #1 \l_ans_seq
-  }
-%    \end{macrocode}
-% We have managed all the comma separated components, we collect them back
-% and append them to \meta{tl variable}.
-%    \begin{macrocode}
-  \exp_args:NNNx
-  \group_end:
-  \tl_put_right:Nn #2 { \seq_use:Nn \l_ans_seq , }
-}
-%    \end{macrocode}
-%
-% \begin{function}{\@@_eval_query:NNn}
-% \begin{syntax}
-% \cs{@@_query:NNn} \meta{bool variable} \meta{seq variable} \marg{overlay query}
-% \end{syntax}
-% Evaluates the single \meta{overlay query},
-% which is expected to contain no comma.
-% Replaces all the named overlay specifications by their static counterparts,
-% make the computation then append the result to 
-% the right of the \meta{seq variable}.
-% Ranges are supported with the colon syntax.
-% If the \meta{bool variable} is true then
-% the cursor is not available.
-% This is executed within a local group.
-% Below are local variables and constants.
-% \begin{variable}{\l_a_tl}
-% Storage for the start of a range.
-% \end{variable}
-% \begin{variable}{\l_b_tl}
-% Storage for the end of a range, or its length.
-% \end{variable}
-% \begin{variable}{\g_@@_colon_regex}
-% Used to parse slide range overlay specifications.
-% Next are the capture groups.
-% \begin{description}
-%   \item [2:] \meta{start}
-%   \item [3:] Second colon
-%   \item [4:] \meta{end} or \meta{length}
-% \end{description}
-%    \begin{macrocode}
-\regex_const:Nn \c@@_colon_regex {
-  \A \s*( [^\:]*? ) \s* \: \s* (\:)? \s* ( [^\:]*? ) \s* \Z
-}
-%    \end{macrocode}
-% \end{variable}
-% \end{function}
-%    \begin{macrocode}
-\cs_new:Npn \@@_eval_query:NNn #1 #2 #3 {
-  \regex_extract_once:NnNTF \c@@_colon_regex {
-    #3
-  } \l_match_seq {
-%    \end{macrocode}
-% We captured colon syntax ranges: one of \texttt{\meta{start}:\meta{length}} 
-% or \texttt{\meta{start}::\meta{last}}.
-% We recover the \meta{start} and \meta{end} or \meta{length} respectively
-% in \cs{l_a_tl} and \cs{l_b_tl}.
-%    \begin{macrocode}
-    \tl_set:Nx \l_a_tl  { \seq_item:Nn \l_match_seq 2 }
-    \tl_set:Nx \l_b_tl  { \seq_item:Nn \l_match_seq 4 }
-    \exp_args:Nx
-    \tl_if_empty:nTF { \seq_item:Nn \l_match_seq 3 } {
-%    \end{macrocode}
-%
-% This is a \texttt{\meta{start}:\meta{length}} range,
-%    \begin{macrocode}
-      \tl_if_empty:VT \l_a_tl {
-%    \end{macrocode}
-% raise when \meta{start} is void because we cannot evaluate the last index
-% without knowing the first.
-%    \begin{macrocode}
-        \msg_error:nnn { @@ } { :n } { Missing~range~start:~#1 }
-        \tl_set:Nn \l_a_tl 1
-      }
-%    \end{macrocode}
-% When not provided, \meta{length} defaults to $\infty$.
-% If there is a \meta{length}, evaluate it.
-%    \begin{macrocode}
-      \tl_if_empty:VF \l_b_tl {
-        \tl_set:Nx \l_b_tl { \fp_to_int:n {
-          \l_a_tl + \l_b_tl - 1
-        } }
-      }
-    } {
-%    \end{macrocode}
-%
-% This is a \texttt{\meta{start}::\meta{end}} range,
-% with optional \meta{start} and \meta{end}.
-% If there is \meta{start}, evaluate it,
-%    \begin{macrocode}
-    \tl_if_empty:VF \l_a_tl {
-      \tl_set:Nx \l_a_tl {
-        \exp_args:NV \fp_to_int:n \l_a_tl
-      }
-    }
-%    \end{macrocode}
-% and if there is an \meta{end}, evaluate it as well.
-%    \begin{macrocode}
-      \tl_if_empty:VF \l_b_tl {
-        \tl_set:Nx \l_b_tl {
-          \exp_args:NV \fp_to_int:n \l_b_tl 
-        }
-      }
-    }
-%    \end{macrocode}
-% We can store the standard \pkg{beamer} range.
-%    \begin{macrocode}
-    \exp_args:NNx
-    \seq_put_right:Nn \l_ans_seq {
-      \l_a_tl - \l_b_tl
-    }
-  } {
-%    \end{macrocode}
-% This is not a colon syntax range: we just evaluate the component and store the result,
-% if any.
-%    \begin{macrocode}
-    \tl_if_empty:nF { #3 } {
-      \exp_args:NNx
-      \seq_put_right:Nn \l_seq { \fp_to_int:n { #3 } }
-    }
-  }
-}
-%    \end{macrocode}
-%
-% \begin{function}{\@@_eval_static:NNn}
-% \begin{syntax}
-% \cs{@@_eval_static:NNn} \meta{bool variable} \meta{tl variable} \marg{integer expression}
-% \end{syntax}
-% Evaluates the \meta{integer expression},
-% replacing all the named specifications by their
-% counterpart then put the result to
-% the right of the \meta{tl variable}.
-% If the \meta{boolean variable} is true then
-% the cursor is not available (useful when used from \cs{Beanover}).
-% Executed within a group.
-% Local variables: 
-% \cs{l_ans_tl} for the content of \meta{tl variable}
-% \begin{variable}{\l_split_seq}
-% The sequence of queries and non queries.
-% \end{variable}
-% \begin{variable}{\l_split_int}
-%  Is the index of the non queries, before all the catched groups.
-% \end{variable}
-% \begin{variable}{\l_name_tl}
-%    Storage for \cs{l_split_seq} items that represent names.
-%    \begin{macrocode}
-\tl_new:N \l_name_tl
-%    \end{macrocode}
-% \end{variable}
-% \begin{variable}{\l@@_static_tl}
-%    Storage for the static values of named slide ranges.
-% \end{variable}
-% \begin{variable}{\l_group_tl}
-%    Storage for capture groups.
-% \end{variable}
-% \begin{variable}{\c@@_int_regex}
-% A decimal integer with an eventual sign.
-%    \begin{macrocode}
-\regex_const:Nn \c@@_int_regex {
-  (?:[-+]\s*)?[0-9]+
-}
-%    \end{macrocode}
-% \end{variable}
-% \end{function}
-%
-% \begin{variable}{\c@@_split_regex}
-% Used to parse slide ranges overlay specifications.
-% Next are the capture groups.
-% Group numbers are 1 based because it is used in splitting contex
-% where only capture groups are considered.
-% \end{variable}
-%    \begin{macrocode}
-\regex_const:Nn \c@@_split_regex {
-  \s* ( ? :
-%    \end{macrocode}
-% \begin{description}
-%   \item [1:] optional prefix increment |++|
-%   \item [2:] \meta{name} of a cursor
-%    \begin{macrocode}
-    ( \+\+ )? ( \ur{c@@_id_regex} ) \b
-%    \end{macrocode}
-%   \item [3:] \meta{name} of a cursor
-%   \item [4:] the integer after |+=|
-%    \begin{macrocode}
-  | ( \ur{c@@_id_regex} ) \s*
-      \+= \s* ( \ur{c@@_int_regex} )
-%    \end{macrocode}
-%   \item [5:] \meta{name} of a slide range followed by an attribute.
-%    \begin{macrocode}
-  | ( \ur{c@@_id_regex} ) \.
-    ( ? :
-%    \end{macrocode}
-%   \item [6:]  \texttt{length}
-%    \begin{macrocode}
-        (l)ength\b
-%    \end{macrocode}
-%   \item [7:]  \texttt{range}
-%    \begin{macrocode}
-      | (r)ange\b
-%    \end{macrocode}
-%   \item [8:]  \texttt{last}
-%    \begin{macrocode}
-      | (l)ast\b
-%    \end{macrocode}
-%   \item [9:]  \texttt{next}
-%    \begin{macrocode}
-      | (n)ext\b
-%    \end{macrocode}
-%   \item [10:] the integer after the dot
-%    \begin{macrocode}
-      | ( \ur{c@@_int_regex} )
-%    \end{macrocode}
-%   \item [11:] \texttt{reset}
-%    \begin{macrocode}
-      | (r)eset\b
-%    \end{macrocode}
-%   \item [12:] \texttt{UNKNOWN}
-%    \begin{macrocode}
-      | ( \S+ )
-    )
-%    \end{macrocode}
-%   \item [13:] Alias
-%    \begin{macrocode}
-  | ( _ \ur{c@@_id_regex} )
-%    \end{macrocode}
-% \end{description}
-%    \begin{macrocode}
-  ) \s*
-}
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\cs_new:Npn \@@_eval_static:NNn #1 #2 #3 {
-  \group_begin:
-%    \end{macrocode}
-% Local variables:
-%    \begin{macrocode}
-  \tl_clear:N  \l_ans_tl
-  \int_zero:N  \l_split_int
-  \seq_clear:N \l_split_seq
-  \tl_clear:N  \l_name_tl
-  \tl_clear:N  \l_group_tl
-  \tl_clear:N  \l_a_tl
-%    \end{macrocode}
-% Implementation:
-%    \begin{macrocode}  
-  \regex_split:NnN \c@@_split_regex { #3 } \l_split_seq
-  \int_set:Nn \l_split_int { 1 }
-  \tl_set:Nx \l_ans_tl { \seq_item:Nn \l_split_seq { \l_split_int } }
-%    \end{macrocode}
-% The |++| prefix should not be given when postfix attributes are.
-% \begin{function}{\guard:n}
-% \begin{syntax}
-% \cs{@@_a:n} \marg{code}
-% \end{syntax}
-% \end{function}
-% Helper function defined locally. Execute the \meta{code} if the \texttt{++}
-% prefix is not catched, ``raises'' an exception otherwise.
-%    \begin{macrocode}
-  \cs_set:Npn \guard:n ##1 {
-    \exp_args:Nx
-    \tl_if_empty:nTF {
-      \seq_item:Nn \l_split_seq { \l_split_int + 1 }
-    } {
-      ##1
-    } {
-      \msg_fatal:nnn { @@ } { :n } {
-        Unexpected~beanover~specification~(prefix):~ #3
-      }
-    }
-  }
-%    \end{macrocode}
-% \begin{function}{\switch:nTF}
-% \begin{syntax}
-% \cs{switch:nTF} \marg{capture group number} \marg{empty code} \marg{non empty code}
-% \end{syntax}
-% Helper function to locally set the |\l_group_tl| variable
-% to the captured group \meta{capture group number}
-% and branch.
-% \end{function}
-%    \begin{macrocode}
-  \cs_set:Npn \switch:nNTF ##1 ##2 ##3 ##4 {
-    \tl_set:Nx ##2 {
-      \seq_item:Nn \l_split_seq { \l_split_int + ##1 }
-    }
-    \tl_if_empty:NTF ##2 { ##3 } { ##4 }
-  }
-%    \end{macrocode}
-% Main loop.
-%    \begin{macrocode}
-  \int_while_do:nNnn { \l_split_int } < { \seq_count:N \l_split_seq } {
-    \switch:nNTF { 2 } \l_name_tl {
-      \switch:nNTF { 3 } \l_name_tl {
-        \switch:nNTF { 5 } \l_name_tl {
-          \switch:nNTF { 13 } \l_name_tl {
-%    \end{macrocode}
-% Unreachable code. \textcolor{red}{PROBLEM WITH |::|.}
-%    \begin{macrocode}
-          } { % alias
-%    \end{macrocode}
-% Case \texttt{_\meta{name}}.
-% This is an alias, go recursive.
-% Work in progress.
-%    \begin{macrocode}
-  \exp_args:NNV
-  \prop_if_in:NnTF \g_@@_prop \l_name_tl {
-    \tl_set:Nx \l_a_tl {
-      \exp_args:NNV
-      \prop_item:Nn \g_@@_prop \l_name_tl
-    }
-    \tl_if_empty:NT \l_a_tl {
-      \tl_set:Nn \l_a_tl { :: }
-    }
-  } {
-    \exp_args:Nnnx
-    \msg_error:nnn { @@ } { :n } {
-      Unknown~ alias:~\tl_use:N \l_a_tl\space(in~#3)
-    }
-    \tl_set:Nn \l_a_tl { :: }
-  }
-  \exp_args:NNNV
-  \@@_eval_static:NNn \c_false_bool \l_ans_tl \l_a_tl
-          }
-        } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.\meta{attribute}}.
-%    \begin{macrocode}
-          \switch:nNTF { 6 } \l_group_tl { % .length
-            \switch:nNTF { 7 } \l_group_tl { % .range
-              \switch:nNTF { 8 } \l_group_tl { % .last
-                \switch:nNTF { 9 } \l_group_tl { % .next
-                  \switch:nNTF { 10 } \l_group_tl { % .<integer>
-                    \switch:nNTF { 11 } \l_group_tl { % .reset
-                      \switch:nNTF { 12 } \l_group_tl { % .UNKNOWN
-%    \end{macrocode}
-% Unreachable code.
-%    \begin{macrocode}
-                      } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.UNKNOWN}.
-%    \begin{macrocode}
-  \msg_fatal:nnn { @@ } { :n } { Unknown~attribute~\l_group_tl:~#3 }
-                      }
-                    } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.reset}.
-%    \begin{macrocode}
-  \bool_if:NT #1 {
-    \msg_fatal:nnn { @@ } { :n } {
-      No~\l_name_tl~cursor~available~inside~\cs{Beanover}:~#3
-    }
-  }
-  \exp_args:NnV
-  \@@_reset:nn { 0 } \l_name_tl
-                    }
-                  } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.\meta{integer}}.
-%    \begin{macrocode}
-  \group_begin:
-  \tl_clear:N \l_ans_tl
-  \exp_args:NNV \@@_start:Nn \l_ans_tl \l_name_tl
-  \tl_put_right:Nn \l_ans_tl { + ( \l_group_tl ) - 1 }
-  \exp_args:NNNx
-  \group_end:
-  \tl_put_right:Nn \l_ans_tl {
-    \fp_to_int:n \l_ans_tl
-  }
-                  }
-                } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.next}.
-%    \begin{macrocode}
-  \exp_args:NNV \@@_next:Nn \l_ans_tl \l_name_tl
-                }
-              } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.last}.
-%    \begin{macrocode}
-  \exp_args:NNV \@@_last:Nn \l_ans_tl \l_name_tl
-              }
-            } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.range}. \textcolor{red}{PROBLEM with |::|}
-%    \begin{macrocode}
-  \bool_if:NT #1 {
-    \msg_fatal:nnn { @@ } { :n } {
-      No~\l_name_tl.range available:~#3
-    }
-  }
-  \exp_args:NNV \@@_start:Nn \l_ans_tl \l_name_tl
-  \tl_put_right:Nn \l_ans_tl { :: }
-  \exp_args:NNV \@@_last:Nn \l_ans_tl \l_name_tl
-            }
-          } {
-%    \end{macrocode}
-% Case \texttt{\meta{name}.length}.
-%    \begin{macrocode}
-  \exp_args:NNV \@@_length:Nn \l_ans_tl \l_name_tl
-          }
-        }
-      } {
-        \switch:nNTF { 4 } \l_group_tl { % +=
-  \msg_fatal:nnn { @@ } { :n } {
-    No~integer~to~increment~\l_name_tl:~#3
-  }
-%    \end{macrocode}
-% Case \texttt{\meta{name} += \meta{integer}}.
-%    \begin{macrocode}
-        } {
-  \bool_if:NT #1 {
-    \msg_fatal:nnn { @@ } { :n } {
-      No~\l_name_tl~cursor~available~inside~\cs{Beanover}:~#3
-    }
-  }
-  \exp_args:NNVV
-  \@@_incr:Nnn \l_ans_tl \l_name_tl \l_group_tl
-        }
-      }
-    } {
-      \switch:nNTF { 1 } \l_name_tl {
-%    \end{macrocode}
-% Case \texttt{\meta{name}}.
-%    \begin{macrocode}
-        \bool_if:NT #1 {
-          \msg_fatal:nnn { @@ } { :n } {
-            No~\l_name_tl~cursor~available~inside~\cs{Beanover}:~#3
-          }
-        }
-        \exp_args:NNV
-        \@@_cursor:Nn \l_ans_tl \l_name_tl
-      } { % ++ ?
-%    \end{macrocode}
-% Case \texttt{++\meta{name}}.
-%    \begin{macrocode}
-        \bool_if:NT #1 {
-          \msg_fatal:nnn { @@ } { :n } {
-            No~\l_name_tl~cursor~available~inside~\cs{Beanover}:~#3
-          }
-        }
-        \exp_args:NNV
-        \@@_incr:Nnn \l_ans_tl \l_name_tl 1
-      }
-    }
-    \int_add:Nn \l_split_int { 13 }
-    \tl_put_right:Nx \l_ans_tl {
-      \seq_item:Nn \l_split_seq { \l_split_int }
-    }
-  }
-  \exp_args:NNNV
-  \group_end:
-  \tl_put_right:Nn #2 \l_ans_tl
-}
-%    \end{macrocode}
-%
-% \begin{function}{\@@_start:Nn}
+% \begin{function}{\@@_start:Nn, \@@_start:NV}
 % \begin{syntax}
 % \cs{@@_start:Nn} \meta{tl variable} \marg{name}
 % \end{syntax}
 % Append the start of the \meta{name} slide range
 % to the \meta{tl variable}
-% with \cs{@@_eval_static:NNn}.
+% with \cs{@@_append:Nn}.
 % Cache the result.
 %    \begin{macrocode}
 \cs_new:Npn \@@_start:Nn #1 #2 {
-  \prop_if_in:NnTF \g_@@_prop { #2.A } {
+  \prop_if_in:NnTF \g_@@_prop { #2/A } {
     \tl_put_right:Nx #1 {
-      \prop_item:Nn \g_@@_prop { #2.A }
+      \prop_item:Nn \g_@@_prop { #2/A }
     }
   } {
     \group_begin:
     \tl_clear:N \l_ans_tl
-    \prop_if_in:NnTF \g_@@_prop { #2.c } {
-      \exp_args:NNNx
-      \@@_eval:NNn \c_true_bool \l_ans_tl {
-        \prop_item:Nn \g_@@_prop { #2.c } + 0
+    \prop_if_in:NnTF \g_@@_prop { #2/c } {
+      \flag_raise:n { no_cursor }
+      \@@_eval:Nx \l_ans_tl {
+        \prop_item:Nn \g_@@_prop { #2/c } + 0
       }
     } {
-      \exp_args:NNNx
-      \@@_eval:NNn \c_false_bool \l_ans_tl {
-        \prop_item:Nn \g_@@_prop { #2.1 } + 0 
+      \@@_eval:Nx \l_ans_tl {
+        \prop_item:Nn \g_@@_prop { #2/1 } + 0 
       }
     }
-    \prop_gput:NnV \g_@@_prop { #2.A } \l_ans_tl
+    \prop_gput:NnV \g_@@_prop { #2/A } \l_ans_tl
     \exp_args:NNNV
     \group_end:
     \tl_put_right:Nn #1 \l_ans_tl
   }
 }
+\cs_generate_variant:Nn \@@_start:Nn { NV }
 %    \end{macrocode}
 % \end{function}
+% \begin{test}
+% \Beanover { A = 123 }
+% \tl_clear:N \l_ans_tl
+% \__beanover_start:Nn \l_ans_tl { A }
+% \exp_args:Nxx \tl_if_eq:nnF {123} {\l_ans_tl} {\textcolor{red}{\bfseries FAILED: \l_ans_tl}}
+% \end{test}
 % \begin{function}[TF]{\@@_length:n}
 %   \begin{syntax}
 %     \cs{@@_length:nTF} \marg{name} \Arg{true code} \Arg{false code}
@@ -1426,14 +1285,14 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % \end{function}
 %    \begin{macrocode}
 \prg_new_protected_conditional:Npnn \@@_length:n #1 { TF } {
-  \prop_has_item:NnTF \g_@@_prop { #1 } {
-    \prg_return_true
+  \prop_if_in:NnTF \g_@@_prop { #1 } {
+    \prg_return_true:
   } {
-    \prg_return_false
+    \prg_return_false:
   }
 }
 %    \end{macrocode}
-% \begin{function}{\@@_length:Nn}
+% \begin{function}{\@@_length:Nn, \@@_length:NV}
 % \begin{syntax}
 % \cs{@@_length:Nn} \meta{tl variable} \marg{name}
 % \end{syntax}
@@ -1441,20 +1300,18 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \@@_length:Nn #1 #2 {
-  \prop_if_in:NnTF \g_@@_prop { #2.L } {
-    \tl_put_right:Nx #1 { \prop_item:Nn \g_@@_prop { #2.L } }
+  \prop_if_in:NnTF \g_@@_prop { #2/L } {
+    \tl_put_right:Nx #1 { \prop_item:Nn \g_@@_prop { #2/L } }
   } {
     \@@_length:nTF { #2 } {
       \group_begin:
       \tl_clear:N \l_ans_tl
-      \exp_args:NNNx
-      \@@_eval:NNn \c_true_bool \l_ans_tl {
-        \prop_item:Nn \g_@@_prop { #2.l } + 0
+      \flag_raise:n { no_cursor }
+      \@@_eval:Nx \l_ans_tl {
+        \prop_item:Nn \g_@@_prop { #2/l } + 0
       }
-      \tl_set:Nx \l_ans_tl {
-        \exp_args:NV \fp_to_int:n \l_ans_tl
-      }
-      \prop_gput:NnV \g_@@_prop { #2.L } \l_ans_tl
+      \tl_set:Nx \l_ans_tl { \fp_to_int:n { \l_ans_tl } }
+      \prop_gput:NnV \g_@@_prop { #2/L } \l_ans_tl
       \exp_args:NNNV
       \group_end:
       \tl_put_right:Nn #1 \l_ans_tl
@@ -1464,8 +1321,9 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
     }
   }
 }
+\cs_generate_variant:Nn \@@_length:Nn { NV }
 %    \end{macrocode}
-% \begin{function}{\@@_next:Nn}
+% \begin{function}{\@@_next:Nn, \@@_next:NV}
 % \begin{syntax}
 % \cs{@@_next:Nn} \meta{tl variable} \marg{name}
 % \end{syntax}
@@ -1473,9 +1331,9 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \@@_next:Nn #1 #2 {
-  \prop_if_in:NnTF \g_@@_prop { #2.N } {
+  \prop_if_in:NnTF \g_@@_prop { #2/N } {
     \tl_put_right:Nx #1 {
-      \prop_item:Nn \g_@@_prop { #2.N }
+      \prop_item:Nn \g_@@_prop { #2/N }
     }
   } {
     \@@_length:nTF { #2 } {
@@ -1485,12 +1343,10 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
       \tl_put_right:Nn \l_ans_tl { + }
       \@@_length:Nn \l_ans_tl { #2 }
       \tl_clear:N \l_a_tl
-      \exp_args:NNNV
-      \@@_eval:NNn \c_true_bool \l_a_tl \l_ans_tl
-      \tl_set:Nx \l_ans_tl {
-        \exp_args:NV \fp_to_int:n \l_a_tl
-      }
-      \prop_gput:NnV \g_@@_prop { #2.N } \l_ans_tl
+      \flag_raise:n { no_cursor }
+      \@@_eval:NV \l_a_tl \l_ans_tl
+      \tl_set:Nx \l_ans_tl { \fp_to_int:n { \l_a_tl } }
+      \prop_gput:NnV \g_@@_prop { #2/N } \l_ans_tl
       \exp_args:NNNV
       \group_end:
       \tl_put_right:Nn #1 \l_ans_tl
@@ -1500,17 +1356,18 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
     }
   }
 }
+\cs_generate_variant:Nn \@@_next:Nn { NV }
 %    \end{macrocode}
-% \begin{function}{\@@_last:Nn}
+% \begin{function}{\@@_last:Nn, \@@_last:NV}
 % \begin{syntax}
 % \cs{@@_last:Nn} \meta{tl variable} \marg{name}
 % \end{syntax}
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \@@_last:Nn #1 #2 {
-  \prop_if_in:NnTF \g_@@_prop { #2.Z } {
+  \prop_if_in:NnTF \g_@@_prop { #2/Z } {
     \tl_put_right:Nx #1 {
-      \prop_item:Nn \g_@@_prop { #2.Z }
+      \prop_item:Nn \g_@@_prop { #2/Z }
     }
   } {
     \@@_length:nTF { #2 } {
@@ -1518,10 +1375,8 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
       \tl_clear:N \l_ans_tl
       \@@_next:Nn \l_ans_tl { #2 }
       \tl_put_right:Nn \l_ans_tl { - 1 }
-      \tl_set:Nx \l_ans_tl {
-        \exp_args:NV \fp_to_int:n \l_ans_tl
-      }
-      \prop_gput:NnV \g_@@_prop { #2.Z } \l_ans_tl
+      \tl_set:Nx \l_ans_tl { \fp_to_int:n { \l_ans_tl } }
+      \prop_gput:NnV \g_@@_prop { #2/Z } \l_ans_tl
       \exp_args:NNNV
       \group_end:
       \tl_put_right:Nn #1 \l_ans_tl
@@ -1531,8 +1386,9 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
     }
   }
 }
+\cs_generate_variant:Nn \@@_last:Nn { NV }
 %    \end{macrocode}
-% \begin{function}{\@@_cursor:Nn}
+% \begin{function}{\@@_cursor:Nn, \@@_cursor:NV}
 % \begin{syntax}
 % \cs{@@_cursor:Nn} \meta{tl variable} \marg{name}
 % \end{syntax}
@@ -1565,13 +1421,16 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
     \int_compare:nNnF { \l_ans_tl } > { \l_a_tl } {
       \tl_set_eq:NN \l_ans_tl \l_a_tl
     }
-  }
+  } {
+    \msg_error:nnn { __beanover } { :n } { No~length~given:~#2 }
+  }  
   \exp_args:NNNV
   \group_end:
-		\tl_set:Nn #1 \l_ans_tl
+  \tl_set:Nn #1 \l_ans_tl
 }
+\cs_generate_variant:Nn \@@_cursor:Nn { NV }
 %    \end{macrocode}
-% \begin{function}{\@@_incr:Nnn}
+% \begin{function}{\@@_incr:Nnn, \@@_incr:NVV}
 % \begin{syntax}
 % \cs{@@_incr:Nnn} \meta{tl variable} \marg{name} \marg{offset}
 % \end{syntax}
@@ -1584,14 +1443,388 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
   \tl_clear:N \l_a_tl
   \tl_clear:N \l_ans_tl
   \@@_cursor:Nn \l_a_tl { #2 }
-  \exp_args:NNx
-  \@@_eval:Nn \l_ans_tl { \l_a_tl + ( #3 ) }
+  \@@_eval:Nx \l_ans_tl { \l_a_tl + ( #3 ) }
   \prop_gput:NnV \g_@@_prop { #2 } \l_ans_tl
   \exp_args:NNNV
   \group_end:
   \tl_put_right:Nn #1 \l_ans_tl
 }
+\cs_generate_variant:Nn \@@_incr:Nnn { NVV }
 %    \end{macrocode}
+%
+% \subsubsection{Evaluation}
+%
+% \begin{function}{\@@_append:Nn, \@@_append:NV}
+% \begin{syntax}
+% \cs{@@_append:Nn} \meta{tl variable} \marg{integer expression}
+% \end{syntax}
+% Evaluates the \meta{integer expression},
+% replacing all the named specifications by their
+% counterpart then put the result to
+% the right of the \meta{tl variable}.
+% Executed within a group.
+% Local variables: 
+% \cs{l_ans_tl} for the content of \meta{tl variable}
+% \end{function}
+% \begin{variable}{\l_split_seq}
+% The sequence of queries and non queries.
+% \end{variable}
+% \begin{variable}{\l_split_int}
+%  Is the index of the non queries, before all the catched groups.
+% \end{variable}
+% \begin{variable}{\l_name_tl}
+%    Storage for \cs{l_split_seq} items that represent names.
+% \end{variable}
+% \begin{variable}{\l@@_static_tl}
+%    Storage for the static values of named slide ranges.
+% \end{variable}
+% \begin{variable}{\l_group_tl}
+%    Storage for capture groups.
+% \end{variable}
+%    \begin{macrocode}
+\cs_new:Npn \@@_append:Nn #1 #2 {
+  \group_begin:
+%    \end{macrocode}
+% Local variables:
+%    \begin{macrocode}
+  \tl_clear:N  \l_ans_tl
+  \int_zero:N  \l_split_int
+  \seq_clear:N \l_split_seq
+  \tl_clear:N  \l_name_tl
+  \tl_clear:N  \l_group_tl
+  \tl_clear:N  \l_a_tl
+%    \end{macrocode}
+% Implementation:
+%    \begin{macrocode}  
+  \regex_split:NnN \c@@_split_regex { #2 } \l_split_seq
+  \int_set:Nn \l_split_int { 1 }
+  \tl_set:Nx \l_ans_tl { \seq_item:Nn \l_split_seq { \l_split_int } }
+%    \end{macrocode}
+% \begin{function}{\switch:nTF}
+% \begin{syntax}
+% \cs{switch:nTF} \marg{capture group number} \marg{black code} \marg{white code}
+% \end{syntax}
+% Helper function to locally set the |\l_group_tl| variable
+% to the captured group \meta{capture group number}
+% and branch.
+% \end{function}
+%    \begin{macrocode}
+  \cs_set:Npn \switch:nNTF ##1 ##2 ##3 ##4 {
+    \tl_set:Nx ##2 {
+      \seq_item:Nn \l_split_seq { \l_split_int + ##1 }
+    }
+    \tl_if_empty:NTF ##2 { ##4 } { ##3 }
+  }
+%    \end{macrocode}
+% Main loop.
+%    \begin{macrocode}
+  \int_while_do:nNnn { \l_split_int } < { \seq_count:N \l_split_seq } {
+        \switch:NnTF \l_name_tl 1 {
+          \switch:NnTF \l_a_tl 2 {
+%    \end{macrocode}
+% Case \texttt{\meta{name}.\meta{integer}}.
+%    \begin{macrocode}
+  \group_begin:
+  \tl_clear:N \l_ans_tl
+  \exp_args:NNV \@@_start:Nn \l_ans_tl \l_name_tl
+  \tl_put_right:Nn \l_ans_tl { + ( \l_group_tl ) - 1 }
+  \exp_args:NNNx
+  \group_end:
+  \tl_put_right:Nn \l_ans_tl {
+    \fp_to_int:n \l_ans_tl
+            }
+          } {
+            \switch:NnTF \l_a_tl 3 {
+%    \end{macrocode}
+% Case \texttt{\meta{name}.length}.
+%    \begin{macrocode}
+              \@@_length:NV \l_ans_tl \l_name_tl
+            } {
+              \switch:NnTF \l_a_tl 4 {
+%    \end{macrocode}
+% Case \texttt{\meta{name}.range}. \textcolor{red}{\bfseries conceptual problem with `|::|' }
+%    \begin{macrocode}
+  \flag_if_raised:nT { no_range } {
+    \msg_fatal:nnn { @@ } { :n } {
+      No~\l_name_tl.range available:~#2
+    }
+  }
+  \@@_start:NV \l_ans_tl \l_name_tl
+  \tl_put_right:Nn \l_ans_tl { :: }
+  \@@_last:NV \l_ans_tl \l_name_tl
+              } {
+                \switch:NnTF \l_a_tl 5 {
+%    \end{macrocode}
+% Case \texttt{\meta{name}.last}.
+%    \begin{macrocode}
+  \@@_last:NV \l_ans_tl \l_name_tl
+                } {
+                  \switch:NnTF \l_a_tl 6 {
+%    \end{macrocode}
+% Case \texttt{\meta{name}.next}.
+%    \begin{macrocode}
+  \@@_next:NV \l_ans_tl \l_name_tl
+                  } {
+                    \switch:NnTF \l_group_tl 7 {
+%    \end{macrocode}
+% Case \texttt{\meta{name}.reset}.
+%    \begin{macrocode}
+  \flag_if_raised:nT { no_cursor } {
+    \msg_fatal:nnn { @@ } { :n } {
+      No~\l_name_tl~cursor~available~inside~\cs{Beanover}:~#2
+    }
+  }
+  \@@_reset:nV { 0 } \l_name_tl
+                    } {
+                      \switch:NnTF \l_group_tl 8 {
+%    \end{macrocode}
+% Case \texttt{\meta{name}.UNKNOWN}.
+%    \begin{macrocode}
+  \msg_fatal:nnn { @@ } { :n } { Unknown~attribute~\l_group_tl:~#2 }
+                      } { }
+                    }
+                  }
+                }
+
+              }
+            }
+          }
+        } {
+          \switch:NnTF \l_name_tl 12 {
+            \flag_if_raised:nT { no_cursor } {
+              \msg_fatal:nnn { @@ } { :n } {
+No~\l_name_tl~cursor~available~inside~\cs{Beanover}:~#2
+              }
+            }
+            \switch:NnTF \l_ans_tl 11 {
+%    \end{macrocode}
+% Case \texttt{++\meta{name}}.
+%    \begin{macrocode}
+              \exp_args:NNV
+              \@@_incr:Nnn \l_ans_tl \l_name_tl 1
+            } {
+%    \end{macrocode}
+% Case \texttt{\meta{name}}.
+%    \begin{macrocode}
+              \@@_cursor:NV \l_ans_tl \l_name_tl
+            }
+          } {
+        }
+      }
+  }
+  \exp_args:NNNx
+  \group_end:
+  \tl_put_right:Nn #1 { \fp_to_int:n { \l_ans_tl } }
+}
+\cs_generate_variant:Nn \@@_append:Nn { NV }
+%    \end{macrocode}
+%
+% \begin{function}{\@@_eval_query:Nn}
+% \begin{syntax}
+% \cs{@@_eval_query:Nn} \meta{seq variable} \marg{overlay query}
+% \end{syntax}
+% Evaluates the single \meta{overlay query},
+% which is expected to contain no comma.
+% Replaces all the named overlay specifications by their static counterparts,
+% make the computation then append the result to 
+% the right of the \meta{seq variable}.
+% Ranges are supported with the colon syntax.
+% If the \meta{bool variable} is true then
+% the cursor is not available.
+% This is executed within a local group.
+% Below are local variables and constants.
+% \begin{variable}{\l_a_tl}
+% Storage for the start of a range.
+% \end{variable}
+% \begin{variable}{\l_b_tl}
+% Storage for the end of a range, or its length.
+% \end{variable}
+%    \begin{macrocode}
+\cs_new:Npn \@@_eval_query:Nn #1 #2 {
+  \regex_extract_once:NnNTF \c@@_colon_regex {
+    #2
+  } \l_match_seq {
+    \tl_clear:N \l_ans_tl
+    \flag_clear:n { no_cursor }
+    \flag_raise:n { no_range }
+%    \end{macrocode}
+% \end{function}
+% \begin{function}{\switch:nTF}
+% \begin{syntax}
+% \cs{switch:nTF} \marg{capture group number} \marg{black code} \marg{white code}
+% \end{syntax}
+% Helper function to locally set the |\l_group_tl| variable
+% to the captured group \meta{capture group number}
+% and branch.
+% \end{function}
+%    \begin{macrocode}
+    \cs_set:Npn \switch:nNTF ##1 ##2 ##3 ##4 {
+      \tl_set:Nx ##2 {
+        \seq_item:Nn \l_split_seq { ##1 }
+      }
+      \tl_if_empty:NTF ##2 { ##4 } { ##3 }
+    }
+    \switch:nNTF 5 \l_a_tl {
+%    \end{macrocode}
+% \emoji{left-speech-bubble} Single expression
+%    \begin{macrocode}
+      \flag_clear:n { no_range }
+      \@@_append:NV \l_ans_tl \l_a_tl
+      \seq_put_right:NV #1 \l_ans_tl
+    } {
+      \switch:nNTF 2 \l_a_tl {
+        \switch:nNTF 4 \l_b_tl {
+          \switch:nNTF 3 \l_a_tl {
+%    \end{macrocode}
+% \emoji{left-speech-bubble} \texttt{\meta{start}::\meta{end}} range
+%    \begin{macrocode}
+            \@@_append:NV \l_ans_tl \l_a_tl
+            \tl_put_right:Nn \l_ans_tl { - }
+            \@@_append:NV \l_ans_tl \l_b_tl
+            \seq_put_right:NV #1 \l_ans_tl
+          } {
+%    \end{macrocode}
+% \emoji{left-speech-bubble} \texttt{\meta{start}:\meta{length}} range
+%    \begin{macrocode}
+            \@@_append:NV \l_ans_tl \l_a_tl        
+            \tl_put_right:Nx \l_ans_tl { - }        
+            \tl_put_right:Nx \l_a_tl { - ( \l_b_tl ) + 1}  
+            \@@_append:NV \l_ans_tl \l_b_tl
+            \seq_put_right:NV #1 \l_ans_tl
+          }
+        } {
+%    \end{macrocode}
+% \emoji{left-speech-bubble} \texttt{\meta{start}:} an \texttt{\meta{start}::} range
+%    \begin{macrocode}
+          \@@_append:NV \l_ans_tl \l_a_tl
+          \tl_put_right:Nn \l_ans_tl { - }
+          \seq_put_right:NV #1 \l_ans_tl
+        }
+      } {
+        \switch:nNTF 4 \l_b_tl {
+          \switch:nNTF 3 \l_a_tl {
+%    \end{macrocode}
+% \emoji{left-speech-bubble} \texttt{::\meta{end}} range
+%    \begin{macrocode}
+            \tl_put_right:Nn \l_ans_tl { - }
+            \@@_append:NV \l_ans_tl \l_a_tl
+            \seq_put_right:NV #1 \l_ans_tl            
+          } {
+\msg_error:nnx { @@ } { :n } { Syntax error(Missing~start):~#2 }
+          }
+        } {
+%    \end{macrocode}
+% \emoji{left-speech-bubble} \texttt{:} or \texttt{::} range
+%    \begin{macrocode}
+          \seq_put_right:Nn #1 { - }
+        } 
+      }
+    }
+  } {
+%    \end{macrocode}
+% Error
+%    \begin{macrocode}
+    \msg_error:nnn { @@ } { :n } { Syntax~error:~#2 }
+  }
+}
+%    \end{macrocode}
+%
+% \begin{function}{\@@_eval:Nn}
+% \begin{syntax}
+% \cs{@@_eval:Nn} \meta{tl variable} \marg{overlay queries}
+% \end{syntax}
+% Evaluates the \meta{overlay queries},
+% replacing all the named overlay specifications and integer expressions
+% by their static counterparts, then append the result to
+% the right of the \meta{tl variable}.
+% This is executed within a local group.
+% Below are local variables and constants used
+% throughout the body of this function.
+% \begin{variable}{\l_query_seq}
+% Storage for a sequence of \meta{query}'s obtained by splitting a comma separated list.
+% \end{variable}
+% \begin{variable}{\l_ans_seq}
+% Storage of the evaluated result.
+% \end{variable}
+% \begin{variable}{\c@@_comma_regex}
+% Used to parse slide range overlay specifications.
+%    \begin{macrocode}
+\regex_const:Nn \c@@_comma_regex { \s* ,  \s* }
+%    \end{macrocode}
+% \end{variable}
+% No other variable is used.
+% \end{function}
+%    \begin{macrocode}
+\cs_new:Npn \@@_eval:Nn #1 #2 {
+  \group_begin:
+%    \end{macrocode}
+% Local variables declaration
+%    \begin{macrocode}
+  \tl_clear:N  \l_a_tl
+  \tl_clear:N  \l_b_tl
+  \tl_clear:N  \l_ans_tl
+  \seq_clear:N \l_ans_seq
+  \seq_clear:N \l_query_seq
+%    \end{macrocode}
+% In this main evaluation step, we evaluate the integer expression and put
+% the result in a variable which content will be copied after the group is closed.
+% We authorize comma separated expressions
+% and \texttt{\meta{start}::\meta{end}} range expressions as well.
+% We first split the expression around commas, into \cs{l_query_seq}.
+%    \begin{macrocode}
+  \@@_append:Nn \l_ans_tl { #2 }
+  \exp_args:NNV
+  \regex_split:NnN \c@@_comma_regex \l_ans_tl \l_query_seq
+%    \end{macrocode}
+% Then each component is evaluated and the result is stored in \cs{l_seq}
+% that we must clear before use.
+%    \begin{macrocode}
+  \seq_map_tokens:Nn \l_query_seq {
+    \@@_eval_query:Nn \l_ans_seq
+  }
+%    \end{macrocode}
+% We have managed all the comma separated components, we collect them back
+% and append them to \meta{tl variable}.
+%    \begin{macrocode}
+  \exp_args:NNNx
+  \group_end:
+  \tl_put_right:Nn #1 { \seq_use:Nn \l_ans_seq , }
+}
+\cs_generate_variant:Nn \@@_eval:Nn { NV, Nx }
+%    \end{macrocode}
+%
+% \begin{function}{\BeanoverEval}
+%   \begin{syntax}
+%     \cs{BeanoverEval} \oarg{tl variable} \marg{overlay queries}
+%   \end{syntax}
+% \meta{overlay queries} is the argument of |?(...)| instructions.
+% This is a comma separated list of single \meta{overlay query}'s.
+%
+% This function evaluates the \meta{overlay queries} and store the result in the \meta{tl variable} when provided
+% or leave the result in the input stream. Forwards to \cs{@@_eval:Nn}
+% within a group. \cs{l_ans_tl} is used to store the result.
+% \end{function}
+%    \begin{macrocode}
+\NewExpandableDocumentCommand \BeanoverEval { s o m } {
+  \group_begin:
+  \tl_clear:N \l_ans_tl
+  \IfBooleanTF { #1 } {
+    \flag_raise:n { no_cursor }
+  } {
+    \flag_clear:n { no_cursor }
+  }
+  \@@_eval:Nn \l_ans_tl { #3 }
+  \IfValueTF { #2 } {
+    \exp_args:NNNV
+    \group_end:
+    \tl_set:Nn #2 \l_ans_tl
+  } {
+    \exp_args:NV
+    \group_end: \l_ans_tl
+  }
+}
+%    \end{macrocode}
+%
 %
 % \subsubsection{Reseting slide ranges}
 % \begin{function}{\BeanoverReset}
@@ -1616,13 +1849,13 @@ For example \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} g
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \@@_reset:nn #1 #2 {
-  \prop_if_in:NnTF \g_@@_prop { #2.1 } {
+  \prop_if_in:NnTF \g_@@_prop { #2/1 } {
     \prop_gremove:Nn \g_@@_prop { #2 }
-    \prop_gremove:Nn \g_@@_prop { #2.A }
-    \prop_gremove:Nn \g_@@_prop { #2.L }
-    \prop_gremove:Nn \g_@@_prop { #2.N }
-    \prop_gremove:Nn \g_@@_prop { #2.Z }
-    \prop_gput:Nnn \g_@@_prop { #2.c } { #1 }
+    \prop_gremove:Nn \g_@@_prop { #2/A }
+    \prop_gremove:Nn \g_@@_prop { #2/L }
+    \prop_gremove:Nn \g_@@_prop { #2/N }
+    \prop_gremove:Nn \g_@@_prop { #2/Z }
+    \prop_gput:Nnn \g_@@_prop { #2/c } { #1 }
   } {
     \msg_warning:nnn { @@ } { :n } { Unknown~name:~#2 }
   }
