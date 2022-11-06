@@ -111,7 +111,7 @@ and the derived files           beanover.ins,
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
-\title{\pkg{beamer} named overlay ranges with \pkg{beanover}}
+\title{\pkg{beamer} named overlay specification with \pkg{beanover}}
 \author{Jérôme Laurens}
 \GetFileInfo{beanover.sty}
 \date{\fileversion \qquad \filedate}
@@ -189,10 +189,10 @@ In general, a slide list is a range of positive integers identified by a unique 
 The main practical interest is that such lists may be defined relative to one another, we can even have lists of slide ranges.
 Finally, we can use these lists to specify \pkg{beamer} overlay specifications.
 %
-\subsection{Defining named slide ranges}
-In order to define named slide ranges, we can either use the |\Beanover| command below inside a \pkg{beamer} frame environment, or use the |beanover| option of this environment.
+\subsection{Defining named slide lists}
+In order to define named slide lists, we can either use the |\Beanover| command below inside a \pkg{beamer} frame environment, or use the |beanover| option of this environment.
 The value of the |beanover| option is exactly the argument of the |\Beanover| command.
-When used, the |\Beanover| command is executed on each frame, whereas the option is executed only once but is more verbose.
+When used, the |\Beanover| command is executed for each frame, whereas the option is executed only once but is a bit more verbose.
 %
 \begin{function}{\Beanover}
   \begin{syntax}
@@ -201,33 +201,52 @@ When used, the |\Beanover| command is executed on each frame, whereas the option
 \end{function}
 The keys are the slide lists names, they are case sensitive and must contain no spaces nor `|/|' character.
 When the same key is used multiple times, only the last one is taken into account.
-Possible values are the \emph{range specifiers} \meta{first},
+Possible values are the \emph{slide range specifiers} \meta{first},
 \meta{first}:\meta{length}, \meta{first}::\meta{last}, :\meta{length}::\meta{last}
 where \meta{first}, \meta{length} and \meta{last} are algebraic expression involving any named overlay specification defined next when an integer.
-
-A comma separated list of such specifiers between square brackets is also allowed, which results in a \emph{named slide list}.
-
-The \cs{Beanover} command is used at the very beginning of the |frame| environment and thus only apply to this frame. It can be used there mutliple times. 
-%
-\subsection{Defining named slide lists}
-The declaration
-|\Beanover{|\meta{name}|=[|\meta{spec_1}|,|\meta{spec_2}|,...,|\meta{spec_n}|]}|
+Also possible are \emph{slide list specifiers} which are comma separated list of \emph{slide range specifiers} and \emph{slide list specifier} between square brackets.
+The definition
+\\[0.2ex]
+\hphantom{xx}\meta{name}|=[|\meta{spec_1}|,|\meta{spec_2}|,...,|\meta{spec_n}|]|,
+\\[0.2ex]
 is a convenient shortcut for
-|\Beanover{|\meta{name}|.1=|\meta{spec_1}|, |\meta{name}|.2=|\meta{spec_2}|,..., |\meta{name}|.n=|\meta{spec_n}|}|.
-The rule of the previous section can apply.
+\\[0.2ex]
+\hphantom{xx}\meta{name}|.1=|\meta{spec_1}|,|
+\\\hphantom{xx}\meta{name}|.2=|\meta{spec_2}|,|
+\\\hphantom{xx}|...,|
+\\\hphantom{xx}\meta{name}|.|\textit{n}|=|\meta{spec_n}.
+\\[0.2ex]
+The rules above can apply individually to each
+\\[0.2ex]
+\hphantom{xx}\meta{name}|.|\rlap{\textit{i}}\phantom{|i|}|=|\meta{spec_i}.
+\\[0.2ex]
+Moreover we can go deeper: the definition
+\\[0.2ex]
+\hphantom{xx}\meta{name}|=[[|\meta{spec_{1.1}}|,| \meta{spec_{1.2}}|],[[|\meta{spec_{2.1}}|,| \meta{spec_{2.2}}|]]|
+\\[0.2ex]
+is a convenient shortcut for
+\\[0.2ex]
+\hphantom{xx}\meta{name}|.1.1=|\meta{spec_{1.1}}|,|
+\\\hphantom{xx}\meta{name}|.1.2=|\meta{spec_{1.2}}|,|
+\\\hphantom{xx}\meta{name}|.2.1=|\meta{spec_{2.1}}|,|
+\\\hphantom{xx}\meta{name}|.2.2=|\meta{spec_{2.2}}
+\\[0.2ex]
+and so on.
+
+The \cs{Beanover} command is used at the very beginning of the |frame| environment body and thus only apply to this frame. It can be used there mutliple times. 
 %
 \section{Named overlay specifications}
 %
 \subsection{Named slide ranges}
-For named slide ranges, the named overlay specifications are detailled in the tables below together with
+When \emph{slide range specifications} ar used, the named overlay specifications are detailled in the tables below together with
 their replacement meaning value as \pkg{beamer} standard overlay specification.
 %
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
 \hline
-\bfseries \textrm{syntax} & \bfseries \textrm{meaning} 
+\multicolumn{2}{c}{\ttfamily \meta{name} == [\(i\), \(i+1\), \(i+2\),...]}
 \\\hline
-\multicolumn{2}{c}{\ttfamily \meta{name} = [\(i\), \(i+1\), \(i+2\),...]}
+\bfseries \textrm{syntax} & \bfseries \textrm{meaning} 
 \\\hline
 \meta{name}.1 & \(i\)\\
 \meta{name}.2 & \(i+1\) \\
@@ -257,9 +276,9 @@ like in the frame example below, we also have
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l|l|l}
 \hline
-\bfseries \textrm{syntax} & \bfseries \textrm{meaning} & & \bfseries \textrm{output}
+\multicolumn{2}{c|}{\ttfamily \meta{name} == [\(i\), \(i+1\),..., \(j\)]}
 \\\hline
-\multicolumn{2}{c|}{\ttfamily \meta{name} = [\(i\), \(i+1\),..., \(j\)]}
+\bfseries \textrm{syntax} & \bfseries \textrm{meaning} & & \bfseries \textrm{output}
 \\\hline
 \meta{name}.length & \(j-i+1\) & A.length & 6\\
 \meta{name}.last & \(j\) & A.last & 8\\
@@ -295,25 +314,22 @@ which is some kind of variable that can be used and incremented.
 Notice that |.n| can generally be omitted.
 %
 \subsection{Named slide lists}
-The declaration
-|\Beanover{A=[|\meta{spec_1}|,|\meta{spec_2}|,...,|\meta{spec_n}|]}|
-is a convenient shortcut for
-|\Beanover{A.1=|\meta{spec_1}|, A.2=|\meta{spec_2}|,..., A.n=|\meta{spec_n}|}|.
-The rule of the previous section can apply.
-%
-\section{Named overlay specifications}
-%
-For named slide ranges, the named overlay specifications are detailled in the tables below together with
-their replacement meaning value as \pkg{beamer} standard overlay specification.
+After the definition
+\\[0.2ex]
+\hphantom{xx}\meta{name}|=[|\meta{spec_1}|,|\meta{spec_2}|,...,|\meta{spec_n}|]|
+\\[0.2ex]
+the rules of the previous section apply recursively to each individual
+declaration
+\\[0.2ex]\hphantom{xx}\meta{name}|.|\rlap{\textit{i}}\hphantom{|i|}|=|\meta{spec_i}.
 %
 \section{\texttt{?(...)} query expressions}
-\pkg{beamer} defines \meta{overlay specifications} included between pointed brackets. Before they are processed by the \pkg{beamer} class,
-the \pkg{beanover} package scans the \meta{overlay specifications} for any occurrence of `\texttt{?(\meta{queries})}'. Each of them is then evaluated and replaced by its static counterpart.
-The overall result is finally forwarded to \pkg{beamer}.
+This is the key feature of the \pkg{beanover} package, extending \pkg{beamer} \meta{overlay specifications} included between pointed brackets. Before the \meta{overlay specifications} are processed by the \pkg{beamer} class,
+the \pkg{beanover} package scans them for any occurrence of `\texttt{?(\meta{queries})}'. Each one is then evaluated and replaced by its static counterpart.
+The overall result is finally forwarded to the \pkg{beamer} class.
 
 The \meta{queries} argument is a comma separated list of individual \meta{query}'s of next table.
 Sometimes, using \texttt{\meta{name}.range} is not allowed as it would lead to
-an algeabraix difference instead of a range.
+an algeabraic difference instead of a range.
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l|>{ \ttfamily }l}
 \hline
@@ -325,7 +341,7 @@ an algeabraix difference instead of a range.
 \meta{first expr}|:| & \meta{first} '-' & no \texttt{ \meta{name}.range }\\
 \meta{first expr}|::| & \meta{first} '-' & no \texttt{ \meta{name}.range }\\
 \meta{first expr}|:|\meta{length expr} & \meta{first} '-' \meta{last} & no \texttt{ \meta{name}.range }\\
-\meta{first expr}|:|\meta{end expr} & \meta{first} '-' \meta{last}  & no \texttt{ \meta{name}.range }\\
+\meta{first expr}|::|\meta{end expr} & \meta{first} '-' \meta{last}  & no \texttt{ \meta{name}.range }\\
 \hline
 \end{tabular}
 \end{center}
@@ -333,7 +349,7 @@ Here \meta{first expr}, \meta{length expr} and \meta{end expr}
 both denote algebraic expressions possibly involving named overlay specifications and counters.
 As integers, they respectively evaluate to \meta{first}, \meta{length} and \meta{last}.
 
-For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been defined with a length.
+For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been properly defined with a length.
 
 \end{documentation}
 \DocInput{beanover.dtx}
