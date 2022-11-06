@@ -1,7 +1,7 @@
 % \iffalse meta-comment
 % !TEX program  = LuaLaTeX
 %
-%% File: beanover.dtx
+%% File: beanoves.dtx
 %
 % Run this file twice with LuaLaTeX
 %
@@ -22,7 +22,7 @@
 %</internal>
 %<*readme>
 ----------------------------------------------------------------
-beanover --- beamer named overlay ranges
+beanoves --- beamer named overlay ranges
 E-mail: jerome.laurens@u-bourgogne.fr
 Released under the LaTeX Project Public License v1.3c or later
 See https://www.latex-project.org/lppl.txt
@@ -46,7 +46,7 @@ Time lines are very handy both during edition and to manage complex and variable
 \endpreamble
 \postamble
 
-beanover --- beamer named overlay ranges
+beanoves --- beamer named overlay ranges
 
 Copyright (C) 2022 by Jérôme LAURENS <jerome.laurens@u-bourgogne.fr>
 
@@ -60,25 +60,25 @@ https://www.latex-project.org/lppl.txt
 This work is "maintained" (as per LPPL maintenance status) by
 Jérôme LAURENS.
 
-This work consists of the file  beanover.dtx
-and the derived files           beanover.ins,
-                                beanover.pdf and
-                                beanover.sty.
+This work consists of the file  beanoves.dtx
+and the derived files           beanoves.ins,
+                                beanoves.pdf and
+                                beanoves.sty.
 
 \endpostamble
-\usedir{tex/latex/beanover}
+\usedir{tex/latex/beanoves}
 \generate{
   \file{\jobname.sty}{\from{\jobname.dtx}{package}}
 }
 %</install>
 %<install>\endbatchfile
 %<*internal>
-\usedir{source/latex/beanover}
+\usedir{source/latex/beanoves}
 \generate{
   \file{\jobname.ins}{\from{\jobname.dtx}{install}}
 }
 \nopreamble\nopostamble
-\usedir{doc/latex/beanover}
+\usedir{doc/latex/beanoves}
 \generate{
   \file{README.txt}{\from{\jobname.dtx}{readme}}
 }
@@ -107,13 +107,13 @@ and the derived files           beanover.ins,
 \RequirePackage{unicode-math}
 \RequirePackage{emoji}
 \tcbuselibrary{minted}
-\RequirePackage{beanover}
+\RequirePackage{beanoves}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
-\title{\pkg{beamer} named overlay specification with \pkg{beanover}}
+\title{\pkg{beamer} named overlay specification with \pkg{beanoves}}
 \author{Jérôme Laurens}
-\GetFileInfo{beanover.sty}
+\GetFileInfo{beanoves.sty}
 \date{\fileversion \qquad \filedate}
 \begin{document}
 \maketitle
@@ -144,10 +144,10 @@ overlay specifications have been extended.
   minted style = autumn,
 }
 \documentclass {beamer}
-\RequirePackage {beanover}
+\RequirePackage {beanoves}
 \begin{document}
 \begin{frame} [
-    beanover = {
+    beanoves = {
       A = 1:2,
       B = A.next:3,
       C = B.next,
@@ -168,7 +168,7 @@ overlay specifications have been extended.
 \end{document}
 \end{tcblisting}
 %
-On line 5, we use the |beanover| key to declare named slide ranges.
+On line 5, we use the |beanoves| key to declare named slide ranges.
 On line 6, we declare a slide range named `A', starting at slide 1 and with length 2.
 On line 13, the new overlay specification \texttt{?(A.1)} stands for 1,
 on line 16, \texttt{?(A.2)} stands for 2
@@ -190,13 +190,13 @@ The main practical interest is that such lists may be defined relative to one an
 Finally, we can use these lists to specify \pkg{beamer} overlay specifications.
 %
 \subsection{Defining named slide lists}
-In order to define named slide lists, we can either use the |\Beanover| command below inside a \pkg{beamer} frame environment, or use the |beanover| option of this environment.
-The value of the |beanover| option is exactly the argument of the |\Beanover| command.
-When used, the |\Beanover| command is executed for each frame, whereas the option is executed only once but is a bit more verbose.
+In order to define named slide lists, we can either use the |\beanoves| command below inside a \pkg{beamer} frame environment, or use the |beanoves| option of this environment.
+The value of the |beanoves| option is exactly the argument of the |\beanoves| command.
+When used, the |\beanoves| command is executed for each frame, whereas the option is executed only once but is a bit more verbose.
 %
-\begin{function}{\Beanover}
+\begin{function}{\beanoves}
   \begin{syntax}
-    \cs{Beanover}\marg{key--value list}
+    \cs{beanoves}\marg{key--value list}
   \end{syntax}
 \end{function}
 The keys are the slide lists names, they are case sensitive and must contain no spaces nor `|/|' character.
@@ -233,7 +233,7 @@ is a convenient shortcut for
 \\[0.2ex]
 and so on.
 
-The \cs{Beanover} command is used at the very beginning of the |frame| environment body and thus only apply to this frame. It can be used there mutliple times. 
+The \cs{beanoves} command is used at the very beginning of the |frame| environment body and thus only apply to this frame. It can be used there mutliple times. 
 %
 \section{Named overlay specifications}
 %
@@ -254,20 +254,20 @@ their replacement meaning value as \pkg{beamer} standard overlay specification.
 \hline
 \end{tabular}
 \end{center}
-In the frame example below, we use the \cs{BeanoverEval} command for the demonstration.
+In the frame example below, we use the \cs{beanovesEval} command for the demonstration.
 It is mainly used for debugging and testing purposes.
 
 \begin{tcblisting} {
   listing only,
 }
  \begin{frame} {Frame \insertframenumber} {Slide \insertslidenumber}
- \Beanover{
+ \beanoves{
    A = 3,
  }
  \ttfamily
- \BeanoverEval(A.1) ==3,
- \BeanoverEval(A.2) ==4,
- \BeanoverEval(A.-1)==1,
+ \beanovesEval(A.1) ==3,
+ \beanovesEval(A.2) ==4,
+ \beanovesEval(A.-1)==1,
  \end{frame}
  \end{tcblisting}
 %
@@ -291,14 +291,14 @@ like in the frame example below, we also have
   listing only,
 }
  \begin{frame} {Frame \insertframenumber} {Slide \insertslidenumber}
- \Beanover{
+ \beanoves{
    A = 3:6,
  }
  \ttfamily
- \BeanoverEval(A.length) == 6,
- \BeanoverEval(A.1)      == 3,
- \BeanoverEval(A.2)      == 4,
- \BeanoverEval(A.-1)     == 1,
+ \beanovesEval(A.length) == 6,
+ \beanovesEval(A.1)      == 3,
+ \beanovesEval(A.2)      == 4,
+ \beanovesEval(A.-1)     == 1,
  \end{frame}
  \end{tcblisting}
 %
@@ -323,8 +323,8 @@ declaration
 \\[0.2ex]\hphantom{xx}\meta{name}|.|\rlap{\textit{i}}\hphantom{|i|}|=|\meta{spec_i}.
 %
 \section{\texttt{?(...)} query expressions}
-This is the key feature of the \pkg{beanover} package, extending \pkg{beamer} \meta{overlay specifications} included between pointed brackets. Before the \meta{overlay specifications} are processed by the \pkg{beamer} class,
-the \pkg{beanover} package scans them for any occurrence of `\texttt{?(\meta{queries})}'. Each one is then evaluated and replaced by its static counterpart.
+This is the key feature of the \pkg{beanoves} package, extending \pkg{beamer} \meta{overlay specifications} included between pointed brackets. Before the \meta{overlay specifications} are processed by the \pkg{beamer} class,
+the \pkg{beanoves} package scans them for any occurrence of `\texttt{?(\meta{queries})}'. Each one is then evaluated and replaced by its static counterpart.
 The overall result is finally forwarded to the \pkg{beamer} class.
 
 The \meta{queries} argument is a comma separated list of individual \meta{query}'s of next table.
@@ -352,7 +352,7 @@ As integers, they respectively evaluate to \meta{first}, \meta{length} and \meta
 For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been properly defined with a length.
 
 \end{documentation}
-\DocInput{beanover.dtx}
+\DocInput{beanoves.dtx}
 \end{document}
 %</driver>
 % \fi
@@ -370,7 +370,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %
 % Identify the internal prefix (\LaTeX3 \pkg{DocStrip} convention).
 %    \begin{macrocode}
-%<@@=beanover>
+%<@@=beanoves>
 %    \end{macrocode}
 %
 % \subsection{Package declarations}
@@ -378,7 +378,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2020/01/01]
 \ProvidesExplPackage
-  {beanover}
+  {beanoves}
   {2022/10/28}
   {1.0}
   {Named overlay specifications for beamer}
@@ -387,8 +387,8 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % \begin{implementation}
 % \ExplSyntaxOn
 % \NewDocumentEnvironment{test}{}
-%   {\color{red}\bfseries\ExplSyntaxOn\__beanover_gclear:}
-%   {\__beanover_gclear:\ExplSyntaxOff\ignorespacesafterend}
+%   {\color{red}\bfseries\ExplSyntaxOn\__beanoves_gclear:}
+%   {\__beanoves_gclear:\ExplSyntaxOff\ignorespacesafterend}
 % \ExplSyntaxOff
 %
 % \NewDocumentEnvironment{myFailure}{}
@@ -425,7 +425,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %   }
 %   \end{list}
 % }
-% \cs_gset:Npn \__beanover_test_extract:nnnn #1 #2 #3 #4 {
+% \cs_gset:Npn \__beanoves_test_extract:nnnn #1 #2 #3 #4 {
 %   \regex_extract_once:nnNTF { #1 } { #2 } \l_match_seq {
 %     \tl_set:Nx \l_a_tl { \seq_use:Nn \l_match_seq , }
 %     \seq_set_from_clist:Nn \l_split_seq { #3 }
@@ -443,7 +443,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %     \end{myFailure}
 %   }
 % }
-% \cs_gset:Npn \__beanover_test_extract:Nnnn #1 #2 #3 #4 {
+% \cs_gset:Npn \__beanoves_test_extract:Nnnn #1 #2 #3 #4 {
 %   \regex_extract_once:NnNTF #1 { #2 } \l_match_seq {
 %     \tl_set:Nx \l_a_tl { \seq_use:Nn \l_match_seq , }
 %     \seq_set_from_clist:Nn \l_split_seq { #3 }
@@ -461,7 +461,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %     \end{myFailure}
 %   }
 % }
-% \cs_gset:Npn \__beanover_test_split:Nnnn #1 #2 #3 #4 {
+% \cs_gset:Npn \__beanoves_test_split:Nnnn #1 #2 #3 #4 {
 %   \regex_split:NnN #1 { #2 } \l_match_seq
 %   \tl_set:Nx \l_a_tl { \seq_use:Nn \l_match_seq , }
 %   \seq_set_from_clist:Nn \l_split_seq { #3 }
@@ -473,7 +473,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %     \end{myFailure}
 %   }
 % }
-% \cs_gset:Npn \__beanover_assert_equal:nnn #1 #2 #3 {
+% \cs_gset:Npn \__beanoves_assert_equal:nnn #1 #2 #3 {
 %   \tl_if_eq:nnF { #1 } { #2 } {
 %     \begin{myFailure}
 %     \item FAILURE~`#1'!=`#2'
@@ -481,7 +481,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %     \end{myFailure}
 %   }
 % }
-% \cs_generate_variant:Nn \__beanover_assert_equal:nnn { xxn }
+% \cs_generate_variant:Nn \__beanoves_assert_equal:nnn { xxn }
 % \end{test}
 %
 % \subsection{Local variables}
@@ -608,27 +608,27 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % \end{function}
 % \begin{test}
 % \cs_set:Npn \Test:xxn #1 #2 #3 {
-%   \__beanover_assert_equal:xxn { #1 } { #2 } {Test~\cs{__beanover_g(put|remove|clear|...):nn}~#3}
+%   \__beanoves_assert_equal:xxn { #1 } { #2 } {Test~\cs{__beanoves_g(put|remove|clear|...):nn}~#3}
 % }
-% \__beanover_gput:nn { A } { B }
-% \Test:xxn { \__beanover_item:n {A} } { B } { 1 }
-% \Test:xxn { \__beanover_if_in:nTF {A} TF } { T } { 3 }
-% \Test:xxn { \__beanover_if_in:nTF {B} TF } { F } { 4 }
-% \Test:xxn { \__beanover_if_in:nT {A} T } { T } { 5 }
-% \Test:xxn { \__beanover_if_in:nT {B} T } { } { 6 }
-% \Test:xxn { \__beanover_if_in:nF {A} F } { } { 7 }
-% \Test:xxn { \__beanover_if_in:nF {B} F } { F } { 8 }
-% \Test:xxn { \bool_if:nTF { \__beanover_if_in_p:n {A} } TF } { T } { 9 }
-% \Test:xxn { \bool_if:nTF { \__beanover_if_in_p:n {B} } TF } { F } { 10 }
-% \Test:xxn { \bool_if:nTF { \__beanover_if_in_p:n {B} || \__beanover_if_in_p:n {A} } TF } { T } { 11 }
+% \__beanoves_gput:nn { A } { B }
+% \Test:xxn { \__beanoves_item:n {A} } { B } { 1 }
+% \Test:xxn { \__beanoves_if_in:nTF {A} TF } { T } { 3 }
+% \Test:xxn { \__beanoves_if_in:nTF {B} TF } { F } { 4 }
+% \Test:xxn { \__beanoves_if_in:nT {A} T } { T } { 5 }
+% \Test:xxn { \__beanoves_if_in:nT {B} T } { } { 6 }
+% \Test:xxn { \__beanoves_if_in:nF {A} F } { } { 7 }
+% \Test:xxn { \__beanoves_if_in:nF {B} F } { F } { 8 }
+% \Test:xxn { \bool_if:nTF { \__beanoves_if_in_p:n {A} } TF } { T } { 9 }
+% \Test:xxn { \bool_if:nTF { \__beanoves_if_in_p:n {B} } TF } { F } { 10 }
+% \Test:xxn { \bool_if:nTF { \__beanoves_if_in_p:n {B} || \__beanoves_if_in_p:n {A} } TF } { T } { 11 }
 % \tl_clear:N \l_b_tl
-% \__beanover_get:nNTF {A} \l_b_tl {
+% \__beanoves_get:nNTF {A} \l_b_tl {
 %   \tl_set:Nn \l_b_tl { SUCCESS }
 % } {
 %   \tl_set:Nn \l_b_tl { FAILURE }
 % }
 % \Test:xxn { \l_b_tl } { SUCCESS } { 13 }
-% \__beanover_get:nNTF {B} \l_b_tl {
+% \__beanoves_get:nNTF {B} \l_b_tl {
 %   \tl_set:Nn \l_b_tl { FAILURE }
 % } {
 %   \tl_set:Nn \l_b_tl { SUCCESS }
@@ -637,7 +637,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % \end{test}
 % Utility message.
 %    \begin{macrocode}
-\msg_new:nnn { beanover } { :n } { #1 }
+\msg_new:nnn { beanoves } { :n } { #1 }
 %    \end{macrocode}
 %
 % \subsubsection{Regular expressions}
@@ -651,8 +651,8 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 }
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_name_regex {A} {A} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_name_regex {_A1} {_A1} {Test~2}
+% \__beanoves_test_extract:Nnnn \c__beanoves_name_regex {A} {A} {Test~1}
+% \__beanoves_test_extract:Nnnn \c__beanoves_name_regex {_A1} {_A1} {Test~2}
 % \end{test}
 % \end{variable}
 % \begin{variable}{\c@@_path_regex}
@@ -663,9 +663,9 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 }
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_path_regex {} {} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_path_regex {.1} {.1} {Test~2}
-% \__beanover_test_extract:Nnnn \c__beanover_path_regex {.1.2} {.1.2} {Test~3}
+% \__beanoves_test_extract:Nnnn \c__beanoves_path_regex {} {} {Test~1}
+% \__beanoves_test_extract:Nnnn \c__beanoves_path_regex {.1} {.1} {Test~2}
+% \__beanoves_test_extract:Nnnn \c__beanoves_path_regex {.1.2} {.1.2} {Test~3}
 % \end{test}
 % \end{variable}
 %
@@ -682,17 +682,17 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 }
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_key_regex {A} {A} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_key_regex {_A1} {_A1} {Test~2}
-% \__beanover_test_extract:Nnnn \c__beanover_key_regex {A.1} {A.1} {Test~3}
-% \__beanover_test_extract:Nnnn \c__beanover_key_regex {_A1.1} {_A1.1} {Test~4}
-% \__beanover_test_extract:Nnnn \c__beanover_key_regex {_A1.1.2} {_A1.1.2} {Test~5}
-% \__beanover_test_extract:Nnnn \c__beanover_key_regex {(_A1.1.2)} {_A1.1.2} {Test~6}
-% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {A} {A} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {_A1} {_A1} {Test~2}
-% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {A.1} {A.1} {Test~3}
-% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {_A1.1} {_A1.1} {Test~4}
-% \__beanover_test_extract:Nnnn \c__beanover_A_key_Z_regex {_A1.1.2} {_A1.1.2} {Test~5}
+% \__beanoves_test_extract:Nnnn \c__beanoves_key_regex {A} {A} {Test~1}
+% \__beanoves_test_extract:Nnnn \c__beanoves_key_regex {_A1} {_A1} {Test~2}
+% \__beanoves_test_extract:Nnnn \c__beanoves_key_regex {A.1} {A.1} {Test~3}
+% \__beanoves_test_extract:Nnnn \c__beanoves_key_regex {_A1.1} {_A1.1} {Test~4}
+% \__beanoves_test_extract:Nnnn \c__beanoves_key_regex {_A1.1.2} {_A1.1.2} {Test~5}
+% \__beanoves_test_extract:Nnnn \c__beanoves_key_regex {(_A1.1.2)} {_A1.1.2} {Test~6}
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_key_Z_regex {A} {A} {Test~1}
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_key_Z_regex {_A1} {_A1} {Test~2}
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_key_Z_regex {A.1} {A.1} {Test~3}
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_key_Z_regex {_A1.1} {_A1.1} {Test~4}
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_key_Z_regex {_A1.1.2} {_A1.1.2} {Test~5}
 % \end{test}
 % \end{variable}
 %
@@ -707,12 +707,12 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 }
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {A} {A} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1} {_A1} {Test~2}
-% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {A.1} {A.1} {Test~3}
-% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1.-1} {_A1.-1} {Test~4}
-% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1.-1.2} {_A1.-1.2} {Test~5}
-% \__beanover_test_extract:Nnnn \c__beanover_dotted_regex {_A1.range} {_A1.range} {Test~6}
+% \__beanoves_test_extract:Nnnn \c__beanoves_dotted_regex {A} {A} {Test~1}
+% \__beanoves_test_extract:Nnnn \c__beanoves_dotted_regex {_A1} {_A1} {Test~2}
+% \__beanoves_test_extract:Nnnn \c__beanoves_dotted_regex {A.1} {A.1} {Test~3}
+% \__beanoves_test_extract:Nnnn \c__beanoves_dotted_regex {_A1.-1} {_A1.-1} {Test~4}
+% \__beanoves_test_extract:Nnnn \c__beanoves_dotted_regex {_A1.-1.2} {_A1.-1.2} {Test~5}
+% \__beanoves_test_extract:Nnnn \c__beanoves_dotted_regex {_A1.range} {_A1.range} {Test~6}
 % \end{test}
 % \end{variable}
 %
@@ -722,13 +722,13 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 \regex_const:Nn \c@@_colons_regex { :(:+)? }
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_split:Nnnn \c__beanover_colons_regex
+% \__beanoves_test_split:Nnnn \c__beanoves_colons_regex
 %   { A:C } {{A},{},{C}} {Test~1}
-% \__beanover_test_split:Nnnn \c__beanover_colons_regex
+% \__beanoves_test_split:Nnnn \c__beanoves_colons_regex
 %   { A::C } {{A},{:},{C}} {Test~2}
-% \__beanover_test_split:Nnnn \c__beanover_colons_regex
+% \__beanoves_test_split:Nnnn \c__beanoves_colons_regex
 %   { A:::C } {{A},{::},{C}} {Test~3}
-% \__beanover_test_split:Nnnn \c__beanover_colons_regex
+% \__beanoves_test_split:Nnnn \c__beanoves_colons_regex
 %   { :B::C } {{},{},{B},{:},{C}} {Test~4}
 % \end{test}
 % \end{variable}
@@ -741,11 +741,11 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 }
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_int_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_int_regex
 %   {421} {421} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_int_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_int_regex
 %   {+421} {+421} {Test~2}
-% \__beanover_test_extract:Nnnn \c__beanover_int_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_int_regex
 %   {-421} {-421} {Test~3}
 % \end{test}
 % \end{variable}
@@ -766,13 +766,13 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \end{macrocode}
 % \end{myList}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_list_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_list_regex
 %   {[]} {[],{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_list_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_list_regex
 %   {[x]} {[x], x} {Test~2}
-% \__beanover_test_extract:Nnnn \c__beanover_list_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_list_regex
 %   {[~x~]} {[~x~],{x}} {Test~3}
-% \__beanover_test_extract:Nnnn \c__beanover_list_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_list_regex
 %   {[~x[~]} {[~x[~],{x[}} {Test~4}
 % 
 % \end{test}
@@ -799,13 +799,13 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
     ( \ur{c@@_path_regex} ) (?: \. n )?
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ++ABC.n } {{++ABC.n},{ABC},{},{},{},{},{},{},{},{},{}} {Test~2a}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ++ABC.1.2.n~~ } {{++ABC.1.2.n~~},{ABC},{.1.2},{},{},{},{},{},{},{},{}} {Test~2b}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ++ABC } {{++ABC},{ABC},{},{},{},{},{},{},{},{},{}} {Test~2c}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ++ABC.1.2~~ } {{++ABC.1.2~~},{ABC},{.1.2},{},{},{},{},{},{},{},{}} {Test~2d}
 % \end{test}
 % We continue with other expressions
@@ -826,9 +826,9 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
        \. l(e)ngth
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.length } {{A.length},{},{},{A},{},{e},{},{},{},{},{}} {Test~5a}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.1.2.length } {{A.1.2.length},{},{},{A},{.1.2},{e},{},{},{},{},{}} {Test~5b}
 % \end{test}
 %   \item 6: the \meta{last} attribute
@@ -836,9 +836,9 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
     |  \. l(a)st
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.last } {{A.last},{},{},{A},{},{},{a},{},{},{},{}} {Test~6a}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.1.2.last } {{A.1.2.last},{},{},{A},{.1.2},{},{a},{},{},{},{}} {Test~6b}
 % \end{test}
 %   \item 7: the \meta{next} attribute
@@ -846,9 +846,9 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
     |  \. ne(x)t
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.next } {{A.next},{},{},{A},{},{},{},{x},{},{},{}} {Test~7a}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.1.2.next } {{A.1.2.next},{},{},{A},{.1.2},{},{},{x},{},{},{}} {Test~7b}
 % \end{test}
 %   \item 8: the \meta{range} attribute
@@ -856,9 +856,9 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
     |  \. (r)ange
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.range } {{A.range},{},{},{A},{},{},{},{},{r},{},{}} {Test~8a}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.1.2.range } {{A.1.2.range},{},{},{A},{.1.2},{},{},{},{r},{},{}} {Test~8b}
 % \end{test}
 %   \item 9: the \meta{n} attribute
@@ -866,9 +866,9 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
     |  \. (n)
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.n } {{A.n},{},{},{A},{},{},{},{},{},{n},{}} {Test~9a}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.1.2.n } {{A.1.2.n},{},{},{A},{.1.2},{},{},{},{},{n},{}} {Test~9b}
 % \end{test}
 %   \item 10: the poor man integer expression after `|+=|'.
@@ -887,15 +887,15 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
         )?
 %    \end{macrocode}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ABC.n += 421 } {{ABC.n += 421},{},{},{ABC},{},{},{},{},{},{n},{421}} {Test~`+='~1}
-% \__beanover_test_extract:Nnnn \c__beanover_key_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_key_regex
 %   { P.1 } {P.1} {Test~`+='~2}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ABC.n += 1+P.1 } {{ABC.n += 1+P.1},{},{},{ABC},{},{},{},{},{},{n},{1+P.1}} {Test~`+='~2}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ABC.n += 1+P.1X } {{ABC.n += 1+P.1},{},{},ABC,{},{},{},{},{}, {n},{1+P.1}} {Test~`+='~3}
-% \__beanover_test_extract:Nnnn \c__beanover_split_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ABC.n += (P.1+1)~~^^A(
 % ) } {{ABC.n += (P.1+1)~},{},{},ABC,{},{},{},{},{}, {n},{(P.1+1)~}} {Test~`+='~4}
 % \end{test}
@@ -915,7 +915,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % Prints an error message when a key only item is used.
 %    \begin{macrocode}
 \cs_new:Npn \@@_error:n #1 {
-  \msg_fatal:nnn { beanover } { :n } { Missing~value~for~#1 }
+  \msg_fatal:nnn { beanoves } { :n } { Missing~value~for~#1 }
 }
 %    \end{macrocode}
 % \end{function}
@@ -945,7 +945,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
   \tl_if_empty:nTF { #2 } {
     \tl_if_empty:nTF { #3 } {
       \tl_if_empty:nTF { #4 } {
-        \msg_error:nnn { beanover } { :n } { Not~a~range:~:~#1 }
+        \msg_error:nnn { beanoves } { :n } { Not~a~range:~:~#1 }
       } {
         \@@_gput:nn { #1/Z } { #4 }
       }
@@ -973,41 +973,41 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \end{macrocode}%
 % \begin{test}
 % \cs_set:Npn \Test #1 #2 #3 #4 #5 {
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {#1/A} } { #2 } {Test~\cs{__beanover_range:nnnn}~#5~A }
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {#1/L} } { #3 } {Test~\cs{__beanover_range:nnnn}~#5~L }
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {#1/Z} } { #4 } {Test~\cs{__beanover_range:nnnn}~#5~Z }
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {#1/A} } { #2 } {Test~\cs{__beanoves_range:nnnn}~#5~A }
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {#1/L} } { #3 } {Test~\cs{__beanoves_range:nnnn}~#5~L }
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {#1/Z} } { #4 } {Test~\cs{__beanoves_range:nnnn}~#5~Z }
 % }
-% \__beanover_range:nnnn {X} {FIRST} {} {}
-% \Test { X } {FIRST} {} {} {TestB~\cs{__beanover_range:nnnn}~X}
-% \__beanover_range:nnnn {X} {} {LENGTH} {}
-% \Test { X } {} {LENGTH} {} {TestC~\cs{__beanover_range:nnnn}~X.1}
-% \__beanover_range:nnnn {X} {} {} {LAST}
-% \Test { X } {} {} {LAST} {TestC~\cs{__beanover_range:nnnn}~X.1}
-% \__beanover_range:nnnn {X.1} {FIRST} {} {}
-% \Test { X.1 } {FIRST} {} {} {TestB~\cs{__beanover_range:nnnn}~X.1}
-% \__beanover_range:nnnn {X.1} {} {LENGTH} {}
-% \Test { X.1 } {} {LENGTH} {} {TestC~\cs{__beanover_range:nnnn}~X.1}
-% \__beanover_range:nnnn {X.1} {} {} {LAST}
-% \Test { X.1 } {} {} {LAST} {TestC~\cs{__beanover_range:nnnn}~X.1}
-% \__beanover_range:nnnn {X} {FIRST} {LENGTH} {}
-% \Test { X } {FIRST} {LENGTH} {X.first+X.length-1} {Test~\cs{__beanover_range:nnnn}~a}
-% \__beanover_range:nnnn {X} {FIRST} {} {LAST}
-% \Test { X } {FIRST} {X.last-(X.first)+1} {LAST} {Test~\cs{__beanover_range:nnnn}~b}
-% \__beanover_range:nnnn {X} {} {LENGTH} {LAST}
-% \Test { X } {X.last-(X.length)+1} {LENGTH} {LAST} {Test~\cs{__beanover_range:nnnn}~c}
+% \__beanoves_range:nnnn {X} {FIRST} {} {}
+% \Test { X } {FIRST} {} {} {TestB~\cs{__beanoves_range:nnnn}~X}
+% \__beanoves_range:nnnn {X} {} {LENGTH} {}
+% \Test { X } {} {LENGTH} {} {TestC~\cs{__beanoves_range:nnnn}~X.1}
+% \__beanoves_range:nnnn {X} {} {} {LAST}
+% \Test { X } {} {} {LAST} {TestC~\cs{__beanoves_range:nnnn}~X.1}
+% \__beanoves_range:nnnn {X.1} {FIRST} {} {}
+% \Test { X.1 } {FIRST} {} {} {TestB~\cs{__beanoves_range:nnnn}~X.1}
+% \__beanoves_range:nnnn {X.1} {} {LENGTH} {}
+% \Test { X.1 } {} {LENGTH} {} {TestC~\cs{__beanoves_range:nnnn}~X.1}
+% \__beanoves_range:nnnn {X.1} {} {} {LAST}
+% \Test { X.1 } {} {} {LAST} {TestC~\cs{__beanoves_range:nnnn}~X.1}
+% \__beanoves_range:nnnn {X} {FIRST} {LENGTH} {}
+% \Test { X } {FIRST} {LENGTH} {X.first+X.length-1} {Test~\cs{__beanoves_range:nnnn}~a}
+% \__beanoves_range:nnnn {X} {FIRST} {} {LAST}
+% \Test { X } {FIRST} {X.last-(X.first)+1} {LAST} {Test~\cs{__beanoves_range:nnnn}~b}
+% \__beanoves_range:nnnn {X} {} {LENGTH} {LAST}
+% \Test { X } {X.last-(X.length)+1} {LENGTH} {LAST} {Test~\cs{__beanoves_range:nnnn}~c}
 % \cs_set:Npn \msg_error:nnn #1 #2 #3 {
 %   \cs_set:Npn \Test ##1 ##2 ##3 ##4 ##5 { }
 % }
 % \cs_set:Npn \Test #1 #2 #3 #4 #5 {
-%   \__beanover_assert_equal:xxn { MISSING~ERROR } {  } {Test~\cs{__beanover_range:nnnn}~#5~Z }
+%   \__beanoves_assert_equal:xxn { MISSING~ERROR } {  } {Test~\cs{__beanoves_range:nnnn}~#5~Z }
 % }
-% \__beanover_range:nnnn {X} {} {} {}
-% \Test { X } {} {} {} {TestA~\cs{__beanover_range:nnnn}~X}
+% \__beanoves_range:nnnn {X} {} {} {}
+% \Test { X } {} {} {} {TestA~\cs{__beanoves_range:nnnn}~X}
 % \cs_set:Npn \Test #1 #2 #3 #4 #5 {
-%   \__beanover_assert_equal:xxn { MISSING~ERROR } {  } {Test~\cs{__beanover_range:nnnn}~#5~Z }
+%   \__beanoves_assert_equal:xxn { MISSING~ERROR } {  } {Test~\cs{__beanoves_range:nnnn}~#5~Z }
 % }
-% \__beanover_range:nnnn {X.1} {} {} {}
-% \Test { X.1 } {} {} {} {TestA~\cs{__beanover_range:nnnn}~X.1}
+% \__beanoves_range:nnnn {X.1} {} {} {}
+% \Test { X.1 } {} {} {} {TestA~\cs{__beanoves_range:nnnn}~X.1}
 % \end{test}
 % \end{function}
 %
@@ -1039,17 +1039,17 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \end{macrocode}
 % A |::| was expected:
 %    \begin{macrocode}
-\msg_error:nnn { beanover } { :n } { Invalid~range~expression(1):~#2 }
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(1):~#2 }
           } {
             \int_compare:nNnT { \tl_count:N \l_c_tl } > { 1 } {
-\msg_error:nnn { beanover } { :n } { Invalid~range~expression(2):~#2 }
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(2):~#2 }
             }
             \seq_pop_left:NN \l_split_seq \l_c_tl
 %    \end{macrocode}
 % \cs{l_c_tl} may contain the \meta{end}.
 %    \begin{macrocode}
             \seq_if_empty:NF \l_split_seq {
-\msg_error:nnn { beanover } { :n } { Invalid~range~expression(3):~#2 }
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(3):~#2 }
             }
           }
         }
@@ -1058,7 +1058,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % This is a two colon range.
 %    \begin{macrocode}
         \int_compare:nNnT { \tl_count:N \l_b_tl } > { 1 } {
-\msg_error:nnn { beanover } { :n } { Invalid~range~expression(4):~#2 }
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(4):~#2 }
         }
         \seq_pop_left:NN \l_split_seq \l_c_tl
 %    \end{macrocode}
@@ -1071,10 +1071,10 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % \cs{l_b_tl} may contain the \meta{length}.
 %    \begin{macrocode}
             \seq_if_empty:NF \l_split_seq {
-\msg_error:nnn { beanover } { :n } { Invalid~range~expression(5):~#2 }
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(5):~#2 }
             }
           } {
-\msg_error:nnn { beanover } { :n } { Invalid~range~expression(6):~#2 }
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(6):~#2 }
           }
         } {
           \tl_clear:N \l_b_tl
@@ -1091,38 +1091,38 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
     || \tl_if_empty_p:N \l_b_tl
     || \tl_if_empty_p:N \l_c_tl
   } {
-\msg_error:nnn { beanover } { :n } { Invalid~range~expression(7):~#2 }
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(7):~#2 }
   }
   \@@_range:nVVV { #1 } \l_a_tl \l_b_tl \l_c_tl
 }
 %    \end{macrocode}
 % \begin{test}
 % \cs_set:Npn \Test:nnnn #1 #2 #3 #4 {
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X/A} } {#1} {Test~\cs{__beanover_do_parse:nn}~#4-a}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X/L} } {#2} {Test~\cs{__beanover_do_parse:nn}~#4-b}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X/Z} } {#3} {Test~\cs{__beanover_do_parse:nn}~#4-c}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X/A} } {#1} {Test~\cs{__beanoves_do_parse:nn}~#4-a}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X/L} } {#2} {Test~\cs{__beanoves_do_parse:nn}~#4-b}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X/Z} } {#3} {Test~\cs{__beanoves_do_parse:nn}~#4-c}
 % }
-% \__beanover_do_parse:nn {X} {A}
+% \__beanoves_do_parse:nn {X} {A}
 % \Test:nnnn {A} {} {} {1}
-% \__beanover_do_parse:nn {X} {A:B}
+% \__beanoves_do_parse:nn {X} {A:B}
 % \Test:nnnn {A} {B} {X.first+X.length-1} {2}
-% \__beanover_do_parse:nn {X} {A::C}
+% \__beanoves_do_parse:nn {X} {A::C}
 % \Test:nnnn {A} {X.last-(X.first)+1} {C} {3}
-% \__beanover_do_parse:nn {X} {:B::C}
+% \__beanoves_do_parse:nn {X} {:B::C}
 % \Test:nnnn {X.last-(X.length)+1} {B} {C} {4}
-% \__beanover_do_parse:nn {X} {::C:B}
+% \__beanoves_do_parse:nn {X} {::C:B}
 % \Test:nnnn {X.last-(X.length)+1} {B} {C} {5}
 % {
 %   \cs_set:Npn \msg_error:nnn #1 #2 #3 {
 %     \cs_set:Npn \Test:nnnn ##1 ##2 ##3 ##4 { }
 %   }
-%   \__beanover_do_parse:nn {X} {A::C:B}
+%   \__beanoves_do_parse:nn {X} {A::C:B}
 % }
 % {
 %   \cs_set:Npn \msg_error:nnn #1 #2 #3 {
 %     \cs_set:Npn \Test:nnnn ##1 ##2 ##3 ##4 { }
 %   }
-%   \__beanover_do_parse:nn {X} {A:B::C}
+%   \__beanoves_do_parse:nn {X} {A:B::C}
 % }
 % \end{test}
 %    \begin{macrocode}
@@ -1147,42 +1147,42 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
       \@@_do_parse:nn { #1 } { #2 }
     }
   } {
-    \msg_error:nnn { beanover } { :n } { Invalid~key:~#1 }
+    \msg_error:nnn { beanoves } { :n } { Invalid~key:~#1 }
   }
   \group_end:
 }
 %    \end{macrocode}
 % \begin{test}
 % \cs_set:Npn \Test:nnnn #1 #2 #3 #4 {
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X/A} } {#1} {Test~\cs{__beanover_parse:nn}~#4-a}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X/L} } {#2} {Test~\cs{__beanover_parse:nn}~#4-b}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X/Z} } {#3} {Test~\cs{__beanover_parse:nn}~#4-c}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X/A} } {#1} {Test~\cs{__beanoves_parse:nn}~#4-a}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X/L} } {#2} {Test~\cs{__beanoves_parse:nn}~#4-b}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X/Z} } {#3} {Test~\cs{__beanoves_parse:nn}~#4-c}
 % }
-% \__beanover_parse:nn {X} {A}
+% \__beanoves_parse:nn {X} {A}
 % \Test:nnnn {A} {} {} {1}
-% \__beanover_parse:nn {X} {A:B}
+% \__beanoves_parse:nn {X} {A:B}
 % \Test:nnnn {A} {B} {X.first+X.length-1} {2}
-% \__beanover_parse:nn {X} {A::C}
+% \__beanoves_parse:nn {X} {A::C}
 % \Test:nnnn {A} {X.last-(X.first)+1} {C} {3}
 % \end{test}
 % \begin{test}
 % \cs_set:Npn \Test:nnnn #1 #2 #3 #4 {
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X.1.2/A} } {#1} {Test~\cs{__beanover_parse:nn}~#4-a}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X.1.2/L} } {#2} {Test~\cs{__beanover_parse:nn}~#4-b}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X.1.2/Z} } {#3} {Test~\cs{__beanover_parse:nn}~#4-c}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X.1.2/A} } {#1} {Test~\cs{__beanoves_parse:nn}~#4-a}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X.1.2/L} } {#2} {Test~\cs{__beanoves_parse:nn}~#4-b}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X.1.2/Z} } {#3} {Test~\cs{__beanoves_parse:nn}~#4-c}
 % }
-% \__beanover_parse:nn {X.1.2} {A}
+% \__beanoves_parse:nn {X.1.2} {A}
 % \Test:nnnn {A} {} {} {1}
-% \__beanover_parse:nn {X.1.2} {A:B}
+% \__beanoves_parse:nn {X.1.2} {A:B}
 % \Test:nnnn {A} {B} {X.1.2.first+X.1.2.length-1} {2}
-% \__beanover_parse:nn {X.1.2} {A::C}
+% \__beanoves_parse:nn {X.1.2} {A::C}
 % \Test:nnnn {A} {X.1.2.last-(X.1.2.first)+1} {C} {3}
 % \cs_set:Npn \Test:nnnnn #1 #2 #3 #4 #5 {
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X.#5/A} } {#1} {Test~\cs{__beanover_parse:nn}~#4-a}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X.#5/L} } {#2} {Test~\cs{__beanover_parse:nn}~#4-b}
-%   \__beanover_assert_equal:xxn {\__beanover_item:n {X.#5/Z} } {#3} {Test~\cs{__beanover_parse:nn}~#4-c}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X.#5/A} } {#1} {Test~\cs{__beanoves_parse:nn}~#4-a}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X.#5/L} } {#2} {Test~\cs{__beanoves_parse:nn}~#4-b}
+%   \__beanoves_assert_equal:xxn {\__beanoves_item:n {X.#5/Z} } {#3} {Test~\cs{__beanoves_parse:nn}~#4-c}
 % }
-% \__beanover_parse:nn {X.3} {[A,A:B,A::C,:B::C,::C:B]}
+% \__beanoves_parse:nn {X.3} {[A,A:B,A::C,:B::C,::C:B]}
 % \Test:nnnnn {A} {} {} {4-1} {3.1}
 % \Test:nnnnn {A} {B} {X.3.2.first+X.3.2.length-1} {4-2} {3.2}
 % \Test:nnnnn {A} {X.3.3.last-(X.3.3.first)+1} {C} {4-3} {3.3}
@@ -1190,26 +1190,26 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % \Test:nnnnn {X.3.5.last-(X.3.5.length)+1} {B} {C} {4-5} {3.5}
 % \end{test}
 %
-% \begin{function}{\Beanover}
+% \begin{function}{\beanoves}
 %   \begin{syntax}
-%     \cs{Beanover} \marg{key--value list}
+%     \cs{beanoves} \marg{key--value list}
 %   \end{syntax}
 %   The keys are the slide range specifiers.
 % We do not accept key only items, they are managed by \cs{@@_error:n}.
 % \meta{key--value} items are parsed by \cs{@@_parse:nn}.
 % A group is open.
 %    \begin{macrocode}
-\NewDocumentCommand \Beanover { m } {
+\NewDocumentCommand \beanoves { m } {
   \keyval_parse:NNn \@@_error:n \@@_parse:nn { #1 }
   \ignorespaces
 }
 %    \end{macrocode}
 % If we use this command in the frame body, it will be executed for each
 % different frame.
-% If we use the frame option \texttt{beanover} instead, the command is executed
+% If we use the frame option \texttt{beanoves} instead, the command is executed
 % only once, at the cost of a more verbose code.
 %    \begin{macrocode}
-\define@key{beamerframe}{beanover}{\Beanover{#1}}
+\define@key{beamerframe}{beanoves}{\beanoves{#1}}
 %    \end{macrocode}
 % \end{function}
 % \subsubsection{Scanning named overlay specifications}
@@ -1314,7 +1314,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \end{macrocode}
 % No opening parenthesis found, raise.
 %    \begin{macrocode}
-            \msg_fatal:nnx { beanover } { :n } {Missing~'('%---)
+            \msg_fatal:nnx { beanoves } { :n } {Missing~'('%---)
               ~after~a~?:~#1}
           } {
             \tl_if_eq:NnT \l_token_tl { ( %)
@@ -1343,7 +1343,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % `|)|'.
 % |\l_depth_int| is 0 whenever |\l_query_bool| is false.
 %    \begin{macrocode}
-                  \msg_error:nnx { beanover } { :n } {Missing~%(---
+                  \msg_error:nnx { beanoves } { :n } {Missing~%(---
                     `)':~#1 }
                   \int_do_while:nNnn \l_depth_int > 1 {
                     \int_decr:N \l_depth_int
@@ -1450,14 +1450,14 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %   \tl_put_right:Nn #2 { !(#1) }
 % }
 % \tl_clear:N \l_a_tl
-% \__beanover_scan:nNN {1+1} \eval:nN \l_a_tl
-% \__beanover_scan:nNN {?(A)} \eval:nN \l_a_tl
+% \__beanoves_scan:nNN {1+1} \eval:nN \l_a_tl
+% \__beanoves_scan:nNN {?(A)} \eval:nN \l_a_tl
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \tl_clear:N \l_a_tl
-%   \__beanover_scan:nNN { #1 } \eval:nN \l_a_tl
+%   \__beanoves_scan:nNN { #1 } \eval:nN \l_a_tl
 %   \exp_args:NV
-%   \__beanover_assert_equal:nnn \l_a_tl { #2 } {
-%     Test~\cs{__beanover_scan:nNN}~#3
+%   \__beanoves_assert_equal:nnn \l_a_tl { #2 } {
+%     Test~\cs{__beanoves_scan:nNN}~#3
 %   }
 % }
 % \Test:nnn {} {} {1}
@@ -1539,19 +1539,19 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \begin{macrocode}
 \cs_new:Npn \@@_first:nN #1 #2 {
   \@@_if_first:nNF { #1 } #2 {
-    \msg_error:nnn { beanover } { :n } { Range~with~no~first:~#1 }
+    \msg_error:nnn { beanoves } { :n } { Range~with~no~first:~#1 }
   }
 }
 \cs_generate_variant:Nn \@@_first:nN { VN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \Beanover { X = #1 }
+%   \beanoves { X = #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_first:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_first:nN }~#3 }
+%   \__beanoves_first:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_first:nN }~#3 }
 % }
 % \Test:nnn { 123 } { 123 } { 1 }
 % \Test:nnn { 123 } { 123 } { 2 }
@@ -1608,17 +1608,17 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % \end{syntax}
 % Append the length of the \meta{name} slide range to \meta{tl variable}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \Beanover { X = #1 }
+%   \beanoves { X = #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_length:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_length:nN }~#3 }
+%   \__beanoves_length:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_length:nN }~#3 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_length:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_length:nN }~#3 }
+%   \__beanoves_length:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_length:nN }~#3 }
 % }
 % \Test:nnn { 123:421 } { 421 } { 1 }
 % \Test:nnn { A::C  } { C-(A-1) } { 2 }
@@ -1629,19 +1629,19 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \begin{macrocode}
 \cs_new:Npn \@@_length:nN #1 #2 {
   \@@_if_length:nNF { #1 } #2 {
-    \msg_error:nnn { beanover } { :n } { Range~with~no~length:~#1 }
+    \msg_error:nnn { beanoves } { :n } { Range~with~no~length:~#1 }
   }
 }
 \cs_generate_variant:Nn \@@_length:nN { VN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \Beanover { X = #1 }
+%   \beanoves { X = #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_length:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_length:nN }~#3 }
+%   \__beanoves_length:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_length:nN }~#3 }
 % }
 % \Test:nnn { A:B } { B } { 1 }
 % \Test:nnn { A:B } { B } { 2 }
@@ -1702,59 +1702,59 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \begin{macrocode}
 \cs_new:Npn \@@_last:nN #1 #2 {
   \@@_if_last:nNF { #1 } #2 {
-    \msg_error:nnn { beanover } { :n } { Range~with~no~last:~#1 }
+    \msg_error:nnn { beanoves } { :n } { Range~with~no~last:~#1 }
   }
 }
 \cs_generate_variant:Nn \@@_last:nN { VN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \Beanover { X = #1 }
+%   \beanoves { X = #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_last:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_last:nN }~#3-a }
+%   \__beanoves_last:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_last:nN }~#3-a }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_last:nNTF { X } \l_ans_tl {
+%   \__beanoves_if_last:nNTF { X } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   } {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_last:nN }~#3-b }
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_last:nN }~#3-c }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_last:nN }~#3-b }
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_last:nN }~#3-c }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_last:nNTF { Y } \l_ans_tl {
+%   \__beanoves_if_last:nNTF { Y } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   } {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_last:nN }~#3-d }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_last:nN }~#3-d }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_last:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_last:nN }~#3-a }
+%   \__beanoves_last:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_last:nN }~#3-a }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_last:nNTF { X } \l_ans_tl {
+%   \__beanoves_if_last:nNTF { X } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   } {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_last:nN }~#3-b }
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_last:nN }~#3-c }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_last:nN }~#3-b }
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_last:nN }~#3-c }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_last:nNTF { Y } \l_ans_tl {
+%   \__beanoves_if_last:nNTF { Y } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   } {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_last:nN }~#3-d }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_last:nN }~#3-d }
 % }
 % \Test:nnn { ::C } { C } { 1 }
 % \Test:nnn { ::C } { C } { 2 }
@@ -1811,59 +1811,59 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \begin{macrocode}
 \cs_new:Npn \@@_next:nN #1 #2 {
   \@@_if_next:nNF { #1 } #2 {
-    \msg_error:nnn { beanover } { :n } { Range~with~no~next:~#1 }
+    \msg_error:nnn { beanoves } { :n } { Range~with~no~next:~#1 }
   }
 }
 \cs_generate_variant:Nn \@@_next:nN { VN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \Beanover { X = #1 }
+%   \beanoves { X = #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_next:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_next:nN }~#3-a }
+%   \__beanoves_next:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_next:nN }~#3-a }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_next:nNTF { X } \l_ans_tl {
+%   \__beanoves_if_next:nNTF { X } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   } {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_next:nN }~#3-b }
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_next:nN }~#3-c }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_next:nN }~#3-b }
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_next:nN }~#3-c }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_next:nNTF { Y } \l_ans_tl {
+%   \__beanoves_if_next:nNTF { Y } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   } {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_next:nN }~#3-d }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_next:nN }~#3-d }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_next:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_next:nN }~#3-a }
+%   \__beanoves_next:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_next:nN }~#3-a }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_next:nNTF { X } \l_ans_tl {
+%   \__beanoves_if_next:nNTF { X } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   } {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_next:nN }~#3-b }
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_next:nN }~#3-c }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_next:nN }~#3-b }
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_next:nN }~#3-c }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_if_next:nNTF { Y } \l_ans_tl {
+%   \__beanoves_if_next:nNTF { Y } \l_ans_tl {
 %     \tl_set:Nn \l_a_tl { FAILURE }
 %   } {
 %     \tl_set:Nn \l_a_tl { SUCCESS }
 %   }
-%   \__beanover_assert_equal:xxn { \l_a_tl } { SUCCESS }
-%     { Test~\cs{__beanover_next:nN }~#3-d }
+%   \__beanoves_assert_equal:xxn { \l_a_tl } { SUCCESS }
+%     { Test~\cs{__beanoves_next:nN }~#3-d }
 % }
 % \Test:nnn { ::C } { C+1 } { 1 }
 % \Test:nnn { A::C } { C+1 } { 2 }
@@ -1898,14 +1898,14 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 \cs_generate_variant:Nn \@@_free_counter:nN { VN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \Beanover { X = #1 }
+%   \beanoves { X = #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_free_counter:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_free_counter:nN }~#3 }
-%   \__beanover_gclear:
+%   \__beanoves_free_counter:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_free_counter:nN }~#3 }
+%   \__beanoves_gclear:
 % }
 % \Test:nnn { 1 } { 1 } { 1 }
 % \Test:nnn { 123 } { 123 } { 2 }
@@ -1950,14 +1950,14 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 \cs_generate_variant:Nn \@@_counter:nN { VN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \__beanover_parse:nn { X } { #1 }
+%   \__beanoves_parse:nn { X } { #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_counter:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_counter:nN }~#3 }
-%   \__beanover_gclear:
+%   \__beanoves_counter:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_counter:nN }~#3 }
+%   \__beanoves_gclear:
 % }
 % \Test:nnn { 1 } { 1 } { 1 }
 % \Test:nnn { 123 } { 123 } { 2 }
@@ -1990,7 +1990,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
       }
     }
   } {
-\msg_error:nnx { beanover } { :n } { Internal~error (#1/#2) }
+\msg_error:nnx { beanoves } { :n } { Internal~error (#1/#2) }
   }
   \tl_clear:N \l_b_tl
   \exp_args:Nx
@@ -2008,14 +2008,14 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 { \tl_set:Nx #2 { #1 } }
 % \cs_set:Npn \Test:nnn #1 #2 #3 #4 #5 {
-%   \Beanover { #1 }
+%   \beanoves { #1 }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_index:nnN { #2 } { #3 } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #4 }
-%     { Test~\cs{__beanover_index:nnN }~#5 }
-%   \__beanover_gclear:
+%   \__beanoves_index:nnN { #2 } { #3 } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #4 }
+%     { Test~\cs{__beanoves_index:nnN }~#5 }
+%   \__beanoves_gclear:
 % }
 % \Test:nnn { A = 1 } { A } { .1 } { 1 } { 1 }
 % \Test:nnn { A = 1 } { A } { .2 } { 2 } { 2 }
@@ -2052,31 +2052,31 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 \cs_generate_variant:Nn \@@_incr:nnN { VVN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 {
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 {
 %   \tl_set:Nx #2 {
 %     \fp_eval:n { round( #1 ) }
 %   }
 % }
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_free_counter:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #1 }
-%     { Test~\cs{__beanover_incr:nN }~#3-a }
+%   \__beanoves_free_counter:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #1 }
+%     { Test~\cs{__beanoves_incr:nN }~#3-a }
 %   \tl_clear:N \l_ans_tl
-%   \__beanover_counter:nN { X } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #2 }
-%     { Test~\cs{__beanover_incr:nN }~#3-b }
-%   \__beanover_gclear:
+%   \__beanoves_counter:nN { X } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #2 }
+%     { Test~\cs{__beanoves_incr:nN }~#3-b }
+%   \__beanoves_gclear:
 % }
-% \Beanover { X = 123 }
+% \beanoves { X = 123 }
 % \Test:nnn { 123 } { 123 } { 1 }
-% \Beanover { X = 123 }
-% \__beanover_incr:nn { X } { -100 }
+% \beanoves { X = 123 }
+% \__beanoves_incr:nn { X } { -100 }
 % \Test:nnn { 23 } { 123 } { 2 }
-% \Beanover { X = ::123 }
+% \beanoves { X = ::123 }
 % \Test:nnn { 123 } { 123 } { 3 }
-% \Beanover { X = ::123 }
-% \__beanover_incr:nn { X } { 100 }
+% \beanoves { X = ::123 }
+% \__beanoves_incr:nn { X } { 100 }
 % \Test:nnn { 223 } { 123 } { 4 }
 % \end{test}
 %
@@ -2113,22 +2113,22 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 \cs_generate_variant:Nn \@@_resolve:nnN { VVN }
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 {
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 {
 %   \tl_set:Nx #2 { #1 }
 % }
 % \cs_set:Npn \Test:nnn #1 #2 #3 #4 #5 {
 %   \tl_clear:N \l_ans_tl
-%   \Beanover { #1 }
-%   \__beanover_resolve:nnN { #2 } { #3 } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #4 }
-%     { Test~\cs{__beanover_resolve:nnN }~#5 }
-%   \__beanover_gclear:
+%   \beanoves { #1 }
+%   \__beanoves_resolve:nnN { #2 } { #3 } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #4 }
+%     { Test~\cs{__beanoves_resolve:nnN }~#5 }
+%   \__beanoves_gclear:
 % }
 % \Test:nnn {} { X } { .1.2 } { X.1.2 } { 1 }
-% \__beanover_parse:nn { X.1 } { Y }
-% \__beanover_get:nN { X.1 / A } \l_ans_tl
-% \__beanover_assert_equal:xxn { \l_ans_tl } { Y }
-%   { Test~\cs{__beanover_resolve:nnN }~A }
+% \__beanoves_parse:nn { X.1 } { Y }
+% \__beanoves_get:nN { X.1 / A } \l_ans_tl
+% \__beanoves_assert_equal:xxn { \l_ans_tl } { Y }
+%   { Test~\cs{__beanoves_resolve:nnN }~A }
 % \Test:nnn { X.1 = Y } { X } { .1.2 } { Y.2 } { 2 }
 % \Test:nnn { X.1 = Y, Y.2 = Z } { X } { .1.2 } { Z } { 3 }
 % \Test:nnn { X.1.2 = Z } { X } { .1.2 } { Z } { 3 }
@@ -2220,15 +2220,15 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
       \switch:nNTF 3 \l_name_tl {
 %    \end{macrocode}
 % \begin{test}
-% \cs_set:Npn \__beanover_eval:xN #1 #2 {
+% \cs_set:Npn \__beanoves_eval:xN #1 #2 {
 %   \tl_set:Nx #2 { #1 }
 % }
 % \cs_set:Npn \Test:nnn #1 #2 #3 #4 {
 %   \tl_clear:N \l_ans_tl
-%   \Beanover { #1 }
-%   \__beanover_append:nN { #2 } \l_ans_tl
-%   \__beanover_assert_equal:xxn { \l_ans_tl } { #3 }
-%     { Test~\cs{__beanover_resolve:nnN }~#4 }
+%   \beanoves { #1 }
+%   \__beanoves_append:nN { #2 } \l_ans_tl
+%   \__beanoves_assert_equal:xxn { \l_ans_tl } { #3 }
+%     { Test~\cs{__beanoves_resolve:nnN }~#4 }
 % }
 % \Test:nnn {X=123} { ++X.n } { 124 } { 1 }
 % \end{test}
@@ -2354,23 +2354,23 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \end{macrocode}
 % \end{myList}
 % \begin{test}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {A:B} {A:B,{A},{},{B},{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 % {A} {A,{},{},{},A} {Test~2}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {A:B} {A:B,{A},{},{B},{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {A::B} {A::B,{A},{:},{B},{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {A:} {A:,{A},{},{},{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {A::} {A::,{A},{:},{},{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {::B} {::B,{},:,B,{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {::} {::,{},:,{},{}} {Test~1}
-% \__beanover_test_extract:Nnnn \c__beanover_A_cln_Z_regex
+% \__beanoves_test_extract:Nnnn \c__beanoves_A_cln_Z_regex
 %   {:} {:,{},{},{},{}} {Test~1}
 % \end{test}
 %
@@ -2445,7 +2445,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
             \@@_append:VN \l_a_tl \l_ans_tl
             \seq_put_right:NV #1 \l_ans_tl            
           } {
-\msg_error:nnx { beanover } { :n } { Syntax~error(Missing~first):~#1 }
+\msg_error:nnx { beanoves } { :n } { Syntax~error(Missing~first):~#1 }
           }
         } {
 %    \end{macrocode}
@@ -2459,7 +2459,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %    \end{macrocode}
 % Error
 %    \begin{macrocode}
-    \msg_error:nnn { beanover } { :n } { Syntax~error:~#1 }
+    \msg_error:nnn { beanoves } { :n } { Syntax~error:~#1 }
   }
 }
 %    \end{macrocode}
@@ -2528,9 +2528,9 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 \cs_generate_variant:Nn \@@_eval:nN { VN, xN }
 %    \end{macrocode}
 %
-% \begin{function}{\BeanoverEval}
+% \begin{function}{\beanovesEval}
 %   \begin{syntax}
-%     \cs{BeanoverEval} \oarg{tl variable} \marg{overlay queries}
+%     \cs{beanovesEval} \oarg{tl variable} \marg{overlay queries}
 %   \end{syntax}
 % \meta{overlay queries} is the argument of |?(...)| instructions.
 % This is a comma separated list of single \meta{overlay query}'s.
@@ -2540,7 +2540,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 % within a group. \cs{l_ans_tl} is used locally to store the result.
 % \end{function}
 %    \begin{macrocode}
-\NewExpandableDocumentCommand \BeanoverEval { s o m } {
+\NewExpandableDocumentCommand \beanovesEval { s o m } {
   \group_begin:
   \tl_clear:N \l_ans_tl
   \IfBooleanTF { #1 } {
@@ -2562,12 +2562,12 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
 %
 %
 % \subsubsection{Reseting slide ranges}
-% \begin{function}{\BeanoverReset}
+% \begin{function}{\beanovesReset}
 %   \begin{syntax}
-%     \cs{BeanoverReset} \oarg{first value} \marg{Slide list name}
+%     \cs{beanovesReset} \oarg{first value} \marg{Slide list name}
 %   \end{syntax}
 %    \begin{macrocode}
-\NewDocumentCommand \BeanoverReset { O{1} m } {
+\NewDocumentCommand \beanovesReset { O{1} m } {
   \@@_reset:nn { #1 } { #2 }
   \ignorespaces
 }
@@ -2594,7 +2594,7 @@ For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.lengt
     \@@_gremove:n { #2//N }
     \@@_gput:nn { #2/C0 } { #1 }
   } {
-    \msg_warning:nnn { beanover } { :n } { Unknown~name:~#2 }
+    \msg_warning:nnn { beanoves } { :n } { Unknown~name:~#2 }
   }
 }
 %    \end{macrocode}

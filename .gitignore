@@ -276,9 +276,9 @@ TSWLatexianTemp*
 *.lpz
 .DS_Store
 archive/bealover.sty
-source/beanover.hd
-source/beanover.ins
-source/beanover.sty
+source/beanoves.hd
+source/beanoves.ins
+source/beanoves.sty
 source/current.tex
 source/example1.tex
 source/TEST/test.pdf
