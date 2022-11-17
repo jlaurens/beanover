@@ -281,7 +281,4 @@ source/beanoves.ins
 source/beanoves.sty
 source/current.tex
 source/example1.tex
-source/TEST/test.pdf
-source/TEST/test.tex
-source/TEST/test2.pdf
-source/TEST/test2.tex
+source/TEST/**

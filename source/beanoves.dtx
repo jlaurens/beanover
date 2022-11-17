@@ -619,7 +619,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \prop_gremove:Nn \g_@@_prop
 }
 \cs_new:Npn \@@_gclear:n #1 {
-  \clist_map_inline:nn { A, L, Z, C, C0, /A, /L, /Z, /N } {
+  \clist_map_inline:nn { A, L, Z, C, C0, /, /A, /L, /Z, /N } {
     \@@_gremove:n { #1 / ##1 }
   }
 }
@@ -1081,10 +1081,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   \begin{syntax}
 %     \cs{@@_parse:nn} \meta{command} \marg{key}
 %   \end{syntax}
-% Shortcut to \texttt{\cs{@@_parse:nn} \meta{command} \marg{key} \{ 1 \}}
+% Define a hidden range, for which slides are never shown.
+% This is useful to conditionally show or hide a sequence of slides.
 %    \begin{macrocode}
 \cs_new:Npn \@@_parse:Nn #1 #2 {
-  \@@_parse:Nnn #1 { #2 } { 1 }
+  \@@_gput:nn { #1/ } { }
 }
 %    \end{macrocode}
 % \end{function}
@@ -1312,9 +1313,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{function}
 % \subsubsection{Scanning named overlay specifications}
-% Patch some beamer command to support |?(...)| instructions in overlay specifications.
-% \begin{function}{\beamer@masterdecode}
+% Patch some beamer commands to support |?(...)| instructions in overlay specifications.
+% \begin{function}{\beamer@frame, \beamer@masterdecode}
 % \begin{syntax}
+% \cs{beamer@frame} \marg{overlay specification}
 % \cs{beamer@masterdecode} \marg{overlay specification}
 % \end{syntax}
 % Preprocess \meta{overlay specification} before \pkg{beamer} uses it.
@@ -1325,6 +1327,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % Save the original macro \cs{beamer@masterdecode} and then override it
 % to properly preprocess the argument.
 %    \begin{macrocode}
+\cs_set_eq:NN \@@_beamer@frame \beamer@frame
+\cs_set:Npn \beamer@frame < #1 > {
+  \@@_group_begin:
+  \tl_clear:N \l_ans_tl
+  \@@_scan:nNN { #1 } \@@_eval:nN \l_ans_tl
+  \exp_args:NNNV
+  \@@_group_end:
+  \@@_beamer@frame < \l_ans_tl >
+}
 \cs_set_eq:NN \@@_beamer@masterdecode \beamer@masterdecode
 \cs_set:Npn \beamer@masterdecode #1 {
   \@@_group_begin:
@@ -1575,7 +1586,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \AddToHook
   { env/beamer@framepauses/before }
-  { \prop_gclear:N \g_@@_prop }
+  { \@@_gclear: }
 %    \end{macrocode}
 %
 % \subsubsection{Evaluation bricks}
@@ -2465,35 +2476,39 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \bool_if:NTF \l_@@_no_range_bool {
     \prg_return_false:
   } {
-    \@@_group_begin:
-    \tl_clear:N \l_a_tl
-    \tl_clear:N \l_b_tl
-    \tl_clear:N \l_ans_tl
-    \@@_raw_first:nNTF { #1 } \l_a_tl {
-      \@@_raw_last:nNTF { #1 } \l_b_tl {
-        \exp_args:NNNx
-        \@@_group_end:
-        \tl_put_right:Nn #2 { \l_a_tl - \l_b_tl }
-\@@_DEBUG:x{ RANGE_TRUE_A_Z:key=#1/\string#2=#2/}
-        \prg_return_true:
-      } {
-        \exp_args:NNNx
-        \@@_group_end:
-        \tl_put_right:Nn #2 { \l_a_tl - }
-\@@_DEBUG:x{ RANGE_TRUE_A:key=#1/\string#2=#2/}
-        \prg_return_true:
-      }
+    \@@_if_in:nTF { #1/ } {
+      \tl_put_right:Nn { 0-0 }
     } {
-      \@@_raw_last:nNTF { #1 } \l_b_tl {
-\@@_DEBUG:x{ RANGE_TRUE_Z:key=#1/\string#2=#2/}
-        \exp_args:NNNx
-        \@@_group_end:
-        \tl_put_right:Nn #2 { - \l_b_tl }
-        \prg_return_true:
+      \@@_group_begin:
+      \tl_clear:N \l_a_tl
+      \tl_clear:N \l_b_tl
+      \tl_clear:N \l_ans_tl
+      \@@_raw_first:nNTF { #1 } \l_a_tl {
+        \@@_raw_last:nNTF { #1 } \l_b_tl {
+          \exp_args:NNNx
+          \@@_group_end:
+          \tl_put_right:Nn #2 { \l_a_tl - \l_b_tl }
+\@@_DEBUG:x{ RANGE_TRUE_A_Z:key=#1/\string#2=#2/}
+          \prg_return_true:
+        } {
+          \exp_args:NNNx
+          \@@_group_end:
+          \tl_put_right:Nn #2 { \l_a_tl - }
+\@@_DEBUG:x{ RANGE_TRUE_A:key=#1/\string#2=#2/}
+          \prg_return_true:
+        }
       } {
+        \@@_raw_last:nNTF { #1 } \l_b_tl {
+\@@_DEBUG:x{ RANGE_TRUE_Z:key=#1/\string#2=#2/}
+          \exp_args:NNNx
+          \@@_group_end:
+          \tl_put_right:Nn #2 { - \l_b_tl }
+          \prg_return_true:
+        } {
 \@@_DEBUG:x{ RANGE_FALSE:key=#1/}
-        \@@_group_end:
-        \prg_return_false:
+          \@@_group_end:
+          \prg_return_false:
+        }
       }
     }
   }
@@ -3259,7 +3274,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \@@_eval:nN #1 #2 {
-  EVAL:\tl_to_str:n{#1}/\string#2=\tl_to_str:V #2\\
+\@@_DEBUG:x {EVAL:\tl_to_str:n{#1}/\string#2=\tl_to_str:V #2}
   \@@_group_begin:
 %    \end{macrocode}
 % Local variables declaration
