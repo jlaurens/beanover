@@ -959,6 +959,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.-1 } {A.-1,{},{},{A},{},{},{},{},{},{},{},{-1}} {Test~`.-'~1}
+% \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { A.1.2.-1 } {A.1.2.-1,{},{},{A},{.1.2},{},{},{},{},{},{},{-1}} {Test~`.-'~1}
 % \end{test}
 %    \begin{macrocode}
@@ -971,6 +972,27 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{variable}
 %
+% \subsubsection{\pkg{beamer.cls} interface}
+%    \begin{macrocode}
+\RequirePackage{keyval}
+\define@key{beamerframe}{beanoves~id}[]{
+  \tl_set:Nx \l@@_id_tl { #1 }
+  \@@_DEBUG_on:
+  \@@_DEBUG:x {**********~THIS_IS_KEY}
+  \@@_DEBUG_off:
+}
+\AddToHook{env/beamer@frameslide/before}{
+  \@@_DEBUG_on:
+  \@@_DEBUG:x {**********~THIS_IS_BEFORE}
+  \@@_DEBUG_off:
+}
+\AddToHook{cmd/frame/before}{
+  \tl_clear:N \l@@_id_tl
+  \@@_DEBUG_on:
+  \@@_DEBUG:x {**********~THIS_IS_FRAME}
+  \@@_DEBUG_off:
+}
+%    \end{macrocode}
 % \subsubsection{Defining named slide ranges}
 %
 % \begin{function}{\@@_parse:Nnn}
