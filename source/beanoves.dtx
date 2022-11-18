@@ -844,30 +844,32 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % We start with `|++|' instrussions
 % \footnote{At the same time an instruction and an expression... this is a synonym of exprection}.
 %   \begin{myList}
-%   \item 1: \meta{name} of a slide range
+%   \item 1: \meta{id} of a slide range
+%   \item 2: \meta{name} of a slide range
 %    \begin{macrocode}
-    \+\+ ( \ur{c@@_name_regex} )
+    \+\+ (?: ( \ur{c@@_name_regex} ) ! )? ( \ur{c@@_name_regex} )
 %    \end{macrocode}
-%   \item 2: optionally followed by an integer path
+%   \item 3: optionally followed by an integer path
 %    \begin{macrocode}
     ( \ur{c@@_path_regex} ) (?: \. n )?
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { ++ABC.n } {{++ABC.n},{ABC},{},{},{},{},{},{},{},{},{},{}} {Test~2a}
+%   { ++ABC.n } {{++ABC.n},{},{ABC},{},{},{},{},{},{},{},{},{},{},{}} {Test~2a}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { ++ABC.1.2.n~~ } {{++ABC.1.2.n~~},{ABC},{.1.2},{},{},{},{},{},{},{},{},{}} {Test~2b}
+%   { ++ABC.1.2.n~~ } {{++ABC.1.2.n~~},{},{ABC},{.1.2},{},{},{},{},{},{},{},{},{},{}} {Test~2b}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { ++ABC } {{++ABC},{ABC},{},{},{},{},{},{},{},{},{},{}} {Test~2c}
+%   { ++ABC } {{++ABC},{},{ABC},{},{},{},{},{},{},{},{},{},{},{}} {Test~2c}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { ++ABC.1.2~~ } {{++ABC.1.2~~},{ABC},{.1.2},{},{},{},{},{},{},{},{},{}} {Test~2d}
+%   { ++ABC.1.2~~ } {{++ABC.1.2~~},{},{ABC},{.1.2},{},{},{},{},{},{},{},{},{},{}} {Test~2d}
 % \end{test}
 % We continue with other expressions
-%   \item 3: \meta{name} of a slide range
+%   \item 4: \meta{id} of a slide range
+%   \item 5: \meta{name} of a slide range
 %    \begin{macrocode}
-  | ( \ur{c@@_name_regex} )
+  | (?: ( \ur{c@@_name_regex} ) ! )? ( \ur{c@@_name_regex} )
 %    \end{macrocode}
-%   \item 4: optionally followed by an integer path
+%   \item 6: optionally followed by an integer path
 %    \begin{macrocode}
     ( \ur{c@@_path_regex} )
 %    \end{macrocode}
@@ -875,57 +877,57 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
     (?:
 %    \end{macrocode}
-%   \item 5: the \meta{length} attribute
+%   \item 7: the \meta{length} attribute
 %    \begin{macrocode}
        \. l(e)ngth
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.length } {{A.length},{},{},{A},{},{e},{},{},{},{},{},{}} {Test~5a}
+%   { A.length } {{A.length},{},{},{},{},{A},{},{e},{},{},{},{},{},{}} {Test~5a}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.1.2.length } {{A.1.2.length},{},{},{A},{.1.2},{e},{},{},{},{},{},{}} {Test~5b}
+%   { A.1.2.length } {{A.1.2.length},{},{},{},{},{A},{.1.2},{e},{},{},{},{},{},{}} {Test~5b}
 % \end{test}
-%   \item 6: the \meta{last} attribute
+%   \item 8: the \meta{last} attribute
 %    \begin{macrocode}
     |  \. l(a)st
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.last } {{A.last},{},{},{A},{},{},{a},{},{},{},{},{}} {Test~6a}
+%   { A.last } {{A.last},{},{},{},{},{A},{},{},{a},{},{},{},{},{}} {Test~6a}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.1.2.last } {{A.1.2.last},{},{},{A},{.1.2},{},{a},{},{},{},{},{}} {Test~6b}
+%   { A.1.2.last } {{A.1.2.last},{},{},{},{},{A},{.1.2},{},{a},{},{},{},{},{}} {Test~6b}
 % \end{test}
-%   \item 7: the \meta{next} attribute
+%   \item 9: the \meta{next} attribute
 %    \begin{macrocode}
     |  \. ne(x)t
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.next } {{A.next},{},{},{A},{},{},{},{x},{},{},{},{}} {Test~7a}
+%   { A.next } {{A.next},{},{},{},{},{A},{},{},{},{x},{},{},{},{}} {Test~7a}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.1.2.next } {{A.1.2.next},{},{},{A},{.1.2},{},{},{x},{},{},{},{}} {Test~7b}
+%   { A.1.2.next } {{A.1.2.next},{},{},{},{},{A},{.1.2},{},{},{x},{},{},{},{}} {Test~7b}
 % \end{test}
-%   \item 8: the \meta{range} attribute
+%   \item 10: the \meta{range} attribute
 %    \begin{macrocode}
     |  \. (r)ange
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.range } {{A.range},{},{},{A},{},{},{},{},{r},{},{},{}} {Test~8a}
+%   { A.range } {{A.range},{},{},{},{},{A},{},{},{},{},{r},{},{},{}} {Test~8a}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.1.2.range } {{A.1.2.range},{},{},{A},{.1.2},{},{},{},{r},{},{},{}} {Test~8b}
+%   { A.1.2.range } {{A.1.2.range},{},{},{},{},{A},{.1.2},{},{},{},{r},{},{},{}} {Test~8b}
 % \end{test}
-%   \item 9: the \meta{n} attribute
+%   \item 11: the \meta{n} attribute
 %    \begin{macrocode}
     |  \. (n)
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.n } {{A.n},{},{},{A},{},{},{},{},{},{n},{},{}} {Test~9a}
+%   { A.n } {{A.n},{},{},{},{},{A},{},{},{},{},{},{n},{},{}} {Test~9a}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.1.2.n } {{A.1.2.n},{},{},{A},{.1.2},{},{},{},{},{n},{},{}} {Test~9b}
+%   { A.1.2.n } {{A.1.2.n},{},{},{},{},{A},{.1.2},{},{},{},{},{n},{},{}} {Test~9b}
 % \end{test}
-%   \item 10: the poor man integer expression after `|+=|'.
+%   \item 12: the poor man integer expression after `|+=|'.
 %   When it contains no parenthesis, it is an algebraic expression involving
 %   integers and \meta{key}'s.
 %   Otherwise it starts with a parenthesis and ends with the first parenthesis
@@ -942,25 +944,26 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { ABC.n += 421 } {{ABC.n += 421},{},{},{ABC},{},{},{},{},{},{n},{421},{}} {Test~`+='~1}
+%   { ABC.n += 421 } {{ABC.n += 421},{},{},{},{},{ABC},{},{},{},{},{},{n},{421},{}} {Test~`+='~1}
 % \__beanoves_test_extract:Nnnn \c__beanoves_key_regex
 %   { P.1 } {P.1} {Test~`+='~2}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { ABC.n += 1+P.1 } {{ABC.n += 1+P.1},{},{},{ABC},{},{},{},{},{},{n},{1+P.1},{}} {Test~`+='~2}
+%   { ABC.n += 1+P.1 } {{ABC.n += 1+P.1},{},{},{},{},{ABC},{},{},{},{},{},{n},{1+P.1},{}} {Test~`+='~2}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { ABC.n += 1+P.1X } {{ABC.n += 1+P.1},{},{},ABC,{},{},{},{},{},{n},{1+P.1},{}} {Test~`+='~3}
+%   { ABC.n += 1+P.1X } {{ABC.n += 1+P.1},{},{},{},{},ABC,{},{},{},{},{},{n},{1+P.1},{}} {Test~`+='~3}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 %   { ABC.n += (P.1+1)~~^^A(
-% ) } {{ABC.n += (P.1+1)~},{},{},ABC,{},{},{},{},{},{n},{(P.1+1)~},{}} {Test~`+='~4}
+% ) } {{ABC.n += (P.1+1)~},{},{},{},{},ABC,{},{},{},{},{},{n},{(P.1+1)~},{}} {Test~`+='~4}
 % \end{test}
+%   \item 13: a trailing  `-\meta{integer}'.
 %    \begin{macrocode}
     | \. ( - \ur{c@@_int_regex} )
 %    \end{macrocode}
 % \begin{test}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.-1 } {A.-1,{},{},{A},{},{},{},{},{},{},{},{-1}} {Test~`.-'~1}
+%   { A.-1 } {A.-1,{},{},{},{},{A},{},{},{},{},{},{},{},{-1}} {Test~`.-'~1}
 % \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%   { A.1.2.-1 } {A.1.2.-1,{},{},{A},{.1.2},{},{},{},{},{},{},{-1}} {Test~`.-'~1}
+%   { A.1.2.-1 } {A.1.2.-1,{},{},{},{},{A},{.1.2},{},{},{},{},{},{},{-1}} {Test~`.-'~1}
 % \end{test}
 %    \begin{macrocode}
     )?
@@ -1595,7 +1598,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn {1+1} {1+1} {2}
 % \Test:nnn {1?(+)1} {1!(+)1} {3}
 % \Test:nnn {1?(+((X)(X))-)1} {1!(+((X)(X))-)1} {4}
-% \end{test}
+% \end{test}I
 %
 % \subsubsection{Evaluation bricks}
 %
@@ -1739,6 +1742,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Beanoves { X = :LENGTH::LAST }
 %   \tl_clear:N \l_ans_tl
 % \__beanoves_DEBUG:x { 1111111111111111111 }
+% \__beanoves_DEBUG_on:
 % \__beanoves_raw_length:nNT { X } \l_ans_tl {}
 % \__beanoves_assert_equal:xxn { \l_ans_tl } { 1 }
 %   { Test~\cs{__beanoves_first:nN }~LENGTH }
@@ -2957,19 +2961,19 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \int_compare:nNnTF {
         \l_@@_split_int } < { \seq_count:N \l_split_seq
       } {
-        \switch:nNTF 1 \l_name_tl {
+        \switch:nNTF 2 \l_name_tl {
 %    \end{macrocode}
 % \begin{myList}
 % \item Case \texttt{++\meta{name}\meta{integer path}.n}.
 %    \begin{macrocode}
-          \switch:nNTF 2 \l_path_tl {
+          \switch:nNTF 3 \l_path_tl {
             \@@_resolve:VVN \l_name_tl \l_path_tl \l_name_tl
           } { }
           \@@_if_incr:VnNF \l_name_tl 1 \l_ans_tl {
             \break:
           }
         } {
-          \switch:nNTF 3 \l_name_tl {
+          \switch:nNTF 5 \l_name_tl {
 %    \end{macrocode}
 % \begin{test}
 % \cs_set:Npn \__beanoves_eval:xN #1 #2 {
@@ -2990,21 +2994,17 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \item Cases \texttt{\meta{name}\meta{integer path}...}.
 %    \begin{macrocode}
             \tl_set:Nn \l_b_tl {
-              \switch:nNTF 4 \l_path_tl {
+              \switch:nNTF 6 \l_path_tl {
                 \@@_resolve:VVN \l_name_tl \l_path_tl \l_name_tl
               } { }
             }
-            \switch:nNTF 5 \l_a_tl {
-%    \end{macrocode}
-% \item Case \texttt{...length}.
-%    \begin{macrocode}
+            \switch:nNTF 7 \l_a_tl {
               \l_b_tl
               \@@_raw_length:VNF \l_name_tl \l_ans_tl {
                 \break:
               }
-            } {
-              \switch:nNTF 6 \l_a_tl {
 %    \end{macrocode}
+% \item Case \texttt{...length}.
 % \begin{test}
 % \cs_set:Npn \Test:nnnn #1 #2 #3 {
 % \__beanoves_DEBUG:n {**********~Test:~if_append/#3/#1/}
@@ -3022,15 +3022,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { S::E, S =11,L=2,E=12 } { 2 } { 5 }
 % \Test:nnnn { :L::E, S=11,L=2,E=12 } { 2 } { 6 }
 % \end{test}
-% \item Case \texttt{...last}.
 %    \begin{macrocode}
+            } {
+              \switch:nNTF 8 \l_a_tl {
                 \l_b_tl
                 \@@_raw_last:VNF \l_name_tl \l_ans_tl {
                   \break:
                 }
-              } {
-                \switch:nNTF 7 \l_a_tl {
 %    \end{macrocode}
+% \item Case \texttt{...last}.
 % \begin{test}
 % \cs_set:Npn \Test:nnnn #1 #2 #3 {
 % \__beanoves_DEBUG:n {**********~Test:~if_append/#3/#1/}
@@ -3048,15 +3048,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { S::E, S=11,L=2,E=12 } { 12 } { 5 }
 % \Test:nnnn { :L::E, S=11,L=2,E=12 } { 12 } { 6 }
 % \end{test}
-% \item Case \texttt{...next}.
 %    \begin{macrocode}
+              } {
+                \switch:nNTF 9 \l_a_tl {
                   \l_b_tl
                   \@@_if_next:VNF \l_name_tl \l_ans_tl {
                     \break:
                   }
-                } {
-                  \switch:nNTF 8 \l_a_tl {
 %    \end{macrocode}
+% \item Case \texttt{...next}.
 % \begin{test}
 % \cs_set:Npn \Test:nnnn #1 #2 #3 {
 % \__beanoves_DEBUG:n {**********~Test:~if_append/#3/#1/}
@@ -3074,8 +3074,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { S::E, S=11,L=2,E=12 } { 13 } { 5 }
 % \Test:nnnn { :L::E, S=11,L=2,E=12 } { 13 } { 6 }
 % \end{test}
-% \item Case \texttt{...range}.
 %    \begin{macrocode}
+                } {
+                  \switch:nNTF { 10 } \l_a_tl {
                     \l_b_tl
                     \@@_if_range:VNTF \l_name_tl \l_ans_tl {
                       \cs_set_eq:NN \@@_fp_round: \relax
@@ -3083,6 +3084,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
                       \break:
                     }
 %    \end{macrocode}
+% \item Case \texttt{...range}.
 % \begin{test}
 % \cs_set:Npn \Test:nnnn #1 #2 #3 {
 % \__beanoves_DEBUG:n {**********~Test:~if_append/#3/#1/}
@@ -3102,12 +3104,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{test}
 %    \begin{macrocode}
                   } {
-                    \switch:nNTF 9 \l_a_tl {
+                    \switch:nNTF { 11 } \l_a_tl {
 %    \end{macrocode}
 % \item Case \texttt{...n}.
 %    \begin{macrocode}
                       \l_b_tl
-                      \switch:nNTF { 10 } \l_a_tl {
+                      \switch:nNTF { 12 } \l_a_tl {
 %    \end{macrocode}
 % \item Case \texttt{...+=\meta{integer}}.
 %    \begin{macrocode}
@@ -3148,24 +3150,24 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \item Case \texttt{...\meta{integer path}}.
 %    \begin{macrocode}
-                      \switch:nNTF { 11 } \l_a_tl {
-\switch:nNTF 4 \l_path_tl { } {
+                      \switch:nNTF { 13 } \l_a_tl {
+\switch:nNTF 6 \l_path_tl { } {
   \tl_clear:N \l_path_tl
 }
 \@@_if_index:VVVNF \l_name_tl \l_path_tl \l_a_tl \l_ans_tl {
   \break:
 }
                       } {
-                        \switch:nNTF 4 \l_path_tl {
-\@@_if_index:VVNF \l_name_tl \l_path_tl \l_ans_tl {
-  \break:
+\switch:nNTF 6 \l_path_tl {
+  \@@_if_index:VVNF \l_name_tl \l_path_tl \l_ans_tl {
+    \break:
+  }
+} {
+  \exp_args:Nx
+  \@@_if_counter:nNF { \l_name_tl } \l_ans_tl {
+    \break:
+  }
 }
-                        } {
-\exp_args:Nx
-\@@_if_counter:nNF { \l_name_tl } \l_ans_tl {
-  \break:
-}
-                        }
                       }
 %    \end{macrocode}
 % \begin{test}
@@ -3210,7 +3212,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
           }
         }
-        \int_add:Nn \l_@@_split_int { 12 }
+        \int_add:Nn \l_@@_split_int { 14 }
         \tl_put_right:Nx \l_ans_tl {
           \seq_item:Nn \l_split_seq { \l_@@_split_int }
         }
