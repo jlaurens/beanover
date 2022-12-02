@@ -485,7 +485,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     \__beanoves_call_reset:
 %      {
 %   \__beanoves_DEBUG_on:
-%   \__beanoves_DEBUG:x { TEST~##1~/~line:~\the\inputlineno}
+%   \__beanoves_DEBUG:x { ▶︎▶︎▶︎▶︎▶︎~TEST~##1~/~line:~\the\inputlineno}
 %   } }
 %   \RenewDocumentEnvironment{Failure}{}
 %     {\begin{list}{\llap{\emoji{no-entry}\hspace{1em}}}{%
@@ -507,12 +507,55 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \__beanoves_DEBUG:n { ####1 -> ####2 }
 %     }
 %   }
+%   \cs_set:Npn \Test_resolve:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+%     \banner:n { ##6 }
+%     \tl_if_empty:nF { ##1 } {
+%       \Beanoves { ##1 }
+%       \log_g_prop:
+%     }
+%     \__beanoves_group_begin:
+%     \tl_set_eq:NN \l_id_tl \l__beanoves_id_tl
+%     \tl_set:Nx \l_name_tl { \l_id_tl ##2 }
+%     \seq_set_split:Nnn \l_path_seq {.} { ##3 }
+%     \seq_remove_all:Nn \l_path_seq { }
+%     \__beanoves_resolve:NNNTF \l_id_tl \l_name_tl \l_path_seq {
+%       \assert_equal:xxn { \l_id_tl } { ?! } { ##6-id }
+%       \assert_equal:xxn { \l_name_tl } { ?!##4 } { ##6-name }
+%       \assert_equal:xxn { \seq_use:Nn \l_path_seq . } { ##5 } { ##6-path }
+%     } {
+%       \test_fail:n { ##6-CALL }
+%     }
+%     \__beanoves_gclear:
+%     \__beanoves_group_end:
+%   }
+%   \cs_set:Npn \Test_resolve_n:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+%     \banner:n { ##6 }
+%     \tl_if_empty:nF { ##1 } {
+%       \Beanoves { ##1 }
+%       \log_g_prop:
+%     }
+%     \__beanoves_group_begin:
+%     \tl_set_eq:NN \l_id_tl \l__beanoves_id_tl
+%     \tl_set:Nx \l_name_tl { \l_id_tl ##2 }
+%     \seq_set_split:Nnn \l_path_seq {.} { ##3 }
+%     \seq_remove_all:Nn \l_path_seq { }
+%     \__beanoves_resolve_n:NNNTF \l_id_tl \l_name_tl \l_path_seq {
+%       \assert_equal:xxn { \l_id_tl } { ?! } { ##6-id }
+%       \assert_equal:xxn { \l_name_tl } { ?!##4 } { ##6-name }
+%       \assert_equal:xxn { \seq_use:Nn \l_path_seq . } { ##5 } { ##6-path }
+%     } {
+%       \test_fail:n { ##6-CALL }
+%     }
+%     \__beanoves_group_end:
+%     \__beanoves_gclear:
+%   }
 %   \cs_set:Npn \Test_raw:nnnn ##1 ##2 ##3 ##4 {
 %     \banner:n{##4~/~##2}
 %     \tl_if_empty:nF { ##2 } {
 %       \Beanoves { X = ##2 }
 %       \log_g_prop:
 %     }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \cs_if_exist:cTF { __beanoves_raw_##1:nNTF } {
 %       \use:c { __beanoves_raw_##1:nNTF } { ?!X } \l_ans_tl {
@@ -523,6 +566,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     } {
 %       \test_fail:n { ##4-BAD~##1 }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test:nnnn ##1 ##2 ##3 ##4 {
 %   \banner:n { ##4~/~##2 }
@@ -530,6 +574,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \Beanoves { X = ##2 }
 %       \log_g_prop:
 %     }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \cs_if_exist:cTF { __beanoves_if_##1:nNTF } {
 %       \use:c { __beanoves_if_##1:nNTF } { ?!X } \l_ans_tl {
@@ -562,6 +607,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %         \test_fail:n { ##4-BAD~##1 }
 %       }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test_index:nnnn ##1 ##2 ##3 ##4 {
 %     \banner:n {##4}
@@ -569,12 +615,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \Beanoves { X = ##1 }
 %       \log_g_prop:
 %     }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \__beanoves_if_index:nnNTF { ?!X } { ##2 } \l_ans_tl {
 %       \assert_equal:xxn { \l_ans_tl } { ##3 } { ##4-a }
 %     } {
 %       \assert_fail:n { ##4-b }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test_free_counter:nnn ##1 ##2 ##3 {
 %     \banner:n { ##3~/~##1/ }
@@ -582,22 +630,26 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \Beanoves { X = ##1 }
 %       \log_g_prop:
 %     }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \__beanoves_if_free_counter:nNTF { ?!X } \l_ans_tl {
 %       \assert_equal:xxn { \l_ans_tl } { ##2 } { ##3-a }
 %     } {
 %       \test_fail:n { ##3-b }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test_counter:nnn ##1 ##2 ##3 {
 %     \banner:n { ##3~/~##1 }
 %     \__beanoves_parse:Nnn \__beanoves_range:nVVV { X } { ##1 }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \__beanoves_if_counter:nNTF { ?!X } \l_ans_tl {
 %       \assert_equal:xxn { \l_ans_tl } { ##2 } { ##3-b }
 %     } {
 %       \test_fail:n { ##3-a }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test_incr:nnnn ##1 ##2 ##3 ##4 {
 %     \banner:n { ##3~/~##1+##2 }
@@ -605,6 +657,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \Beanoves { X = ##1 }
 %       \log_g_prop:
 %     }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \__beanoves_if_free_counter:nNTF { ?!X } \l_ans_tl {
 %       \tl_clear:N \l_ans_tl
@@ -616,6 +669,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     } {
 %       \test_fail:n { ##4-d }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test_range:nnn ##1 ##2 ##3 {
 %     \banner:n { ##3~/~##1 }
@@ -623,25 +677,29 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \Beanoves { X = ##1 }
 %       \log_g_prop:
 %     }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \__beanoves_if_range:nNTF { ?!X } \l_ans_tl {
 %       \assert_equal:xxn { \l_ans_tl } { ##2 } { ##3-a }
 %     } {
 %       \test_fail:n { ##3-b }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test_append:nnnn ##1 ##2 ##3 ##4 {
-%     \banner:n { ##4~/~X=##1=>##2==##3 }
+%     \banner:n { ##4~/~X=##1=>##2==##3~/ }
 %     \tl_if_empty:nF { ##1 } {
 %       \Beanoves { X = ##1 }
 %       \log_g_prop:
 %     }
+%     \__beanoves_group_begin:
 %     \tl_clear:N \l_ans_tl
 %     \__beanoves_if_append:nNTF { ##2 } \l_ans_tl {
 %       \assert_equal:xxn { \l_ans_tl } { ##3 } { ##4-a }
 %     } {
 %       \test_fail:n { ##4-b }
 %     }
+%     \__beanoves_group_end:
 %   }
 %   \cs_set:Npn \Test_regex:nnnn ##1 {
 %     \tl_if_exist:cTF { c__beanoves_##1_regex } {
@@ -667,6 +725,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   }
 % }
 % \cs_set:Npn \__beanoves_test_extract:nnnn #1 #2 #3 #4 {
+%   \__beanoves_group_begin:
 %   \tl_if_empty:nT { #3 } {
 %     \regex_extract_once:nnNT { #1 } { #2 } \l_match_seq {
 %       \test_fail:n { #4-a }
@@ -681,8 +740,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \test_fail:n { #4-a }
 %     }
 %   }
+%   \__beanoves_group_end:
 % }
 % \cs_set:Npn \__beanoves_test_extract:Nnnn #1 #2 #3 #4 {
+%   \__beanoves_group_begin:
 %   \regex_extract_once:NnNTF #1 { #2 } \l_match_seq {
 %     \tl_set:Nx \l_a_tl { \seq_use:Nn \l_match_seq , }
 %     \seq_set_from_clist:Nn \l_match_seq { #3 }
@@ -693,10 +754,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \test_fail:n { #4-a }
 %     }
 %   }
+%   \__beanoves_group_end:
 % }
 % \cs_generate_variant:Nn
 %   \__beanoves_test_extract:Nnnn { cnnn }
 % \cs_set:Npn \__beanoves_test_split:Nnnn #1 #2 #3 #4 {
+%   \__beanoves_group_begin:
 %   \regex_split:NnNTF #1 { #2 } \l_split_seq {
 %     \tl_set:Nx \l_a_tl { \seq_use:Nn \l_split_seq , }
 %     \seq_set_from_clist:Nn \l_split_seq { #3 }
@@ -707,6 +770,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %       \test_fail:n { #4-a }
 %     }
 %   }
+%   \__beanoves_group_end:
 % }
 % \cs_generate_variant:Nn \msg_error:nnnn { nnnx }
 % \cs_set:Npn \__beanoves_assert_equal:nnn #1 #2 #3 {
@@ -719,7 +783,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   }
 % }
 % \cs_set:Npn \__beanoves_test_fail:n #1 {
-%   \msg_error:nnnx { beanoves } { :nn } { FAILURE } { \myCurrentTestFile :\the\inputlineno :#1}
+%   \msg_error:nnnx { beanoves } { :nn } { FAILURE } { \myCurrentTestFile :\the\inputlineno :#1~(\int_use:N \g__beanoves_call_int)}
 %   \begin{Failure}
 %   \item FAILURE~unexpected~branch~(\myCurrentTestFile :\the\inputlineno)
 %   \item #1
@@ -775,7 +839,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \begin{variable} {\g@@_call_int}
 %    \begin{macrocode}
 \int_zero_new:N  \g@@_call_int
-\int_const:Nn \c@@_max_call_int { 1024 }
+\int_const:Nn \c@@_max_call_int { 2048 }
 %    \end{macrocode}
 % \end{variable}
 % \begin{function}{\@@_call_reset:}
@@ -986,13 +1050,17 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % A sequence of \texttt{.\meta{positive integer}} items representing a path.
 %    \begin{macrocode}
 \regex_const:Nn \c@@_path_regex {
-  (?: \. \d+ )*
+  (?: \. [+-]? \d+ )*
 }
 %    \end{macrocode}
 % \begin{test}[banner=path_regex]
 % \Test_regex:nnnn { path } {} {} {1}
 % \Test_regex:nnnn { path } {.1} {.1} {2}
 % \Test_regex:nnnn { path } {.1.2} {.1.2} {3}
+% \Test_regex:nnnn { path } {.1.-2} {.1.-2} {4}
+% \Test_regex:nnnn { path } {.-1} {.-1} {5}
+% \Test_regex:nnnn { path } {.-1.2} {.-1.2} {6}
+% \Test_regex:nnnn { path } {.-1.-2} {.-1.-2} {7}
 % \end{test}
 % \end{variable}
 %
@@ -1015,7 +1083,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
   \A ( ( \ur{c@@_id_regex} ? ) \ur{c@@_name_regex} )
 %    \end{macrocode}
-% \item[5:] te path, if any.
+% \item[5:] the path, if any.
 %    \begin{macrocode}
   ( \ur{c@@_path_regex} ) \Z
 }
@@ -1067,23 +1135,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { A::C } {{A},{:},{C}} {2}
 % \Test:nnn { A:::C } {{A},{::},{C}} {3}
 % \Test:nnn { :B::C } {{},{},{B},{:},{C}} {4}
-% \end{test}
-% \end{variable}
-%
-% \begin{variable}{\c@@_int_regex}
-% A decimal integer with an eventual leading sign next to the first digit.
-%    \begin{macrocode}
-\regex_const:Nn \c@@_int_regex {
-  (?:[-+])? \d+
-}
-%    \end{macrocode}
-% \begin{test}[banner=int_regex]
-% \cs_set:Npn \Test:nnn {
-%   \__beanoves_test_extract:Nnnn \c__beanoves_int_regex
-% }
-% \Test:nnn { 421} { 421} {1}
-% \Test:nnn {+421} {+421} {2}
-% \Test:nnn {-421} {-421} {3}
 % \end{test}
 % \end{variable}
 %
@@ -1140,21 +1191,21 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
 % }
 % \Test:nnn { ++ABC.n }
-%   {{++ABC.n},{ABC},{},{},{},{},{},{},{},{},{},{},{},{}} {2a}
+%   {{++ABC.n},{ABC},{},{},{},{},{},{},{},{},{},{},{}} {2a}
 % \Test:nnn { ++ABC.1.2.n~~ }
-%   {{++ABC.1.2.n~~},{ABC},{},{.1.2},{},{},{},{},{},{},{},{},{},{}} {2b}
+%   {{++ABC.1.2.n~~},{ABC},{},{.1.2},{},{},{},{},{},{},{},{},{}} {2b}
 % \Test:nnn { ++ABC }
-%   {{++ABC},{ABC},{},{},{},{},{},{},{},{},{},{},{},{}} {2c}
+%   {{++ABC},{ABC},{},{},{},{},{},{},{},{},{},{},{}} {2c}
 % \Test:nnn { ++ABC.1.2~~ }
-%   {{++ABC.1.2~~},{ABC},{},{.1.2},{},{},{},{},{},{},{},{},{},{}} {2d}
+%   {{++ABC.1.2~~},{ABC},{},{.1.2},{},{},{},{},{},{},{},{},{}} {2d}
 % \Test:nnn { ++?!ABC.n }
-%   {{++?!ABC.n},{?!ABC},{?!},{},{},{},{},{},{},{},{},{},{},{}} {2a}
+%   {{++?!ABC.n},{?!ABC},{?!},{},{},{},{},{},{},{},{},{},{}} {2a}
 % \Test:nnn { ++?!ABC.1.2.n~~ }
-%   {{++?!ABC.1.2.n~~},{?!ABC},{?!},{.1.2},{},{},{},{},{},{},{},{},{},{}} {2b}
+%   {{++?!ABC.1.2.n~~},{?!ABC},{?!},{.1.2},{},{},{},{},{},{},{},{},{}} {2b}
 % \Test:nnn { ++?!ABC }
-%   {{++?!ABC},{?!ABC},{?!},{},{},{},{},{},{},{},{},{},{},{}} {2c}
+%   {{++?!ABC},{?!ABC},{?!},{},{},{},{},{},{},{},{},{},{}} {2c}
 % \Test:nnn { ++?!ABC.1.2~~ }
-%   {{++?!ABC.1.2~~},{?!ABC},{?!},{.1.2},{},{},{},{},{},{},{},{},{},{}} {2d}
+%   {{++?!ABC.1.2~~},{?!ABC},{?!},{.1.2},{},{},{},{},{},{},{},{},{}} {2d}
 % \end{test}
 % We continue with other expressions
 %   \item 4: fully qualified \meta{name} of a slide range,
@@ -1182,13 +1233,13 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     { #1 } { {#1},{},{},{},#2 } { #3 } 
 % }
 % \Test:nnn { A.length }
-%   {{A},{},{},{e},{},{},{},{},{},{}} {5a}
+%   {{A},{},{},{e},{},{},{},{},{}} {5a}
 % \Test:nnn { A.1.2.length }
-%   {{A},{},{.1.2},{e},{},{},{},{},{},{}} {5b}
+%   {{A},{},{.1.2},{e},{},{},{},{},{}} {5b}
 % \Test:nnn { ?!A.length }
-%   {{?!A},{?!},{},{e},{},{},{},{},{},{}} {5c}
+%   {{?!A},{?!},{},{e},{},{},{},{},{}} {5c}
 % \Test:nnn { ?!A.1.2.length }
-%   {{?!A},{?!},{.1.2},{e},{},{},{},{},{},{}} {5d}
+%   {{?!A},{?!},{.1.2},{e},{},{},{},{},{}} {5d}
 % \end{test}
 %   \item 8: the \meta{last} attribute
 %    \begin{macrocode}
@@ -1201,13 +1252,13 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     { #1 } { {#1},{},{},{},#2 } { #3 } 
 % }
 % \Test:nnn { A.last }
-%   {{A},{},{},{},{a},{},{},{},{},{}} {6a}
+%   {{A},{},{},{},{a},{},{},{},{}} {6a}
 % \Test:nnn { A.1.2.last }
-%   {{A},{},{.1.2},{},{a},{},{},{},{},{}} {6b}
+%   {{A},{},{.1.2},{},{a},{},{},{},{}} {6b}
 % \Test:nnn { ?!A.last }
-%   {{?!A},{?!},{},{},{a},{},{},{},{},{}} {6c}
+%   {{?!A},{?!},{},{},{a},{},{},{},{}} {6c}
 % \Test:nnn { ?!A.1.2.last }
-%   {{?!A},{?!},{.1.2},{},{a},{},{},{},{},{}} {6d}
+%   {{?!A},{?!},{.1.2},{},{a},{},{},{},{}} {6d}
 % \end{test}
 %   \item 9: the \meta{next} attribute
 %    \begin{macrocode}
@@ -1220,13 +1271,13 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     { #1 } { {#1},{},{},{},#2 } { #3 } 
 % }
 % \Test:nnn { A.next }
-%   {{A},{},{},{},{},{x},{},{},{},{}} {7a}
+%   {{A},{},{},{},{},{x},{},{},{}} {7a}
 % \Test:nnn { A.1.2.next }
-%   {{A},{},{.1.2},{},{},{x},{},{},{},{}} {7b}
+%   {{A},{},{.1.2},{},{},{x},{},{},{}} {7b}
 % \Test:nnn { ?!A.next }
-%   {{?!A},{?!},{},{},{},{x},{},{},{},{}} {7c}
+%   {{?!A},{?!},{},{},{},{x},{},{},{}} {7c}
 % \Test:nnn { ?!A.1.2.next }
-%   {{?!A},{?!},{.1.2},{},{},{x},{},{},{},{}} {7d}
+%   {{?!A},{?!},{.1.2},{},{},{x},{},{},{}} {7d}
 % \end{test}
 %   \item 10: the \meta{range} attribute
 %    \begin{macrocode}
@@ -1239,13 +1290,13 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     { #1 } { {#1},{},{},{},#2 } { #3 } 
 % }
 % \Test:nnn { A.range }
-%   {{A},{},{},{},{},{},{r},{},{},{}} {8a}
+%   {{A},{},{},{},{},{},{r},{},{}} {8a}
 % \Test:nnn { A.1.2.range }
-%   {{A},{},{.1.2},{},{},{},{r},{},{},{}} {8b}
+%   {{A},{},{.1.2},{},{},{},{r},{},{}} {8b}
 % \Test:nnn { ?!A.range }
-%   {{?!A},{?!},{},{},{},{},{r},{},{},{}} {8c}
+%   {{?!A},{?!},{},{},{},{},{r},{},{}} {8c}
 % \Test:nnn { ?!A.1.2.range }
-%   {{?!A},{?!},{.1.2},{},{},{},{r},{},{},{}} {8d}
+%   {{?!A},{?!},{.1.2},{},{},{},{r},{},{}} {8d}
 % \end{test}
 %   \item 11: the \meta{n} attribute
 %    \begin{macrocode}
@@ -1258,13 +1309,13 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     { #1 } { {#1},{},{},{},#2 } { #3 } 
 % }
 % \Test:nnn { A.n }
-%   {{A},{},{},{},{},{},{},{n},{},{}} {9a}
+%   {{A},{},{},{},{},{},{},{n},{}} {9a}
 % \Test:nnn { A.1.2.n }
-%   {{A},{},{.1.2},{},{},{},{},{n},{},{}} {9b}
+%   {{A},{},{.1.2},{},{},{},{},{n},{}} {9b}
 % \Test:nnn { ?!A.n }
-%   {{?!A},{?!},{},{},{},{},{},{n},{},{}} {9c}
+%   {{?!A},{?!},{},{},{},{},{},{n},{}} {9c}
 % \Test:nnn { ?!A.1.2.n }
-%   {{?!A},{?!},{.1.2},{},{},{},{},{n},{},{}} {9d}
+%   {{?!A},{?!},{.1.2},{},{},{},{},{n},{}} {9d}
 % \end{test}
 %   \item 12: the poor man integer expression after `|+=|',
 %   which is the longest sequence of black characters,
@@ -1274,7 +1325,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
         (?: \s* \+= \s* ( \S+ ) )?
 %    \end{macrocode}
-% \begin{test}[banner={split_regex/+=}, debug]
+% \begin{test}[banner={split_regex/+=}]
 % \cs_set:Npn \:nnnn #1 #2 #3 #4 {
 %   \banner:n { #4 }
 %   \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
@@ -1291,44 +1342,25 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   \:nnnn { #1 } \l_a_tl
 % }
 % \Test:nnnn { ABC.n += 421 } {}
-%   {{ABC},{},{},{},{},{},{},{n},{421},{}} {`+='~1}
+%   {{ABC},{},{},{},{},{},{},{n},{421}} {`+='~1}
 % \__beanoves_test_extract:Nnnn \c__beanoves_key_regex
 %   { P.1 } {P.1} {`+='~2}
 % \Test:nnnn { ABC.n += 1+P.1 } {}
-%   {{ABC},{},{},{},{},{},{},{n},{1+P.1},{}} {`+='~2}
+%   {{ABC},{},{},{},{},{},{},{n},{1+P.1}} {`+='~2}
 % \Test:nnnn { ABC.n += 1+P.1~X } { ABC.n += 1+P.1~ }
-%   {ABC,{},{},{},{},{},{},{n},{1+P.1},{}} {`+='~3}
+%   {ABC,{},{},{},{},{},{},{n},{1+P.1}} {`+='~3}
 % \Test:nnnn { ABC.n += (P.1+1)~~^^A(
-% ) } { ABC.n += (P.1+1)~~ } {ABC,{},{},{},{},{},{},{n},{(P.1+1)},{}} {`+='~4}
+% ) } { ABC.n += (P.1+1)~~ } {ABC,{},{},{},{},{},{},{n},{(P.1+1)}} {`+='~4}
 % \Test:nnnn { ?!ABC.n += 421 } {}
-%   {{?!ABC},{?!},{},{},{},{},{},{n},{421},{}} {`+='~5}
+%   {{?!ABC},{?!},{},{},{},{},{},{n},{421}} {`+='~5}
 % \__beanoves_test_extract:Nnnn \c__beanoves_key_regex
 %   { P.1 } {P.1} {`+='~2}
 % \Test:nnnn { ?!ABC.n += 1+P.1 } {}
-%   {{?!ABC},{?!},{},{},{},{},{},{n},{1+P.1},{}} {`+='~6}
+%   {{?!ABC},{?!},{},{},{},{},{},{n},{1+P.1}} {`+='~6}
 % \Test:nnnn { ?!ABC.n += 1+P.1~X } {?!ABC.n += 1+P.1~}
-%   {?!ABC,{?!},{},{},{},{},{},{n},{1+P.1},{}} {`+='~7}
+%   {?!ABC,{?!},{},{},{},{},{},{n},{1+P.1}} {`+='~7}
 % \Test:nnnn { ?!ABC.n += (P.1+1)~~^^A(
-% ) } {?!ABC.n += (P.1+1)~~} {?!ABC,{?!},{},{},{},{},{},{n},{(P.1+1)},{}} {`+='~8}
-% \end{test}
-%   \item 13: a trailing  `-\meta{integer}'.
-%    \begin{macrocode}
-    | \. ( - \ur{c@@_int_regex} )
-%    \end{macrocode}
-% \begin{test}[banner=split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \banner:n { #3 }
-%   \__beanoves_test_extract:Nnnn \c__beanoves_split_regex
-%     { #1 } { {#1},{},{},{},#2 } { #3 } 
-% }
-% \Test:nnn { A.-1 }
-%   {{A},{},{},{},{},{},{},{},{},{-1}} {`.-'~1}
-% \Test:nnn { A.1.2.-1 }
-%   {{A},{},{.1.2},{},{},{},{},{},{},{-1}} {`.-'~2}
-% \Test:nnn { ?!A.-1 }
-%   {{?!A},{?!},{},{},{},{},{},{},{},{-1}} {`.-'~3}
-% \Test:nnn { ?!A.1.2.-1 }
-%   {{?!A},{?!},{.1.2},{},{},{},{},{},{},{-1}} {`.-'~4}
+% ) } {?!ABC.n += (P.1+1)~~} {?!ABC,{?!},{},{},{},{},{},{n},{(P.1+1)}} {`+='~8}
 % \end{test}
 %    \begin{macrocode}
     )?
@@ -1342,10 +1374,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \cs_set:Npn \Test:nnn {
 %   \__beanoves_test_split:Nnnn \c__beanoves_split_regex
 % }
-% \Test:nnn { 1/++A/2 }   { 1/,{A}    ,{},{},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
-% \Test:nnn { 1/++?!A/2 } { 1/,{?!A},{?!},{},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
-% \Test:nnn { 1/++A.3/2 } { 1/,{A},{},{.3},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
-% \Test:nnn { 1/++?!A.3/2 } { 1/,{?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
+% \Test:nnn { 1/++A/2 }   { 1/,{A}    ,{},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
+% \Test:nnn { 1/++?!A/2 } { 1/,{?!A},{?!},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
+% \Test:nnn { 1/++A.3/2 } { 1/,{A},{},{.3},{},{},{},{},{},{},{},{},{},/2} { 1 }
+% \Test:nnn { 1/++?!A.3/2 } { 1/,{?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},/2} { 1 }
 % \end{test}
 % \end{variable}
 %
@@ -2106,35 +2138,13 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % For example, with |A=B| and |B=C|, |A| is resolved in |C|.
 % But with |A=B+1| and |B=C|, |A| is not resolved in |C+1|.
 % With |A=B:D| and |B=C|, |A| is not resolved in |C:D| as well.
-% \begin{function}[TF]{\@@_resolve_path:NNN}
-% \begin{syntax}
-% \cs{@@_resolve_path:NNNTF} \marg{id tl var} \marg{name tl var} \marg{path seq var}
-% \end{syntax}
-% On input, \marg{id tl var} contains a frame id, 
-% \marg{name tl var} contains a range name and
-% \marg{path seq var} contains the components of an integer path, possibly empty.
-% On return, \meta{id tl var} contains the frame id used,
-% \meta{name tl var} contains the resolved range name and
-% \meta{path seq var} contains the sequence of integer path components that could not be resolved.
-% To resolve a path,
-% \meta{name_0}.\meta{i_1}.\meta{i_2}...\meta{i_n} is turned into
-% \meta{name_1}.\meta{i_2}...\meta{i_n}
-% where \meta{name_0}.\meta{i_1} is \meta{name_1},
-% then \meta{name_2}.\meta{i_3}...\meta{i_n}
-% where \meta{name_1}.\meta{i_2} is \meta{name_2}...
-% If the above rule does not apply,
-% \meta{name_0}.\meta{i_1}.\meta{i_2}...\meta{i_n} may turn into
-% \meta{name_2}.\meta{i_3}...\meta{i_n}
-% when \meta{name_0}.\meta{i_1}.\meta{i_2} is \meta{name_2}...
-% The algorithm is not yet more clever.
-% \end{function}
 % \begin{function}[TF]{\@@_extract_key:NNN}
 % \begin{syntax}
 % \cs{@@_extract_key:NNNTF} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{true code} \marg{false code}
 % \end{syntax}
 % Auxiliary function. \meta{id tl var} contains a frame id whereas
 % \meta{name tl var} contains a range name.
-% If we can make the call, on return,
+% If we recognize a key, on return,
 % \meta{name tl var} contains the resolved name,
 % \meta{path seq var} is prepended with new integer path components,
 % \marg{true code} is executed, otherwise \marg{false code} is executed.
@@ -2205,38 +2215,273 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   }
 }
 %    \end{macrocode}
-% \begin{function}[TF]{\@@_resolve_path:NNN}
+% \begin{function}[TF]{\@@_resolve:NNN}
 % \begin{syntax}
-% \cs{@@_resolve_path:NNNTF} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{true code} \marg{false code}
+% \cs{@@_resolve:NNNTF} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{true code} \marg{false code}
 % \end{syntax}
 % When too many nested calls occurred, \marg{false code} is executed directly.
 % \meta{id tl var}, \meta{name tl var} and \meta{path seq var}
 % are meant to contain proper information.
+% On input, \marg{id tl var} contains a frame id, 
+% \marg{name tl var} contains a range name and
+% \marg{path seq var} contains the components of an integer path, possibly empty.
+% On return, \meta{id tl var} contains the frame id used,
+% \meta{name tl var} contains the resolved range name and
+% \meta{path seq var} contains the sequence of integer path components that could not be resolved.
+% To resolve a path,
+% \meta{name_0}.\meta{i_1}.\meta{i_2}...\meta{i_n} is turned into
+% \meta{name_1}.\meta{i_2}...\meta{i_n}
+% where \meta{name_0}.\meta{i_1} is \meta{name_1},
+% then \meta{name_2}.\meta{i_3}...\meta{i_n}
+% where \meta{name_1}.\meta{i_2} is \meta{name_2}...
+% If the above rule does not apply,
+% \meta{name_0}.\meta{i_1}.\meta{i_2}...\meta{i_n} may turn into
+% \meta{name_2}.\meta{i_3}...\meta{i_n}
+% when \meta{name_0}.\meta{i_1}.\meta{i_2} is \meta{name_2}...
+% The algorithm is not yet more clever.
 % The resolution algorithm is quite straightforward:
 % \begin{enumerate}
-% \item If \meta{name tl var} content is the name of a range,
+% \item If \meta{name tl var} content is the name of an unlimited range,
 % and the first item of this range is exactly another name range with
 % eventually a heading frame identifier or a trailing integer path,
 % then \meta{name tl var} is replaced by this name, the \meta{id tl var}
 % and \cs{l@@_id_tl} are updates accordingly and
 % the \meta{path seq var} is prepended with the integer path.
-% \item If \meta{path seq var} is not empty, pop its left element to the
-% right of \meta{name tl var} after a separating dot, and loop.
+% \item If \meta{path seq var} is not empty,
+% append to the right of \meta{name tl var} after a separating dot,
+% all its left elements but the last one  and loop.
 % Otherwise return.
 % None of the tl variables must be one of \cs{l_a_tl}, \cs{l_b_tl} or \cs{l_c_tl}.
+% None of the seq variables must be one of \cs{l_a_seq}, \cs{l_b_seq}.
 % \end{enumerate}
 % \end{function}
 %    \begin{macrocode}
-\prg_new_conditional:Npnn \@@_resolve_path:NNN
+\prg_new_conditional:Npnn \@@_resolve:NNN
     #1 #2 #3 { T, F, TF } {
-  \@@_resolve:NNNNTF \use_i:nn #1 #2 #3 {
-    \prg_return_true:
-  } { 
-    \prg_return_false:
-  }
-}
-
+\@@_DEBUG:x { \string\@@_resolve:NNN/
+    \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./ }
+  \@@_group_begin:
 %    \end{macrocode}
+% Local variables:
+% \begin{itemize}
+% \item \cs{l_a_tl} contains the name with a partial index path currently resolved.
+% \item \cs{l_a_seq} contains the index path components currently resolved.
+% \item \cs{l_b_tl} contains the resolution.
+% \item \cs{l_b_seq} contains the index path components to be resolved.
+% \end{itemize}
+%    \begin{macrocode}
+  \seq_set_eq:NN \l_a_seq #3
+  \seq_clear:N \l_b_seq
+  \cs_set:Npn \loop: {
+    \@@_call:TF {
+      \tl_set_eq:NN \l_a_tl #2
+      \seq_if_empty:NTF \l_a_seq {
+        \exp_args:Nx
+        \@@_get:nNTF { \l_a_tl / L } \l_b_tl {
+          \cs_set:Nn \loop: { \return_true: }        
+        } {
+          \get_extract:F {
+%    \end{macrocode}
+% Unknown key \meta{\cs{l_a_tl}}|/A| or
+% the value for key \meta{\cs{l_a_tl}}|/A| does not fit.
+%    \begin{macrocode}
+            \cs_set:Nn \loop: { \return_true: }
+          }
+        }
+      } {
+        \tl_put_right:Nx \l_a_tl { . \seq_use:Nn \l_a_seq . }
+        \get_extract:F {
+          \seq_pop_right:NNT \l_a_seq \l_c_tl {
+            \seq_put_left:NV \l_b_seq \l_c_tl
+          }
+        }
+      }
+      \loop:
+    } {
+\@@_DEBUG:x { \string\@@_resolve:NNN\space~TOO~MANY~CALLS/
+    \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./ }
+      \@@_group_end:
+      \prg_return_false:
+    }
+  }
+  \cs_set:Npn \get_extract:F ##1 {
+    \exp_args:Nx
+    \@@_get:nNTF { \l_a_tl / A } \l_b_tl {
+\@@_DEBUG:x { RESOLUTION:~\l_a_tl / A=>\l_b_tl}
+      \@@_extract_key:NNNTF #1 \l_b_tl \l_b_seq {
+        \tl_set_eq:NN #2 \l_b_tl
+        \seq_set_eq:NN #3 \l_b_seq
+        \seq_set_eq:NN \l_a_seq \l_b_seq
+        \seq_clear:N \l_b_seq
+      } { ##1 }
+    } { ##1 }
+  }
+  \cs_set:Npn \return_true: {
+    \cs_set:Npn \:nnn ####1 ####2 ####3 {
+      \@@_group_end:
+      \tl_set:Nn #1 { ####1 }
+      \tl_set:Nn #2 { ####2 }
+      \seq_set_split:Nnn #3 . { ####3 }
+      \seq_remove_all:Nn #3 { }
+    }
+    \exp_args:NVVx
+    \:nnn #1 #2 {
+      \seq_use:Nn #3 .
+    }
+\@@_DEBUG:x { ...\string\@@_resolve:NNN\space TRUE/
+    \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./ }
+    \prg_return_true:
+  }
+  \loop:
+}
+%    \end{macrocode}
+% \begin{test}[banner=\string\__beanoves_resolve:NNNTF]
+% \Test_resolve:nnnnnn { X } { X } { } { X } { } { 1A }
+% \Test_resolve:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
+% \Test_resolve:nnnnnn { X } { X } { 1.2.3 } { X } { 1.2.3 } { 3A }
+% \Test_resolve:nnnnnn { X=Y,Y } { X } { } { Y } { } { 1B }
+% \Test_resolve:nnnnnn { X=Y,Y } { X } { 1.2.3 } { Y } { 1.2.3 } { 2B }
+% \Test_resolve:nnnnnn { X=Y,Y=Z, Z } { X } { } { Z } { } { 3B }
+% \Test_resolve:nnnnnn { X=Y,Y=Z, Z } { X } { 1.2.3 } { Z } { 1.2.3 } { 4B }
+% \Test_resolve:nnnnnn { X.1=Y } { X } { 1 } { Y } { } { 1C }
+% \Test_resolve:nnnnnn { X.1.2=Y } { X } { 1.2 } { Y } { } { 2C }
+% \Test_resolve:nnnnnn { X.1=Y } { X } { 1.2 } { Y } { 2 } { 3C }
+% \Test_resolve:nnnnnn { X.1=Y } { X } { 1.2.3 } { Y } { 2.3 } { 4C }
+% \Test_resolve:nnnnnn { X.1.2=Y } { X } { 1.2.3 } { Y } { 3 } { 5C }
+% \Test_resolve:nnnnnn { X.1.2=Y } { X } { 1.2.3.4 } { Y } { 3.4 } { 6C }
+% \Test_resolve:nnnnnn { X=Y, Y.1.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7A }
+% \Test_resolve:nnnnnn { X=Y, Y.1.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7B }
+% \Test_resolve:nnnnnn { X=Y, Y.1.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7C }
+% \Test_resolve:nnnnnn { X=Y, Y.1=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7D }
+% \Test_resolve:nnnnnn { X=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 1.2.3.4 } { 7D }
+% \Test_resolve:nnnnnn { X.1=Y, Y.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7E }
+% \Test_resolve:nnnnnn { X.1=Y, Y.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7F }
+% \Test_resolve:nnnnnn { X.1=Y, Y.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7G }
+% \Test_resolve:nnnnnn { X.1=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7H }
+% \Test_resolve:nnnnnn { X.1.2=Y, Y.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7I }
+% \Test_resolve:nnnnnn { X.1.2=Y, Y.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7J }
+% \Test_resolve:nnnnnn { X.1.2=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7K }
+% \Test_resolve:nnnnnn { X.1.2.3=Y, X.1.2=Z } { X } { 1.2.3.4 } { Y } { 4 } { 8A }
+% \end{test}
+% \begin{function}[TF]{\@@_resolve_n:NNNTF}
+% \begin{syntax}
+% \cs{@@_resolve_n:NNNTF} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{ true code} \marg { false code }
+% \end{syntax}
+% The difference with the function above without |_n| is that resolution
+% is performed only when there is an integer path afterwards
+% \end{function}
+%    \begin{macrocode}
+\prg_new_conditional:Npnn \@@_resolve_n:NNN
+    #1 #2 #3 { T, F, TF } {
+\@@_DEBUG:x { \string\@@_resolve_n:NNN/
+    \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./ }
+  \@@_group_begin:
+%    \end{macrocode}
+% Local variables:
+% \begin{itemize}
+% \item \cs{l_a_tl} contains the name with a partial index path currently resolved.
+% \item \cs{l_a_seq} contains the index path components currently resolved.
+% \item \cs{l_b_tl} contains the resolution.
+% \item \cs{l_b_seq} contains the index path components to be resolved.
+% \end{itemize}
+%    \begin{macrocode}
+  \seq_set_eq:NN \l_a_seq #3
+  \seq_clear:N \l_b_seq
+  \cs_set:Npn \loop: {
+    \@@_call:TF {
+      \tl_set_eq:NN \l_a_tl #2
+      \seq_if_empty:NTF \l_a_seq {
+        \exp_args:Nx
+        \@@_get:nNTF { \l_a_tl / L } \l_b_tl {
+          \cs_set:Nn \loop: { \return_true: }        
+        } {
+          \seq_if_empty:NTF \l_b_seq {
+            \cs_set:Nn \loop: { \return_true: }        
+          } {
+            \get_extract:F {
+%    \end{macrocode}
+% Unknown key \meta{\cs{l_a_tl}}|/A| or
+% the value for key \meta{\cs{l_a_tl}}|/A| does not fit.
+%    \begin{macrocode}
+              \cs_set:Nn \loop: { \return_true: }
+            }
+          }
+        }
+      } {
+        \tl_put_right:Nx \l_a_tl { . \seq_use:Nn \l_a_seq . }
+        \get_extract:F {
+          \seq_pop_right:NNT \l_a_seq \l_c_tl {
+            \seq_put_left:NV \l_b_seq \l_c_tl
+          }
+        }
+      }
+      \loop:
+    } {
+\@@_DEBUG:x { \string\@@_resolve_n:NNN\space~TOO~MANY~CALLS/
+    \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./ }
+      \@@_group_end:
+      \prg_return_false:
+    }
+  }
+  \cs_set:Npn \get_extract:F ##1 {
+    \exp_args:Nx
+    \@@_get:nNTF { \l_a_tl / A } \l_b_tl {
+\@@_DEBUG:x { RESOLUTION:~\l_a_tl / A=>\l_b_tl}
+      \@@_extract_key:NNNTF #1 \l_b_tl \l_b_seq {
+        \tl_set_eq:NN #2 \l_b_tl
+        \seq_set_eq:NN #3 \l_b_seq
+        \seq_set_eq:NN \l_a_seq \l_b_seq
+        \seq_clear:N \l_b_seq
+      } { ##1 }
+    } { ##1 }
+  }
+  \cs_set:Npn \return_true: {
+    \cs_set:Npn \:nnn ####1 ####2 ####3 {
+      \@@_group_end:
+      \tl_set:Nn #1 { ####1 }
+      \tl_set:Nn #2 { ####2 }
+      \seq_set_split:Nnn #3 . { ####3 }
+      \seq_remove_all:Nn #3 { }
+    }
+    \exp_args:NVVx
+    \:nnn #1 #2 {
+      \seq_use:Nn #3 .
+    }
+\@@_DEBUG:x { ...\string\@@_resolve_n:NNN\space TRUE/
+    \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./ }
+    \prg_return_true:
+  }
+  \loop:
+}
+%    \end{macrocode}
+% \begin{test}[banner=\string\__beanoves_resolve_n:NNNTF]
+% \Test_resolve_n:nnnnnn { X } { X } { } { X } { } { 1A }
+% \Test_resolve_n:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
+% \Test_resolve_n:nnnnnn { X } { X } { 1.2.3 } { X } { 1.2.3 } { 3A }
+% \Test_resolve_n:nnnnnn { X=Y,Y } { X } { } { X } { } { 1B }
+% \Test_resolve_n:nnnnnn { X=Y,Y } { X } { 1.2.3 } { Y } { 1.2.3 } { 2B }
+% \Test_resolve_n:nnnnnn { X=Y,Y=Z, Z } { X } { } { X } { } { 3B }
+% \Test_resolve_n:nnnnnn { X=Y,Y=Z, Z } { X } { 1.2.3 } { Z } { 1.2.3 } { 4B }
+% \Test_resolve_n:nnnnnn { X.1=Y } { X } { 1 } { Y } { } { 1C }
+% \Test_resolve_n:nnnnnn { X.1.2=Y } { X } { 1.2 } { Y } { } { 2C }
+% \Test_resolve_n:nnnnnn { X.1=Y } { X } { 1.2 } { Y } { 2 } { 3C }
+% \Test_resolve_n:nnnnnn { X.1=Y } { X } { 1.2.3 } { Y } { 2.3 } { 4C }
+% \Test_resolve_n:nnnnnn { X.1.2=Y } { X } { 1.2.3 } { Y } { 3 } { 5C }
+% \Test_resolve_n:nnnnnn { X.1.2=Y } { X } { 1.2.3.4 } { Y } { 3.4 } { 6C }
+% \Test_resolve_n:nnnnnn { X=Y, Y.1.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7A }
+% \Test_resolve_n:nnnnnn { X=Y, Y.1.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7B }
+% \Test_resolve_n:nnnnnn { X=Y, Y.1.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7C }
+% \Test_resolve_n:nnnnnn { X=Y, Y.1=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7D }
+% \Test_resolve_n:nnnnnn { X=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 1.2.3.4 } { 7D }
+% \Test_resolve_n:nnnnnn { X.1=Y, Y.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7E }
+% \Test_resolve_n:nnnnnn { X.1=Y, Y.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7F }
+% \Test_resolve_n:nnnnnn { X.1=Y, Y.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7G }
+% \Test_resolve_n:nnnnnn { X.1=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7H }
+% \Test_resolve_n:nnnnnn { X.1.2=Y, Y.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7I }
+% \Test_resolve_n:nnnnnn { X.1.2=Y, Y.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7J }
+% \Test_resolve_n:nnnnnn { X.1.2=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7K }
+% \Test_resolve_n:nnnnnn { X.1.2.3=Y, X.1.2=Z } { X } { 1.2.3.4 } { Y } { 4 } { 8A }
+% \end{test}
 % \begin{function}[TF]{\@@_resolve:NNNNTF}
 % \begin{syntax}
 % \cs{@@_resolve:NNNNTF} \meta{cs:nn} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{ true code} \marg { false code }
@@ -2244,25 +2489,142 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % When too many nested calls occurred, \marg{false code} is executed directly.
 % \meta{id tl var}, \meta{name tl var} and \meta{path seq var}
 % are meant to contain proper information.
-% The resolution algorithm is quite straightforward:
-% \begin{enumerate}
-% \item If \meta{name tl var} content is the name of a range,
-% and the first item of this range is exactly another name range with
-% eventually a heading frame identifier or a trailing integer path,
-% then \meta{name tl var} is replaced by this name, the \meta{id tl var}
-% and \cs{l@@_id_tl} are updates accordingly and
-% the \meta{path seq var} is prepended with the integer path.
-% \item If \meta{path seq var} is not empty, pop its left element to the
-% right of \meta{name tl var} after a separating dot, and loop.
-% Otherwise return.
-% None of the tl variables must be one of \cs{l_a_tl}, \cs{l_b_tl} or \cs{l_c_tl}.
-% \end{enumerate}
+% To resolve a path,
+% \meta{name_0}.\meta{i_1}.\meta{i_2}...\meta{i_n} is turned into
+% \meta{name_1}.\meta{i_2}...\meta{i_n}
+% where \meta{name_0}.\meta{i_1} is \meta{name_1},
+% then \meta{name_2}.\meta{i_3}...\meta{i_n}
+% where \meta{name_1}.\meta{i_2} is \meta{name_2}...
+% If the above rule does not apply,
+% \meta{name_0}.\meta{i_1}.\meta{i_2}...\meta{i_n} may turn into
+% \meta{name_2}.\meta{i_3}...\meta{i_n}
+% when \meta{name_0}.\meta{i_1}.\meta{i_2} is \meta{name_2}...
+% We try to match the longest sequence of components first.
+% The algorithm is not yet more clever.
 % In general, \meta{cs:nn} is just \cs{use_i:nn} but for in place
 % incrementation, we must resolve only when there is an integer path.
 % See the implementation of the \cs{@@_if_append:...} conditionals.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \@@_resolve:NNNN
+    #1 #2 #3 #4 { T, F, TF } {
+\@@_DEBUG:x { \string\@@_resolve:NNNN/
+    \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./ }
+  #1 {
+    \@@_group_begin:
+%    \end{macrocode}
+% \cs{l_a_tl} contains the name with a partial index path currently resolved.
+% \cs{l_a_seq} contains the remaining index path components to be resolved.
+% \cs{l_b_seq} contains the current index path components to be resolved.
+%    \begin{macrocode}
+    \tl_set_eq:NN \l_a_tl #3
+    \seq_set_eq:NN \l_a_seq #4
+    \tl_clear:N \l_b_tl
+    \seq_clear:N \l_b_seq
+    \cs_set:Npn \return_true: {
+      \cs_set:Npn \:nnn ####1 ####2 ####3 {
+        \@@_group_end:
+        \tl_set:Nn #2 { ####1 }
+        \tl_set:Nn #3 { ####2 }
+        \seq_set_split:Nnn #4 . { ####3 }
+        \seq_remove_all:Nn #4 { }
+      }
+      \exp_args:NVVx
+      \:nnn #2 #3 {
+        \seq_use:Nn #4 .
+      }
+\@@_DEBUG:x { ...\string\@@_resolve:NNNN\space TRUE/
+  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./ }
+      \prg_return_true:
+    }
+    \cs_set:Npn \branch:n ##1 {
+      \seq_pop_right:NNTF \l_a_seq \l_b_tl {
+        \seq_put_left:NV \l_b_seq \l_b_tl
+\@@_DEBUG:x {\string\@@_resolve:NNNN\space POP~TRUE~##1}
+\@@_DEBUG:x {\string\l_b_tl:\l_b_tl }
+\@@_DEBUG:x {\string\l_a_seq:\seq_count:N\l_a_seq/\seq_use:Nn \l_a_seq ./ }
+\@@_DEBUG:x {\string\l_b_seq:\seq_count:N\l_b_seq/\seq_use:Nn \l_b_seq ./ }
+        \tl_set:Nn \l_a_tl { #3 . }
+        \tl_put_right:Nx \l_a_tl { \seq_use:Nn \l_a_seq . }
+      } {
+        \cs_set_eq:NN \loop: \return_true:
+      }
+    }
+    \cs_set:Npn \branch:FF ##1 ##2 {
+      \exp_args:Nx
+      \@@_get:nNTF { \l_a_tl / A } \l_b_tl {
+        \@@_extract_key:NNNTF #2 \l_b_tl \l_b_seq {
+          \tl_set_eq:NN #3 \l_b_tl
+          \seq_set_eq:NN #4 \l_b_seq
+          \seq_set_eq:NN \l_a_seq \l_b_seq
+        } { ##1 }
+      } { ##2 }
+    }
+    \cs_set:Npn \extract_key:F {
+      \@@_extract_key:NNNTF #2 \l_b_tl \l_b_seq {
+        \tl_set_eq:NN #3 \l_b_tl
+        \seq_set_eq:NN #4 \l_b_seq
+        \seq_set_eq:NN \l_a_seq \l_b_seq
+      }
+    }
+    \cs_set:Npn \loop: {
+      \@@_call:TF {
+        \exp_args:Nx
+        \@@_get:nNTF { \l_a_tl / L } \l_b_tl {
+%    \end{macrocode}
+% If there is a length, no resolution occurs.
+%    \begin{macrocode}
+          \branch:n { 1 }
+        } {
+          \seq_pop_right:NNTF \l_a_seq \l_c_tl {
+            \seq_clear:N \l_b_seq
+            \tl_set:Nn \l_a_tl { #3 . }
+            \tl_put_right:Nx \l_a_tl { \seq_use:Nn \l_a_seq . . }
+            \tl_put_right:NV \l_a_tl \l_c_tl
+            \branch:FF {
+%    \end{macrocode}
+% The value for key \meta{\cs{l_a_tl}}|/L| is not just a (qualified) name.
+%    \begin{macrocode}
+											\seq_put_left:NV \l_b_seq \l_c_tl
+            } {
+%    \end{macrocode}
+% Unknown key \meta{\cs{l_a_tl}}|/L|.
+%    \begin{macrocode}
+											\seq_put_left:NV \l_b_seq \l_c_tl
+            }
+          } {
+            \branch:FF {
+              \cs_set_eq:NN \loop: \return_true:
+            } {
+              \cs_set:Npn \loop: {
+                \@@_group_end:
+\@@_DEBUG:x { \string\@@_resolve:NNNN\space FALSE/
+  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
+  \g@@_call_int :\int_use:N\g@@_call_int/
+}
+                \prg_return_false:
+              }
+            }
+          }
+        }
+      } {
+        \cs_set:Npn \loop: {
+          \@@_group_end:
+\@@_DEBUG:x { \string\@@_resolve:NNNN\space FALSE/
+  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
+  \g@@_call_int :\int_use:N\g@@_call_int/
+}
+          \prg_return_false:
+        }
+      }
+      \loop:
+    }
+    \loop:
+  } {
+    \prg_return_true:
+  }
+}
+\prg_new_conditional:Npnn \@@_resolve_OLD:NNNN
     #1 #2 #3 #4 { T, F, TF } {
 \@@_DEBUG:x { \string\@@_resolve:NNNN/
     \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./ }
@@ -2338,51 +2700,32 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   }
 }
 %    \end{macrocode}
-% \begin{test}[banner=\string\__beanoves_resolve_path:NNNTF]
-% \cs_set:Npn \Test:nnnnnn #1 #2 #3 #4 #5 #6 {
-%   \banner:n { #6 }
-%   \tl_clear:N \l_ans_tl
-%   \Beanoves { #1 }
-%   \tl_set_eq:NN \l_id_tl \l__beanoves_id_tl
-%   \tl_set:Nx \l_name_tl { \l_id_tl #2 }
-%   \seq_set_split:Nnn \l_path_seq {.} { #3 }
-%   \seq_remove_all:Nn \l_path_seq { }
-%   \__beanoves_resolve_path:NNNTF \l_id_tl \l_name_tl \l_path_seq {
-%     \tl_set:Nn \l_ans_tl { SUCCESS }
-%   } {
-%     \tl_set:Nn \l_ans_tl { FAILURE }
-%   }
-%   \__beanoves_assert_equal:xxn { \l_ans_tl } { SUCCESS } { #6-ans }
-%   \__beanoves_assert_equal:xxn { \l_id_tl } { ?! } { #6-id }
-%   \__beanoves_assert_equal:xxn { \l_name_tl } { ?!#4 } { #6-name }
-%   \__beanoves_assert_equal:xxn { \seq_use:Nn \l_path_seq . } { #5 } { #6-path }
-%   \__beanoves_gclear:
-% }
-% \Test:nnnnnn { X } { X } { } { X } { } { 1A }
-% \Test:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
-% \Test:nnnnnn { X } { X } { 1.2.3 } { X } { 1.2.3 } { 3A }
-% \Test:nnnnnn { X=Y,Y } { X } { } { Y } { } { 1B }
-% \Test:nnnnnn { X=Y,Y } { X } { 1.2.3 } { Y } { 1.2.3 } { 2B }
-% \Test:nnnnnn { X=Y,Y=Z, Z } { X } { } { Z } { } { 3B }
-% \Test:nnnnnn { X=Y,Y=Z, Z } { X } { 1.2.3 } { Z } { 1.2.3 } { 4B }
-% \Test:nnnnnn { X.1=Y } { X } { 1 } { Y } { } { 1C }
-% \Test:nnnnnn { X.1.2=Y } { X } { 1.2 } { Y } { } { 2C }
-% \Test:nnnnnn { X.1=Y } { X } { 1.2 } { Y } { 2 } { 3C }
-% \Test:nnnnnn { X.1=Y } { X } { 1.2.3 } { Y } { 2.3 } { 4C }
-% \Test:nnnnnn { X.1.2=Y } { X } { 1.2.3 } { Y } { 3 } { 5C }
-% \Test:nnnnnn { X.1.2=Y } { X } { 1.2.3.4 } { Y } { 3.4 } { 6C }
-% \Test:nnnnnn { X=Y, Y.1.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7A }
-% \Test:nnnnnn { X=Y, Y.1.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7B }
-% \Test:nnnnnn { X=Y, Y.1.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7C }
-% \Test:nnnnnn { X=Y, Y.1=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7D }
-% \Test:nnnnnn { X=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 1.2.3.4 } { 7D }
-% \Test:nnnnnn { X.1=Y, Y.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7E }
-% \Test:nnnnnn { X.1=Y, Y.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7F }
-% \Test:nnnnnn { X.1=Y, Y.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7G }
-% \Test:nnnnnn { X.1=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7H }
-% \Test:nnnnnn { X.1.2=Y, Y.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7I }
-% \Test:nnnnnn { X.1.2=Y, Y.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7J }
-% \Test:nnnnnn { X.1.2=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7K }
+% \begin{test}[banner=\string\__beanoves_resolve:NNNTF]
+% \Test_resolve:nnnnnn { X } { X } { } { X } { } { 1A }
+% \Test_resolve:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
+% \Test_resolve:nnnnnn { X } { X } { 1.2.3 } { X } { 1.2.3 } { 3A }
+% \Test_resolve:nnnnnn { X=Y,Y } { X } { } { Y } { } { 1B }
+% \Test_resolve:nnnnnn { X=Y,Y } { X } { 1.2.3 } { Y } { 1.2.3 } { 2B }
+% \Test_resolve:nnnnnn { X=Y,Y=Z, Z } { X } { } { Z } { } { 3B }
+% \Test_resolve:nnnnnn { X=Y,Y=Z, Z } { X } { 1.2.3 } { Z } { 1.2.3 } { 4B }
+% \Test_resolve:nnnnnn { X.1=Y } { X } { 1 } { Y } { } { 1C }
+% \Test_resolve:nnnnnn { X.1.2=Y } { X } { 1.2 } { Y } { } { 2C }
+% \Test_resolve:nnnnnn { X.1=Y } { X } { 1.2 } { Y } { 2 } { 3C }
+% \Test_resolve:nnnnnn { X.1=Y } { X } { 1.2.3 } { Y } { 2.3 } { 4C }
+% \Test_resolve:nnnnnn { X.1.2=Y } { X } { 1.2.3 } { Y } { 3 } { 5C }
+% \Test_resolve:nnnnnn { X.1.2=Y } { X } { 1.2.3.4 } { Y } { 3.4 } { 6C }
+% \Test_resolve:nnnnnn { X=Y, Y.1.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7A }
+% \Test_resolve:nnnnnn { X=Y, Y.1.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7B }
+% \Test_resolve:nnnnnn { X=Y, Y.1.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7C }
+% \Test_resolve:nnnnnn { X=Y, Y.1=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7D }
+% \Test_resolve:nnnnnn { X=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 1.2.3.4 } { 7D }
+% \Test_resolve:nnnnnn { X.1=Y, Y.2.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7E }
+% \Test_resolve:nnnnnn { X.1=Y, Y.2.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7F }
+% \Test_resolve:nnnnnn { X.1=Y, Y.2=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7G }
+% \Test_resolve:nnnnnn { X.1=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 2.3.4 } { 7H }
+% \Test_resolve:nnnnnn { X.1.2=Y, Y.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7I }
+% \Test_resolve:nnnnnn { X.1.2=Y, Y.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7J }
+% \Test_resolve:nnnnnn { X.1.2=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7K }
 % \end{test}
 %
 % \subsubsection{Evaluation bricks}
@@ -2509,6 +2852,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_raw:nnnn { first } { FIRST:LENGTH } { 222 } { 6 }
 % \Test_raw:nnnn { first } { FIRST::LAST } { 222 } { 7 }
 % \Test_raw:nnnn { first } { FIRST::LAST } { 222 } { 8 }
+% \Test_raw:nnnn { first } { :LENGTH::LAST } { 222 } { 8 }
+% \Test_raw:nnnn { first } { :LENGTH::LAST } { 222 } { 9 }
+% \Test_raw:nnnn { first } { ::LAST:LENGTH } { 222 } { 10 }
+% \Test_raw:nnnn { first } { ::LAST:LENGTH } { 222 } { 11 }
 % \end{test}
 % \begin{function}[TF]{ \@@_if_first:nN }
 % \begin{syntax}
@@ -2578,6 +2925,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { first } { FIRST:LENGTH } { 222 } { 6 }
 % \Test:nnnn { first } { FIRST::LAST } { 222 } { 7 }
 % \Test:nnnn { first } { FIRST::LAST } { 222 } { 8 }
+% \Test:nnnn { first } { :LENGTH::LAST } { 222 } { 8 }
+% \Test:nnnn { first } { :LENGTH::LAST } { 222 } { 9 }
+% \Test:nnnn { first } { ::LAST:LENGTH } { 222 } { 10 }
+% \Test:nnnn { first } { ::LAST:LENGTH } { 222 } { 11 }
 % \end{test}
 % \begin{function}[TF]{\@@_raw_length:nN}
 % \begin{syntax}
@@ -2598,6 +2949,16 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_raw:nnnn { length } { :LENGTH::LAST } { 445 } { 8 }
 % \Test_raw:nnnn { length } { ::LAST:LENGTH } { 445 } { 9 }
 % \Test_raw:nnnn { length } { ::LAST:LENGTH } { 445 } { 10 }
+% \Test_append:nnnn { 222::666 } { X.last } { 666 } { A }
+% \Test_append:nnnn { 222::666 } { X.1 } { 222 } { B }
+% \Test_append:nnnn { 222::666 } { X.last - X.1 } { 444 } { C }
+% \Test_append:nnnn { 222::666 } { X.last - (X.1) } { 444 } { D }
+% \Test_append:nnnn { FIRST::LAST } { X.last } { 666 } { A2 }
+% \Test_append:nnnn { FIRST::LAST } { X.1 } { 222 } { B2 }
+% \Test_append:nnnn { FIRST::LAST } { X.last - X.1 } { 444 } { C2 }
+% \Test_append:nnnn { FIRST::LAST } { X.last - (X.1) } { 444 } { D2 }
+% \Test_raw:nnnn { length } { FIRST::LAST } { 445 } { 11 }
+% \Test_raw:nnnn { length } { FIRST::LAST } { 445 } { 12 }
 % \end{test}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \@@_raw_length:nN #1 #2 { T, F, TF } {
@@ -2718,6 +3079,8 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_raw:nnnn { last } { :LENGTH::LAST } { 666 } { 8 }
 % \Test_raw:nnnn { last } { ::LAST:LENGTH } { 666 } { 9 }
 % \Test_raw:nnnn { last } { ::LAST:LENGTH } { 666 } { 10 }
+% \Test_raw:nnnn { last } { FIRST:LENGTH } { 666 } { 10 }
+% \Test_raw:nnnn { last } { FIRST:LENGTH } { 666 } { 11 }
 % \end{test}
 %
 % \begin{function}[TF]{\@@_if_next:nN}
@@ -2795,123 +3158,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { next } { ::LAST:LENGTH } { 667 } { 9 }
 % \Test:nnnn { next } { ::LAST:LENGTH } { 667 } { 10 }
 % \end{test}
-% \begin{function}[TF]{\@@_if_free_counter:nN, \@@_if_free_counter:VN}
-% \begin{syntax}
-% \cs{@@_if_free_counter:nNTF} \marg{name} \meta{tl variable} \marg{true code} \marg{false code}
-% \end{syntax}
-% Set the \meta{tl variable} to the value of
-% the counter associated to the \marg{name} slide range.
-% \end{function}
-%    \begin{macrocode}
-\prg_new_conditional:Npnn \@@_if_free_counter:nN #1 #2 { T, F, TF } {
-\@@_DEBUG:x { IF_FREE:  key=\tl_to_str:n{#1}/
-    value=\@@_item:n {#1/C}/cs=\string #2/ }
-  \@@_group_begin:
-  \tl_clear:N \l_ans_tl
-  \@@_get:nNF { #1/C } \l_ans_tl {
-    \@@_raw_first:nNF { #1 } \l_ans_tl {
-      \@@_raw_last:nNF { #1 } \l_ans_tl { }
-    }
-  }
-\@@_DEBUG:x { IF_FREE_2:\string \l_ans_tl=\tl_to_str:V \l_ans_tl/}
-  \tl_if_empty:NTF \l_ans_tl {
-    \@@_group_end:
-    \regex_match:NnTF \c@@_A_key_Z_regex { #1 } {
-      \@@_gput:nn { #1/C } { 1 }
-      \tl_set:Nn #2 { 1 }
-\@@_DEBUG:x { IF_FREE_MATCH_TRUE:
-  key=\tl_to_str:n{#1}\string #2=\tl_to_str:V #2 / }
-      \prg_return_true:
-    } {
-\@@_DEBUG:x { IF_FREE_NO_MATCH_FALSE:
-  key=\tl_to_str:n{#1}\string #2=\tl_to_str:V #2/ }
-      \prg_return_false:
-    }
-  } {
-    \@@_gput:nV { #1/C } \l_ans_tl
-    \exp_args:NNNV
-    \@@_group_end:
-    \tl_set:Nn #2 \l_ans_tl
-\@@_DEBUG:x { IF_FREE_TRUE(2):  /
-  key=\tl_to_str:n{#1}/\string #2=\tl_to_str:V #2}
-    \prg_return_true:
-  }
-}
-\prg_generate_conditional_variant:Nnn
-  \@@_if_free_counter:nN { VN } { T, F, TF }
-%    \end{macrocode}
-% \begin{test}[banner=free_counter, debug]
-% \reset:n { Y }
-% \Test_free_counter:nnn { 1 } { 1 } { 1 }
-% \Test_free_counter:nnn { 222 } { 222 } { 2 }
-% \Test_free_counter:nnn { ::666 } { 666 } { 3 }
-% \Test_free_counter:nnn { FIRST } { 222 } { 4 }
-% \Test_free_counter:nnn { ::LAST } { 666 } { 5 }
-% \__beanoves_gclear:
-% \Test_free_counter:nnn { A } { 1 } { 6 }
-% \Test_free_counter:nnn { A+B } { 2 } { 7 }
-% \Test_free_counter:nnn { A+B+C } { 3 } { 8 }
-% \Test_free_counter:nnn { ::A } { 1 } { 9 }
-% \Test_free_counter:nnn { ::A+B } { 2 } { 10 }
-% \Test_free_counter:nnn { ::A+B+C } { 3 } { 11 }
-% \end{test}
-% \begin{function}[TF]{\@@_if_counter:nN, \@@_if_counter:VN}
-% \begin{syntax}
-% \cs{@@_if_counter:nNTF} \marg{name} \meta{tl variable} \marg{true code} \marg{false code}
-% \end{syntax}
-% Append the value of the counter associated to the \marg{name} slide range
-% to the right of \meta{tl variable}.
-% The value always lays in between the range, whenever possible.
-% \end{function}
-%    \begin{macrocode}
-\prg_new_conditional:Npnn \@@_if_counter:nN #1 #2 { T, F, TF } {
-\@@_DEBUG:x { IF_COUNTER:key=
-    \tl_to_str:n{#1}/\string #2=\tl_to_str:V #2 }
-  \@@_group_begin:
-  \@@_if_free_counter:nNTF { #1 } \l_ans_tl {
-%    \end{macrocode}
-% If there is a \meta{first}, use it to bound the result from below.
-%    \begin{macrocode}
-    \tl_clear:N \l_a_tl
-    \@@_raw_first:nNT { #1 } \l_a_tl {
-      \fp_compare:nNnT { \l_ans_tl } < { \l_a_tl } {
-        \tl_set:NV \l_ans_tl \l_a_tl
-      }
-    }
-%    \end{macrocode}
-% If there is a \meta{last}, use it to bound the result from above.
-%    \begin{macrocode}
-    \tl_clear:N \l_a_tl
-    \@@_raw_last:nNT { #1 } \l_a_tl {
-      \fp_compare:nNnT { \l_ans_tl } > { \l_a_tl } {
-        \tl_set:NV \l_ans_tl \l_a_tl
-      }
-    }
-    \exp_args:NNV
-    \@@_group_end:
-    \@@_fp_round:nN \l_ans_tl #2
-\@@_DEBUG:x {IF_COUNTER_TRUE:key=\tl_to_str:n{#1}/
-  \string #2=\tl_to_str:V #2 }
-    \prg_return_true:
-  } {
-\@@_DEBUG:x {IF_COUNTER_FALSE:key=\tl_to_str:n{#1}/
-  \string #2=\tl_to_str:V #2 }
-    \prg_return_false:
-  }
-}
-\prg_generate_conditional_variant:Nnn
-  \@@_if_counter:nN { VN } { T, F, TF }
-%    \end{macrocode}
-% \begin{test}[banner=counter]
-% \reset:n { Y }
-% \Test_counter:nnn { 1 } { 1 } { 1 }
-% \Test_counter:nnn { 222 } { 222 } { 2 }
-% \Test_counter:nnn { ::666 } { 666 } { 3 }
-% \Test_counter:nnn { FIRST } { 222 } { 4 }
-% \Test_counter:nnn { ::LAST } { 666 } { 5 }
-% \Test_counter:nnn { FIRST+LENGTH-1 } { 666 } { 6 }
-% \Test_counter:nnn { ::FIRST+LENGTH-1 } { 666 } { 7 }
-% \end{test}
 % \begin{function}[TF]{\@@_if_index:nnN, \@@_if_index:VVN, \@@_if_index:nnnN}
 % \begin{syntax}
 % \cs{@@_if_index:nnNTF} \marg{name} \marg{integer} \meta{tl variable} \marg{true code} \marg{false code}
@@ -2955,60 +3201,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_index:nnnn { 11 } {  0 } { 10 } { 4 }
 % \Test_index:nnnn { 11 } { -1 } {  9 } { 5 }
 % \Test_index:nnnn { 11 } { -2 } {  8 } { 6 }
-% \end{test}
-%
-% \begin{function} [TF] {\@@_if_incr:nn, \@@_if_incr:nnN, \@@_if_incr:VnN, \@@_if_incr:VVN}
-% \begin{syntax}
-% \cs{@@_if_incr:nnTF}  \marg{name} \marg{offset} \marg{true code} \marg{false code}
-% \cs{@@_if_incr:nnNTF} \marg{name} \marg{offset} \meta{tl variable} \marg{true code} \marg{false code}
-% \end{syntax}
-% \end{function}
-% Increment the free counter position accordingly.
-% When requested, put the result in the \meta{tl variable}.
-% In the second version, the result will lay within the declared range.
-%    \begin{macrocode}
-\prg_new_conditional:Npnn \@@_if_incr:nn #1 #2 { T, F, TF } {
-\@@_DEBUG:x { IF_INCR:\tl_to_str:n{#1}/\tl_to_str:n{#2} }
-  \@@_group_begin:
-  \tl_clear:N \l_a_tl
-  \@@_if_free_counter:nNTF { #1 } \l_a_tl {
-    \tl_clear:N \l_b_tl
-    \@@_if_append:xNTF { \l_a_tl + (#2) } \l_b_tl {
-      \@@_fp_round:N \l_b_tl
-      \@@_gput:nV { #1/C } \l_b_tl
-      \@@_group_end:
-\@@_DEBUG:x { IF_INCR_TRUE:#1/#2 }
-      \prg_return_true:
-    } {
-      \@@_group_end:
-\@@_DEBUG:x { IF_INCR_FALSE(1):#1/#2 }
-      \prg_return_false:
-    }
-  } {
-    \@@_group_end:
-\@@_DEBUG:x { IF_INCR_FALSE(2):#1/#2 }
-    \prg_return_false:
-  }
-}
-\prg_new_conditional:Npnn \@@_if_incr:nnN #1 #2 #3 { T, F, TF } {
-  \@@_if_incr:nnTF { #1 } { #2 } {
-    \@@_if_counter:nNTF { #1 } #3 {
-      \prg_return_true:
-    } {
-      \prg_return_false:
-    }
-  } {
-    \prg_return_false:
-  }
-}
-\prg_generate_conditional_variant:Nnn
-  \@@_if_incr:nnN { VnN, VVN } { T, F, TF }
-%    \end{macrocode}
-% \begin{test}[banner=if_incr]
-% \reset:n { Y }
-% \Test_incr:nnnn { 123 } { 123 } { 246 } { 1 }
-% \Test_incr:nnnn { 123 } { 100+20+3 } { 246 } { 2 }
-% \Test_incr:nnnn { FIRST } { LENGTH-1 } { 666 } { 2 }
 % \end{test}
 %
 % \begin{function}[TF]{\@@_if_range:nN}
@@ -3095,6 +3287,178 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_range:nnn { ::LAST:LENGTH } { 222-666 } { 6 }
 % \end{test}
 %
+% \begin{function}[TF]{\@@_if_free_counter:nN, \@@_if_free_counter:VN}
+% \begin{syntax}
+% \cs{@@_if_free_counter:nNTF} \marg{name} \meta{tl variable} \marg{true code} \marg{false code}
+% \end{syntax}
+% Set the \meta{tl variable} to the value of
+% the counter associated to the \marg{name} slide range.
+% \end{function}
+%    \begin{macrocode}
+\prg_new_conditional:Npnn \@@_if_free_counter:nN #1 #2 { T, F, TF } {
+\@@_DEBUG:x { IF_FREE:  key=\tl_to_str:n{#1}/
+    value=\@@_item:n {#1/C}/cs=\string #2/ }
+  \@@_group_begin:
+  \tl_clear:N \l_ans_tl
+  \@@_get:nNF { #1/C } \l_ans_tl {
+    \@@_raw_first:nNF { #1 } \l_ans_tl {
+      \@@_raw_last:nNF { #1 } \l_ans_tl { }
+    }
+  }
+\@@_DEBUG:x { IF_FREE_2:\string \l_ans_tl=\tl_to_str:V \l_ans_tl/}
+  \tl_if_empty:NTF \l_ans_tl {
+    \@@_group_end:
+    \regex_match:NnTF \c@@_A_key_Z_regex { #1 } {
+      \@@_gput:nn { #1/C } { 1 }
+      \tl_set:Nn #2 { 1 }
+\@@_DEBUG:x { IF_FREE_MATCH_TRUE:
+  key=\tl_to_str:n{#1}\string #2=\tl_to_str:V #2 / }
+      \prg_return_true:
+    } {
+\@@_DEBUG:x { IF_FREE_NO_MATCH_FALSE:
+  key=\tl_to_str:n{#1}\string #2=\tl_to_str:V #2/ }
+      \prg_return_false:
+    }
+  } {
+    \@@_gput:nV { #1/C } \l_ans_tl
+    \exp_args:NNNV
+    \@@_group_end:
+    \tl_set:Nn #2 \l_ans_tl
+\@@_DEBUG:x { IF_FREE_TRUE(2):  /
+  key=\tl_to_str:n{#1}/\string #2=\tl_to_str:V #2}
+    \prg_return_true:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \@@_if_free_counter:nN { VN } { T, F, TF }
+%    \end{macrocode}
+% \begin{test}[banner=free_counter]
+% \reset:n { Y }
+% \Test_free_counter:nnn { 1 } { 1 } { 1 }
+% \Test_free_counter:nnn { 222 } { 222 } { 2 }
+% \Test_free_counter:nnn { ::666 } { 666 } { 3 }
+% \Test_free_counter:nnn { FIRST } { 222 } { 4 }
+% \Test_free_counter:nnn { ::LAST } { 666 } { 5 }
+% \__beanoves_gclear:
+% \Test_free_counter:nnn { A } { 1 } { 6 }
+% \Test_free_counter:nnn { A+B } { 2 } { 7 }
+% \Test_free_counter:nnn { A+B+C } { 3 } { 8 }
+% \Test_free_counter:nnn { ::A } { 1 } { 9 }
+% \Test_free_counter:nnn { ::A+B } { 2 } { 10 }
+% \Test_free_counter:nnn { ::A+B+C } { 3 } { 11 }
+% \end{test}
+% \begin{function}[TF]{\@@_if_counter:nN, \@@_if_counter:VN}
+% \begin{syntax}
+% \cs{@@_if_counter:nNTF} \marg{name} \meta{tl variable} \marg{true code} \marg{false code}
+% \end{syntax}
+% Append the value of the counter associated to the \marg{name} slide range
+% to the right of \meta{tl variable}.
+% The value always lays in between the range, whenever possible.
+% \end{function}
+%    \begin{macrocode}
+\prg_new_conditional:Npnn \@@_if_counter:nN #1 #2 { T, F, TF } {
+\@@_DEBUG:x { IF_COUNTER:key=
+    \tl_to_str:n{#1}/\string #2=\tl_to_str:V #2 }
+  \@@_group_begin:
+  \@@_if_free_counter:nNTF { #1 } \l_ans_tl {
+%    \end{macrocode}
+% If there is a \meta{first}, use it to bound the result from below.
+%    \begin{macrocode}
+    \tl_clear:N \l_a_tl
+    \@@_raw_first:nNT { #1 } \l_a_tl {
+      \fp_compare:nNnT { \l_ans_tl } < { \l_a_tl } {
+        \tl_set:NV \l_ans_tl \l_a_tl
+      }
+    }
+%    \end{macrocode}
+% If there is a \meta{last}, use it to bound the result from above.
+%    \begin{macrocode}
+    \tl_clear:N \l_a_tl
+    \@@_raw_last:nNT { #1 } \l_a_tl {
+      \fp_compare:nNnT { \l_ans_tl } > { \l_a_tl } {
+        \tl_set:NV \l_ans_tl \l_a_tl
+      }
+    }
+    \exp_args:NNV
+    \@@_group_end:
+    \@@_fp_round:nN \l_ans_tl #2
+\@@_DEBUG:x {IF_COUNTER_TRUE:key=\tl_to_str:n{#1}/
+  \string #2=\tl_to_str:V #2 }
+    \prg_return_true:
+  } {
+\@@_DEBUG:x {IF_COUNTER_FALSE:key=\tl_to_str:n{#1}/
+  \string #2=\tl_to_str:V #2 }
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \@@_if_counter:nN { VN } { T, F, TF }
+%    \end{macrocode}
+% \begin{test}[banner=counter]
+% \reset:n { Y }
+% \Test_counter:nnn { 1 } { 1 } { 1 }
+% \Test_counter:nnn { 222 } { 222 } { 2 }
+% \Test_counter:nnn { ::666 } { 666 } { 3 }
+% \Test_counter:nnn { FIRST } { 222 } { 4 }
+% \Test_counter:nnn { ::LAST } { 666 } { 5 }
+% \Test_counter:nnn { FIRST+LENGTH-1 } { 666 } { 6 }
+% \Test_counter:nnn { ::FIRST+LENGTH-1 } { 666 } { 7 }
+% \end{test}
+%
+% \begin{function} [TF] {\@@_if_incr:nn, \@@_if_incr:nnN, \@@_if_incr:VnN, \@@_if_incr:VVN}
+% \begin{syntax}
+% \cs{@@_if_incr:nnTF}  \marg{name} \marg{offset} \marg{true code} \marg{false code}
+% \cs{@@_if_incr:nnNTF} \marg{name} \marg{offset} \meta{tl variable} \marg{true code} \marg{false code}
+% \end{syntax}
+% \end{function}
+% Increment the free counter position accordingly.
+% When requested, put the result in the \meta{tl variable}.
+% In the second version, the result will lay within the declared range.
+%    \begin{macrocode}
+\prg_new_conditional:Npnn \@@_if_incr:nn #1 #2 { T, F, TF } {
+\@@_DEBUG:x { IF_INCR:\tl_to_str:n{#1}/\tl_to_str:n{#2} }
+  \@@_group_begin:
+  \tl_clear:N \l_a_tl
+  \@@_if_free_counter:nNTF { #1 } \l_a_tl {
+    \tl_clear:N \l_b_tl
+    \@@_if_append:xNTF { \l_a_tl + (#2) } \l_b_tl {
+      \@@_fp_round:N \l_b_tl
+      \@@_gput:nV { #1/C } \l_b_tl
+      \@@_group_end:
+\@@_DEBUG:x { IF_INCR_TRUE:#1/#2 }
+      \prg_return_true:
+    } {
+      \@@_group_end:
+\@@_DEBUG:x { IF_INCR_FALSE(1):#1/#2 }
+      \prg_return_false:
+    }
+  } {
+    \@@_group_end:
+\@@_DEBUG:x { IF_INCR_FALSE(2):#1/#2 }
+    \prg_return_false:
+  }
+}
+\prg_new_conditional:Npnn \@@_if_incr:nnN #1 #2 #3 { T, F, TF } {
+  \@@_if_incr:nnTF { #1 } { #2 } {
+    \@@_if_counter:nNTF { #1 } #3 {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  } {
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn
+  \@@_if_incr:nnN { VnN, VVN } { T, F, TF }
+%    \end{macrocode}
+% \begin{test}[banner=if_incr]
+% \reset:n { Y }
+% \Test_incr:nnnn { 123 } { 123 } { 246 } { 1 }
+% \Test_incr:nnnn { 123 } { 100+20+3 } { 246 } { 2 }
+% \Test_incr:nnnn { FIRST } { LENGTH-1 } { 666 } { 2 }
+% \end{test}
+%
 % \subsubsection{Evaluation}
 %
 % \begin{function}[TF]{\@@_if_append:nN,\@@_if_append:VN,\@@_if_append:xN}
@@ -3134,7 +3498,8 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \@@_if_append:nN #1 #2 { T, F, TF } {
 \@@_DEBUG:x { \string\@@_if_append:nNTF/
-    \tl_to_str:n { #1 } / \string #2/}
+    \tl_to_str:n { #1 } / \string #2/
+}
   \@@_call:TF {
 \@@_DEBUG:x { IF_APPEND...}
     \@@_group_begin:
@@ -3155,7 +3520,8 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \regex_split:NnN \c@@_split_regex { #1 } \l_split_seq
 \@@_DEBUG:x { IF_APPEND_SPLIT_SEQ: /
   \#=\seq_count:N \l_split_seq /
-  \seq_use:Nn \l_split_seq / / }
+  \seq_use:Nn \l_split_seq / /
+}
     \int_set:Nn \l_split_int { 1 }
     \tl_set:Nx \l_ans_tl {
       \seq_item:Nn \l_split_seq { \l_split_int }
@@ -3177,11 +3543,16 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       }
 \@@_DEBUG:x { IF_APPEND_SWITCH/##1/
   \int_eval:n { \l_split_int + ##1 } /
-  \string##2=\tl_to_str:N##2/ }
+  \string##2=\tl_to_str:N##2/
+}
       \tl_if_empty:NTF ##2 {
-\@@_DEBUG:x { IF_APPEND_SWITCH_WHITE/##1/}
+\@@_DEBUG:x { IF_APPEND_SWITCH_WHITE/##1/
+  \int_eval:n { \l_split_int + ##1 }
+}
         ##4 } {
-\@@_DEBUG:x { IF_APPEND_SWITCH_BLACK/##1/}
+\@@_DEBUG:x { IF_APPEND_SWITCH_BLACK/##1/
+  \int_eval:n { \l_split_int + ##1 }
+}
         ##3
       }
     }
@@ -3222,7 +3593,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       }
 \@@_DEBUG:x { PATH_SEQ:\l_path_tl==\seq_use:Nn\l_path_seq .}
 \@@_DEBUG:x { \string ##1 }
-      \@@_resolve:NNNNTF ##1 \l_id_tl \l_name_tl \l_path_seq {
+      ##1 \l_id_tl \l_name_tl \l_path_seq {
         \cs_set:Npn \: {
           ##4
 \@@_DEBUG:x {AFTER_ANS~=~\l_ans_tl}
@@ -3252,7 +3623,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \begin{myList}
 % \item Case \texttt{++\meta{name}\meta{integer path}.n}.
 %    \begin{macrocode}
-          \:NnnT \use_i:nn 2 3 {
+          \:NnnT \@@_resolve_n:NNNTF 2 3 {
             \@@_if_incr:VnNF \l_name_tl 1 \l_ans_tl {
               \cs_set_eq:NN \loop: \return_false:
             }
@@ -3260,7 +3631,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
         } {
           \switch:nNTF 4 \l_name_tl {
 %    \end{macrocode}
-% \begin{test}[banner=append/n]
+% \begin{test}[banner=append/n, debug]
 % \Test_append:nnnn { 123 } { X.n } { 123 } { 1 }
 % \Test_append:nnnn { } { ++X.n } { 124 } { 2 }
 % \Test_append:nnnn { } { X.n } { 124 } { 3 }
@@ -3268,7 +3639,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \item Cases \texttt{\meta{name}\meta{integer path}...}.
 %    \begin{macrocode}
             \switch:nNTF 7 \l_a_tl {
-              \:NnnT \use_i:nn 5 6 {
+              \:NnnT \@@_resolve:NNNTF 5 6 {
                 \:T {
                   \@@_raw_length:VNF \l_name_tl \l_ans_tl {
                     \cs_set_eq:NN \loop: \return_false:
@@ -3291,7 +3662,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
             } {
               \switch:nNTF 8 \l_a_tl {
-                \:NnnT \use_i:nn 5 6 {
+%    \end{macrocode}
+% \item Case \texttt{...last}.
+%    \begin{macrocode}
+                \:NnnT \@@_resolve:NNNTF 5 6 {
                   \:T {
                     \@@_raw_last:VNF \l_name_tl \l_ans_tl {
                       \cs_set_eq:NN \loop: \return_false:
@@ -3299,7 +3673,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
                   }
                 }
 %    \end{macrocode}
-% \item Case \texttt{...last}.
 % \begin{test}[banner=append/last]
 % \Test_append:nnnn { ::666 } { X.last } { 666 } { 1 }
 % \Test_append:nnnn { 222:445 } { X.last } { 666 } { 2 }
@@ -3328,7 +3701,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { :LENGTH::LAST } { X.next } { 667 } { 8 }
 % \end{test}
 %    \begin{macrocode}
-                  \:NnnT \use_i:nn 5 6 {
+                  \:NnnT \@@_resolve:NNNTF 5 6 {
                     \:T {
                       \@@_if_next:VNF \l_name_tl \l_ans_tl {
                         \cs_set_eq:NN \loop: \return_false:
@@ -3353,7 +3726,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { :LENGTH::LAST } { X.range } { 222-666 } { 10 }
 % \end{test}
 %    \begin{macrocode}
-                    \:NnnT \use_i:nn 5 6 {
+                    \:NnnT \@@_resolve:NNNTF 5 6 {
                       \:T {
                         \@@_if_range:VNTF \l_name_tl \l_ans_tl {
                           \cs_set_eq:NN \fp_round: \prg_do_nothing:
@@ -3367,18 +3740,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \item Case \texttt{...n}.
 %    \begin{macrocode}
-                      \cs_set:Npn \:nn {
-                        \seq_if_empty:NTF \l_path_seq {
-                          \use_ii:nn
-                        } {
-                          \use_i:nn
-                        }
-                      }
                       \switch:nNTF { 12 } \l_a_tl {
 %    \end{macrocode}
 % \item Case \texttt{...+=\meta{integer}}.
 %    \begin{macrocode}
-                        \:NnnT \:nn 5 6 {
+                        \:NnnT \@@_resolve_n:NNNTF 5 6 {
                           \:T {
 \@@_DEBUG:x {NAME=\l_name_tl}
 \@@_DEBUG:x {INCR=\l_a_tl}
@@ -3391,8 +3757,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
                         }
 \@@_DEBUG:x {ANS~=~\l_ans_tl}
                       } {
-                        \:NnnT \use_i:nn 5 6 {
-\@@_DEBUG:x { NAME=\l_name_tl}
+                        \:NnnT \@@_resolve_n:NNNTF 5 6 {
                           \seq_if_empty:NTF \l_path_seq {
 \@@_if_counter:VNF \l_name_tl \l_ans_tl {
   \cs_set_eq:NN \loop: \return_false:
@@ -3414,7 +3779,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
                       }
 \@@_DEBUG:x {ANS~=~\l_ans_tl}
 %    \end{macrocode}
-% \begin{test}[banner={append/+=}, debug]
+% \begin{test}[banner={append/+=}]
 % \Test_append:nnnn { 222 } { X.n += 444 } { 666 } { 1 }
 % \Test_append:nnnn { } { X.n } { 666 } { 2 }
 % \Test_append:nnnn { } { X   } { 666 } { 3 }
@@ -3439,78 +3804,23 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{test}
 %    \begin{macrocode}
                     } {
-                      \:NnnT \use_i:nn 5 6 {
-                        \switch:nNTF { 13 } \l_a_tl {
-%    \end{macrocode}
-% \item Case \texttt{...\meta{integer path}.-\meta{integer}}.
-% \begin{test}[banner=append/-<int>]
-% \Test_append:nnnn { 222 } { X.-111 } { 111 } { 1 }
-% \reset:n { }
-% \Test_append:nnnn { FIRST } { X.-111 } { 111 } { 2 }
-% \Test_append:nnnn { FIRST, X.12.34 = LAST } { X.12.34.-111 } { 555 } { 3 }
-% \end{test}
-%    \begin{macrocode}
-\seq_if_empty:NF \l_path_seq {
-  \tl_clear:N \l_a_tl
-  \int_set:Nn \l_tmpa_int { 4 }
-  \int_do_until:nNn \l_tmpa_int = 13 {
-    \tl_put_right:Nx \l_a_tl { \seq_item:Nn \l_split_seq {\l_split_int+\l_tmpa_int} }
-    \int_incr:N \l_tmpa_int
-  }
-  \msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~\l_a_tl}
-}
-\@@_if_index:VVNF \l_name_tl \l_a_tl \l_ans_tl {
-  \cs_set_eq:NN \loop: \return_false:
-}
-                        } {
-                          \seq_if_empty:NTF \l_path_seq {
+                      \:NnnT \@@_resolve_n:NNNTF 5 6 {
+                        \seq_if_empty:NTF \l_path_seq {
 \@@_if_counter:VNF \l_name_tl \l_ans_tl {
   \cs_set_eq:NN \loop: \return_false:
 }
-                          } {
-                            \seq_pop_left:NN \l_path_seq \l_a_tl
-                            \seq_if_empty:NTF \l_path_seq {
+                        } {
+                          \seq_pop_left:NN \l_path_seq \l_a_tl
+                          \seq_if_empty:NTF \l_path_seq {
 \@@_if_index:VVNF \l_name_tl \l_a_tl \l_ans_tl {
   \cs_set_eq:NN \loop: \return_false:
 }
-                            } {
+                          } {
 \msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
 \cs_set_eq:NN \loop: \return_false:
-                            }
                           }
                         }
                       }
-%    \end{macrocode}
-% \begin{test}[banner=append]
-% \cs_set:Npn \Test:nnnn #1 #2 #3 #4 {
-%   \__beanoves_DEBUG:n { Test:~if_append/#3/#1/}
-%   \Beanoves { #1 }
-%   \tl_clear:N \l_a_tl
-%   \__beanoves_if_append:nNT { #2 } \l_a_tl {}
-%   \assert_equal:xxn \l_a_tl { #3 } {
-%     Test~\cs{__beanoves_if_append:nN}/#4
-%   }
-%   \__beanoves_gclear:
-% }
-% \Test_append:nnnn { 1, A=1 } { A.10 } { 10 } { 1 }
-% \Test_append:nnnn { 1, B=101 } { B.10 } { 110 } { 2 }
-% \Test_append:nnnn { 1, C.1=101 } { C.1 } { 101 } { 3 }
-% \Test_append:nnnn { 1, D.1=101 } { D.1.10 } { 110 } { 4 }
-% \Test_append:nnnn { 1, E.1.2=101 } { E.1.2 } { 101 } { 5 }
-% \Test_append:nnnn { 1, F.1.2=101 } { F.1.2.3 } { 103 } { 6 }
-% \Test_append:nnnn { 1, G.1=GG, GG.2=102 } { G.1.2 } { 102 } { 7 }
-% \Test_append:nnnn { 1, H.1=HH, HH.2=102 } { H.1.2.3 } { 104 } { 8 }
-% \Test_append:nnnn { 1, I=10 } { I.-10 } { -1 } { 9 }
-% \Test_append:nnnn { 1, I=10 } { I.0 } { 9 } { 9-a }
-% \Test_append:nnnn { 1, I=10 } { I.-0 } { 9 } { 9-b }
-% \Test_append:nnnn { 1, J.1=10 } { J.1.0 } { 9 } { 10 }
-% \Test_append:nnnn { 1, J.1=10 } { J.1.-0 } { 9 } { 10-a }
-% \Test_append:nnnn { 1, J.1=10 } { J.1.-10 } { -1 } { 10-b }
-% \Test_append:nnnn { 1, K.1=KK, KK.2 = 10 } { K.1.2.0 } { 9 } { 11 }
-% \Test_append:nnnn { 1, K.1=KK, KK.2 = 10 } { K.1.2.-0 } { 9 } { 11-a }
-% \Test_append:nnnn { 1, K.1=KK, KK.2 = 10 } { K.1.2.-10 } { -1 } { 11-b }
-% \end{test}
-%    \begin{macrocode}
                     }
                   }
 \@@_DEBUG:x {ANS~=~\l_ans_tl}
@@ -3528,7 +3838,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \@@_DEBUG:x {ANS~=~\l_ans_tl}
         }
 \@@_DEBUG:x {ITERATE~ANS=\l_ans_tl }
-        \int_add:Nn \l_split_int { 14 }
+        \int_add:Nn \l_split_int { 13 }
         \tl_put_right:Nx \l_ans_tl {
           \seq_item:Nn \l_split_seq { \l_split_int }
         }
@@ -3541,8 +3851,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     }
     \loop:
   } {
-    \msg_error:nnx
-      { beanoves } { :n } { Too~many~calls:~\tl_to_str:n { #1 } }
+    \msg_error:nnx { beanoves } { :n } { Too~many~calls:~ #1 }
     \prg_return_false:
   }
 }
@@ -3614,7 +3923,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \prg_new_conditional:Npnn \@@_if_eval_query:nN #1 #2 { T, F, TF } {
 \@@_DEBUG:x { EVAL_QUERY:#1/
     \tl_to_str:n{#1}/\string#2=\tl_to_str:N #2}
-  \g@@_call_reset:
+  \@@_call_reset:
   \regex_extract_once:NnNTF \c@@_A_cln_Z_regex {
     #1
   } \l_match_seq {
@@ -3782,12 +4091,22 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \@@_eval:nN #1 #2 {
-\@@_DEBUG:x {EVAL:\tl_to_str:n{#1}/\string#2=\tl_to_str:V #2}
+\@@_DEBUG:x {\string\@@_eval:nN:\tl_to_str:n{#1}/\string#2=\tl_to_str:V #2}
   \@@_group_begin:
 %    \end{macrocode}
 % Local variables declaration
 %    \begin{macrocode}
-  \seq_clear:N \l_ans_seq
+\@@_DEBUG:x { WILL_CLEAN }
+  \seq_if_exist:NTF \l_query_seq {
+    \seq_clear:N \l_query_seq
+  } {
+    \seq_new:N \l_query_seq
+  }
+  \seq_if_exist:NTF \l_ans_seq {
+    \seq_clear:N \l_ans_seq
+  } {
+    \seq_new:N \l_ans_seq
+  }
 %    \end{macrocode}
 % In this main evaluation step, we evaluate the integer expression and put
 % the result in a variable which content will be copied after the group is closed.
@@ -3820,6 +4139,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 \cs_generate_variant:Nn \@@_eval:nN { VN, xN }
 %    \end{macrocode}
+% \begin{test}[banner=eval, debug]
+% \reset:n { }
+% \Test_append:nnnn { 222 } { X.1 } { 222 } { A }
+% \__beanoves_DEBUG:x { \string \l_ans_tl }
+% \tl_clear:N \l_ans_tl
+% \__beanoves_eval:nN {X.1} \l_ans_tl
+% \assert_equal:xxn { \l_ans_tl } { 222 } { 1 }
+% \end{test}
 %
 % \begin{function}{\BeanovesEval}
 %   \begin{syntax}
@@ -3833,7 +4160,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % within a group. \cs{l_ans_tl} is used locally to store the result.
 % \end{function}
 %    \begin{macrocode}
-\NewExpandableDocumentCommand \BeanovesEval { s o m } {
+\NewDocumentCommand \BeanovesEval { s o m } {
   \@@_group_begin:
   \tl_clear:N \l_ans_tl
   \IfBooleanTF { #1 } {
@@ -3852,12 +4179,17 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   }
 }
 %    \end{macrocode}
-%
+% \begin{test}[banner=BeanovesEval, debug]
+% \reset:n { }
+% \Test_append:nnnn { 222 } { X.1 } { 222 } { A }
+% \BeanovesEval[\l_ans_tl]{X.1}
+% \assert_equal:xxn { \l_ans_tl } { 222 } { 1 }
+% \end{test}
 %
 % \subsubsection{Reseting slide ranges}
 % \begin{function}{\BeanovesReset}
 %   \begin{syntax}
-%     \cs{beanovesReset} \oarg{first value} \marg{Slide list name}
+%     \cs{beanovesReset} \oarg{first value} \marg{Slide range name}
 %   \end{syntax}
 %    \begin{macrocode}
 \NewDocumentCommand \BeanovesReset { O{1} m } {
@@ -3870,7 +4202,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %
 % \begin{function}{\@@_reset:nn}
 % \begin{syntax}
-% \cs{@@_reset:nn} \marg{first value} \marg{slide list name}
+% \cs{@@_reset:nn} \marg{first value} \marg{slide range name}
 % \end{syntax}
 % Reset the counter to the given \meta{first value}.
 % Clean the cached values also.
