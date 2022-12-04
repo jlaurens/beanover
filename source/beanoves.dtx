@@ -409,12 +409,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2020/01/01]
 \ProvidesExplPackage
-%<*gubed&!debug>
+%<*!debug>
   {beanoves}
-%</gubed&!debug>
-%<*debug&!gubed>
+%</!debug>
+%<*!gubed>
   {beanoves-debug}
-%</debug&!gubed>
+%</!gubed>
   {2022/10/28}
   {1.0}
   {Named overlay specifications for beamer}
@@ -426,7 +426,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \msg_new:nnn { beanoves } { :n } { #1 }
 \msg_new:nnn { beanoves } { :nn } { #1~(#2) }
-%<*debug&!gubed>
+%<*!gubed>
 \cs_set:Npn \__bnvs_DEBUG_:nn #1 #2 {
   \msg_term:nnn { beanoves } { :n } { #1~#2 }
 }
@@ -448,19 +448,19 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \int_incr:N \l__bnvs_group_int
 }
 \cs_set_eq:NN \__bnvs_group_end: \group_end:
-\cs_new:Npn \__bnvs_DEBUG__:nn #1 #2 {
+\cs_new:Npn \__bnvs_DEBUG_a:nn #1 #2 {
   \__bnvs_DEBUG:x { #1~#2 }
 }
 \cs_new:Npn \__bnvs_DEBUG:nn #1 {
   \exp_args:Nx
-  \__bnvs_DEBUG__:nn
+  \__bnvs_DEBUG_a:nn
   { ▄▄ \prg_replicate:nn {\l__bnvs_group_int + 1} {#1} }
 }
 \cs_generate_variant:Nn \__bnvs_DEBUG:nn { nx, nV }
-%</debug&!gubed>
-%<*gubed&!debug>
+%</!gubed>
+%<*!debug>
 \cs_set_eq:NN \__bnvs_group_begin: \group_begin:
-%</gubed&!debug>
+%</!debug>
 %    \end{macrocode}
 %
 % \begin{implementation}
@@ -959,15 +959,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % except \cs{__bnvs_gprovide:nn} which meaning is straightforward.
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_gput:nn #1 #2 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_gput:nn/key:#1/value:#2/}
-%</debug&!gubed>
+%</!gubed>
   \prop_gput:Nnn \g__bnvs_prop { #1 } { #2 }
 }
 \cs_new:Npn \__bnvs_gprovide:nn #1 #2 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_gprovide:nn/key:#1/value:#2/}
-%</debug&!gubed>
+%</!gubed>
   \prop_if_in:NnF \g__bnvs_prop { #1 } {
     \prop_gput:Nnn \g__bnvs_prop { #1 } { #2 }
   }
@@ -1027,16 +1027,16 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_get:nN #1 #2 { T, F, TF } {
   \prop_get:NnNTF \g__bnvs_prop { #1 } #2 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_get:nN\space TRUE/
   #1/\string#2:#2/
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_get:nN\space FALSE/#1/\string#2/ }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_false:
   }
 }
@@ -1441,35 +1441,35 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \RequirePackage{keyval}
 \define@key{beamerframe}{beanoves~id}[]{
   \tl_set:Nx \l__bnvs_id_current_tl { #1 ! }
-%<*debug&!gubed>
+%<*!gubed>
   \__bnvs_DEBUG_on:
   \__bnvs_DEBUG:x {THIS_IS_KEY}
   \__bnvs_DEBUG_off:
-%</debug&!gubed>
+%</!gubed>
 }
 \AddToHook{env/beamer@frameslide/before}{
   \bool_set_true:N \l__bnvs_in_frame_bool
-%<*debug&!gubed>
+%<*!gubed>
   \__bnvs_DEBUG_on:
   \__bnvs_DEBUG:x {THIS_IS_BEFORE}
   \__bnvs_DEBUG_off:
-%</debug&!gubed>
+%</!gubed>
 }
 \AddToHook{env/beamer@frameslide/after}{
   \bool_set_false:N \l__bnvs_in_frame_bool
-%<*debug&!gubed>
+%<*!gubed>
   \__bnvs_DEBUG_on:
-  \__bnvs_DEBUG:x {THIS_IS_BEFORE}
+  \__bnvs_DEBUG:x {THIS_IS_AFTER}
   \__bnvs_DEBUG_off:
-%</debug&!gubed>
+%</!gubed>
 }
 \AddToHook{cmd/frame/before}{
   \tl_set:Nn \l__bnvs_id_current_tl { ?! }
-%<*debug&!gubed>
+%<*!gubed>
   \__bnvs_DEBUG_on:
   \__bnvs_DEBUG:x {THIS_IS_FRAME}
   \__bnvs_DEBUG_off:
-%</debug&!gubed>
+%</!gubed>
 }
 %    \end{macrocode}
 % \subsubsection{Defining named slide ranges}
@@ -1499,15 +1499,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % The alt variant does not override an already existing value.
 %
 % Implementation detail: the core functionality is implemented in
-% the function \cs{__bnvs_range:Nnnnn} which first argument is
+% the auxiliary function \cs{__bnvs_range:Nnnnn} which first argument is
 % \cs{__bnvs_gput:nn} for \cs{__bnvs_range:nnnn} and
 % \cs{__bnvs_gprovide:nn} for \cs{__bnvs_range_alt:nnnn}.
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_range:Nnnnn #1 #2 #3 #4 #5 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_range:Nnnnn/\string#1/#2/#3/#4/#5/}
-%</debug&!gubed>
+%</!gubed>
   \tl_if_empty:nTF { #3 } {
     \tl_if_empty:nTF { #4 } {
       \tl_if_empty:nTF { #5 } {
@@ -1617,9 +1617,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \cs_generate_variant:Nn \tl_if_empty:nTF { xTF }
 \cs_new:Npn \__bnvs_do_parse:Nnn #1 #2 #3 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_do_parse:Nnn/\string#1/#2/#3}
-%</debug&!gubed>
+%</!gubed>
 %    \end{macrocode}
 % This is not a list.
 %    \begin{macrocode}
@@ -1733,33 +1733,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   \__bnvs_do_parse:Nnn \__bnvs_range:nVVV {X} {A:B::C}
 % }
 % \end{test}
-%    \begin{macrocode}
-\cs_new:Npn \__bnvs_parse_old:Nnn #1 #2 #3 {
-  \__bnvs_group_begin:
-  \regex_match:NnTF \c__bnvs_A_key_Z_regex { #2 } {
-%    \end{macrocode}
-% We got a valid key.
-%    \begin{macrocode}
-    \regex_extract_once:NnNTF \c__bnvs_list_regex { #3 } \l__bnvs_match_seq {
-%    \end{macrocode}
-% This is a comma separated list, extract each item and go recursive.
-%    \begin{macrocode}
-      \exp_args:NNx
-      \seq_set_from_clist:Nn \l__bnvs_match_seq {
-        \seq_item:Nn \l__bnvs_match_seq { 2 }
-      }
-      \seq_map_indexed_inline:Nn \l__bnvs_match_seq {
-        \__bnvs_do_parse:Nnn #1 { #2.##1 } { ##2 }
-      }
-    } {
-      \__bnvs_do_parse:Nnn #1 { #2 } { #3 }
-    }
-  } {
-    \msg_error:nnn { beanoves } { :n } { Invalid~key:~#1 }
-  }
-  \__bnvs_group_end:
-}
-%    \end{macrocode}
 % \begin{function}[TF]{\__bnvs_id_name_set:nNN}
 % \begin{syntax}
 % \cs{__bnvs_id_name_set:nNNTF} \marg{key} \meta{id tl var} \meta{full name tl var} \marg{ true code} \marg{ false code}
@@ -1772,7 +1745,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_id_name_set:nNN #1 #2 #3 { T, F, TF } {
   \__bnvs_group_begin:
-  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_regex { #1 } \l__bnvs_match_seq {
+  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_regex {
+    #1
+  } \l__bnvs_match_seq {
     \tl_set:Nx #2 { \seq_item:Nn \l__bnvs_match_seq 3 }
     \tl_if_empty:NTF #2 {
       \exp_args:NNNx
@@ -1789,19 +1764,19 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \:n #2
       \tl_set:Nn #3 { #1 }
     }
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_id_name_set:nNN\space TRUE/#1/
-  \string#2:#2/\string#3:#3/\string\l__bnvs_id_current_tl:\l__bnvs_id_current_tl/
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_id_name_set:nNN\space TRUE/}
+\__bnvs_DEBUG:x { #1/ \string#2:#2/\string#3:#3/ }
+\__bnvs_DEBUG:x { \string\l__bnvs_id_current_tl:\l__bnvs_id_current_tl/ }
+%</!gubed>
     \prg_return_true:
   } {
     \__bnvs_group_end:
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_id_name_set:nNN\space FALSE/#1/
-  \string#2/\string#3/
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_id_name_set:nNN\space FALSE
+  /#1/\string#2/\string#3/
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_false:
   }
 }
@@ -1834,15 +1809,17 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{test}
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_parse:Nnn #1 #2 #3 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_parse:Nnn/\string#1/#2/#3/}
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
   \__bnvs_id_name_set:nNNTF { #2 } \l__bnvs_id_tl \l__bnvs_name_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {key:#2/ID:\l__bnvs_id_tl/NAME:\l__bnvs_name_tl/}
-%</debug&!gubed>%</debug&!gubed>
-    \regex_extract_once:NnNTF \c__bnvs_list_regex { #3 } \l__bnvs_match_seq {
+%</!gubed>
+    \regex_extract_once:NnNTF \c__bnvs_list_regex {
+      #3
+    } \l__bnvs_match_seq {
 %    \end{macrocode}
 % This is a comma separated list, extract each item and go recursive.
 %    \begin{macrocode}
@@ -2229,11 +2206,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \exp_args_generate:n { VVx }
 \prg_new_conditional:Npnn \__bnvs_extract_key:NNN
     #1 #2 #3 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_extract_key:NNN/
     \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn#3./
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
   \exp_args:NNV
   \regex_extract_once:NnNTF \c__bnvs_A_key_Z_regex #2 \l__bnvs_match_seq {
@@ -2243,12 +2220,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \exp_args:Nx
     \tl_if_empty:nT { \seq_item:Nn \l__bnvs_match_seq 3 } {
       \tl_put_left:NV #2 { #1 }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { VERIF~\tl_to_str:V #2 }
-%</debug&!gubed>
+%</!gubed>
     }
     \exp_args:NNnx
-    \seq_set_split:Nnn \l__bnvs_split_seq . { \seq_item:Nn \l__bnvs_match_seq 4 }
+    \seq_set_split:Nnn \l__bnvs_split_seq . {
+      \seq_item:Nn \l__bnvs_match_seq 4
+    }
     \seq_remove_all:Nn \l__bnvs_split_seq { }
     \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_a_tl
     \seq_if_empty:NTF \l__bnvs_split_seq {
@@ -2261,19 +2240,19 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
         \tl_set:Nn #2 { ##2 }
       }
       \exp_args:NVV \:nn #1 #2
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { END/\string#1:#1/\string#2:#2/ }
-%</debug&!gubed>
+%</!gubed>
     } {
 %    \end{macrocode}
 % Some new integer path components 	are added.
 %    \begin{macrocode}
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_extract_key:NNN/\string#1:#1/
   \string#2:#2/\string#3:\seq_use:Nn#3./
   \string\l__bnvs_split_seq:\seq_use:Nn\l__bnvs_split_seq./
 }
-%</debug&!gubed>
+%</!gubed>
       \cs_set:Npn \:nnn ##1 ##2 ##3 {
         \__bnvs_group_end:
         \tl_set:Nn #1 { ##1 }
@@ -2285,26 +2264,26 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \:nnn #1 #2 {
         \seq_use:Nn \l__bnvs_split_seq . . \seq_use:Nn #3 .
       }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { END/\string#1:#1/\string#2:#2/
   \string#3:\seq_use:Nn #3 . /
   \string\l__bnvs_split_seq:\seq_use:Nn \l__bnvs_split_seq . /
 }
-%</debug&!gubed>%</debug&!gubed>
+%</!gubed>%</!gubed>
     }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_extract_key:NNN\space TRUE/
   \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3 . /
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   } {
     \__bnvs_group_end:
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_extract_key:NNN\space FALSE/
   \string#1/\string#2/\string#3/
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_false:
   }
 }
@@ -2352,11 +2331,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_resolve:NNN
     #1 #2 #3 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_resolve:NNN/
   \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
 %    \end{macrocode}
 % Local variables:
@@ -2395,11 +2374,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       }
       \loop:
     } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_resolve:NNN\space~TOO~MANY~CALLS/
   \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./
 }
-%</debug&!gubed>
+%</!gubed>
       \__bnvs_group_end:
       \prg_return_false:
     }
@@ -2407,9 +2386,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \cs_set:Npn \get_extract:F ##1 {
     \exp_args:Nx
     \__bnvs_get:nNTF { \l__bnvs_a_tl / A } \l__bnvs_b_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { RESOLUTION:~\l__bnvs_a_tl / A=>\l__bnvs_b_tl}
-%</debug&!gubed>
+%</!gubed>
       \__bnvs_extract_key:NNNTF #1 \l__bnvs_b_tl \l__bnvs_b_seq {
         \tl_set_eq:NN #2 \l__bnvs_b_tl
         \seq_set_eq:NN #3 \l__bnvs_b_seq
@@ -2430,11 +2409,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \:nnn #1 #2 {
       \seq_use:Nn #3 .
     }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { ...\string\__bnvs_resolve:NNN\space TRUE/
   \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   }
   \loop:
@@ -2478,11 +2457,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_resolve_n:NNN
     #1 #2 #3 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_resolve_n:NNN/
   \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
 %    \end{macrocode}
 % Local variables:
@@ -2525,11 +2504,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       }
       \loop:
     } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_resolve_n:NNN\space~TOO~MANY~CALLS/
   \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./
 }
-%</debug&!gubed>
+%</!gubed>
       \__bnvs_group_end:
       \prg_return_false:
     }
@@ -2537,9 +2516,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \cs_set:Npn \get_extract:F ##1 {
     \exp_args:Nx
     \__bnvs_get:nNTF { \l__bnvs_a_tl / A } \l__bnvs_b_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { RESOLUTION:~\l__bnvs_a_tl / A=>\l__bnvs_b_tl}
-%</debug&!gubed>
+%</!gubed>
       \__bnvs_extract_key:NNNTF #1 \l__bnvs_b_tl \l__bnvs_b_seq {
         \tl_set_eq:NN #2 \l__bnvs_b_tl
         \seq_set_eq:NN #3 \l__bnvs_b_seq
@@ -2560,11 +2539,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \:nnn #1 #2 {
       \seq_use:Nn #3 .
     }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { ...\string\__bnvs_resolve_n:NNN\space TRUE/
   \string#1:#1/\string#2:#2/\string#3:\seq_use:Nn #3./
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   }
   \loop:
@@ -2624,11 +2603,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_resolve:NNNN
     #1 #2 #3 #4 { T, F, TF } {
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN/
-  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN / }
+\__bnvs_DEBUG:x { \string#1 / \string#2:#2/\string#3:#3 / }
+\__bnvs_DEBUG:x { \string#4 : \seq_use:Nn #4 . / }
+%</!gubed>
   #1 {
     \__bnvs_group_begin:
 %    \end{macrocode}
@@ -2652,22 +2631,24 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \:nnn #2 #3 {
         \seq_use:Nn #4 .
       }
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { ...\string\__bnvs_resolve:NNNN\space TRUE/
-  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_resolve:NNNN\space TRUE/ }
+\__bnvs_DEBUG:x { \string#1 / \string#2 : #2 / \string#3 : #3 / }
+\__bnvs_DEBUG:x { \string#4 : \seq_use:Nn #4 . / }
+%</!gubed>
       \prg_return_true:
     }
     \cs_set:Npn \branch:n ##1 {
       \seq_pop_right:NNTF \l__bnvs_a_seq \l__bnvs_b_tl {
         \seq_put_left:NV \l__bnvs_b_seq \l__bnvs_b_tl
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_resolve:NNNN\space POP~TRUE~##1}
-\__bnvs_DEBUG:x {\string\l__bnvs_b_tl:\l__bnvs_b_tl }
-\__bnvs_DEBUG:x {\string\l__bnvs_a_seq:\seq_count:N\l__bnvs_a_seq/\seq_use:Nn \l__bnvs_a_seq ./ }
-\__bnvs_DEBUG:x {\string\l__bnvs_b_seq:\seq_count:N\l__bnvs_b_seq/\seq_use:Nn \l__bnvs_b_seq ./ }
-%</debug&!gubed>
+\__bnvs_DEBUG:x {\string\l__bnvs_b_tl : \l__bnvs_b_tl }
+\__bnvs_DEBUG:x {\string\l__bnvs_a_seq : \seq_count:N \l__bnvs_a_seq / }
+\__bnvs_DEBUG:x {\seq_use:Nn \l__bnvs_a_seq ./ }
+\__bnvs_DEBUG:x {\string\l__bnvs_b_seq : \seq_count:N \l__bnvs_b_seq / }
+\__bnvs_DEBUG:x {\seq_use:Nn \l__bnvs_b_seq . / }
+%</!gubed>
         \tl_set:Nn \l__bnvs_a_tl { #3 . }
         \tl_put_right:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_a_seq . }
       } {
@@ -2703,7 +2684,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
           \seq_pop_right:NNTF \l__bnvs_a_seq \l__bnvs_c_tl {
             \seq_clear:N \l__bnvs_b_seq
             \tl_set:Nn \l__bnvs_a_tl { #3 . }
-            \tl_put_right:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_a_seq . . }
+            \tl_put_right:Nx \l__bnvs_a_tl {
+              \seq_use:Nn \l__bnvs_a_seq . .
+            }
             \tl_put_right:NV \l__bnvs_a_tl \l__bnvs_c_tl
             \branch:FF {
 %    \end{macrocode}
@@ -2722,12 +2705,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
             } {
               \cs_set:Npn \loop: {
                 \__bnvs_group_end:
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN\space FALSE/
-  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
-  \g__bnvs_call_int :\int_use:N\g__bnvs_call_int/
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN \space FALSE / }
+\__bnvs_DEBUG:x { \string#1/\string#2 : #2/\string#3 : #3 / }
+\__bnvs_DEBUG:x { \string#4 : \seq_use:Nn #4 . / }
+\__bnvs_DEBUG:x { \g__bnvs_call_int : \int_use:N\g__bnvs_call_int / }
+%</!gubed>
                 \prg_return_false:
               }
             }
@@ -2736,12 +2719,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       } {
         \cs_set:Npn \loop: {
           \__bnvs_group_end:
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN\space FALSE/
-  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
-  \g__bnvs_call_int :\int_use:N\g__bnvs_call_int/
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN\space FALSE / }
+\__bnvs_DEBUG:x { \string#1 / \string#2 : #2 / \string#3 : #3 / }
+\__bnvs_DEBUG:x { \string#4 : \seq_use:Nn #4./ }
+\__bnvs_DEBUG:x { \g__bnvs_call_int : \int_use:N\g__bnvs_call_int/ }
+%</!gubed>
           \prg_return_false:
         }
       }
@@ -2754,11 +2737,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 \prg_new_conditional:Npnn \__bnvs_resolve_OLD:NNNN
     #1 #2 #3 #4 { T, F, TF } {
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN/
-  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN/ }
+\__bnvs_DEBUG:x { \string#1 / \string#2 : #2 / \string#3 : #3 / }
+\__bnvs_DEBUG:x { \string#4 : \seq_use:Nn #4 . / }
+%</!gubed>
   #1 {
     \__bnvs_group_begin:
 %    \end{macrocode}
@@ -2779,21 +2762,21 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \:nnn #2 #3 {
         \seq_use:Nn #4 .
       }
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { ...\string\__bnvs_resolve:NNNN\space TRUE/
-  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_resolve:NNNN\space TRUE/ }
+\__bnvs_DEBUG:x { \string#1 / \string#2 : #2 / \string#3 : #3/ }
+\__bnvs_DEBUG:x { \string#4 : \seq_use:Nn #4 . / }
+%</!gubed>
       \prg_return_true:
     }
     \cs_set:Npn \branch:n ##1 {
       \seq_pop_left:NNTF \l__bnvs_a_seq \l__bnvs_b_tl {
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN\space POP~TRUE~##1/
-  \string\l__bnvs_b_tl:\l__bnvs_b_tl/\string\l__bnvs_a_seq:\seq_count:N\l__bnvs_a_seq/
-  \seq_use:Nn \l__bnvs_a_seq ./
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN\space POP~TRUE~##1 / }
+\__bnvs_DEBUG:x { \string\l__bnvs_b_tl : \l__bnvs_b_tl / }
+\__bnvs_DEBUG:x { \string\l__bnvs_a_seq : \seq_count:N\l__bnvs_a_seq / }
+\__bnvs_DEBUG:x { \seq_use:Nn \l__bnvs_a_seq . / }
+%</!gubed>
         \tl_put_right:Nn \l__bnvs_a_tl { . }
         \tl_put_right:NV \l__bnvs_a_tl \l__bnvs_b_tl
       } {
@@ -2822,12 +2805,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       } {
         \cs_set:Npn \loop: {
           \__bnvs_group_end:
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN\space FALSE/
-  \string#1/\string#2:#2/\string#3:#3/\string#4:\seq_use:Nn #4./
-  \string\g__bnvs_call_int : \int_use:N\g__bnvs_call_int/
-}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNN\space FALSE / }
+\__bnvs_DEBUG:x { \string#1 / \string#2 : #2 / \string#3 : #3 / }
+\__bnvs_DEBUG:x { \string#4:\seq_use:Nn #4 . / }
+\__bnvs_DEBUG:x { \string\g__bnvs_call_int : \int_use:N\g__bnvs_call_int / }
+%</!gubed>
           \prg_return_false:
         }
       }
@@ -2880,38 +2863,38 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_fp_round:nN #1 #2 {
-%<*debug&!gubed>
-  \__bnvs_DEBUG:x { ROUND:\tl_to_str:n{#1}/\string#2=\tl_to_str:V #2}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ROUND:\tl_to_str:n{#1} / \string#2=\tl_to_str:V #2}
+%</!gubed>
   \tl_if_empty:nTF { #1 } {
-%<*debug&!gubed>
-    \__bnvs_DEBUG:x { ...ROUND:~EMPTY }
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ...ROUND:~EMPTY }
+%</!gubed>
   } {
     \tl_put_right:Nx #2 {
       \fp_eval:n { round(#1) }
     }
-%<*debug&!gubed>
-    \__bnvs_DEBUG:x { ...ROUND:~\tl_to_str:V #2 => \string#2}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ...ROUND:~\tl_to_str:V #2 => \string#2}
+%</!gubed>
   }
 }
 \cs_generate_variant:Nn \__bnvs_fp_round:nN { VN, xN }
 \cs_new:Npn \__bnvs_fp_round:N #1 {
   \tl_if_empty:VTF #1 {
-%<*debug&!gubed>
-    \__bnvs_DEBUG:x { ROUND:~EMPTY }
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ROUND:~EMPTY }
+%</!gubed>
   } {
-%<*debug&!gubed>
-    \__bnvs_DEBUG:x { ROUND~IN:~\tl_to_str:V #1 }
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ROUND~IN:~\tl_to_str:V #1 }
+%</!gubed>
     \tl_set:Nx #1 {
       \fp_eval:n { round(#1) }
     }
-%<*debug&!gubed>
-    \__bnvs_DEBUG:x { ROUND~OUT:~\tl_to_str:V #1 }
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { ROUND~OUT:~\tl_to_str:V #1 }
+%</!gubed>
   }
 }
 %    \end{macrocode}
@@ -2929,9 +2912,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_set:Npn \__bnvs_return_true:nnN #1 #2 #3 {
   \tl_if_empty:NTF \l__bnvs_ans_tl {
     \__bnvs_group_end:
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RETURN_FALSE/key=#1/type=#2/EMPTY }
-%</debug&!gubed>
+%</!gubed>
     \__bnvs_gremove:n { #1//#2 }
     \prg_return_false:
   } {
@@ -2940,59 +2923,59 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \exp_args:NNNV
     \__bnvs_group_end:
     \tl_put_right:Nn #3 \l__bnvs_ans_tl
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { RETURN_TRUE/key=#1/type=#2/ans=\l__bnvs_ans_tl/ }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   }
 }
 \cs_set:Npn \__bnvs_return_false:nn #1 #2 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RETURN_FALSE/key=#1/type=#2/ }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_end:
   \__bnvs_gremove:n { #1//#2 }
   \prg_return_false:
 }
 \prg_new_conditional:Npnn \__bnvs_raw_first:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { RAW_FIRST/
   key=\tl_to_str:n{#1}/\string #2=/\tl_to_str:V #2/
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_if_in:nTF { #1//A } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_FIRST/#1/CACHED }
-%</debug&!gubed>
+%</!gubed>
     \tl_put_right:Nx #2 { \__bnvs_item:n { #1//A } }
     \prg_return_true:
   } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_FIRST/key=#1/NOT_CACHED }
-%</debug&!gubed>
+%</!gubed>
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
     \__bnvs_get:nNTF { #1/A } \l__bnvs_a_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { RAW_FIRST/key=#1/A=\l__bnvs_a_tl }
-%</debug&!gubed>
+%</!gubed>
       \__bnvs_if_append:VNTF \l__bnvs_a_tl \l__bnvs_ans_tl {
         \__bnvs_return_true:nnN { #1 } A #2
       } {
         \__bnvs_return_false:nn { #1 } A
       }
     } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_FIRST/key=#1/A/F }
-%</debug&!gubed>
+%</!gubed>
       \__bnvs_get:nNTF { #1/L } \l__bnvs_a_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_FIRST/key=#1/L=\l__bnvs_a_tl }
-%</debug&!gubed>
+%</!gubed>
         \__bnvs_get:nNTF { #1/Z } \l__bnvs_b_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_FIRST/key=#1/Z=\l__bnvs_b_tl }
-%</debug&!gubed>
+%</!gubed>
           \__bnvs_if_append:xNTF {
             \l__bnvs_b_tl - ( \l__bnvs_a_tl ) + 1
           } \l__bnvs_ans_tl {
@@ -3001,15 +2984,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
             \__bnvs_return_false:nn { #1 } A
           }
         } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_FIRST/key=#1/Z/F/ }
-%</debug&!gubed>
+%</!gubed>
           \__bnvs_return_false:nn { #1 } A
         } 
       } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_FIRST/key=#1/L/F/ }
-%</debug&!gubed>
+%</!gubed>
         \__bnvs_return_false:nn { #1 } A
       } 
     }
@@ -3046,16 +3029,16 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_first:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_FIRST/\tl_to_str:n{#1}/\string #2=\tl_to_str:V #2}
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_raw_first:nNTF { #1 } #2 {
     \prg_return_true:
   } {
     \__bnvs_get:nNTF { #1/C } \l__bnvs_a_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { IF_FIRST/#1/C/T/\l__bnvs_a_tl }
-%</debug&!gubed>
+%</!gubed>
       \bool_set_true:N \l_no_counter_bool
       \__bnvs_if_append:xNTF \l__bnvs_a_tl \l__bnvs_ans_tl {
         \__bnvs_return_true:nnN { #1 } A #2
@@ -3066,18 +3049,18 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \regex_match:NnTF \c__bnvs_A_key_Z_regex { #1 } {
         \__bnvs_gput:nn { #1/A } { 1 }
         \tl_set:Nn #2 { 1 }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x{IF_FIRST_MATCH:
   key=\tl_to_str:n{#1}/\string #2=\tl_to_str:V #2 /
 }
-%</debug&!gubed>
+%</!gubed>
         \__bnvs_return_true:nnN { #1 } A #2
       } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x{IF_FIRST_NO_MATCH:
   key=\tl_to_str:n{#1}/\string #2=\tl_to_str:V #2 
 }
-%</debug&!gubed>
+%</!gubed>
         \__bnvs_return_false:nn { #1 } A
       }
     }  
@@ -3148,19 +3131,19 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{test}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_raw_length:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_raw_length:nN/#1/\string#2/ }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_if_in:nTF { #1//L } {
     \tl_put_right:Nx #2 { \__bnvs_item:n { #1//L } }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { RAW_LENGTH/CACHED/key:#1/\__bnvs_item:n { #1//L } }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { RAW_LENGTH/NOT_CACHED/key:#1/ }
-%</debug&!gubed>
+%</!gubed>
     \__bnvs_gput:nn { #1//L } { 0 }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -3205,9 +3188,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_raw_last:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:n { RAW_LAST/#1 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_if_in:nTF { #1//Z } {
     \tl_put_right:Nx #2 { \__bnvs_item:n { #1//Z } }
     \prg_return_true:
@@ -3216,9 +3199,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
     \__bnvs_if_in:nTF { #1/Z } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { NORMAL_RAW_LAST:~\__bnvs_item:n { #1/Z } }
-%</debug&!gubed>
+%</!gubed>
       \__bnvs_if_append:xNTF {
         \__bnvs_item:n { #1/Z }
       } \l__bnvs_ans_tl {
@@ -3370,9 +3353,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_index:nnN #1 #2 #3 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_INDEX:key=#1/index=#2/\string#3/ }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
   \tl_clear:N \l__bnvs_ans_tl
   \__bnvs_raw_first:nNTF { #1 } \l__bnvs_ans_tl {
@@ -3380,16 +3363,16 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \exp_args:NNV
     \__bnvs_group_end:
     \__bnvs_fp_round:nN \l__bnvs_ans_tl #3
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_INDEX_TRUE:key=#1/index=#2/
   \string#3=\tl_to_str:N #3
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_INDEX_FALSE:key=#1/index=#2/ }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_false:
   }
 }
@@ -3415,9 +3398,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_range:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x{ RANGE:key=#1/\string#2/}
-%</debug&!gubed>
+%</!gubed>
   \bool_if:NTF \l__bnvs_no_range_bool {
     \prg_return_false:
   } {
@@ -3433,32 +3416,32 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
           \exp_args:NNNx
           \__bnvs_group_end:
           \tl_put_right:Nn #2 { \l__bnvs_a_tl - \l__bnvs_b_tl }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x{ RANGE_TRUE_A_Z:key=#1/\string#2=#2/}
-%</debug&!gubed>
+%</!gubed>
           \prg_return_true:
         } {
           \exp_args:NNNx
           \__bnvs_group_end:
           \tl_put_right:Nn #2 { \l__bnvs_a_tl - }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x{ RANGE_TRUE_A:key=#1/\string#2=#2/}
-%</debug&!gubed>
+%</!gubed>
           \prg_return_true:
         }
       } {
         \__bnvs_raw_last:nNTF { #1 } \l__bnvs_b_tl {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x{ RANGE_TRUE_Z:key=#1/\string#2=#2/}
-%</debug&!gubed>
+%</!gubed>
           \exp_args:NNNx
           \__bnvs_group_end:
           \tl_put_right:Nn #2 { - \l__bnvs_b_tl }
           \prg_return_true:
         } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x{ RANGE_FALSE:key=#1/}
-%</debug&!gubed>
+%</!gubed>
           \__bnvs_group_end:
           \prg_return_false:
         }
@@ -3509,11 +3492,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_free_counter:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_FREE:  key=\tl_to_str:n{#1}/
   value=\__bnvs_item:n {#1/C}/cs=\string #2/
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
   \tl_clear:N \l__bnvs_ans_tl
   \__bnvs_get:nNF { #1/C } \l__bnvs_ans_tl {
@@ -3521,26 +3504,27 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \__bnvs_raw_last:nNF { #1 } \l__bnvs_ans_tl { }
     }
   }
-%<*debug&!gubed>
-\__bnvs_DEBUG:x { IF_FREE_2:\string \l__bnvs_ans_tl=\tl_to_str:V \l__bnvs_ans_tl/}
-%</debug&!gubed>
+%<*!gubed>
+\__bnvs_DEBUG:x { IF_FREE_2: \string \l__bnvs_ans_tl= }
+\__bnvs_DEBUG:x { \tl_to_str:V \l__bnvs_ans_tl/ }
+%</!gubed>
   \tl_if_empty:NTF \l__bnvs_ans_tl {
     \__bnvs_group_end:
     \regex_match:NnTF \c__bnvs_A_key_Z_regex { #1 } {
       \__bnvs_gput:nn { #1/C } { 1 }
       \tl_set:Nn #2 { 1 }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_FREE_MATCH_TRUE:
   key=\tl_to_str:n{#1}\string #2=\tl_to_str:V #2 /
 }
-%</debug&!gubed>
+%</!gubed>
       \prg_return_true:
     } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_FREE_NO_MATCH_FALSE:
   key=\tl_to_str:n{#1}\string #2=\tl_to_str:V #2/
 }
-%</debug&!gubed>
+%</!gubed>
       \prg_return_false:
     }
   } {
@@ -3548,11 +3532,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \exp_args:NNNV
     \__bnvs_group_end:
     \tl_set:Nn #2 \l__bnvs_ans_tl
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_FREE_TRUE(2):  /
   key=\tl_to_str:n{#1}/\string #2=\tl_to_str:V #2
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   }
 }
@@ -3584,11 +3568,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_counter:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_COUNTER:key=
   \tl_to_str:n{#1}/\string #2=\tl_to_str:V #2
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
   \__bnvs_if_free_counter:nNTF { #1 } \l__bnvs_ans_tl {
 %    \end{macrocode}
@@ -3612,18 +3596,18 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \exp_args:NNV
     \__bnvs_group_end:
     \__bnvs_fp_round:nN \l__bnvs_ans_tl #2
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {IF_COUNTER_TRUE:key=\tl_to_str:n{#1}/
   \string #2=\tl_to_str:V #2
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_true:
   } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {IF_COUNTER_FALSE:key=\tl_to_str:n{#1}/
   \string #2=\tl_to_str:V #2
 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_false:
   }
 }
@@ -3652,9 +3636,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % In the second version, the result will lay within the declared range.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_incr:nn #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_INCR:\tl_to_str:n{#1}/\tl_to_str:n{#2} }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
   \tl_clear:N \l__bnvs_a_tl
   \__bnvs_if_free_counter:nNTF { #1 } \l__bnvs_a_tl {
@@ -3663,22 +3647,22 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \__bnvs_fp_round:N \l__bnvs_b_tl
       \__bnvs_gput:nV { #1/C } \l__bnvs_b_tl
       \__bnvs_group_end:
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_INCR_TRUE:#1/#2 }
-%</debug&!gubed>
+%</!gubed>
       \prg_return_true:
     } {
       \__bnvs_group_end:
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_INCR_FALSE(1):#1/#2 }
-%</debug&!gubed>
+%</!gubed>
       \prg_return_false:
     }
   } {
     \__bnvs_group_end:
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_INCR_FALSE(2):#1/#2 }
-%</debug&!gubed>
+%</!gubed>
     \prg_return_false:
   }
 }
@@ -3739,15 +3723,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_append:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string\__bnvs_if_append:nNTF/
   \tl_to_str:n { #1 } / \string #2/
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_call:TF {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND...}
-%</debug&!gubed>
+%</!gubed>
     \__bnvs_group_begin:
 %    \end{macrocode}
 % Local variables:
@@ -3764,19 +3748,19 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % Implementation:
 %    \begin{macrocode}
     \regex_split:NnN \c__bnvs_split_regex { #1 } \l__bnvs_split_seq
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND_SPLIT_SEQ: /
   \#=\seq_count:N \l__bnvs_split_seq /
   \seq_use:Nn \l__bnvs_split_seq / /
 }
-%</debug&!gubed>
+%</!gubed>
     \int_set:Nn \l__bnvs_split_int { 1 }
     \tl_set:Nx \l__bnvs_ans_tl {
       \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
     }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { ANS: \l__bnvs_ans_tl }
-%</debug&!gubed>
+%</!gubed>
 %    \end{macrocode}
 % \begin{function}{\switch:nTF}
 % \begin{syntax}
@@ -3791,24 +3775,24 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \tl_set:Nx ##2 {
         \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int + ##1 }
       }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND_SWITCH/##1/
   \int_eval:n { \l__bnvs_split_int + ##1 } /
   \string##2=\tl_to_str:N##2/
 }
-%</debug&!gubed>
+%</!gubed>
       \tl_if_empty:NTF ##2 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND_SWITCH_WHITE/##1/
   \int_eval:n { \l__bnvs_split_int + ##1 }
 }
-%</debug&!gubed>
+%</!gubed>
         ##4 } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND_SWITCH_BLACK/##1/
   \int_eval:n { \l__bnvs_split_int + ##1 }
 }
-%</debug&!gubed>
+%</!gubed>
         ##3
       }
     }
@@ -3821,12 +3805,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \exp_args:NNNV
       \__bnvs_group_end:
       \tl_put_right:Nn #2 \l__bnvs_ans_tl
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND_TRUE:\tl_to_str:n { #1 } /
   \string #2=\tl_to_str:V #2 /
 }
 \log_g_prop:
-%</debug&!gubed>
+%</!gubed>
       \prg_return_true:
     }
     \cs_set:Npn \fp_round: {
@@ -3834,11 +3818,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     }
     \cs_set:Npn \return_false: {
       \__bnvs_group_end:
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND_FALSE:\tl_to_str:n { #1 } /
   \string #2=\tl_to_str:V #2 /
 }
-%</debug&!gubed>
+%</!gubed>
       \prg_return_false:
     }
     \cs_set:Npn \:NnnT ##1 ##2 ##3 ##4 {
@@ -3849,16 +3833,16 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \switch:nNTF { ##3 } \l__bnvs_path_tl {
         \seq_set_split:NnV \l__bnvs_path_seq { . } \l__bnvs_path_tl
         \seq_remove_all:Nn \l__bnvs_path_seq { }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==\seq_use:Nn\l__bnvs_path_seq .}
-%</debug&!gubed>
+%</!gubed>
       } {
         \seq_clear:N \l__bnvs_path_seq
       }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==\seq_use:Nn\l__bnvs_path_seq .}
 \__bnvs_DEBUG:x { \string ##1 }
-%</debug&!gubed>
+%</!gubed>
       ##1 \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
         \cs_set:Npn \: {
           ##4
@@ -3877,11 +3861,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % Main loop.
 %    \begin{macrocode}
     \cs_set:Npn \loop: {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { IF_APPEND_LOOP:\int_use:N\l__bnvs_split_int /
   \seq_count:N \l__bnvs_split_seq /
 }
-%</debug&!gubed>
+%</!gubed>
       \int_compare:nNnTF {
         \l__bnvs_split_int } < { \seq_count:N \l__bnvs_split_seq
       } {
@@ -3993,15 +3977,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { :LENGTH::LAST } { X.range } { 222-666 } { 10 }
 % \end{test}
 %    \begin{macrocode}
-                    \:NnnT \__bnvs_resolve:NNNTF 5 6 {
-                      \:T {
-                        \__bnvs_if_range:VNTF \l__bnvs_name_tl \l__bnvs_ans_tl {
-                          \cs_set_eq:NN \fp_round: \prg_do_nothing:
-                        } {
-                          \cs_set_eq:NN \loop: \return_false:
-                        }
-                      }
-                    }
+\:NnnT \__bnvs_resolve:NNNTF 5 6 {
+  \:T {
+    \__bnvs_if_range:VNTF \l__bnvs_name_tl \l__bnvs_ans_tl {
+      \cs_set_eq:NN \fp_round: \prg_do_nothing:
+    } {
+      \cs_set_eq:NN \loop: \return_false:
+    }
+  }
+}
                   } {
                     \switch:nNTF { 11 } \l__bnvs_a_tl {
 %    \end{macrocode}
@@ -4011,17 +3995,17 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \item Case \texttt{...+=\meta{integer}}.
 %    \begin{macrocode}
-                        \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
-                          \:T {
-%<*debug&!gubed>
+\:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+  \:T {
+%<*!gubed>
 \__bnvs_DEBUG:x {NAME=\l__bnvs_name_tl}
 \__bnvs_DEBUG:x {INCR=\l__bnvs_a_tl}
-%</debug&!gubed>
-\__bnvs_if_incr:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
-  \cs_set_eq:NN \loop: \return_false:
+%</!gubed>
+    \__bnvs_if_incr:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
+      \cs_set_eq:NN \loop: \return_false:
+    }
+  }
 }
-                          }
-                        }
                       } {
                         \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
                           \seq_if_empty:NTF \l__bnvs_path_seq {
@@ -4029,15 +4013,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \cs_set_eq:NN \loop: \return_false:
 }
                           } {
-                            \seq_pop_left:NN \l__bnvs_path_seq \l__bnvs_a_tl
-                            \seq_if_empty:NTF \l__bnvs_path_seq {
-\__bnvs_if_incr:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
+\seq_pop_left:NN \l__bnvs_path_seq \l__bnvs_a_tl
+\seq_if_empty:NTF \l__bnvs_path_seq {
+  \__bnvs_if_incr:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
+    \cs_set_eq:NN \loop: \return_false:
+  }
+} {
+  \msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
   \cs_set_eq:NN \loop: \return_false:
 }
-                            } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
-                            }
                           }
                         }
                       }
@@ -4095,21 +4079,21 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
           }
         }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {ITERATE~ANS=\l__bnvs_ans_tl }
-%</debug&!gubed>
+%</!gubed>
         \int_add:Nn \l__bnvs_split_int { 13 }
         \tl_put_right:Nx \l__bnvs_ans_tl {
           \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
         }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {ITERATE~ANS=\l__bnvs_ans_tl }
-%</debug&!gubed>
+%</!gubed>
         \loop:
       } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {END_OF_LOOP~ANS=\l__bnvs_ans_tl }
-%</debug&!gubed>
+%</!gubed>
         \return_true:
       }
     }
@@ -4185,20 +4169,20 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_if_eval_query:nN #1 #2 { T, F, TF } {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { EVAL_QUERY:#1/
   \tl_to_str:n{#1}/\string#2=\tl_to_str:N #2
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_call_reset:
   \regex_extract_once:NnNTF \c__bnvs_A_cln_Z_regex {
     #1
   } \l__bnvs_match_seq {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { EVAL_QUERY:#1/
   \string\l__bnvs_match_seq/\seq_use:Nn \l__bnvs_match_seq //
 }
-%</debug&!gubed>
+%</!gubed>
     \bool_set_false:N \l__bnvs_no_counter_bool
     \bool_set_false:N \l__bnvs_no_range_bool
 %    \end{macrocode}
@@ -4213,15 +4197,15 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
     \cs_set:Npn \switch:nNTF ##1 ##2 ##3 ##4 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { EQ_SWITCH:##1/ }
-%</debug&!gubed>
+%</!gubed>
       \tl_set:Nx ##2 {
         \seq_item:Nn \l__bnvs_match_seq { ##1 }
       }
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x { \string ##2/ \tl_to_str:N ##2/}
-%</debug&!gubed>
+%</!gubed>
       \tl_if_empty:NTF ##2 { ##4 } { ##3 }
     }
     \switch:nNTF 5 \l__bnvs_a_tl {
@@ -4350,11 +4334,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_eval:nN #1 #2 {
-%<*debug&!gubed>
+%<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_eval:nN:\tl_to_str:n{#1}/
   \string#2=\tl_to_str:V #2
 }
-%</debug&!gubed>
+%</!gubed>
   \__bnvs_group_begin:
 %    \end{macrocode}
 % Local variables declaration
