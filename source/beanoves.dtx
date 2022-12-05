@@ -63,8 +63,9 @@ Jérôme LAURENS.
 
 This work consists of the file  beanoves.dtx
 and the derived files           beanoves.ins,
-                                beanoves.pdf and
-                                beanoves.sty.
+                                beanoves.pdf,
+                                beanoves.sty and
+                                beanoves-debug.sty.
 
 \endpostamble
 \generate{
@@ -111,7 +112,7 @@ and the derived files           beanoves.ins,
 \RecordChanges
 \title{\pkg{beamer} named overlay specification with \pkg{beanoves}}
 \author{Jérôme Laurens}
-\GetFileInfo{beanoves-debug.sty}
+\GetFileInfo{\jobname-debug.sty}
 \date{\fileversion \qquad \filedate}
 \begin{document}
 \maketitle
@@ -142,7 +143,7 @@ overlay specifications have been extended.
   minted style = autumn,
 }
 \documentclass {beamer}
-\RequirePackage {beanoves-debug}
+\RequirePackage {beanoves}
 \begin{document}
 \Beanoves {
       A = 1:2,
@@ -395,8 +396,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %}
 %
 % \begin{implementation}
-% \NewDocumentEnvironment {gobble} { +b } {} {}
-%    \begin{gobble}
+% \NewDocumentEnvironment {gobble} { s+b } {
+%   \IfBooleanTF{#1}{}{\vspace{-0.5em}}
+% } {}
+%    \begin{gobble}*
 %<*package>
 %    \end{gobble}
 %
@@ -412,25 +415,38 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2020/01/01]
 \ProvidesExplPackage
+%    \end{macrocode}
+% \begin{gobble}
 %<*!debug>
+% \end{gobble}
+%    \begin{macrocode}
   {beanoves}
+%    \end{macrocode}
+% \begin{gobble}
 %</!debug>
 %<*!gubed>
   {beanoves-debug}
 %</!gubed>
+% \end{gobble}
+%    \begin{macrocode}
   {2022/10/28}
   {1.0}
   {Named overlay specifications for beamer}
 %    \end{macrocode}
 %
-% \subsection{logging and debugging facilities}
+% \subsection{logging}
 %
 % Utility message.
 %    \begin{macrocode}
 \msg_new:nnn { beanoves } { :n } { #1 }
 \msg_new:nnn { beanoves } { :nn } { #1~(#2) }
 %    \end{macrocode}
-% \begin{gobble}
+% \subsection{Debugging and testing facilities}
+% Typesetting file |beanoves.dtx| creates both \pkg{beanoves}
+% and \pkg{beanoves-debug} style files. The former is intended for everyday
+% use whereas the latter contains supplemental debugging and testing
+% facilities which are intentionally left undocumented. 
+% \begin{gobble}*
 %<*!gubed>
 \cs_set:Npn \__bnvs_DEBUG_:nn #1 #2 {
   \msg_term:nnn { beanoves } { :n } { #1~#2 }
