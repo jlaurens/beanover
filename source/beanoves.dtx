@@ -73,7 +73,7 @@ and the derived files           beanoves.ins,
 }
 \usedir{tex/latex/beanoves}
 \generate{
-  \file{\jobname.sty}{\from{\jobname.dtx}{package,gubed}}
+  \file{\jobname.sty}{\from{\jobname.dtx}{package,gubed,tset}}
 }
 %</install>
 %<install>\endbatchfile
@@ -515,7 +515,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %     \__bnvs_DEBUG:x {TEST~\l_banner_tl\space file:~\myCurrentTestFile, line:~\the\inputlineno}
 %   }
 %   \cs_set:Npn \banner:n ##1 {
-%     \__bnvs_call_reset:
+%     \__bnvs_call_greset:
 %      {
 %   \__bnvs_DEBUG_on:
 %   \__bnvs_DEBUG:x { ▶︎▶︎▶︎▶︎▶︎~TEST~##1~/~line:~\the\inputlineno}
@@ -871,14 +871,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % we do not specialize with the module name.
 % On execution, next initialization instructions declare the variables as side effect.
 %    \begin{macrocode}
-\int_new:N  \l__bnvs_depth_int
-\bool_new:N \l__bnvs_ask_bool
-\bool_new:N \l__bnvs_query_bool
-\bool_new:N \l__bnvs_no_counter_bool
-\bool_new:N \l__bnvs_no_range_bool
-\bool_new:N \l__bnvs_continue_bool
-\bool_new:N \l__bnvs_in_frame_bool
-\bool_set_false:N \l__bnvs_in_frame_bool
 \tl_new:N \l__bnvs_id_current_tl
 \tl_new:N \l__bnvs_a_tl
 \tl_new:N \l__bnvs_b_tl
@@ -890,6 +882,8 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \tl_new:N \l__bnvs_group_tl
 \tl_new:N \l__bnvs_query_tl
 \tl_new:N \l__bnvs_token_tl
+\int_new:N \g__bnvs_call_int
+\int_new:N \l__bnvs_depth_int
 \seq_new:N \l__bnvs_a_seq
 \seq_new:N \l__bnvs_b_seq
 \seq_new:N \l__bnvs_ans_seq
@@ -898,22 +892,28 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \seq_new:N \l__bnvs_path_seq
 \seq_new:N \l__bnvs_query_seq
 \seq_new:N \l__bnvs_token_seq
+\bool_new:N \l__bnvs_no_counter_bool
+\bool_new:N \l__bnvs_no_range_bool
+\bool_new:N \l__bnvs_in_frame_bool
+\bool_set_false:N \l__bnvs_in_frame_bool
 %    \end{macrocode}
 % \subsection{Infinite loop management}
 % Unending recursivity is managed here.
 % \begin{variable} {\g__bnvs_call_int}
+% Some functions calls, as well as some loop bodies, decrement this counter.
+% When this counter reaches 0, an error is raised or
+% a computation is aborted.
+% \end{variable}
 %    \begin{macrocode}
-\int_zero_new:N  \g__bnvs_call_int
 \int_const:Nn \c__bnvs_max_call_int { 2048 }
 %    \end{macrocode}
-% \end{variable}
-% \begin{function}{\__bnvs_call_reset:}
+% \begin{function}{\__bnvs_call_greset:}
 % \begin{syntax}
-% \cs{__bnvs_call_reset:}
+% \cs{__bnvs_call_greset:}
 % \end{syntax}
-% Reset the call stack counter.
+% Reset globally the call stack counter to its maximum value.
 %    \begin{macrocode}
-\cs_set:Npn  \__bnvs_call_reset: {
+	\cs_set:Npn  \__bnvs_call_greset: {
   \int_gset:Nn \g__bnvs_call_int { \c__bnvs_max_call_int }
 }
 %    \end{macrocode}
@@ -1277,28 +1277,21 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     ( \ur{c__bnvs_path_regex} ) (?: \. n )?
 %    \end{macrocode}
 % \begin{test}[banner=split_regex]
-% \cs_set:Npn \Test:nnn {
+% \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 } {#2,{},{},{},{},{},{},{},{},{},{}} { #3 }
 % }
-% \Test:nnn { ++ABC.n }
-%   {{++ABC.n},{ABC},{},{},{},{},{},{},{},{},{},{},{}} {2a}
-% \Test:nnn { ++ABC.1.2.n~~ }
-%   {{++ABC.1.2.n~~},{ABC},{},{.1.2},{},{},{},{},{},{},{},{},{}} {2b}
-% \Test:nnn { ++ABC }
-%   {{++ABC},{ABC},{},{},{},{},{},{},{},{},{},{},{}} {2c}
-% \Test:nnn { ++ABC.1.2~~ }
-%   {{++ABC.1.2~~},{ABC},{},{.1.2},{},{},{},{},{},{},{},{},{}} {2d}
-% \Test:nnn { ++?!ABC.n }
-%   {{++?!ABC.n},{?!ABC},{?!},{},{},{},{},{},{},{},{},{},{}} {2a}
-% \Test:nnn { ++?!ABC.1.2.n~~ }
-%   {{++?!ABC.1.2.n~~},{?!ABC},{?!},{.1.2},{},{},{},{},{},{},{},{},{}} {2b}
-% \Test:nnn { ++?!ABC }
-%   {{++?!ABC},{?!ABC},{?!},{},{},{},{},{},{},{},{},{},{}} {2c}
-% \Test:nnn { ++?!ABC.1.2~~ }
-%   {{++?!ABC.1.2~~},{?!ABC},{?!},{.1.2},{},{},{},{},{},{},{},{},{}} {2d}
+% \Test:nnn { ++ABC.n } {{++ABC.n},{ABC},{},{}} {2a}
+% \Test:nnn { ++ABC.1.2.n~~ } {{++ABC.1.2.n~~},{ABC},{},{.1.2}} {2b}
+% \Test:nnn { ++ABC } {{++ABC},{ABC},{},{}} {2c}
+% \Test:nnn { ++ABC.1.2~~ } {{++ABC.1.2~~},{ABC},{},{.1.2}} {2d}
+% \Test:nnn { ++?!ABC.n } {{++?!ABC.n},{?!ABC},{?!},{}} {2a}
+% \Test:nnn { ++?!ABC.1.2.n~~ } {{++?!ABC.1.2.n~~},{?!ABC},{?!},{.1.2}} {2b}
+% \Test:nnn { ++?!ABC } {{++?!ABC},{?!ABC},{?!},{}} {2c}
+% \Test:nnn { ++?!ABC.1.2~~ } {{++?!ABC.1.2~~},{?!ABC},{?!},{.1.2}} {2d}
 % \end{test}
 % We continue with other expressions
-%   \item 4: fully qualified \meta{name} of a slide range,
+%   \item 4: qualified \meta{name} of a slide range,
 %   \item 5: \meta{id} of a slide range plus the exclamation mark
 % (to manage void \meta{id})
 %    \begin{macrocode}
@@ -1320,92 +1313,72 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2 } { #3 } 
+%     { #1 } { {#1},{},{},{},#2,{e},{},{},{},{},{},{} } { #3 } 
 % }
-% \Test:nnn { A.length }
-%   {{A},{},{},{e},{},{},{},{},{}} {5a}
-% \Test:nnn { A.1.2.length }
-%   {{A},{},{.1.2},{e},{},{},{},{},{}} {5b}
-% \Test:nnn { ?!A.length }
-%   {{?!A},{?!},{},{e},{},{},{},{},{}} {5c}
-% \Test:nnn { ?!A.1.2.length }
-%   {{?!A},{?!},{.1.2},{e},{},{},{},{},{}} {5d}
+% \Test:nnn { A.length } {{A},{},{}} {5a}
+% \Test:nnn { A.1.2.length } {{A},{},{.1.2}} {5b}
+% \Test:nnn { ?!A.length } {{?!A},{?!},{}} {5c}
+% \Test:nnn { ?!A.1.2.length } {{?!A},{?!},{.1.2}} {5d}
 % \end{test}
 %   \item 8: the \meta{last} attribute
 %    \begin{macrocode}
     |  \. l(a)st
 %    \end{macrocode}
-% \begin{test}[banner=split_regex]
+% \begin{test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2 } { #3 } 
+%     { #1 } { {#1},{},{},{},#2,{},{a},{},{},{},{},{} } { #3 } 
 % }
-% \Test:nnn { A.last }
-%   {{A},{},{},{},{a},{},{},{},{}} {6a}
-% \Test:nnn { A.1.2.last }
-%   {{A},{},{.1.2},{},{a},{},{},{},{}} {6b}
-% \Test:nnn { ?!A.last }
-%   {{?!A},{?!},{},{},{a},{},{},{},{}} {6c}
-% \Test:nnn { ?!A.1.2.last }
-%   {{?!A},{?!},{.1.2},{},{a},{},{},{},{}} {6d}
+% \Test:nnn { A.last } {{A},{},{}} {6a}
+% \Test:nnn { A.1.2.last } {{A},{},{.1.2}} {6b}
+% \Test:nnn { ?!A.last } {{?!A},{?!},{}} {6c}
+% \Test:nnn { ?!A.1.2.last } {{?!A},{?!},{.1.2}} {6d}
 % \end{test}
 %   \item 9: the \meta{next} attribute
 %    \begin{macrocode}
     |  \. ne(x)t
 %    \end{macrocode}
-% \begin{test}[banner=split_regex]
+% \begin{test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2 } { #3 } 
+%     { #1 } { {#1},{},{},{},#2,{},{},{x},{},{},{},{}} { #3 } 
 % }
-% \Test:nnn { A.next }
-%   {{A},{},{},{},{},{x},{},{},{}} {7a}
-% \Test:nnn { A.1.2.next }
-%   {{A},{},{.1.2},{},{},{x},{},{},{}} {7b}
-% \Test:nnn { ?!A.next }
-%   {{?!A},{?!},{},{},{},{x},{},{},{}} {7c}
-% \Test:nnn { ?!A.1.2.next }
-%   {{?!A},{?!},{.1.2},{},{},{x},{},{},{}} {7d}
+% \Test:nnn { A.next } {{A},{},{}} {7a}
+% \Test:nnn { A.1.2.next } {{A},{},{.1.2}} {7b}
+% \Test:nnn { ?!A.next } {{?!A},{?!},{}} {7c}
+% \Test:nnn { ?!A.1.2.next } {{?!A},{?!},{.1.2}} {7d}
 % \end{test}
 %   \item 10: the \meta{range} attribute
 %    \begin{macrocode}
     |  \. (r)ange
 %    \end{macrocode}
-% \begin{test}[banner=split_regex]
+% \begin{test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2 } { #3 } 
+%     { #1 } { {#1},{},{},{},#2,{},{},{},{r},{},{},{} } { #3 } 
 % }
-% \Test:nnn { A.range }
-%   {{A},{},{},{},{},{},{r},{},{}} {8a}
-% \Test:nnn { A.1.2.range }
-%   {{A},{},{.1.2},{},{},{},{r},{},{}} {8b}
-% \Test:nnn { ?!A.range }
-%   {{?!A},{?!},{},{},{},{},{r},{},{}} {8c}
-% \Test:nnn { ?!A.1.2.range }
-%   {{?!A},{?!},{.1.2},{},{},{},{r},{},{}} {8d}
+% \Test:nnn { A.range } {{A},{},{}} {8a}
+% \Test:nnn { A.1.2.range } {{A},{},{.1.2}} {8b}
+% \Test:nnn { ?!A.range } {{?!A},{?!},{}} {8c}
+% \Test:nnn { ?!A.1.2.range } {{?!A},{?!},{.1.2}} {8d}
 % \end{test}
 %   \item 11: the \meta{n} attribute
 %    \begin{macrocode}
     |  \. (n)
 %    \end{macrocode}
-% \begin{test}[banner=split_regex]
+% \begin{test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2 } { #3 } 
+%     { #1 } { {#1},{},{},{},#2,{},{},{},{},{n},{},{} } { #3 } 
 % }
-% \Test:nnn { A.n }
-%   {{A},{},{},{},{},{},{},{n},{}} {9a}
-% \Test:nnn { A.1.2.n }
-%   {{A},{},{.1.2},{},{},{},{},{n},{}} {9b}
-% \Test:nnn { ?!A.n }
-%   {{?!A},{?!},{},{},{},{},{},{n},{}} {9c}
-% \Test:nnn { ?!A.1.2.n }
-%   {{?!A},{?!},{.1.2},{},{},{},{},{n},{}} {9d}
+% \Test:nnn { A.n } {{A},{},{}} {9a}
+% \Test:nnn { A.1.2.n } {{A},{},{.1.2}} {9b}
+% \Test:nnn { ?!A.n } {{?!A},{?!},{}} {9c}
+% \Test:nnn { ?!A.1.2.n } {{?!A},{?!},{.1.2}} {9d}
 % \end{test}
 %   \item 12: the poor man integer expression after `|+=|',
 %   which is the longest sequence of black characters,
@@ -1415,12 +1388,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \begin{macrocode}
         (?: \s* \+= \s* ( \S+ ) )?
 %    \end{macrocode}
-% \begin{test}[banner={split_regex/+=}]
+% \begin{test}[banner={\string\c__bnvs_split_regex/+=}]
 % \cs_set:Npn \:nnnn #1 #2 #3 #4 {
 %   \banner:n { #4 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
 %     { #1 }
-%     { {#2},{},{},{},#3 } { #4 } 
+%     { {#2},{},{},{},#3,{} } { #4 } 
 % }
 % \cs_set:Npn \Test:nnnn #1 #2 {
 %   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
@@ -1444,7 +1417,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { ?!ABC.n += 421 } {}
 %   {{?!ABC},{?!},{},{},{},{},{},{n},{421}} {`+='~5}
 % \__bnvs_test_extract:Nnnn \c__bnvs_key_regex
-%   { P.1 } {P.1} {`+='~2}
+%   { P.1 } { P.1 } { `+='~2 }
 % \Test:nnnn { ?!ABC.n += 1+P.1 } {}
 %   {{?!ABC},{?!},{},{},{},{},{},{n},{1+P.1}} {`+='~6}
 % \Test:nnnn { ?!ABC.n += 1+P.1~X } {?!ABC.n += 1+P.1~}
@@ -1452,6 +1425,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { ?!ABC.n += (P.1+1)~~^^A(
 % ) } {?!ABC.n += (P.1+1)~~} {?!ABC,{?!},{},{},{},{},{},{n},{(P.1+1)}} {`+='~8}
 % \end{test}
+%   \item 13: the post increment
+%    \begin{macrocode}
+    | (?:\.n)? (\+)\+
+%    \end{macrocode}
 %    \begin{macrocode}
     )?
 %    \end{macrocode}
@@ -1461,13 +1438,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \begin{test}[banner=split_regex]
-% \cs_set:Npn \Test:nnn {
+% \cs_set:Npn \Test:nnn #1 #2 #3{
 %   \__bnvs_test_split:Nnnn \c__bnvs_split_regex
+%  { 1/#1/2 } { 1/,#2,/2 } { #3 }
 % }
-% \Test:nnn { 1/++A/2 }   { 1/,{A}    ,{},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
-% \Test:nnn { 1/++?!A/2 } { 1/,{?!A},{?!},{},{},{},{},{},{},{},{},{},{},/2} { 1 }
-% \Test:nnn { 1/++A.3/2 } { 1/,{A},{},{.3},{},{},{},{},{},{},{},{},{},/2} { 1 }
-% \Test:nnn { 1/++?!A.3/2 } { 1/,{?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},/2} { 1 }
+% \Test:nnn { ++A }   { {A}    ,{},{},{},{},{},{},{},{},{},{},{},{}} { 1 }
+% \Test:nnn { ++?!A } { {?!A},{?!},{},{},{},{},{},{},{},{},{},{},{}} { 1 }
+% \Test:nnn { ++A.3 } { {A},{},{.3},{},{},{},{},{},{},{},{},{},{}} { 1 }
+% \Test:nnn { ++?!A.3 } { {?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},{}} { 1 }
 % \end{test}
 % \end{variable}
 %
@@ -2002,7 +1980,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \cs{beamer@frame} \marg{overlay specification}
 % \cs{beamer@masterdecode} \marg{overlay specification}
 % \end{syntax}
-% Preprocess \meta{overlay specification} before \pkg{beamer} uses it.
+% Preprocess \meta{overlay specification} before \pkg{beamer} reads it.
 % \begin{variable}{\l__bnvs_ans_tl}
 %   Storage for the translated overlay specification, where |?(...)| instructions are replaced by their static counterparts.
 % \end{variable}
@@ -2036,9 +2014,9 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % Scan the \meta{named overlay expression} argument and feed the \meta{tl variable} replacing |?(...)| instructions by their static counterpart
 % with help from the \meta{eval} function, which is \cs{__bnvs_eval:nN}.
 % A group is created to use local variables:
-% \begin{description}
-%   \item[\cs{l_ans_tl}:] is the token list that will be appended to \meta{tl variable} on return.
-% \end{description}
+% \begin{variable}{\l__bnvs_ans_tl}
+% The token list that will be appended to \meta{tl variable} on return.
+% \end{variable}
 % \begin{variable}{\l__bnvs_depth_int}
 % Store the depth level in parenthesis grouping used when finding
 %     the proper closing parenthesis balancing the opening parenthesis that
@@ -2050,189 +2028,199 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \begin{variable}{\l__bnvs_token_seq}
 % The \meta{overlay expression} is split into the sequence of its tokens.
 % \end{variable}
-% \begin{variable}{\l__bnvs_ask_bool}
-% Whether a loop may continue.
-% Controls the continuation of the main loop that scans
-%     the tokens of the \meta{named overlay expression} looking for a question mark.
-% \end{variable}
-% \begin{variable}{\l__bnvs_query_bool}
-% Whether a loop may continue. 
-% Controls the continuation of the secondary loop that scans
-%     the tokens of the \meta{named overlay expression} looking for an opening
-%     parenthesis follow the question mark.
-%     It then controls the loop looking for the balanced closing parenthesis.
-% \end{variable}
 % \begin{variable}{\l__bnvs_token_tl}
 % Storage for just one token.
 % \end{variable}
 % \end{function}
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_scan:nNN #1 #2 #3 {
+%    \end{macrocode}
+% \begin{gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_scan:nNN }
+\__bnvs_DEBUG:x { #1 / }
+\__bnvs_DEBUG:x { \string#2 / }
+\__bnvs_DEBUG:x { \string#3 / }
+%</!gubed>
+% \end{gobble}
+%    \begin{macrocode}
   \__bnvs_group_begin:
   \tl_clear:N \l__bnvs_ans_tl
-  \int_zero:N \l__bnvs_depth_int
   \seq_clear:N \l__bnvs_token_seq
 %    \end{macrocode}
 % Explode the \meta{named overlay expression} into a list of tokens:
 %    \begin{macrocode}
   \regex_split:nnN {} { #1 } \l__bnvs_token_seq
 %    \end{macrocode}
-% Run the top level loop to scan for a `|?|':
+% \begin{function}{\scan_question:}
+% \begin{syntax}
+% \cs{scan_question:}
+% \end{syntax}
+% At top level state, scan the tokens of the
+% \meta{named overlay expression} looking for a `|?|' character.
+% \end{function}
 %    \begin{macrocode}
-  \bool_set_true:N  \l__bnvs_ask_bool
-  \bool_while_do:Nn \l__bnvs_ask_bool {
-    \seq_pop_left:NN \l__bnvs_token_seq \l__bnvs_token_tl
-    \quark_if_no_value:NTF \l__bnvs_token_tl {
+  \cs_set:Npn \scan_question: {
 %    \end{macrocode}
-% We reached the end of the sequence (and the token list),
-% we end the loop here.
+% \begin{gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\scan_question: }
+\__bnvs_DEBUG:x { \string\l__bnvs_ans_tl :~\l__bnvs_ans_tl / }
+%</!gubed>
+% \end{gobble}
 %    \begin{macrocode}
-      \bool_set_false:N \l__bnvs_ask_bool
-    } {
-%    \end{macrocode}
-% \cs{l_token_tl} contains a `normal' token.
-%    \begin{macrocode}
+    \seq_pop_left:NNT \l__bnvs_token_seq \l__bnvs_token_tl {
       \tl_if_eq:NnTF \l__bnvs_token_tl { ? } {
+        \require_open:
+      } {
+        \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_token_tl
+        \scan_question:
+      }
+    }
+  }
 %    \end{macrocode}
-% We found a `|?|', we first gobble tokens until the next `|(|', ^^A ---)
+% \begin{function}{\require_open:}
+% \begin{syntax}
+% \cs{require_open:}
+% \end{syntax}
+% We just found a `|?|',
+% we first gobble tokens until the next `|(|', ^^A ---)
 % whatever they may be. In general, no tokens should be silently ignored.
+% \end{function}
 %    \begin{macrocode}
-        \bool_set_true:N \l__bnvs_query_bool
-        \bool_while_do:Nn \l__bnvs_query_bool {
+  \cs_set:Npn \require_open: {
 %    \end{macrocode}
+% \begin{gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\require_open: }
+\__bnvs_DEBUG:x { \string\l__bnvs_ans_tl :~\l__bnvs_ans_tl/}
+%</!gubed>
+% \end{gobble}
 % Get next token.
 %    \begin{macrocode}
-          \seq_pop_left:NN \l__bnvs_token_seq \l__bnvs_token_tl
-          \quark_if_no_value:NTF \l__bnvs_token_tl {
-%    \end{macrocode}
-% No opening parenthesis found, raise.
-%    \begin{macrocode}
-            \msg_fatal:nnx { beanoves } { :n } {Missing~'('%---)
-              ~after~a~?:~#1}
-          } {
-            \tl_if_eq:NnT \l__bnvs_token_tl { ( %)
-            } {
+    \seq_pop_left:NNTF \l__bnvs_token_seq \l__bnvs_token_tl {
+      \tl_if_eq:NnTF \l__bnvs_token_tl { ( %)
+      } {
 %    \end{macrocode}
 % We found the `|(|` after the `|?|'. ^^A---)
-% Increment the parenthesis depth to 1 (on first passage).
+% Set the parenthesis depth to 1 (on first passage).
 %    \begin{macrocode}
-              \int_incr:N \l__bnvs_depth_int
+        \int_set:Nn \l__bnvs_depth_int { 1 }
 %    \end{macrocode}
-% Record the forthcomming content in the \cs{l_query_tl} variable, ^^A(---
+% Record the forthcomming content in
+% the \cs{l__bnvs_query_tl} variable, ^^A(---
 % up to the next balancing `|)|`.
 %    \begin{macrocode}
-              \tl_clear:N \l__bnvs_query_tl
-              \bool_while_do:Nn \l__bnvs_query_bool {
+        \tl_clear:N \l__bnvs_query_tl
+        \require_close:
+      } {
 %    \end{macrocode}
+% Ignore this token and loop.
+%    \begin{macrocode}
+        \require_open:
+      }
+    } {
+%    \end{macrocode}
+% End reached but no opening parenthesis found, raise.
+%    \begin{macrocode}
+      \msg_fatal:nnx { beanoves } { :n } {Missing~'('%---)
+        ~after~a~?:~#1}
+    }
+  }
+%    \end{macrocode}
+% \begin{function}{\require_close:}
+% \begin{syntax}
+% \cs{require_close:}
+% \end{syntax}
+% We found a `|?(|', we record the forthcomming content in the \cs{l__bnvs_query_tl} variable,
+% up to the next balancing `|)|`.
+% \end{function}
+%    \begin{macrocode}
+  \cs_set:Npn \require_close: {
+%    \end{macrocode}
+% \begin{gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\require_close: }
+\__bnvs_DEBUG:x { \string\l__bnvs_query_tl :~\l__bnvs_query_tl/}
+%</!gubed>
+% \end{gobble}
 % Get next token.
 %    \begin{macrocode}
-                \seq_pop_left:NN \l__bnvs_token_seq \l__bnvs_token_tl
-                \quark_if_no_value:NTF \l__bnvs_token_tl {
-%    \end{macrocode}
-% We reached the end of the sequence and the token list with no closing ^^A(---
-% `|)|'.
-% We raise and end both bool while loops.
-% As recovery we feed \cs{l_query_tl} with the missing ^^A(---
-% `|)|'.
-% |\l__bnvs_depth_int| is 0 whenever |\l__bnvs_query_bool| is false.
-%    \begin{macrocode}
-                  \msg_error:nnx { beanoves } { :n } {Missing~%(---
-                    `)':~#1 }
-                  \int_do_while:nNnn \l__bnvs_depth_int > 1 {
-                    \int_decr:N \l__bnvs_depth_int
-                    \tl_put_right:Nn \l__bnvs_query_tl {%(---
-                    )}
-                  }
-                  \int_zero:N \l__bnvs_depth_int
-                  \bool_set_false:N \l__bnvs_query_bool
-                  \bool_set_false:N \l__bnvs_ask_bool
-                } {
-                  \tl_if_eq:NnTF \l__bnvs_token_tl { ( %---)
-                  } {
+    \seq_pop_left:NNTF \l__bnvs_token_seq \l__bnvs_token_tl {
+      \tl_if_eq:NnTF \l__bnvs_token_tl { ( %---)
+      } {
 %    \end{macrocode}
 % We found a `|(|', ^^A---)
-% increment the depth and append the token to \cs{l_query_tl}.
+% increment the depth and append the token to \cs{l__bnvs_query_tl},
+% then scan again for a^^A---(
+% |)|.
 %    \begin{macrocode}
-                    \int_incr:N \l__bnvs_depth_int
-                    \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
-                  } {
+        \int_incr:N \l__bnvs_depth_int
+        \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
+        \require_close:
+      } {
 %    \end{macrocode}
 % This is not a `|(|'.^^A---)
 %    \begin{macrocode}
-                    \tl_if_eq:NnTF \l__bnvs_token_tl { %(
-                      )
-                    } {
+        \tl_if_eq:NnTF \l__bnvs_token_tl { %(---
+          )
+        } {
 %    \end{macrocode}
 % We found a  ^^A(---
-% `|)|', decrement the depth.
+% `|)|', we decrement and test the depth.
 %    \begin{macrocode}
-                      \int_decr:N \l__bnvs_depth_int
-                      \int_compare:nNnTF \l__bnvs_depth_int = 0 {
+          \int_decr:N \l__bnvs_depth_int
+          \int_compare:nNnTF \l__bnvs_depth_int = 0 {
 %    \end{macrocode}
 % The depth level has reached 0: we found our balancing parenthesis
 % of the |?(...)| instruction.
 % We can append the evaluated slide ranges token list to \cs{l_ans_tl}
-% and stop the inner loop.
+% and look for the next |?|.
 %    \begin{macrocode}
-  \exp_args:NV #2 \l__bnvs_query_tl \l__bnvs_ans_tl
-  \bool_set_false:N \l__bnvs_query_bool
-                      } {
+            \exp_args:NV #2 \l__bnvs_query_tl \l__bnvs_ans_tl
+            \scan_question:
+          } {
 %    \end{macrocode}
 % The depth has not yet reached level 0. ^^A(---
-% We append the `|)|' to \cs{l_query_tl} because it is not the
+% We append the `|)|' to \cs{l__bnvs_query_tl} because it is not yet the
 % end of sequence marker.
 %    \begin{macrocode}
-                        \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
-                      }
-%    \end{macrocode}
-% Above ends the code for a positive depth.
-%    \begin{macrocode}
-                    } {
+            \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
+            \require_close:
+          }
+        } {
 %    \end{macrocode}
 % The scanned token is not a `|(|' nor a `|)|',
-% we append it as is to \cs{l_query_tl}.
+% we append it as is to \cs{l__bnvs_query_tl}
+% and look for a^^A(---
+% |)|.
 %    \begin{macrocode}
-                      \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
-                    }
-                  }
-                }
+          \tl_put_right:NV \l__bnvs_query_tl \l__bnvs_token_tl
+          \require_close:
+        }
+      }
+    } {
 %    \end{macrocode}
 % Above ends the code for Not a  `|(|'^^A---)
+% We reached the end of the sequence and the token list with no closing ^^A(---
+% `|)|'.
+% We raise and terminate.
+% As recovery we feed \cs{l__bnvs_query_tl} with the missing ^^A(---
+% `|)|'.
 %    \begin{macrocode}
-              }
-            }
-%    \end{macrocode}
-% Above ends the code for: Found the `|(|' after the `|?|' ^^A---)
-%    \begin{macrocode}
-          }
-%    \end{macrocode}
-% Above ends the code for not a no value quark.
-%    \begin{macrocode}
-        }
-%    \end{macrocode}
-% Above ends the code for the bool while loop to find the `|(|' after the `|?|'.^^A---)
-%
-% If we reached the end of the token list, then end both the current loop and its containing loop.
-%    \begin{macrocode}
-        \quark_if_no_value:NT \l__bnvs_token_tl {
-          \bool_set_false:N \l__bnvs_query_bool
-          \bool_set_false:N \l__bnvs_ask_bool
-        }
-      } {
-%    \end{macrocode}
-% This is not a `|?|', append the token to right of \cs{l_ans_tl} and continue.
-%    \begin{macrocode}
-        \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_token_tl
+      \msg_error:nnx { beanoves } { :n } {Missing~%(---
+        `)':~#1 }
+      \tl_put_right:Nx \l__bnvs_query_tl {
+        \prg_replicate:nn { \l__bnvs_depth_int } {%(---
+        )}
       }
-%    \end{macrocode}
-% Above ends the code for the bool while loop to find a `|(|' after the `|?|' ^^A---)
-%    \begin{macrocode}
+      \exp_args:NV #2 \l__bnvs_query_tl \l__bnvs_ans_tl
     }
   }
 %    \end{macrocode}
-% Above ends the outer bool while loop to find `|?|' characters.
-% We can append our result to \meta{tl variable}
+% Run the top level loop to scan for a `|?|':
 %    \begin{macrocode}
+  \scan_question:
   \exp_args:NNNV
   \__bnvs_group_end:
   \tl_put_right:Nn #3 \l__bnvs_ans_tl
@@ -4421,12 +4409,27 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   }
 }
                       } {
-                        \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
-                          \seq_if_empty:NTF \l__bnvs_path_seq {
+%    \end{macrocode}
+% \item Case \texttt{...n++}.
+%    \begin{macrocode}
+                        \switch:nNTF { 13 } \l__bnvs_a_tl {
+                          \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+                            \seq_if_empty:NTF \l__bnvs_path_seq {
+\__bnvs_if_post:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+  \cs_set_eq:NN \loop: \return_false:
+}
+                            } {
+\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
+\cs_set_eq:NN \loop: \return_false:
+                            }
+                          }
+                        } {
+                          \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+                            \seq_if_empty:NTF \l__bnvs_path_seq {
 \__bnvs_if_counter:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
   \cs_set_eq:NN \loop: \return_false:
 }
-                          } {
+                            } {
 \seq_pop_left:NN \l__bnvs_path_seq \l__bnvs_a_tl
 \seq_if_empty:NTF \l__bnvs_path_seq {
   \__bnvs_if_incr:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
@@ -4436,6 +4439,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
   \cs_set_eq:NN \loop: \return_false:
 }
+                            }
                           }
                         }
                       }
@@ -4500,7 +4504,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %</!gubed>
 % \end{gobble}
 %    \begin{macrocode}
-        \int_add:Nn \l__bnvs_split_int { 13 }
+        \int_add:Nn \l__bnvs_split_int { 14 }
         \tl_put_right:Nx \l__bnvs_ans_tl {
           \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
         }
@@ -4604,7 +4608,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %</!gubed>
 % \end{gobble}
 %    \begin{macrocode}
-  \__bnvs_call_reset:
+  \__bnvs_call_greset:
   \regex_extract_once:NnNTF \c__bnvs_A_cln_Z_regex {
     #1
   } \l__bnvs_match_seq {
