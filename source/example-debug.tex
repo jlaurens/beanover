@@ -1,0 +1,140 @@
+\PassOptionsToPackage {svgnames}{xcolor}
+\documentclass {beamer}
+\RequirePackage {lmodern}
+\RequirePackage {beanoves-debug}
+\AddToHook{cmd/ttfamily/after}{\frenchspacing}
+\ExplSyntaxOn
+\tl_new:N \MyExpect_tl
+\cs_new:Npn \MyDoExpect:Nn #1 #2 {
+  \BeanovesEval[\MyExpect_tl]{#2}
+  \int_compare:nNnTF {\insertslidenumber} #1 {\MyExpect_tl} {\color{Green}(}{\color{Red}(FAILURE:~}
+}
+\cs_generate_variant:Nn \MyDoExpect:Nn { Nx }
+\cs_new:Npn \MyExpect:Nn #1#2 {
+  \group_begin:
+  \MyDoExpect:Nx #1 {#2}
+  \insertslidenumber \ensuremath{#1} #2)
+  \group_end:
+}
+\cs_new:Npn \MyExpectEqual {
+  \MyExpect:Nn =
+}
+\cs_new:Npn \MyExpectBelow #1 {
+  \MyExpect:Nn < { #1 + 1 }
+}
+\cs_new:Npn \MyExpectAbove #1 {
+  \MyExpect:Nn > { #1 - 1 }
+}
+\cs_new:Npn \MyExpectBetween #1 #2 {
+  \MyExpectAbove{#1}
+  \MyExpectBelow{#2}
+}
+\cs_new:Npn \MyExpectInRange #1 {
+  \__bnvs_group_begin:
+  \tl_clear:N \l__bnvs_a_tl
+  \tl_clear:N \l__bnvs_b_tl
+  \tl_clear:N \l__bnvs_c_tl
+  \regex_split:NnN \c__bnvs_colons_regex { #1 } \l__bnvs_split_seq
+  \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_a_tl {
+    \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_b_tl {
+      \tl_if_empty:NTF \l__bnvs_b_tl {
+        \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_b_tl
+        \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_c_tl {
+          \tl_if_empty:NTF \l__bnvs_c_tl {
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(1):~#1 }
+          } {
+            \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_c_tl
+            \seq_if_empty:NF \l__bnvs_split_seq {
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(3):~#1 }
+            }
+          }
+        }
+      } {
+        \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_c_tl
+        \seq_pop_left:NNTF \l__bnvs_split_seq \l__bnvs_b_tl {
+          \tl_if_empty:NTF \l__bnvs_b_tl {
+            \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_b_tl
+            \seq_if_empty:NF \l__bnvs_split_seq {
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(5):~#1 }
+            }
+          } {
+\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(6):~#1 }
+          }
+        } {
+          \tl_clear:N \l__bnvs_b_tl
+        }
+      }
+    }
+  }
+  \tl_if_empty:NTF \l__bnvs_a_tl {
+    \tl_if_empty:NTF \l__bnvs_b_tl {
+      \tl_if_empty:NTF \l__bnvs_c_tl {
+        \emoji{prohibited}
+      } {
+        \MyExpectBelow \l__bnvs_c_tl
+      }
+    } {
+      \tl_if_empty:NTF \l__bnvs_c_tl {
+        \emoji{prohibited}
+      } {
+        \MyExpectBelow { \l__bnvs_c_tl }
+        \MyExpectAbove { \l__bnvs_c_tl - (\l__bnvs_b_tl)  + 1 }
+      }
+    }
+  } {
+    \MyExpectAbove { \l__bnvs_a_tl }
+    \tl_if_empty:NTF \l__bnvs_b_tl {
+      \tl_if_empty:NF \l__bnvs_c_tl {
+        \MyExpectBelow { \l__bnvs_c_tl }
+      }
+    } {
+      \MyExpectBelow { \l__bnvs_a_tl + \l__bnvs_b_tl - 1 }
+      \tl_if_empty:NF \l__bnvs_c_tl {
+        \emoji{prohibited}
+      }
+    }
+  }
+  \__bnvs_group_end:
+}
+\ExplSyntaxOff
+\RequirePackage[listings]{tcolorbox}
+\begin{document}
+\Beanoves {
+      A = 1:2,
+      B = A.next:3,
+      C = B.next,
+    }
+\begin{test}[banner=FRAME, dedbug]
+\begin{frame}[fragile]
+  {\Large Frame \insertframenumber}
+  {\Large Slide \insertslidenumber}
+\visible<?(1)> {Only on slide 1}\\
+\visible<?(A.2)> {Only on slide 2}\\
+\end{frame}
+\end{test}
+%\Beanoves {
+%      A = 1:2,
+%      B = A.next:3,
+%      C = B.next,
+%    }
+%\begin{frame}
+%  {\Large Frame \insertframenumber}
+%  {\Large Slide \insertslidenumber}
+%\begin{block}{Declarations}
+%\ttfamily
+%      A = 1:2,\\
+%      B = A.next:3,\\
+%      C = B.next,
+%\end{block}
+%\visible<?(A.1)> {Only on slide 1 \MyExpectEqual{A.1}}\\
+%\visible<?(B.1)-?(B.last)> {Only on slide 3 \MyExpectAbove{B.1} to 5 \MyExpectBelow{B.last}}\\
+%\visible<?(C.1)> {Only on slide 6 \MyExpectEqual{C.1}}\\
+%\visible<?(A.2)> {Only on slide 2 \MyExpectEqual{A.2}}\\
+%\visible<?(B.2::B.last)> {Only on slide 4 to 5 \MyExpectInRange{B.2::B.last}}\\
+%\visible<?(C.2)> {Only on slide 7 \MyExpectEqual{C.2}}\\
+%\visible<?(A.3)-> {From slide 3 \MyExpectAbove{A.3}}\\
+%\visible<?(A.4:)> {From slide 4 \MyExpectInRange{A.4:}}\\
+%\visible<?(B.3::B.last)> {Only on slide 5 \MyExpectInRange{B.3::B.last}}\\
+%\visible<?(C.3)> {Only on slide 8 \MyExpectEqual{C.3}}\\
+%\end{frame}
+\end{document}
