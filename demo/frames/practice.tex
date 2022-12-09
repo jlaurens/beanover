@@ -1,0 +1,104 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX root = ../demo.tex
+\setlength{\tabcolsep}{0mm}
+\renewcommand\arraystretch{0}%
+\begin{tabular}{p{0.275\textwidth}p{0.725\textwidth}}
+%
+\only<?(X1.range)>{%
+  \BealoverReset{W1}%
+  \begin{itemize} [<?(++W1)->]
+    \item Octopus
+    \item Starfish
+    \item Picasso \rlap{fish}
+  \end{itemize}
+}%
+%
+\only<?(X2.range)>{%
+  \BealoverReset{W2}%
+  {
+  \setbeamercovered{transparent=30}
+  \begin{itemize} [<?(++W2)>]
+    \item Octopus
+    \item Starfish
+    \item Picasso \rlap{fish}
+  \end{itemize}%
+}%
+}
+&
+\begin{myCodeBox}[baseline=5.5\baselineskip]{l}%
+    \backslash begin \{ frame \}\\
+    \backslash Bealover \{\\
+     \ \ {\color{MyGreen}\bfseries Water = 1 : 3,}\\
+    \}\\
+    \alt<?(X1.range)>{%
+      \backslash begin \{ itemize \} [ <{\color{MyGreen}\bfseries
+        ?\smash{\tikz [remember picture, baseline=(O.base),inner xsep=0mm] {
+          \node (O) {(++Water)};
+          \only<?(Sticky1a.2)>{
+            \begin{pgfinterruptboundingbox}
+            \node [draw,shape=ellipse,thick,] at (O) {\phantom{ (++Water)}};
+            \end{pgfinterruptboundingbox}
+          }
+        }}}- > ]\\
+      \only<?(++W1.reset)> {\color{MyGreen}\bfseries}%
+      \phantom{xx}\backslash item Octopus\\
+      \only<?(++W1)>{\color{MyGreen}\bfseries}%
+      \phantom{xx}\backslash item Starfish\\
+      \only<?(++W1)>{\color{MyGreen}\bfseries}%
+      \phantom{xx}\backslash item Picasso fish\\
+    } {%
+      {\only<?(Sticky2a.2)>{\color{MyGreen}\bfseries}%
+      \backslash setbeamercovered \{ transparent = 30 \}}%
+      \tikz[remember picture]{\coordinate (P) at (0,0);}\\
+      \backslash begin \{ itemize \} [ < {\only<?(Sticky2a.2)>{\color{MyGreen}\bfseries}?(++Water)} > ]\\
+      \phantom{xx}\backslash item
+      {\only<?(++W2.reset)>{\bfseries}Octopus}\\
+      \phantom{xx}\backslash item
+      {\only<?(++W2)>{\bfseries}Starfish}\\
+      \phantom{xx}\backslash item
+      {\only<?(++W2)>{\bfseries}Picasso fish}\\
+    }%
+    \backslash end \{itemize\}\\
+    \backslash end \{frame\}
+  \end{myCodeBox}
+\end{tabular}
+\BealoverSticky<?(Sticky1a.range)>(current page.south){0.75\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\vspace{-0.5\baselineskip}%
+\begin{itemize}
+\item[\myBulb]To uncover items one at a time,
+\visible<?(++Sticky1a.reset+1)>{we use beamer's%
+\tikz[overlay,remember picture]{
+  \path[my arrow](0.1,0.1) edge [out=45, in=-45] ($(O)+0.75*(1.5,-1)$);
+}
+advanced overlay specifications.
+}
+\end{itemize}
+}%
+\BealoverSticky<?(Sticky1b.range)>(current page.south){0.7\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\vspace{-0.5\baselineskip}%
+\begin{itemize}
+\item[\myBulb]Notice how the lines of code are hilighted\\at the same time the items are uncovered...
+\end{itemize}
+}%
+\transpush<?(Sticky2a.1)>[direction=90]
+\BealoverReset{Sticky2a}
+\BealoverSticky<?(Sticky2a.range)>(current page.south){0.7\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
+\vspace{-0.5\baselineskip}%
+\begin{itemize}
+\item[\myBulb]Managing transparency is straightforward
+\visible<?(Sticky2a+=2)>{we use%
+\tikz[overlay,remember picture]{
+  \path[my arrow](0.1,0.1) edge [out=45, in=-45] ($(P)+0.3*(1,-1.4)$);
+}
+beamer's facilities.%
+}%
+\end{itemize}
+}%
+\BealoverSticky<?(Sticky2b.range)>(current page.south){0.7\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
+\vspace{-0.5\baselineskip}%
+\begin{itemize}
+\item[\myBulb]Once again the code is properly hilighted to\\illustrate the behavior of the itemized list...
+\end{itemize}
+}%
+%

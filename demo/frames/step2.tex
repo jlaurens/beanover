@@ -1,0 +1,94 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX root = ../demo.tex
+\setlength{\tabcolsep}{0pt}
+\renewcommand\arraystretch{0}
+\begin{tabular}{p{0.35\textwidth}p{0.65\textwidth}}
+\begin{itemize}
+\item
+Air
+\begin{itemize}
+\item
+\only<-+>{\transparent{0.3}}
+Chameleo
+\item
+\only<-+>{\transparent{0.3}}
+Gannet
+\end{itemize}
+\item
+\only<-+>{\transparent{0.3}}
+Water
+\begin{itemize}
+\item
+\only<-+>{\transparent{0.3}}
+Octopus
+\item
+\only<-.>{\transparent{0.3}}
+Starfish
+\item
+\only<-.>{\transparent{0.3}}
+Picasso fish
+\end{itemize}
+\end{itemize}
+&
+\vspace{-2.5\baselineskip}
+\begin{myCodeBox}[baseline=3\baselineskip]{l}%
+\backslash begin\{itemize\}\\
+\phantom{xx}\backslash item Air\\
+\phantom{xx}\backslash begin\{itemize\}\\
+\phantom{xxxx}\backslash item\\
+\phantom{xxxx}\tikz[remember picture]\coordinate (to1) at (-0.1,0.1);%
+{\only<?(Sticky3.range)>{\bfseries\color{MyGreen}}\backslash only<-+>\{\backslash transparent\{0.3\}\}}\\
+\phantom{xxxx}Chameleo\\
+\phantom{xxxx}\backslash item\\
+\phantom{xxxx}\tikz[remember picture]\coordinate (to2) at (-0.1,0.1);%
+{\only<?(Sticky3.range)>{\bfseries\color{MyGreen}}\backslash only<-+>\{\backslash transparent\{0.3\}\}}\\
+\phantom{xxxx}Gannet\\
+\phantom{xxxx}\backslash end\{itemize\}\\
+\phantom{xx}\backslash item\\
+\phantom{xx}{\tikz[remember picture]\coordinate (to3) at (-0.1,0.1);%
+\only<?(Sticky3.range)>{\bfseries\color{MyGreen}}\backslash only<-+>\{\backslash transparent\{0.3\}\}}\\
+\phantom{xx}Water\\
+\phantom{xx}...\\
+\backslash end\{itemize\}\\
+\end{myCodeBox}
+\end{tabular}
+
+\BealoverSticky<?(Sticky1.range)>(current page.south){0.5\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries We jumped directly to the last slide...}
+%
+\BealoverSticky<?(Sticky2.range)>(current page.south){0.5\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries .. and the source code reads:}
+%
+\BealoverSticky<?(Sticky3.range)>(current page.south){0.9\textwidth}[anchor=south,yshift=\baselineskip]{\bfseries
+\begin{itemize}
+\item [\myBulb]Notice the very handy incremental overlay specifications in\\
+\tikz[remember picture,] {\coordinate (from) at (-0.05,0.2);}%
+\texttt{\color{MyGreen}\backslash only<-+>\{...\}.%
+}
+\item<?(Sticky3.3)>[\myBulb]Unfortunately, they won't help when different layers are involved.
+\end{itemize}
+}
+\BealoverStickyStack<?(Sticky3.2:2)>{%
+  \tikz[
+    overlay,
+    remember picture,
+    my/.style={
+      -{Stealth},
+      MyGreen,
+      thick,
+      densely dotted,
+    },
+  ] {
+    \path [my] (from) edge [out=120, in=180] (to1);
+    \path [my] (from) edge [out=120, in=180] (to2);
+    \path [my] (from) edge [out=120, in=180] (to3);
+  }%
+}%
+
+%
+\BealoverSticky<?(Sticky4.range)>(current page.south){0.7\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries
+\begin{itemize}[<?(++Sticky4)->]
+\item[\myBulb] Now be more appealing with images
+\item[\myBulb] Logical overlay specifications will come into play
+\item[\myBulb] But before, take a look at the chronology
+\end{itemize}
+}

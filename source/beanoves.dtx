@@ -316,6 +316,8 @@ like in the frame example below, we also have
 \hline
 \end{tabular}
 \end{center}
+Using these specifications on unfinite named slide ranges is unsupported and may cause a ``Circular/Undefined dependency'' error.
+To avoid this, use at least a \texttt{:1} length definition.
 \begin{tcblisting} {
   listing only,
   minted options={
@@ -340,14 +342,14 @@ like in the frame example below, we also have
 \end{frame}
 \end{tcblisting}
 %
-Using these specifications on unfinite named slide ranges is unsupported.
 %
-Finally each named slide range has a dedicated counter \texttt{\meta{name}.n}
+Finally each named slide range has a dedicated counter \texttt{\meta{name}.n} (or \texttt{\meta{name}})
 which is some kind of variable that can be used and incremented\footnote{This is actually an experimental feature.}.
 \begin{description}
 \item[\ttfamily\meta{name}.n]: use the position of the counter 
 \item[\ttfamily\meta{name}.n+=\meta{integer}]: advance the counter by \meta{integer} and use the new position
 \item[\ttfamily++\meta{name}.n]: advance the counter by 1 and use the new position
+\item[\ttfamily\meta{name}.n++]: use the actual position and advance the counter by 1
 \end{description}
 Notice that ``|.n|'' can generally be omitted.
 %
@@ -380,6 +382,7 @@ an algeabraic difference instead of a range.
 \meta{first expr}|::| & \meta{first} - & \textrm{no }\meta{name}.range \\
 \meta{first expr}|:|\meta{length expr} & \meta{first} - \meta{last} & \textrm{no }\meta{name}.range \\
 \meta{first expr}|::|\meta{end expr} & \meta{first} - \meta{last}  & \textrm{no }\meta{name}.range \\
+\phantom{\meta{first expr}}|::|\meta{end expr} & \phantom{\meta{first}} - \meta{last}  & \textrm{no }\meta{name}.range \\
 \hline
 \end{tabular}
 \end{center}
@@ -5235,7 +5238,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \seq_put_right:NV \l__bnvs_ans_seq \l__bnvs_ans_tl
     } {
       \seq_map_break:n {
-        \msg_fatal:nnn { beanoves } { :n } { Circular~dependency~in~#1}
+        \msg_fatal:nnn { beanoves } { :n } { Circular/Undefined~dependency~in~#1}
       }
     }
   }

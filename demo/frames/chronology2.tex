@@ -1,0 +1,68 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX root = ../demo.tex
+
+\begin{tikzpicture} [
+  x=\baselineskip,
+  y=\baselineskip,
+]
+  \tikzset {
+    slide label/.style = {
+      minimum height=1.5\baselineskip,
+      font=\small,
+    }
+  }
+  \coordinate (O) at (0,0);
+  \coordinate (I) at (1,0);
+  \coordinate (J) at (0,-1);
+  \visible<?(Sticky1.2)-> {
+    \draw [-{Stealth}] (O) -- ($14*(I)$);
+    \foreach \x in {1,...,7} {
+      \draw (\directlua{tex.print(2*\x-1)},-2pt) -- (\directlua{tex.print(2*\x-1)},2pt);
+    }
+    \node [slide label] at (0.5,0) [anchor=north east]{Slide: };
+    \foreach \x in {1,...,7} {
+      \node [slide label] at (\directlua{tex.print(2*\x-1)},0) [anchor=north]{\x};
+    }
+  }
+  \visible<?(Sticky1.4)-> {
+    \node [slide label] at (0.5,7) [anchor=east]{Air:};
+    \node [slide label] at (0.5,6) [anchor=east]{Chameleo:};
+    \node [slide label] at (0.5,5) [anchor=east]{Gannet:};
+    \node [slide label] at (0.5,4) [anchor=east]{Water:};
+    \node [slide label] at (0.5,3) [anchor=east]{Octopus:};
+    \node [slide label] at (0.5,2) [anchor=east]{Starfish:};
+    \node [slide label] at (0.5,1) [anchor=east]{Picasso:};
+    \foreach \x in {1,...,7} {
+      \foreach \y in {1,...,7} {
+        \fill [lightgray]  (\directlua{tex.print(2*\x-1)},\y) circle(2pt);
+      }
+    }
+  }
+  \visible<?(Sticky1.6)-> {
+    \foreach \y in {1,...,7} {
+      \foreach \x in {\directlua{tex.print(8-\y)},...,7} {
+        \fill [blue]  (\directlua{tex.print(2*\x-1)},\y) circle(2.5pt);
+      }
+    }
+  }
+\end{tikzpicture}%
+\vspace{3\baselineskip}
+\Sticky<?(Sticky1.range)>[
+  anchor=south,
+  yshift=1\baselineskip,
+](current page.south){\bfseries
+\begin{minipage}[t]{0.5\textwidth}
+\begin{itemize}
+\item [\myBulb] We had 7 slides\visible<?(Sticky1.3)->{ for 7 texts}
+\item <?(Sticky1.5)->[\myBulb]Blue dots for uncovered text
+\item<?(Sticky1.7)-> [\myBulb] Very regular behavior
+\end{itemize}
+\end{minipage}
+%\begin{itemize}
+%\item [\myBulb] We had 7 slides\visible<?(Sticky1.3)->{ for 7 texts}
+%\item <?(Sticky1.5)->[\myBulb]Blue dots for uncovered text
+%\item<?(Sticky1.7)-> [\myBulb] Very regular behavior
+%\end{itemize}
+}%
+

@@ -27,66 +27,30 @@
 }
 \cs_new:Npn \MyExpectInRange #1 {
   \group_begin:
-  \tl_clear:N \l__bnvs_a_tl
-  \tl_clear:N \l__bnvs_b_tl
-  \tl_clear:N \l__bnvs_c_tl
-  \regex_split:NnN \c__bnvs_colons_regex { #1 } \l__bnvs_split_seq
-  \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_a_tl {
-    \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_b_tl {
-      \tl_if_empty:NTF \l__bnvs_b_tl {
-        \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_b_tl
-        \seq_pop_left:NNT \l__bnvs_split_seq \l__bnvs_c_tl {
-          \tl_if_empty:NTF \l__bnvs_c_tl {
-\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(1):~#1 }
-          } {
-            \int_compare:nNnT { \tl_count:N \l__bnvs_c_tl } > { 1 } {
-\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(2):~#1 }
-            }
-            \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_c_tl
-            \seq_if_empty:NF \l__bnvs_split_seq {
-\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(3):~#1 }
-            }
-          }
-        }
-      } {
-        \int_compare:nNnT { \tl_count:N \l__bnvs_b_tl } > { 1 } {
-\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(4):~#1 }
-        }
-        \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_c_tl
-        \seq_pop_left:NNTF \l__bnvs_split_seq \l__bnvs_b_tl {
-          \tl_if_empty:NTF \l__bnvs_b_tl {
-            \seq_pop_left:NN \l__bnvs_split_seq \l__bnvs_b_tl
-            \seq_if_empty:NF \l__bnvs_split_seq {
-\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(5):~#1 }
-            }
-          } {
-\msg_error:nnn { beanoves } { :n } { Invalid~range~expression(6):~#1 }
-          }
-        } {
-          \tl_clear:N \l__bnvs_b_tl
-        }
-      }
-    }
-  }
+  \__bnvs_range_set:NNNn
+    \l__bnvs_a_tl \l__bnvs_b_tl \l__bnvs_c_tl { #1 } \l__bnvs_split_seq
   \tl_if_empty:NTF \l__bnvs_a_tl {
     \tl_if_empty:NTF \l__bnvs_b_tl {
       \tl_if_empty:NTF \l__bnvs_c_tl {
       } {
+        \MyExpectBelow { \l__bnvs_c_tl }
       }
     } {
       \tl_if_empty:NTF \l__bnvs_c_tl {
       } {
+        \MyExpectAbove { \l__bnvs_c_tl - ( \l__bnvs_b_tl ) + 1 }
+        \MyExpectBelow { \l__bnvs_c_tl }
       }
     }
   } {
+    \MyExpectAbove { \l__bnvs_a_tl }
     \tl_if_empty:NTF \l__bnvs_b_tl {
       \tl_if_empty:NTF \l__bnvs_c_tl {
       } {
+        \MyExpectBelow { \l__bnvs_c_tl }
       }
     } {
-      \tl_if_empty:NTF \l__bnvs_c_tl {
-      } {
-      }
+      \MyExpectBelow { \l__bnvs_a_tl + \l__bnvs_b_tl - 1 }
     }
   }
   \group_end:
@@ -94,9 +58,26 @@
 \cs_set:Npn \debug_on:n #1 {
   \prg_do_nothing:
 }
+%\__bnvs_DEBUG_on:
 \ExplSyntaxOff
 \RequirePackage[listings]{tcolorbox}
 \begin{document}
+\Beanoves {
+  Air      = 1 :: Gannet.last,
+  Chameleo = Air.2:1,
+  Gannet   = Chameleo.next:1,
+  Water   = Air.next :: Picasso.last,
+  Octopus = Water.2:1,
+  Starfish = Octopus.next:1,
+  StickyStarfish = Starfish.1,
+  Picasso = Starfish.next,
+  PicassoTrans = 1 :: Picasso.0,
+  Summary  = Water.next,
+}
+\begin{frame}
+\visible<?(Water.0)>{ABCD}
+\end{frame}
+\end{document}
 \Beanoves {
       A = 1:2,
       B = A.next:3,
@@ -105,7 +86,8 @@
 \begin{frame}[fragile, t]
   {\Large Frame \insertframenumber}
   {\Large Slide \insertslidenumber}
-\begin{tcblisting}{listing only, title=Declarations}
+\begin{tcblisting}{listing only, title=Declarations,top=0mm,bottom=0mm,boxsep=0.5mm,
+beforeafter skip balanced=0.2\baselineskip plus 2pt}
 \Beanoves {
       A = 1:2,
       B = A.next:3,
@@ -116,11 +98,11 @@
 \visible<?(B.1)-?(B.last)> {Only on slide 3 \MyExpectAbove{B.1} to 5 \MyExpectBelow{B.last}}\\
 \visible<?(C.1)> {Only on slide 6 \MyExpectEqual{C.1}}\\
 \visible<?(A.2)> {Only on slide 2 \MyExpectEqual{A.2}}\\
-%\visible<?(B.2::B.last)> {Only on slide 4 to 5 \MyExpectInRange{B.2::B.last}}\\
+\visible<?(B.2::B.last)> {Only on slide 4 to 5 \MyExpectInRange{B.2::B.last}}\\
 \visible<?(C.2)> {Only on slide 7 \MyExpectEqual{C.2}}\\
 \visible<?(A.3)-> {From slide 3 \MyExpectAbove{A.3}}\\
-%\visible<?(A.4:)> {From slide 4 \MyExpectInRange{A.4:}}\\
-%\visible<?(B.3::B.last)> {Only on slide 5 \MyExpectInRange{B.3::B.last}}\\
+\visible<?(A.4:)> {From slide 4 \MyExpectInRange{A.4:}}\\
+\visible<?(B.3::B.last)> {Only on slide 5 \MyExpectInRange{B.3::B.last}}\\
 \visible<?(C.3)> {Only on slide 8 \MyExpectEqual{C.3}}\\
 \end{frame}
 \end{document}

@@ -1,0 +1,17 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX root = ../demo.tex
+Beamer uses overlay specification aware commands to associate material to slides. The command%
+\begin{myCodeBox}{l}%
+\backslash only<2-4>\{TEXT\}
+\end{myCodeBox}%
+%
+will display ``TEXT'' on slides 2, 3, and 4 only.
+\\[0.5\baselineskip]
+Using explicit slide numbers is sometimes difficult, incremental specifications like%
+\begin{myCodeBox}{l}%
+\backslash item<+>\{TEXT\}\\
+\backslash item<+(-1)-+>\{TEXT\}%
+\end{myCodeBox}%
+may help in linear situations, but this does not fit to next simple example,
+to which suit \textbf{named overlay specifications}.
