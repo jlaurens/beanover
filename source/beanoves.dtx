@@ -774,77 +774,74 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \__bnvs_DEBUG_:nn {◀︎◀︎◀︎◀︎◀︎◀︎◀︎◀︎◀︎◀} {}
   }\ignorespacesafterend
 }
+\cs_set:Npn \__bnvs_test_extract:nnnn #1 #2 #3 #4 {
+  \__bnvs_group_begin:
+  \tl_if_empty:nT { #3 } {
+    \regex_extract_once:nnNT { #1 } { #2 } \l__bnvs_match_seq {
+      \test_fail:n { #4-a }
+    }
+  } {
+    \regex_extract_once:nnNTF { #1 } { #2 } \l__bnvs_match_seq {
+      \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_match_seq , }
+      \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
+      \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_split_seq , }
+      \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
+    } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \__bnvs_group_end:
+}
+\cs_set:Npn \__bnvs_test_extract:Nnnn #1 #2 #3 #4 {
+  \__bnvs_group_begin:
+  \regex_extract_once:NnNTF #1 { #2 } \l__bnvs_match_seq {
+    \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_match_seq , }
+    \seq_set_from_clist:Nn \l__bnvs_match_seq { #3 }
+    \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_match_seq , }
+    \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
+  } {
+    \tl_if_empty:nF { #3 } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \__bnvs_group_end:
+}
+\cs_generate_variant:Nn
+  \__bnvs_test_extract:Nnnn { cnnn }
+\cs_set:Npn \__bnvs_test_split:Nnnn #1 #2 #3 #4 {
+  \__bnvs_group_begin:
+  \regex_split:NnNTF #1 { #2 } \l__bnvs_split_seq {
+    \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_split_seq , }
+    \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
+    \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_split_seq , }
+    \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
+  } {
+    \tl_if_empty:nF { #3 } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \__bnvs_group_end:
+}
+\cs_generate_variant:Nn \msg_error:nnnn { nnnx }
+\cs_set:Npn \__bnvs_assert_equal:nnn #1 #2 #3 {
+  \tl_if_eq:nnF { #1 } { #2 } {
+    \msg_error:nnnx { beanoves } { :nn } { FAILED~`#1'!=`#2' } { \BeanovesCurrentTestFile :\the\inputlineno :#3}
+    \begin{beanoves.failure}
+    \item FAILURE~`#1'!=`#2'~(\BeanovesCurrentTestFile :\the\inputlineno)
+    \item #3
+    \end{beanoves.failure}
+  }
+}
+\cs_set:Npn \__bnvs_test_fail:n #1 {
+  \msg_error:nnnx { beanoves } { :nn } { FAILURE } { \BeanovesCurrentTestFile :\the\inputlineno :#1~(\int_use:N \g__bnvs_call_int)}
+  \begin{beanoves.failure}
+  \item FAILURE~unexpected~branch~(\BeanovesCurrentTestFile :\the\inputlineno)
+  \item #1
+  \end{beanoves.failure}
+}
+\cs_generate_variant:Nn \__bnvs_assert_equal:nnn { xxn }
 %</!gubed>
 % \end{gobble}
-%
-% \ExplSyntaxOn
-% \cs_set:Npn \__bnvs_test_extract:nnnn #1 #2 #3 #4 {
-%   \__bnvs_group_begin:
-%   \tl_if_empty:nT { #3 } {
-%     \regex_extract_once:nnNT { #1 } { #2 } \l__bnvs_match_seq {
-%       \test_fail:n { #4-a }
-%     }
-%   } {
-%     \regex_extract_once:nnNTF { #1 } { #2 } \l__bnvs_match_seq {
-%       \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_match_seq , }
-%       \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
-%       \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_split_seq , }
-%       \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
-%     } {
-%       \test_fail:n { #4-a }
-%     }
-%   }
-%   \__bnvs_group_end:
-% }
-% \cs_set:Npn \__bnvs_test_extract:Nnnn #1 #2 #3 #4 {
-%   \__bnvs_group_begin:
-%   \regex_extract_once:NnNTF #1 { #2 } \l__bnvs_match_seq {
-%     \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_match_seq , }
-%     \seq_set_from_clist:Nn \l__bnvs_match_seq { #3 }
-%     \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_match_seq , }
-%     \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
-%   } {
-%     \tl_if_empty:nF { #3 } {
-%       \test_fail:n { #4-a }
-%     }
-%   }
-%   \__bnvs_group_end:
-% }
-% \cs_generate_variant:Nn
-%   \__bnvs_test_extract:Nnnn { cnnn }
-% \cs_set:Npn \__bnvs_test_split:Nnnn #1 #2 #3 #4 {
-%   \__bnvs_group_begin:
-%   \regex_split:NnNTF #1 { #2 } \l__bnvs_split_seq {
-%     \tl_set:Nx \l__bnvs_a_tl { \seq_use:Nn \l__bnvs_split_seq , }
-%     \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
-%     \tl_set:Nx \l__bnvs_b_tl { \seq_use:Nn \l__bnvs_split_seq , }
-%     \assert_equal:xxn { \l__bnvs_a_tl } { \l__bnvs_b_tl } { #4-seq }
-%   } {
-%     \tl_if_empty:nF { #3 } {
-%       \test_fail:n { #4-a }
-%     }
-%   }
-%   \__bnvs_group_end:
-% }
-% \cs_generate_variant:Nn \msg_error:nnnn { nnnx }
-% \cs_set:Npn \__bnvs_assert_equal:nnn #1 #2 #3 {
-%   \tl_if_eq:nnF { #1 } { #2 } {
-%     \msg_error:nnnx { beanoves } { :nn } { FAILED~`#1'!=`#2' } { \BeanovesCurrentTestFile :\the\inputlineno :#3}
-%     \begin{beanoves.failure}
-%     \item FAILURE~`#1'!=`#2'~(\BeanovesCurrentTestFile :\the\inputlineno)
-%     \item #3
-%     \end{beanoves.failure}
-%   }
-% }
-% \cs_set:Npn \__bnvs_test_fail:n #1 {
-%   \msg_error:nnnx { beanoves } { :nn } { FAILURE } { \BeanovesCurrentTestFile :\the\inputlineno :#1~(\int_use:N \g__bnvs_call_int)}
-%   \begin{beanoves.failure}
-%   \item FAILURE~unexpected~branch~(\BeanovesCurrentTestFile :\the\inputlineno)
-%   \item #1
-%   \end{beanoves.failure}
-% }
-% \cs_generate_variant:Nn \__bnvs_assert_equal:nnn { xxn }
-% \ExplSyntaxOff
 %
 % \NewDocumentEnvironment{myList}{}
 %   {\begin{list}{•}{%
