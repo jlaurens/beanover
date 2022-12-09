@@ -852,21 +852,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %      \listparindent \parindent
 %      \setlength{\parsep}{\parskip}}}
 %   {\end{list}}
-% \ExplSyntaxOn
-% \cs_set:Npn \myDebug #1 {
-%   \begin{list}{\llap{\emoji{no-entry}\quad}}{%
-%      \setlength{\itemindent}{0pt}%
-%      \setlength{\leftmargin}{0pt}%
-%      \setlength{\labelwidth}{-1\parindent}%
-%      \addtolength{\topsep}{-0.5\parskip}%
-%      \listparindent \parindent
-%      \setlength{\parsep}{\parskip}}
-%   \clist_map_inline:nn { #1 } {
-%     \item \exp_args:Nx \use:n { ##1 }
-%   }
-%   \end{list}
-% }
-% \ExplSyntaxOff
 %
 % \subsection{Local variables}
 % We make heavy use of local variables and function scopes.
