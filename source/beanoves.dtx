@@ -507,29 +507,29 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_set_eq:NN \__bnvs_group_begin: \group_begin:
 %</!debug>
 %<*!gubed>
-\keys_define:nn { beanoves.test } {
+\keys_define:nn { bnvs.test } {
   banner .tl_set:N = \l_banner_tl,
   debug .code:n = \__bnvs_DEBUG_on:,
 }
 \ProvideDocumentEnvironment {beanoves.failure} {} {} {}
-\NewDocumentEnvironment{beanoves.test}{} {
+\NewDocumentEnvironment{bnvs.test}{} {
   \color{red}\bfseries\ExplSyntaxOn
   \debug_on:n { check-declarations }
   \__bnvs_gclear:
   \int_gset:Nn \g__bnvs_call_int { 128 }
-  \begin{beanoves.test.expl}
+  \begin{bnvs.test.expl}
 } {
-  \end{beanoves.test.expl}
+  \end{bnvs.test.expl}
   \__bnvs_gclear:\ExplSyntaxOff\ignorespacesafterend
 }
 \cs_new:Npn \BeanovesCurrentTestFile {
   \tl_if_empty:VF \CurrentFilePath { \CurrentFilePath / }
   \CurrentFile
 }
-\NewDocumentEnvironment{beanoves.test.expl}{o} {
+\NewDocumentEnvironment{bnvs.test.expl}{o} {
   \__bnvs_DEBUG_off:
   \tl_set:Nn \l_banner_tl { ? }
-  \IfValueT {#1} { \keys_set_known:nn {beanoves.test} {#1} }
+  \IfValueT {#1} { \keys_set_known:nn {bnvs.test} {#1} }
   {
     \__bnvs_DEBUG_a:nn {▶︎▶︎▶︎▶︎▶︎▶︎▶︎▶︎▶︎▶︎} {}
     \__bnvs_DEBUG_a:xn {TEST~\l_banner_tl\space file:~\BeanovesCurrentTestFile, line:~\the\inputlineno} {}
@@ -1100,7 +1100,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \end{function}
-% \begin{beanoves.test}[banner=(put|remove|clear|...):nn...]
+% \begin{bnvs.test}[banner=(put|remove|clear|...):nn...]
 % \cs_set:Npn \Test:xxn #1 #2 #3 {
 %   \__bnvs_assert_equal:xxn { #1 } { #2 } {\cs{__bnvs_g(put|remove|clear|...):nn}~#3}
 % }
@@ -1128,7 +1128,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   \tl_set:Nn \l__bnvs_b_tl { SUCCESS }
 % }
 % \Test:xxn { \l__bnvs_b_tl } { SUCCESS } { 13 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \subsubsection{Regular expressions}
 %
@@ -1142,10 +1142,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=name_regex]
+% \begin{bnvs.test}[banner=name_regex]
 % \Test_regex:nnnn { name } {A} {A} {1}
 % \Test_regex:nnnn { name } {_A1} {_A1} {2}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{variable}
 % \begin{variable}{\c__bnvs_id_regex}
 % The name of a slide range consists of a non void list of alphanumerical characters and
@@ -1157,10 +1157,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=name_regex]
+% \begin{bnvs.test}[banner=name_regex]
 % \Test_regex:nnnn { id } {!} {!} {1}
 % \Test_regex:nnnn { id } {_A1!} {_A1!} {2}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{variable}
 % \begin{variable}{\c__bnvs_path_regex}
 % A sequence of \texttt{.\meta{positive integer}} items representing a path.
@@ -1171,7 +1171,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=path_regex]
+% \begin{bnvs.test}[banner=path_regex]
 % \Test_regex:nnnn { path } {} {} {1}
 % \Test_regex:nnnn { path } {.1} {.1} {2}
 % \Test_regex:nnnn { path } {.1.2} {.1.2} {3}
@@ -1179,7 +1179,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_regex:nnnn { path } {.-1} {.-1} {5}
 % \Test_regex:nnnn { path } {.-1.2} {.-1.2} {6}
 % \Test_regex:nnnn { path } {.-1.-2} {.-1.-2} {7}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{variable}
 %
 % \begin{variable}{\c__bnvs_key_regex, \c__bnvs_A_key_Z_regex}
@@ -1214,7 +1214,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \end{itemize}
-% \begin{beanoves.test}[banner=key_regex]
+% \begin{bnvs.test}[banner=key_regex]
 % \cs_set:Npn \Test:nnn {
 %   \__bnvs_test_extract:Nnnn \c__bnvs_key_regex
 % }
@@ -1243,7 +1243,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn {?!A.1} {?!A.1, ?!A, ?!, .1} {3-?!}
 % \Test:nnn {?!_A1.1} {?!_A1.1, ?!_A1, ?!, .1} {4-?!}
 % \Test:nnn {?!_A1.1.2} {?!_A1.1.2, ?!_A1, ?!, .1.2} {5-?!}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{variable}
 %
 % \begin{variable}{\c__bnvs_colons_regex}
@@ -1253,7 +1253,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \regex_const:Nn \c__bnvs_colons_regex { :(:+)? }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=colons_regex]
+% \begin{bnvs.test}[banner=colons_regex]
 % \cs_set:Npn \Test:nnn {
 %   \__bnvs_test_split:Nnnn \c__bnvs_colons_regex
 % }
@@ -1261,7 +1261,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { A::C } {{A},{:},{C}} {2}
 % \Test:nnn { A:::C } {{A},{::},{C}} {3}
 % \Test:nnn { :B::C } {{},{},{B},{:},{C}} {4}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{variable}
 %
 % \begin{variable}{\c__bnvs_list_regex}
@@ -1284,7 +1284,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \end{myList}
-% \begin{beanoves.test}[banner=list_regex]
+% \begin{bnvs.test}[banner=list_regex]
 % \cs_set:Npn \Test:nnn {
 %   \__bnvs_test_extract:Nnnn \c__bnvs_list_regex
 % }
@@ -1292,7 +1292,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn {[x]} {[x], x} {2}
 % \Test:nnn {[~x~]} {[~x~],{x}} {3}
 % \Test:nnn {[~x[~]} {[~x[~],{x[}} {4}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{variable}
 %
 % \begin{variable}{\c__bnvs_split_regex}
@@ -1322,7 +1322,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     ( \ur{c__bnvs_path_regex} ) (?: \. n )?
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=split_regex]
+% \begin{bnvs.test}[banner=split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
 %     { #1 } {#2,{},{},{},{},{},{},{},{},{},{}} { #3 }
@@ -1335,7 +1335,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { ++?!ABC.1.2.n~~ } {{++?!ABC.1.2.n~~},{?!ABC},{?!},{.1.2}} {2b}
 % \Test:nnn { ++?!ABC } {{++?!ABC},{?!ABC},{?!},{}} {2c}
 % \Test:nnn { ++?!ABC.1.2~~ } {{++?!ABC.1.2~~},{?!ABC},{?!},{.1.2}} {2d}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % We continue with other expressions
 %   \item 4: qualified \meta{name} of a slide range,
 %   \item 5: \meta{id} of a slide range plus the exclamation mark
@@ -1363,7 +1363,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
        \. l(e)ngth
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=split_regex]
+% \begin{bnvs.test}[banner=split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
@@ -1373,14 +1373,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { A.1.2.length } {{A},{},{.1.2}} {5b}
 % \Test:nnn { ?!A.length } {{?!A},{?!},{}} {5c}
 % \Test:nnn { ?!A.1.2.length } {{?!A},{?!},{.1.2}} {5d}
-% \end{beanoves.test}
+% \end{bnvs.test}
 %   \item 8: the \meta{last} attribute
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
     |  \. l(a)st
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\c__bnvs_split_regex]
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
@@ -1390,14 +1390,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { A.1.2.last } {{A},{},{.1.2}} {6b}
 % \Test:nnn { ?!A.last } {{?!A},{?!},{}} {6c}
 % \Test:nnn { ?!A.1.2.last } {{?!A},{?!},{.1.2}} {6d}
-% \end{beanoves.test}
+% \end{bnvs.test}
 %   \item 9: the \meta{next} attribute
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
     |  \. ne(x)t
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\c__bnvs_split_regex]
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
@@ -1407,14 +1407,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { A.1.2.next } {{A},{},{.1.2}} {7b}
 % \Test:nnn { ?!A.next } {{?!A},{?!},{}} {7c}
 % \Test:nnn { ?!A.1.2.next } {{?!A},{?!},{.1.2}} {7d}
-% \end{beanoves.test}
+% \end{bnvs.test}
 %   \item 10: the \meta{range} attribute
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
     |  \. (r)ange
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\c__bnvs_split_regex]
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
@@ -1424,14 +1424,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { A.1.2.range } {{A},{},{.1.2}} {8b}
 % \Test:nnn { ?!A.range } {{?!A},{?!},{}} {8c}
 % \Test:nnn { ?!A.1.2.range } {{?!A},{?!},{.1.2}} {8d}
-% \end{beanoves.test}
+% \end{bnvs.test}
 %   \item 11: the \meta{n} attribute
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
     |  (?: \. (n) )? (?:
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\c__bnvs_split_regex]
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \banner:n { #3 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
@@ -1441,7 +1441,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { A.1.2.n } {{A},{},{.1.2}} {9b}
 % \Test:nnn { ?!A.n } {{?!A},{?!},{}} {9c}
 % \Test:nnn { ?!A.1.2.n } {{?!A},{?!},{.1.2}} {9d}
-% \end{beanoves.test}
+% \end{bnvs.test}
 %   \item 12: the poor man integer expression after `|+=|',
 %   which is the longest sequence of black characters,
 %   which ends just before a space or at the very last character.
@@ -1452,7 +1452,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
         \s* \+= \s* ( \S+ )
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner={\string\c__bnvs_split_regex/+=}]
+% \begin{bnvs.test}[banner={\string\c__bnvs_split_regex/+=}]
 % \cs_set:Npn \:nnnn #1 #2 #3 #4 {
 %   \banner:n { #4 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
@@ -1488,7 +1488,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   {?!ABC,{?!},{},{},{},{},{},{n},{1+P.1}} {`+='~7}
 % \Test:nnnn { ?!ABC.n += (P.1+1)~~^^A(
 % ) } {?!ABC.n += (P.1+1)~~} {?!ABC,{?!},{},{},{},{},{},{n},{(P.1+1)}} {`+='~8}
-% \end{beanoves.test}
+% \end{bnvs.test}
 %   \item 13: the post increment
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
@@ -1507,7 +1507,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=split_regex]
+% \begin{bnvs.test}[banner=split_regex]
 % \cs_set:Npn \Test:nnn #1 #2 #3{
 %   \__bnvs_test_split:Nnnn \c__bnvs_split_regex
 %  { 1/#1/2 } { 1/,#2,/2 } { #3 }
@@ -1553,7 +1553,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn { ?!A.range }   {{},{},{},{?!A},{?!},{},{},{},{},{r},{},{},{}} { 7-b }
 % \Test:nnn { A.3.range }   {{},{},{},{A},{},{.3},{},{},{},{r},{},{},{}} { 7-c }
 % \Test:nnn { ?!A.3.range }   {{},{},{},{?!A},{?!},{.3},{},{},{},{r},{},{},{}} { 7-d }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{variable}
 %
 % \subsubsection{\pkg{beamer.cls} interface}
@@ -1684,7 +1684,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_generate_variant:Nn \__bnvs_range_alt:nnnn { nVVV }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=range]
+% \begin{bnvs.test}[banner=range]
 % \cs_set:Npn \Test #1 #2 #3 #4 #5 {
 %   \__bnvs_assert_equal:xxn {\__bnvs_item:n {#1/A} } { #2 } {\cs{__bnvs_range:nnnn}~#5~A }
 %   \__bnvs_assert_equal:xxn {\__bnvs_item:n {#1/L} } { #3 } {\cs{__bnvs_range:nnnn}~#5~L }
@@ -1721,7 +1721,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % }
 % \__bnvs_range:nnnn {X.1} {} {} {}
 % \Test { X.1 } {} {} {} {TestA~\cs{__bnvs_range:nnnn}~X.1}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}{\__bnvs_parse:Nn}
 %   \begin{syntax}
 %     \cs{__bnvs_parse:Nn} \meta{command} \marg{key}
@@ -1902,7 +1902,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_generate_variant:Nn \__bnvs_do_parse:Nnn { Nxn, Non }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=do_parse]
+% \begin{bnvs.test}[banner=do_parse]
 % \cs_set:Npn \Test:nnnn #1 #2 #3 #4 {
 % \__bnvs_DEBUG:n {Test:~do_parse/#4/#1/}
 %   \__bnvs_assert_equal:xxn {\__bnvs_item:n {X/A} } {#1} {\cs{__bnvs_do_parse:Nnn}~#4-a}
@@ -1931,7 +1931,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   }
 %   \__bnvs_do_parse:Nnn \__bnvs_range:nVVV {X} {A:B::C}
 % }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}[TF]{\__bnvs_id_name_set:nNN}
 % \begin{syntax}
 % \cs{__bnvs_id_name_set:nNNTF} \marg{key} \meta{id tl var} \meta{full name tl var} \marg{ true code} \marg{ false code}
@@ -1990,7 +1990,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=__bnvs_id_name_set:nNN]
+% \begin{bnvs.test}[banner=__bnvs_id_name_set:nNN]
 % \cs_set:Npn \Test:nnnnn #1 #2 #3 #4 #5 {
 %   \banner:n { #5 }
 %   \__bnvs_id_name_set:nNNTF { #1 } \l__bnvs_b_tl \l__bnvs_c_tl {
@@ -2014,7 +2014,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnnn { X!X   } { X! } { X!X   } { X! } { 5 }
 % \Test:nnnnn { Y!X.1 } { Y! } { Y!X.1 } { Y! } { 6 }
 % \Test:nnnnn { ?!!X.1 } { } { } {  } { 7 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_parse:Nnn #1 #2 #3 {
@@ -2066,7 +2066,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[
+% \begin{bnvs.test}[
 %   banner=\cs{__bnvs_parse:Nnn}+\cs{__bnvs_item:n},
 %   debug,
 % ]
@@ -2080,8 +2080,8 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnnn {A:B  } {A} {B} {?!X.1+?!X.length-1} {2}
 % \Test:nnnnn {A::C } {A} {?!X.last-(?!X.1)+1} {C} {3}
 % \Test:nnnnn {:B::C} {?!X.last-(?!X.length)+1} {B} {C} {4}
-% \end{beanoves.test}
-% \begin{beanoves.test}[
+% \end{bnvs.test}
+% \begin{bnvs.test}[
 %   banner=\cs{__bnvs_parse:Nnn}+\cs{__bnvs_item:n}
 % ]
 % \cs_set:Npn \Test:nnnnn #1 #2 #3 #4 #5 {
@@ -2104,7 +2104,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnnn {A} {?!X.3.3.last-(?!X.3.3.1)+1} {C} {4-3} {3.3}
 % \Test:nnnnn {?!X.3.4.last-(?!X.3.4.length)+1} {B} {C} {4-4} {3.4}
 % \Test:nnnnn {?!X.3.5.last-(?!X.3.5.length)+1} {B} {C} {4-5} {3.5}
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \begin{function}{\Beanoves}
 %   \begin{syntax}
@@ -2434,7 +2434,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=scan]
+% \begin{bnvs.test}[banner=scan]
 % \cs_set:Npn \eval:nN #1 #2 {
 %   \tl_put_right:Nn #2 { !(#1) }
 % }
@@ -2454,7 +2454,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnn {1+1} {1+1} {2}
 % \Test:nnn {1?(+)1} {1!(+)1} {3}
 % \Test:nnn {1?(+((X)(X))-)1} {1!(+((X)(X))-)1} {4}
-% \end{beanoves.test}I
+% \end{bnvs.test}I
 %
 % \subsubsection{Resolution}
 %
@@ -2751,7 +2751,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\__bnvs_resolve:NNNTF]
+% \begin{bnvs.test}[banner=\string\__bnvs_resolve:NNNTF]
 % \Test_resolve:nnnnnn { X } { X } { } { X } { } { 1A }
 % \Test_resolve:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
 % \Test_resolve:nnnnnn { X } { X } { 1.2.3 } { X } { 1.2.3 } { 3A }
@@ -2778,7 +2778,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_resolve:nnnnnn { X.1.2=Y, Y.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7J }
 % \Test_resolve:nnnnnn { X.1.2=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7K }
 % \Test_resolve:nnnnnn { X.1.2.3=Y, X.1.2=Z } { X } { 1.2.3.4 } { Y } { 4 } { 8A }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}[TF]{\__bnvs_resolve_n:NNNTF}
 % \begin{syntax}
 % \cs{__bnvs_resolve_n:NNNTF} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{ true code} \marg { false code }
@@ -2903,7 +2903,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\__bnvs_resolve_n:NNNTF]
+% \begin{bnvs.test}[banner=\string\__bnvs_resolve_n:NNNTF]
 % \Test_resolve_n:nnnnnn { X } { X } { } { X } { } { 1A }
 % \Test_resolve_n:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
 % \Test_resolve_n:nnnnnn { X } { X } { 1.2.3 } { X } { 1.2.3 } { 3A }
@@ -2930,7 +2930,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_resolve_n:nnnnnn { X.1.2=Y, Y.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7J }
 % \Test_resolve_n:nnnnnn { X.1.2=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7K }
 % \Test_resolve_n:nnnnnn { X.1.2.3=Y, X.1.2=Z } { X } { 1.2.3.4 } { Y } { 4 } { 8A }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}[TF]{\__bnvs_resolve:NNNNTF}
 % \begin{syntax}
 % \cs{__bnvs_resolve:NNNNTF} \meta{cs:nn} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{ true code} \marg { false code }
@@ -3224,7 +3224,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\__bnvs_resolve:NNNTF]
+% \begin{bnvs.test}[banner=\string\__bnvs_resolve:NNNTF]
 % \Test_resolve:nnnnnn { X } { X } { } { X } { } { 1A }
 % \Test_resolve:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
 % \Test_resolve:nnnnnn { X } { X } { 1.2.3 } { X } { 1.2.3 } { 3A }
@@ -3250,7 +3250,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_resolve:nnnnnn { X.1.2=Y, Y.3.4=Z } { X } { 1.2.3.4 } { Z } { } { 7I }
 % \Test_resolve:nnnnnn { X.1.2=Y, Y.3=Z } { X } { 1.2.3.4 } { Z } { 4 } { 7J }
 % \Test_resolve:nnnnnn { X.1.2=Y, Y=Z } { X } { 1.2.3.4 } { Z } { 3.4 } { 7K }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \subsubsection{Evaluation bricks}
 %
@@ -3481,7 +3481,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \__bnvs_raw_first:nN { VN, xN } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\__bnvs_raw_first:nNTF]
+% \begin{bnvs.test}[banner=\string\__bnvs_raw_first:nNTF]
 % \Beanoves { FIRST=222, LENGTH=445, LAST=666 }
 % \Test_raw:nnnn { first } { 222 } { 222 } { 1 }
 % \Test_raw:nnnn { first } { 222 } { 222 } { 2 }
@@ -3495,7 +3495,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_raw:nnnn { first } { :LENGTH::LAST } { 222 } { 9 }
 % \Test_raw:nnnn { first } { ::LAST:LENGTH } { 222 } { 10 }
 % \Test_raw:nnnn { first } { ::LAST:LENGTH } { 222 } { 11 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}[TF]{ \__bnvs_if_first:nN }
 % \begin{syntax}
 % \cs{__bnvs_if_first:nNTF} \marg{name} \meta{tl variable} \marg{true code} \marg{false code}
@@ -3584,7 +3584,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_generate_variant:Nn \__bnvs_first:nN { VN }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=first]
+% \begin{bnvs.test}[banner=first]
 % \reset:n { Y }
 % \Test:nnnn { first } { 222 } { 222 } { 1 }
 % \Test:nnnn { first } { 222 } { 222 } { 2 }
@@ -3598,7 +3598,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { first } { :LENGTH::LAST } { 222 } { 9 }
 % \Test:nnnn { first } { ::LAST:LENGTH } { 222 } { 10 }
 % \Test:nnnn { first } { ::LAST:LENGTH } { 222 } { 11 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}[TF]{\__bnvs_raw_length:nN}
 % \begin{syntax}
 % \cs{__bnvs_raw_length:nNTF} \marg{name} \meta{tl variable} \marg{true code} \marg{false code}
@@ -3606,7 +3606,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % Append the length of the \meta{name} slide range to \meta{tl variable}
 % Execute \meta{true code} when there is a \meta{length}, \meta{false code} otherwise.
 % \end{function}
-% \begin{beanoves.test}[banner=raw_length]
+% \begin{bnvs.test}[banner=raw_length]
 % \reset:n { Y }
 % \Test_raw:nnnn { length } { :445 } { 445 } { 1 }
 % \Test_raw:nnnn { length } { :445 } { 445 } { 2 }
@@ -3628,7 +3628,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { FIRST::LAST } { X.last - (X.1) } { 444 } { D2 }
 % \Test_raw:nnnn { length } { FIRST::LAST } { 445 } { 11 }
 % \Test_raw:nnnn { length } { FIRST::LAST } { 445 } { 12 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_raw_length:nN #1 #2 { T, F, TF } {
@@ -3772,7 +3772,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_generate_variant:Nn \__bnvs_last:nN { VN }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=last]
+% \begin{bnvs.test}[banner=last]
 % \reset:n { Y }
 % \Test_raw:nnnn { last } { ::666 } { 666 } { 1 }
 % \Test_raw:nnnn { last } { ::666 } { 666 } { 2 }
@@ -3786,7 +3786,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_raw:nnnn { last } { ::LAST:LENGTH } { 666 } { 10 }
 % \Test_raw:nnnn { last } { FIRST:LENGTH } { 666 } { 10 }
 % \Test_raw:nnnn { last } { FIRST:LENGTH } { 666 } { 11 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \begin{function}[TF]{\__bnvs_if_next:nN}
 % \begin{syntax}
@@ -3854,7 +3854,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_generate_variant:Nn \__bnvs_next:nN { VN }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=next]
+% \begin{bnvs.test}[banner=next]
 % \reset:n { Y }
 % \Test:nnnn { next } { ::666 } { 667 } { 1 }
 % \Test:nnnn { next } { ::666 } { 667 } { 2 }
@@ -3866,7 +3866,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:nnnn { next } { :LENGTH::LAST } { 667 } { 8 }
 % \Test:nnnn { next } { ::LAST:LENGTH } { 667 } { 9 }
 % \Test:nnnn { next } { ::LAST:LENGTH } { 667 } { 10 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}[TF]{\__bnvs_if_index:nnN, \__bnvs_if_index:VVN, \__bnvs_if_index:nnnN}
 % \begin{syntax}
 % \cs{__bnvs_if_index:nnNTF} \marg{name} \marg{integer} \meta{tl variable} \marg{true code} \marg{false code}
@@ -3923,7 +3923,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \__bnvs_if_index:nnN { VVN } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=index]
+% \begin{bnvs.test}[banner=index]
 % \reset:n { Y }
 % \Test_index:nnnn { 11 } {  1 } { 11 } { 1 }
 % \Test_index:nnnn { 11 } {  2 } { 12 } { 2 }
@@ -3931,7 +3931,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_index:nnnn { 11 } {  0 } { 10 } { 4 }
 % \Test_index:nnnn { 11 } { -1 } {  9 } { 5 }
 % \Test_index:nnnn { 11 } { -2 } {  8 } { 6 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \begin{function}[TF]{\__bnvs_if_range:nN}
 % \begin{syntax}
@@ -4034,7 +4034,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_generate_variant:Nn \__bnvs_range:nN { VN }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=range]
+% \begin{bnvs.test}[banner=range]
 % \bool_set_false:N \l__bnvs_no_range_bool
 % \Test_range:nnn { 222 } { 222- } { 1 }
 % \Test_range:nnn { ::666 } { -666 } { 2 }
@@ -4049,7 +4049,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % ^^A\Test_range:nnn { FIRST:LENGTH } { 222-666 } { 4 }
 % \Test_range:nnn { :LENGTH::LAST } { 222-666 } { 5 }
 % \Test_range:nnn { ::LAST:LENGTH } { 222-666 } { 6 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \begin{function}[TF]{\__bnvs_if_free_counter:nN, \__bnvs_if_free_counter:VN}
 % \begin{syntax}
@@ -4133,7 +4133,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \__bnvs_if_free_counter:nN { VN } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=free_counter]
+% \begin{bnvs.test}[banner=free_counter]
 % \reset:n { Y }
 % \Test_free_counter:nnn { 1 } { 1 } { 1 }
 % \Test_free_counter:nnn { 222 } { 222 } { 2 }
@@ -4147,7 +4147,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_free_counter:nnn { ::A } { 1 } { 9 }
 % \Test_free_counter:nnn { ::A+B } { 2 } { 10 }
 % \Test_free_counter:nnn { ::A+B+C } { 3 } { 11 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function}[TF]{\__bnvs_if_counter:nN, \__bnvs_if_counter:VN}
 % \begin{syntax}
 % \cs{__bnvs_if_counter:nNTF} \marg{name} \meta{tl variable} \marg{true code} \marg{false code}
@@ -4222,7 +4222,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \__bnvs_if_counter:nN { VN } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=counter]
+% \begin{bnvs.test}[banner=counter]
 % \reset:n { Y }
 % \Test_counter:nnn { 1 } { 1 } { 1 }
 % \Test_counter:nnn { 222 } { 222 } { 2 }
@@ -4231,7 +4231,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_counter:nnn { ::LAST } { 666 } { 5 }
 % \Test_counter:nnn { FIRST+LENGTH-1 } { 666 } { 6 }
 % \Test_counter:nnn { ::FIRST+LENGTH-1 } { 666 } { 7 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \begin{function} [TF] {\__bnvs_if_incr:nn, \__bnvs_if_incr:nnN, \__bnvs_if_incr:VnN, \__bnvs_if_incr:VVN}
 % \begin{syntax}
@@ -4306,12 +4306,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \__bnvs_if_incr:nnN { VnN, VVN } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=if_incr]
+% \begin{bnvs.test}[banner=if_incr]
 % \reset:n { Y }
 % \Test_incr:nnnn { 123 } { 123 } { 246 } { 1 }
 % \Test_incr:nnnn { 123 } { 100+20+3 } { 246 } { 2 }
 % \Test_incr:nnnn { FIRST } { LENGTH-1 } { 666 } { 2 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{function} [TF] {\__bnvs_if_post:nnN, \__bnvs_if_post:VnN, \__bnvs_if_post:VVN}
 % \begin{syntax}
 % \cs{__bnvs_if_post:nnNTF} \marg{name} \marg{offset} \meta{tl variable} \marg{true code} \marg{false code}
@@ -4367,7 +4367,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \__bnvs_if_post:nnN { VnN, VVN } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\if_post:nnNTF]
+% \begin{bnvs.test}[banner=\string\if_post:nnNTF]
 % \reset:n { Y }
 % \Test_post:nnnn { 123 } { 123 } { 123 } { 1 }
 % \Test_post:nnnn { } { 123 } { 246 } { 1 }
@@ -4376,7 +4376,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_post:nnnn { } { 0 } { 246 } { 1 }
 % \Test_post:nnnn { FIRST } { LENGTH-1 } { 222 } { 3 }
 % \Test_post:nnnn { } { 0 } { 666 } { 3 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \subsubsection{Evaluation}
 %
@@ -4636,11 +4636,11 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
           \switch:nNTF 4 \l__bnvs_name_tl {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=append/n, debug]
+% \begin{bnvs.test}[banner=append/n, debug]
 % \Test_append:nnnn { 123 } { X.n } { 123 } { 1 }
 % \Test_append:nnnn { } { ++X.n } { 124 } { 2 }
 % \Test_append:nnnn { } { X.n } { 124 } { 3 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \item Cases \texttt{\meta{name}\meta{integer path}...}.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
@@ -4655,7 +4655,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...length}.
-% \begin{beanoves.test}[banner=append/length]
+% \begin{bnvs.test}[banner=append/length]
 % \Test_append:nnnn { :445 } { X.length } { 445 } { 1 }
 % \Test_append:nnnn { 222:445 } { X.length } { 445 } { 2 }
 % \Test_append:nnnn { 222::666 } { X.length } { 445 } { 3 }
@@ -4665,7 +4665,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { FIRST:LENGTH } { X.length } { 445 } { 6 }
 % \Test_append:nnnn { FIRST::LAST } { X.length } { 445 } { 7 }
 % \Test_append:nnnn { :LENGTH::LAST } { X.length } { 445 } { 8 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
             } {
@@ -4684,7 +4684,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
                 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=append/last]
+% \begin{bnvs.test}[banner=append/last]
 % \Test_append:nnnn { ::666 } { X.last } { 666 } { 1 }
 % \Test_append:nnnn { 222:445 } { X.last } { 666 } { 2 }
 % \Test_append:nnnn { 222::666 } { X.last } { 666 } { 3 }
@@ -4694,7 +4694,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { FIRST:LENGTH } { X.last } { 666 } { 6 }
 % \Test_append:nnnn { FIRST::LAST } { X.last } { 666 } { 7 }
 % \Test_append:nnnn { :LENGTH::LAST } { X.last } { 666 } { 8 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
               } {
@@ -4702,7 +4702,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...next}.
-% \begin{beanoves.test}[banner=append/next]
+% \begin{bnvs.test}[banner=append/next]
 % \Test_append:nnnn { ::666 } { X.next } { 667 } { 1 }
 % \Test_append:nnnn { 222:445 } { X.next } { 667 } { 2 }
 % \Test_append:nnnn { 222::666 } { X.next } { 667 } { 3 }
@@ -4712,7 +4712,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { FIRST:LENGTH } { X.next } { 667 } { 6 }
 % \Test_append:nnnn { FIRST::LAST } { X.next } { 667 } { 7 }
 % \Test_append:nnnn { :LENGTH::LAST } { X.next } { 667 } { 8 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
                   \:NnnT \__bnvs_resolve:NNNTF 5 6 {
@@ -4727,7 +4727,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...range}.
-% \begin{beanoves.test}[banner=append]
+% \begin{bnvs.test}[banner=append]
 % \Test_append:nnnn { 222 } { X.range } { 222- } { 1 }
 % \Test_append:nnnn { ::666 } { X.range } { -666 } { 2 }
 % \Test_append:nnnn { 222:445 } { X.range } { 222-666 } { 3 }
@@ -4739,7 +4739,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { FIRST:LENGTH } { X.range } { 222-666 } { 8 }
 % \Test_append:nnnn { FIRST::LAST } { X.range } { 222-666 } { 9 }
 % \Test_append:nnnn { :LENGTH::LAST } { X.range } { 222-666 } { 10 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \:NnnT \__bnvs_resolve:NNNTF 5 6 {
@@ -4761,7 +4761,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...+=\meta{integer}}.
-% \begin{beanoves.test}[banner={append/+=}]
+% \begin{bnvs.test}[banner={append/+=}]
 % \Test_append:nnnn { 222 } { X.n += 444 } { 666 } { 1 }
 % \Test_append:nnnn { } { X.n } { 666 } { 2 }
 % \Test_append:nnnn { } { X   } { 666 } { 3 }
@@ -4783,7 +4783,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { FIRST } { X.n += LENGTH ~ - 1 } { 666 } { 16 }
 % \Test_append:nnnn { } { X.n } { 667 } { 17 }
 % \Test_append:nnnn { } { X   } { 667 } { 18 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
@@ -4805,7 +4805,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...n++}.
-% \begin{beanoves.test}[banner={append/...n++}]
+% \begin{bnvs.test}[banner={append/...n++}]
 % \Test_append:nnnn { 222 } { X.n ++ } { 222 } { 1-a }
 % \Test_append:nnnn { } { X++ } { 223 } { 2-a }
 % \Test_append:nnnn { } { X.n   } { 224 } { 3-a }
@@ -4813,7 +4813,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_append:nnnn { FIRST } { X.n ++ } { 222 } { 1-b }
 % \Test_append:nnnn { } { X++ } { 223 } { 2-b }
 % \Test_append:nnnn { } { X.n   } { 224 } { 3-b }
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
                       \switch:nNTF { 13 } \l__bnvs_a_tl {
@@ -4983,7 +4983,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \end{myList}
-% \begin{beanoves.test}[banner=A_cln_Z]
+% \begin{bnvs.test}[banner=A_cln_Z]
 % \Test_regex:nnnn { A_cln_Z } {A:B} {A:B,{A},{},{B},{}} {1}
 % \Test_regex:nnnn { A_cln_Z } {A} {A,{},{},{},A} {2}
 % \Test_regex:nnnn { A_cln_Z } {A:B} {A:B,{A},{},{B},{}} {3}
@@ -4993,7 +4993,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_regex:nnnn { A_cln_Z } {::B} {::B,{},:,B,{}} {7}
 % \Test_regex:nnnn { A_cln_Z } {::} {::,{},:,{},{}} {8}
 % \Test_regex:nnnn { A_cln_Z } {:} {:,{},{},{},{}} {9}
-% \end{beanoves.test}
+% \end{bnvs.test}
 % \end{function}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
@@ -5155,7 +5155,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=\string\__bnvs_eval_query:nNTF]
+% \begin{bnvs.test}[banner=\string\__bnvs_eval_query:nNTF]
 % \Test_query:nnnn { A=100 } { 1 } { 1 } { 1 }
 % \Test_query:nnnn { A=100 } { 1+1 } { 2 } { 2 }
 % \Test_query:nnnn { A=100 } { A.1+A.11 } { 210 } { 3 }
@@ -5166,7 +5166,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test_query:nnnn { A=4 } { A.-1 } { 2 } { 8 }
 % \Test_query:nnnn { A=4 } { A.-2 } { 1 } { 9 }
 % \Test_query:nnnn { A=4 } { A.-3 } { 0 } { 10 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \begin{function}{\__bnvs_eval:nN}
 % \begin{syntax}
@@ -5238,7 +5238,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \seq_put_right:NV \l__bnvs_ans_seq \l__bnvs_ans_tl
     } {
       \seq_map_break:n {
-        \msg_fatal:nnn { beanoves } { :n } { Circular/Undefined~dependency~in~#1}
+\msg_fatal:nnn { beanoves } { :n } { Circular/Undefined~dependency~in~#1}
       }
     }
   }
@@ -5255,14 +5255,14 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 \cs_generate_variant:Nn \__bnvs_eval:nN { VN, xN }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=eval, debug]
+% \begin{bnvs.test}[banner=eval, debug]
 % \reset:n { }
 % \Test_append:nnnn { 222 } { X.1 } { 222 } { A }
 % \__bnvs_DEBUG:x { \string \l__bnvs_ans_tl }
 % \tl_clear:N \l__bnvs_ans_tl
 % \__bnvs_eval:nN {X.1} \l__bnvs_ans_tl
 % \assert_equal:xxn { \l__bnvs_ans_tl } { 222 } { 1 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \begin{function}{\BeanovesEval}
 %   \begin{syntax}
@@ -5297,12 +5297,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{beanoves.test}[banner=BeanovesEval, debug]
+% \begin{bnvs.test}[banner=BeanovesEval, debug]
 % \reset:n { }
 % \Test_append:nnnn { 222 } { X.1 } { 222 } { A }
 % \BeanovesEval[\l__bnvs_ans_tl]{X.1}
 % \assert_equal:xxn { \l__bnvs_ans_tl } { 222 } { 1 }
-% \end{beanoves.test}
+% \end{bnvs.test}
 %
 % \subsubsection{Reseting slide ranges}
 % \begin{function}{\BeanovesReset}
