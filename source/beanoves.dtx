@@ -343,15 +343,24 @@ To avoid this, use at least a \texttt{:1} length definition.
 \end{tcblisting}
 %
 %
-Finally each named slide range has a dedicated counter \texttt{\meta{name}.n} (or \texttt{\meta{name}})
+\subsection{Counters}
+\subsubsection{Value counters}
+Each named slide range has a dedicated value counter \texttt{\meta{name}} 
 which is some kind of variable that can be used and incremented\footnote{This is actually an experimental feature.}.
 \begin{description}
-\item[\ttfamily\meta{name}.n]: use the position of the counter 
-\item[\ttfamily\meta{name}.n+=\meta{integer}]: advance the counter by \meta{integer} and use the new position
-\item[\ttfamily++\meta{name}.n]: advance the counter by 1 and use the new position
-\item[\ttfamily\meta{name}.n++]: use the actual position and advance the counter by 1
+\item[\ttfamily\meta{name}]: use the position of the value counter 
+\item[\ttfamily\meta{name}+=\meta{integer}]: advance the value counter by \meta{integer} and use the new position
+\item[\ttfamily++\meta{name}]: advance the value counter by 1 and use the new position
+\item[\ttfamily\meta{name}++]: use the actual position and advance the value counter by 1
 \end{description}
-Notice that ``|.n|'' can generally be omitted.
+\subsubsection{Index counters}
+In addition we have an implicit index counter that starts at 1:
+\begin{description}
+\item[\ttfamily\meta{name}.n]: equivalent to \texttt{\meta{name}.\meta{n}} where \meta{n} is the value of the implicit index counter
+\item[\ttfamily\meta{name}.n+=\meta{integer}]: advance the implicit index counter by \meta{integer} and use \texttt{\meta{name}.n}
+\item[\ttfamily++\meta{name}]: advance the implicit index counter by 1 and use \texttt{\meta{name}.n}
+\item[\ttfamily\meta{name}++]: use \texttt{\meta{name}.n} and advance the implicit index counter by 1
+\end{description}
 %
 \subsection{Named slide lists}
 After the definition
@@ -466,12 +475,18 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % facilities which are intentionally left undocumented. 
 % \begin{bnvs.gobble}
 %<*!gubed>
-\cs_set:Npn \bnvs_log_gprop: {
+\cs_set:Npn \__bnvs_log_gprop: {
   \prop_map_inline:Nn \g__bnvs_prop {
     \__bnvs_DEBUG:n { ##1 -> ##2 }
   }
 }
-\NewDocumentCommand\BeanovesLogGProp {} { \bnvs_log_gprop: }
+\NewDocumentCommand\BeanovesLogGProp {} { \__bnvs_log_gprop: }
+\cs_set:Npn \__bnvs_log_n_prop: {
+  \prop_map_inline:Nn \l__bnvs_n_prop {
+    \__bnvs_DEBUG:n { n: ##1 -> ##2 }
+  }
+}
+\NewDocumentCommand\BeanovesLogNProp {} { \__bnvs_log_n_prop: }
 \cs_set:Npn \__bnvs_DEBUG_a:nn #1 #2 {
   \msg_term:nnn { beanoves } { :n } { #1~#2 }
 }
@@ -558,7 +573,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n { ##6 }
     \tl_if_empty:nF { ##1 } {
       \Beanoves { ##1 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_current_tl
@@ -579,7 +594,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n { ##6 }
     \tl_if_empty:nF { ##1 } {
       \Beanoves { ##1 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_current_tl
@@ -600,7 +615,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n{##4~/~##2}
     \tl_if_empty:nF { ##2 } {
       \Beanoves { X = ##2 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -619,7 +634,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \banner:n { ##4~/~##2 }
     \tl_if_empty:nF { ##2 } {
       \Beanoves { X = ##2 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -660,7 +675,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n {##4}
     \tl_if_empty:nF { ##1 } {
       \Beanoves { X = ##1 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -675,7 +690,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n { ##3~/~##1/ }
     \tl_if_empty:nF { ##1 } {
       \Beanoves { X = ##1 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -702,7 +717,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n { ##5~/~##2+##3 }
     \tl_if_empty:nF { ##2 } {
       \Beanoves { X = ##2 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -728,7 +743,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n { ##3~/~##1 }
     \tl_if_empty:nF { ##1 } {
       \Beanoves { X = ##1 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -743,7 +758,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
     \banner:n { ##4~/~X=##1=>##2==##3~/ }
     \tl_if_empty:nF { ##1 } {
       \Beanoves { X = ##1 }
-      \bnvs_log_gprop:
+      \__bnvs_log_gprop:
     }
     \__bnvs_group_begin:
     \tl_clear:N \l__bnvs_ans_tl
@@ -963,6 +978,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \item [\texttt{\meta{id}!\meta{name}/Z}] for the last index when provided
 % \item [\texttt{\meta{id}!\meta{name}/C}] for the counter value, when used
 % \item [\texttt{\meta{id}!\meta{name}/C0}] for initial value of the counter (when reset)
+% \item [\texttt{\meta{id}!\meta{name}/n}] for the implicit index counter, when used.
 % \end{description}
 % Other keys are eventually used to cache results when some attributes
 % are defined from other slide ranges. They are characterized by a `|//|'.
@@ -984,7 +1000,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \cs{__bnvs_gput:nn} \marg{key} \marg{value}
 % \cs{__bnvs_gprovide:nn} \marg{key} \marg{value}
 % \cs{__bnvs_item:n} \marg{key}
-% \cs{__bnvs_get:n} \marg{key} \meta{tl variable}
+% \cs{__bnvs_get:nN} \marg{key} \meta{tl variable}
 % \cs{__bnvs_gremove:n} \marg{key}
 % \cs{__bnvs_gclear:n} \marg{key}
 % \cs{__bnvs_gclear_cache:n} \marg{key}
@@ -1027,7 +1043,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
   \prop_gremove:Nn \g__bnvs_prop
 }
 \cs_new:Npn \__bnvs_gclear:n #1 {
-  \clist_map_inline:nn { A, L, Z, C, C0, /, /A, /L, /Z, /N } {
+  \clist_map_inline:nn { A, L, Z, C, C0, n, /, /A, /L, /Z, /N } {
     \__bnvs_gremove:n { #1 / ##1 }
   }
 }
@@ -1072,6 +1088,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % Execute \meta{true code} when the item is found, \meta{false code} otherwise.
 % In the latter case, the content of the \meta{tl variable} is undefined.
 % NB: the predicate won't work because |\prop_get:NnNTF| is not expandable.
+% \end{function}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_get:nN #1 #2 { T, F, TF } {
@@ -1099,7 +1116,6 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \end{function}
 % \begin{bnvs.test}[banner=(put|remove|clear|...):nn...]
 % \cs_set:Npn \Test:xxn #1 #2 #3 {
 %   \__bnvs_assert_equal:xxn { #1 } { #2 } {\cs{__bnvs_g(put|remove|clear|...):nn}~#3}
@@ -1116,18 +1132,158 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \Test:xxn { \bool_if:nTF { \__bnvs_if_in_p:n {B} } TF } { F } { 10 }
 % \Test:xxn { \bool_if:nTF { \__bnvs_if_in_p:n {B} || \__bnvs_if_in_p:n {A} } TF } { T } { 11 }
 % \tl_clear:N \l__bnvs_b_tl
-% \__bnvs_get:nNTF {A} \l__bnvs_b_tl {
-%   \tl_set:Nn \l__bnvs_b_tl { SUCCESS }
-% } {
-%   \tl_set:Nn \l__bnvs_b_tl { FAILURE }
+% \__bnvs_get:nNF {A} \l__bnvs_b_tl {
+%   \assert_fail:n { 13 }
 % }
-% \Test:xxn { \l__bnvs_b_tl } { SUCCESS } { 13 }
-% \__bnvs_get:nNTF {B} \l__bnvs_b_tl {
-%   \tl_set:Nn \l__bnvs_b_tl { FAILURE }
-% } {
-%   \tl_set:Nn \l__bnvs_b_tl { SUCCESS }
+% \__bnvs_get:nNT {B} \l__bnvs_b_tl {
+%   \assert_fail:n { 13 }
 % }
-% \Test:xxn { \l__bnvs_b_tl } { SUCCESS } { 13 }
+% \end{bnvs.test}
+% \subsubsection{Implicit index counter}
+% The implicit index counter is local to the current frame.
+% When used for the first time, it defaults to 1.
+% \begin{variable} {\l__bnvs_n_prop}
+% \meta{key}--\meta{value} property list to store the named slide lists.
+% The keys are \meta{id}!\meta{name}.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\prop_new:N \l__bnvs_n_prop
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \end{variable}
+% \begin{function}{\__bnvs_n_put:nn,\__bnvs_n_put:nV,\__bnvs_n_provide:nn,\__bnvs_n_provide:nV,\__bnvs_n_item:n,\__bnvs_n_get:nN,\__bnvs_n_remove:n,\__bnvs_n_clear:}
+% \begin{syntax}
+% \cs{__bnvs_n_put:nn} \marg{key} \marg{value}
+% \cs{__bnvs_n_provide:nn} \marg{key} \marg{value}
+% \cs{__bnvs_n_item:n} \marg{key}
+% \cs{__bnvs_n_get:nN} \marg{key} \meta{tl variable}
+% \cs{__bnvs_n_remove:n} \marg{key}
+% \cs{__bnvs_n_clear:}
+% \end{syntax}
+% Convenient shortcuts to manage the storage,
+% it makes the code more concise and readable.
+% This is a wrapper over \LaTeX3 eponym functions,
+% except \cs{__bnvs_n_provide:nn} which meaning is straightforward.
+% \end{function}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\cs_new:Npn \__bnvs_n_put:nn #1 #2 {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x {\string\__bnvs_n_put:nn/key:#1/value:#2/}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+  \prop_put:Nnn \l__bnvs_n_prop { #1 } { #2 }
+}
+\cs_new:Npn \__bnvs_n_provide:nn #1 #2 {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x {\string\__bnvs_n_provide:nn/key:#1/value:#2/}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+  \prop_if_in:NnF \l__bnvs_n_prop { #1 } {
+    \prop_put:Nnn \l__bnvs_n_prop { #1 } { #2 }
+  }
+}
+\cs_new:Npn \__bnvs_n_item:n {
+  \prop_item:Nn \l__bnvs_n_prop
+}
+\cs_new:Npn \__bnvs_n_get:nN {
+  \prop_get:NnN \l__bnvs_n_prop
+}
+\cs_new:Npn \__bnvs_n_remove:n {
+  \prop_remove:Nn \l__bnvs_n_prop
+}
+\cs_new:Npn \__bnvs_n_clear: {
+  \prop_clear:N \l__bnvs_n_prop
+}
+\cs_generate_variant:Nn \__bnvs_n_put:nn { nV }
+\cs_generate_variant:Nn \__bnvs_n_provide:nn { nV }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{function}[pTF]{\__bnvs_n_if_in:n,\__bnvs_n_if_in:V}
+% \begin{syntax}
+% \cs{__bnvs_n_if_in_p:n} \marg{key}
+% \cs{__bnvs_n_if_in:nTF} \marg{key} \Arg{true code} \Arg{false code}
+% \end{syntax}
+% Convenient shortcuts to test for the existence of some key, it makes the code more concise and readable.
+% \end{function}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\prg_new_conditional:Npnn \__bnvs_n_if_in:n #1 { p, T, F, TF } {
+  \prop_if_in:NnTF \l__bnvs_n_prop { #1 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\prg_generate_conditional_variant:Nnn \__bnvs_n_if_in:n {V} { p, T, F, TF }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{function}[TF]{\__bnvs_n_get:nN}
+% \begin{syntax}
+% \cs{__bnvs_n_get:nNTF} \marg{key} \meta{tl variable} \Arg{true code} \Arg{false code}
+% \end{syntax}
+% Convenient shortcuts to retrieve the value with branching, it makes the code more concise and readable.
+% Execute \meta{true code} when the item is found, \meta{false code} otherwise.
+% In the latter case, the content of the \meta{tl variable} is undefined.
+% NB: the predicate won't work because |\prop_get:NnNTF| is not expandable.
+% \end{function}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\prg_new_conditional:Npnn \__bnvs_n_get:nN #1 #2 { T, F, TF } {
+  \prop_get:NnNTF \l__bnvs_n_prop { #1 } #2 {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_n_get:nNTF\space TRUE/
+  #1/\string#2:#2/
+}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+    \prg_return_true:
+  } {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_n_get:nNTF\space FALSE/#1/\string#2/ }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+    \prg_return_false:
+  }
+}
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=n_(put|remove|clear|...):nn...]
+% \cs_set:Npn \Test:xxn #1 #2 #3 {
+%   \exp_args:Nnnx
+%   \assert_equal:xxn { #1 } { #2 } {\backslash __bnvs_n_(put|remove|clear|...):nn~#3}
+% }
+% \__bnvs_n_put:nn { A } { B }
+% \__bnvs_log_n_prop:
+% \Test:xxn { \__bnvs_n_item:n {A} } { B } { 1 }
+% \Test:xxn { \__bnvs_n_if_in:nTF {A} TF } { T } { 3 }
+% \Test:xxn { \__bnvs_n_if_in:nTF {B} TF } { F } { 4 }
+% \Test:xxn { \__bnvs_n_if_in:nT {A} T } { T } { 5 }
+% \Test:xxn { \__bnvs_n_if_in:nT {B} T } { } { 6 }
+% \Test:xxn { \__bnvs_n_if_in:nF {A} F } { } { 7 }
+% \Test:xxn { \__bnvs_n_if_in:nF {B} F } { F } { 8 }
+% \Test:xxn { \bool_if:nTF { \__bnvs_n_if_in_p:n {A} } TF } { T } { 9 }
+% \Test:xxn { \bool_if:nTF { \__bnvs_n_if_in_p:n {B} } TF } { F } { 10 }
+% \Test:xxn { \bool_if:nTF { \__bnvs_n_if_in_p:n {B} || \__bnvs_n_if_in_p:n {A} } TF } { T } { 11 }
+% \tl_clear:N \l__bnvs_b_tl
+% \__bnvs_n_get:nNF {A} \l__bnvs_b_tl {
+%   \test_fail:n { 13 }
+% }
+% \__bnvs_n_get:nNT {B} \l__bnvs_b_tl {
+%   \test_fail:n { 13 }
+% }
 % \end{bnvs.test}
 %
 % \subsubsection{Regular expressions}
@@ -1307,10 +1463,10 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % We start with `|++|' instrussions^^A
-% \footnote{At the same time an instruction and an expression... this is a synonym of exprection}.
+% \footnote{At the same time an instruction and an expression... this is a synonym of exprection}. We have on one hand 3 capture groups for pre |++| operator and on the other hand 16-3 capture groups.
 %   \begin{myList}
 %   \item 1: \meta{name} of a slide range
-%   \item 2: \meta{id} of a slide range plus the exclamation mark 
+%   \item 2: \meta{id} of a slide range including the exclamation mark 
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
     \+\+ ( ( \ur{c__bnvs_id_regex}? ) \ur{c__bnvs_name_regex} )
@@ -1319,22 +1475,30 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   \item 3: optionally followed by an integer path
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-    ( \ur{c__bnvs_path_regex} ) (?: \. n )?
+    ( \ur{c__bnvs_path_regex} )
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner=split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/++...]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } {#2,{},{},{},{},{},{},{},{},{},{}} { #3 }
+%     { #1 }
+%     {{#2},#3,{},{},{},{},{},{},{},{},{},{},{},{},{}} { 1|2|3-#4~(++...) } 
 % }
-% \Test:nnn { ++ABC.n } {{++ABC.n},{ABC},{},{}} {2a}
-% \Test:nnn { ++ABC.1.2.n~~ } {{++ABC.1.2.n~~},{ABC},{},{.1.2}} {2b}
-% \Test:nnn { ++ABC } {{++ABC},{ABC},{},{}} {2c}
-% \Test:nnn { ++ABC.1.2~~ } {{++ABC.1.2~~},{ABC},{},{.1.2}} {2d}
-% \Test:nnn { ++?!ABC.n } {{++?!ABC.n},{?!ABC},{?!},{}} {2a}
-% \Test:nnn { ++?!ABC.1.2.n~~ } {{++?!ABC.1.2.n~~},{?!ABC},{?!},{.1.2}} {2b}
-% \Test:nnn { ++?!ABC } {{++?!ABC},{?!ABC},{?!},{}} {2c}
-% \Test:nnn { ++?!ABC.1.2~~ } {{++?!ABC.1.2~~},{?!ABC},{?!},{.1.2}} {2d}
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ++ABC } {} {{ABC},{},{}} {a}
+% \Test:nnnn { ++ABC.1.2~~ } {} {{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ++?!ABC } {} {{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ++?!ABC.1.2~~ } {} {{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ++?!ABC.1.2~X~ } {++?!ABC.1.2~} {{?!ABC},{?!},{.1.2}} {e}
 % \end{bnvs.test}
 % We continue with other expressions
 %   \item 4: qualified \meta{name} of a slide range,
@@ -1363,101 +1527,12 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
        \. l(e)ngth
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner=split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \banner:n { #3 }
-%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2,{e},{},{},{},{},{},{} } { #3 } 
-% }
-% \Test:nnn { A.length } {{A},{},{}} {5a}
-% \Test:nnn { A.1.2.length } {{A},{},{.1.2}} {5b}
-% \Test:nnn { ?!A.length } {{?!A},{?!},{}} {5c}
-% \Test:nnn { ?!A.1.2.length } {{?!A},{?!},{.1.2}} {5d}
-% \end{bnvs.test}
-%   \item 8: the \meta{last} attribute
-% \begin{bnvs.macrocode}
-%    \begin{macrocode}
-    |  \. l(a)st
-%    \end{macrocode}
-% \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \banner:n { #3 }
-%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2,{},{a},{},{},{},{},{} } { #3 } 
-% }
-% \Test:nnn { A.last } {{A},{},{}} {6a}
-% \Test:nnn { A.1.2.last } {{A},{},{.1.2}} {6b}
-% \Test:nnn { ?!A.last } {{?!A},{?!},{}} {6c}
-% \Test:nnn { ?!A.1.2.last } {{?!A},{?!},{.1.2}} {6d}
-% \end{bnvs.test}
-%   \item 9: the \meta{next} attribute
-% \begin{bnvs.macrocode}
-%    \begin{macrocode}
-    |  \. ne(x)t
-%    \end{macrocode}
-% \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \banner:n { #3 }
-%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2,{},{},{x},{},{},{},{}} { #3 } 
-% }
-% \Test:nnn { A.next } {{A},{},{}} {7a}
-% \Test:nnn { A.1.2.next } {{A},{},{.1.2}} {7b}
-% \Test:nnn { ?!A.next } {{?!A},{?!},{}} {7c}
-% \Test:nnn { ?!A.1.2.next } {{?!A},{?!},{.1.2}} {7d}
-% \end{bnvs.test}
-%   \item 10: the \meta{range} attribute
-% \begin{bnvs.macrocode}
-%    \begin{macrocode}
-    |  \. (r)ange
-%    \end{macrocode}
-% \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \banner:n { #3 }
-%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2,{},{},{},{r},{},{},{} } { #3 } 
-% }
-% \Test:nnn { A.range } {{A},{},{}} {8a}
-% \Test:nnn { A.1.2.range } {{A},{},{.1.2}} {8b}
-% \Test:nnn { ?!A.range } {{?!A},{?!},{}} {8c}
-% \Test:nnn { ?!A.1.2.range } {{?!A},{?!},{.1.2}} {8d}
-% \end{bnvs.test}
-%   \item 11: the \meta{n} attribute
-% \begin{bnvs.macrocode}
-%    \begin{macrocode}
-    |  (?: \. (n) )? (?:
-%    \end{macrocode}
-% \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
-%   \banner:n { #3 }
-%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
-%     { #1 } { {#1},{},{},{},#2,{},{},{},{},{n},{},{} } { #3 } 
-% }
-% \Test:nnn { A.n } {{A},{},{}} {9a}
-% \Test:nnn { A.1.2.n } {{A},{},{.1.2}} {9b}
-% \Test:nnn { ?!A.n } {{?!A},{?!},{}} {9c}
-% \Test:nnn { ?!A.1.2.n } {{?!A},{?!},{.1.2}} {9d}
-% \end{bnvs.test}
-%   \item 12: the poor man integer expression after `|+=|',
-%   which is the longest sequence of black characters,
-%   which ends just before a space or at the very last character.
-%   This tricky definition allows quite any algebraic expression,
-%   even those involving parenthesis.
-% \begin{bnvs.macrocode}
-%    \begin{macrocode}
-        \s* \+= \s* ( \S+ )
-%    \end{macrocode}
-% \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner={\string\c__bnvs_split_regex/+=}]
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/.length]
 % \cs_set:Npn \:nnnn #1 #2 #3 #4 {
 %   \banner:n { #4 }
 %   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
 %     { #1 }
-%     { {#2},{},{},{},#3,{} } { #4 } 
+%     {{#2},{},{},{},#3,{e},{},{},{},{},{},{},{},{},{}} { 7-#4~(.length) } 
 % }
 % \cs_set:Npn \Test:nnnn #1 #2 {
 %   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
@@ -1468,91 +1543,341 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %   \exp_args:NnV
 %   \:nnnn { #1 } \l__bnvs_a_tl
 % }
-% \Test:nnnn { ABC.n += 421 } {}
-%   {{ABC},{},{},{},{},{},{},{n},{421}} {`+='~1}
-% \__bnvs_test_extract:Nnnn \c__bnvs_key_regex
-%   { P.1 } {P.1} {`+='~2}
-% \Test:nnnn { ABC.n += 1+P.1 } {}
-%   {{ABC},{},{},{},{},{},{},{n},{1+P.1}} {`+='~2}
-% \Test:nnnn { ABC.n += 1+P.1~X } { ABC.n += 1+P.1~ }
-%   {ABC,{},{},{},{},{},{},{n},{1+P.1}} {`+='~3}
-% \Test:nnnn { ABC.n += (P.1+1)~~^^A(
-% ) } { ABC.n += (P.1+1)~~ } {ABC,{},{},{},{},{},{},{n},{(P.1+1)}} {`+='~4}
-% \Test:nnnn { ?!ABC.n += 421 } {}
-%   {{?!ABC},{?!},{},{},{},{},{},{n},{421}} {`+='~5}
-% \__bnvs_test_extract:Nnnn \c__bnvs_key_regex
-%   { P.1 } { P.1 } { `+='~2 }
-% \Test:nnnn { ?!ABC.n += 1+P.1 } {}
-%   {{?!ABC},{?!},{},{},{},{},{},{n},{1+P.1}} {`+='~6}
-% \Test:nnnn { ?!ABC.n += 1+P.1~X } {?!ABC.n += 1+P.1~}
-%   {?!ABC,{?!},{},{},{},{},{},{n},{1+P.1}} {`+='~7}
-% \Test:nnnn { ?!ABC.n += (P.1+1)~~^^A(
-% ) } {?!ABC.n += (P.1+1)~~} {?!ABC,{?!},{},{},{},{},{},{n},{(P.1+1)}} {`+='~8}
+% \Test:nnnn { A.length } {} {{A},{},{}} {a}
+% \Test:nnnn { A.1.2.length } {} {{A},{},{.1.2}} {b}
+% \Test:nnnn { ?!A.length } {} {{?!A},{?!},{}} {c}
+% \Test:nnnn { ?!A.1.2.length } {} {{?!A},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!A.1.2.length~X } {?!A.1.2.length~} {{?!A},{?!},{.1.2}} {e}
 % \end{bnvs.test}
-%   \item 13: the post increment
+%   \item 8: the \meta{last} attribute
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    |  \. l(a)st
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/.last]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     {{#2},{},{},{},#3,{},{a},{},{},{},{},{},{},{},{}} { 8-#4~(.length) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { A.last } {} {{A},{},{}} {a}
+% \Test:nnnn { A.1.2.last } {} {{A},{},{.1.2}} {b}
+% \Test:nnnn { ?!A.last } {} {{?!A},{?!},{}} {c}
+% \Test:nnnn { ?!A.1.2.last } {} {{?!A},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!A.1.2.last~X~ } { ?!A.1.2.last~ } {{?!A},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+%   \item 9: the \meta{next} attribute
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    |  \. ne(x)t
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/.next]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     {{#2},{},{},{},#3,{},{},{x},{},{},{},{},{},{},{}} { 9-#4~(.next) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { A.next } {} {{A},{},{}} {a}
+% \Test:nnnn { A.1.2.next } {} {{A},{},{.1.2}} {b}
+% \Test:nnnn { ?!A.next } {} {{?!A},{?!},{}} {c}
+% \Test:nnnn { ?!A.1.2.next } {} {{?!A},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!A.1.2.next~X~ } {?!A.1.2.next~} {{?!A},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+%   \item 10: the \meta{range} attribute
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    |  \. (r)ange
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/.range]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     {{#2},{},{},{},#3,{},{},{},{r},{},{},{},{},{},{}} { 10-#4~(.range) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { A.range } {} {{A},{},{}} {a}
+% \Test:nnnn { A.1.2.range } {} {{A},{},{.1.2}} {b}
+% \Test:nnnn { ?!A.range } {} {{?!A},{?!},{}} {c}
+% \Test:nnnn { ?!A.1.2.range } {} {{?!A},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!A.1.2.range~X~ } {?!A.1.2.range~} {{?!A},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+%   \item 11: the \meta{++n} attribute
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    |  \.(\+)\+n
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/.++n]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     { {#2},{},{},{},#3,{},{},{},{},{+},{},{},{},{},{} } { 11-#4~(.++n) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ABC.++n } {} {{ABC},{},{}} {a}
+% \Test:nnnn { ABC.1.2.++n~~ } {}  {{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ?!ABC.++n } {}  {{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ?!ABC.1.2.++n~~ } {}  {{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!ABC.1.2.++n~X~ } { ?!ABC.1.2.++n~}  {{?!ABC},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+%   \item 12: the \meta{n} attribute
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    |  \. (n)
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/.n]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     { {#2},{},{},{},#3,{},{},{},{},{},{n},{},{},{},{} } { 12-#4~(.n) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ABC.n } {} {{ABC},{},{}} {a}
+% \Test:nnnn { ABC.1.2.n~~ } {} {{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ?!ABC.n } {} {{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ?!ABC.1.2.n~~ } {} {{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!ABC.1.2.n~X~ } {?!ABC.1.2.n~} {{?!ABC},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+%   \item 13: the poor man integer expression after `|.n+=|',
+%   which is the longest sequence of black characters,
+%   which ends just before a space or at the very last character.
+%   This tricky definition allows quite any algebraic expression,
+%   even those involving parenthesis.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    (?: \s* \+= \s* ( \S+ )
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner={\string\c__bnvs_split_regex/.n+=}]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     { {#2},{},{},{},#3,{},{},{} } { 13-#4~(.n+=) } 
+% }
+% \cs_set:Npn \Test:nnnnn #1 #2 #3 #4 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl { #3,{},{},{},{},{},{n},{#4} }
+% }
+% \Test:nnnnn { ABC.n += 421 } {} {{ABC}, {}, {}} {421} {a}
+% \Test:nnnnn { ABC.n += 1+P.1 } {} {{ABC}, {}, {}} {1+P.1} {b}
+% \Test:nnnnn { ABC.n += 1+P.1~X } { ABC.n += 1+P.1~ } {{ABC}, {}, {}} {1+P.1} {c}
+% \Test:nnnnn { ABC.n += (P.1+1)~~^^A(
+% ) } { ABC.n += (P.1+1)~~ } {{ABC}, {}, {}} {(P.1+1)} {d}
+% \Test:nnnnn { ?!ABC.n += 421 } {} {{?!ABC}, {?!}, {}} {421} {e}
+% \Test:nnnnn { ?!ABC.n += 1+P.1 } {} {{?!ABC}, {?!}, {}} {1+P.1} {f}
+% \Test:nnnnn { ?!ABC.n += 1+P.1~X } {?!ABC.n += 1+P.1~} {{?!ABC}, {?!}, {}} {1+P.1} {g}
+% \Test:nnnnn { ?!ABC.n += (P.1+1)~~^^A(
+% ) } {?!ABC.n += (P.1+1)~~} {{?!ABC}, {?!}, {}} {(P.1+1)} {h}
+% \end{bnvs.test}
+%   \item 14: the \meta{n++} attribute
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
       | (\+)\+ )?
 %    \end{macrocode}
 % \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/.n++]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     { {#2},{},{},{},#3,{},{},{},{},{},{n},{},{+},{},{}} { 14-#4~(.n++) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ABC.n++ } {} {{ABC},{},{}} {a}
+% \Test:nnnn { ABC.1.2.n++~~ } {}  {{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ?!ABC.n++ } {}  {{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ?!ABC.1.2.n++~~ } {}  {{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!ABC.1.2.n++~X~ } { ?!ABC.1.2.n++~}  {{?!ABC},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+%   \item 11+4=15: the poor man integer expression after `|+=|',
+%   which is the longest sequence of black characters,
+%   which ends just before a space or at the very last character.
+%   This tricky definition allows quite any algebraic expression,
+%   even those involving parenthesis.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-    )?
+    |  \s* \+= \s* ( \S+ )
 %    \end{macrocode}
 % \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner={\string\c__bnvs_split_regex/+=}]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     { {#2},{},{},{},#3,{} } { 15-#4~(+=) } 
+% }
+% \cs_set:Npn \Test:nnnnn #1 #2 #3 #4 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl { #3,{},{},{},{},{},{},{},{},#4 }
+% }
+% \Test:nnnnn { ABC += 421 } {} {{ABC}, {}, {}} {421} {`+='~1}
+% \Test:nnnnn { ABC += 1+P.1 } {} {{ABC}, {}, {}} {1+P.1} {`+='~2}
+% \Test:nnnnn { ABC += 1+P.1~X } { ABC += 1+P.1~ } {{ABC}, {}, {}} {1+P.1} {`+='~3}
+% \Test:nnnnn { ABC += (P.1+1)~~^^A(
+% ) } { ABC += (P.1+1)~~ } {{ABC}, {}, {}} {(P.1+1)} {`+='~4}
+% \Test:nnnnn { ?!ABC += 421 } {} {{?!ABC}, {?!}, {}} {421} {`+='~5}
+% \Test:nnnnn { ?!ABC += 1+P.1 } {} {{?!ABC}, {?!}, {}} {1+P.1} {`+='~6}
+% \Test:nnnnn { ?!ABC += 1+P.1~X } {?!ABC += 1+P.1~} {{?!ABC}, {?!}, {}} {1+P.1} {`+='~7}
+% \Test:nnnnn { ?!ABC += (P.1+1)~~^^A(
+% ) } {?!ABC += (P.1+1)~~} {{?!ABC}, {?!}, {}} {(P.1+1)} {`+='~8}
+% \end{bnvs.test}
+%   \item 13+3=16: the post increment
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    | (\+)\+
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/++]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_regex
+%     { #1 }
+%     { {#2},{},{},{},#3,{},{},{},{},{},{},{},{},{},{+}} { 15-#4~(...++) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ABC++ } {} {{ABC},{},{}} {a}
+% \Test:nnnn { ABC.1.2++~~ } {} {{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ?!ABC++ } {} {{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ?!ABC.1.2++~~ } {} {{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!ABC.1.2++~X~ } {?!ABC.1.2++~} {{?!ABC},{?!},{.1.2}} {e}
+% \end{bnvs.test}
 % \end{myList}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-  ) \s*
+  )? ) \s*
 }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \begin{bnvs.test}[banner=split_regex]
-% \cs_set:Npn \Test:nnn #1 #2 #3{
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_regex/split]
+% \cs_set:Npn \Test:nnn #1 #2 #3 {
 %   \__bnvs_test_split:Nnnn \c__bnvs_split_regex
-%  { 1/#1/2 } { 1/,#2,/2 } { #3 }
+%  { 1/#1/2 } { 1/,#2,{},{},{},{},{},{},{},{},{},{},{},{},{},/2 } { split-#3 }
 % }
-% \Test:nnn { ++A }   { {A},{},{},{},{},{},{},{},{},{},{},{},{}} { 1-a }
-% \Test:nnn { ++A.n }   { {A},{},{},{},{},{},{},{},{},{},{},{},{}} { 1-b }
-% \Test:nnn { ++?!A } { {?!A},{?!},{},{},{},{},{},{},{},{},{},{},{}} { 1-c }
-% \Test:nnn { ++?!A.n } { {?!A},{?!},{},{},{},{},{},{},{},{},{},{},{}} { 1-d }
-% \Test:nnn { ++A.3 } { {A},{},{.3},{},{},{},{},{},{},{},{},{},{}} { 1-e }
-% \Test:nnn { ++A.3.n } { {A},{},{.3},{},{},{},{},{},{},{},{},{},{}} { 1-f }
-% \Test:nnn { ++?!A.3 } { {?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},{}} { 1-g }
-% \Test:nnn { ++?!A.3.n } { {?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},{}} { 1-h }
-% \Test:nnn { A }   { {},{},{},{A},{},{},{},{},{},{},{},{},{}} { 2-a }
-% \Test:nnn { A.n }   {{},{},{},{A},{},{},{},{},{},{},{n},{},{}} { 2-b }
-% \Test:nnn { ?!A } {{},{},{},{?!A},{?!},{},{},{},{},{},{},{},{}} { 2-c }
-% \Test:nnn { ?!A.n } {{},{},{},{?!A},{?!},{},{},{},{},{},{n},{},{}} { 2-d }
-% \Test:nnn { A.3 } { {},{},{},{A},{},{.3},{},{},{},{},{},{},{}} { 2-e }
-% \Test:nnn { A.3.n } {{},{},{},{A},{},{.3},{},{},{},{},{n},{},{}} { 2-f }
-% \Test:nnn { ?!A.3 } {{},{},{},{?!A},{?!},{.3},{},{},{},{},{},{},{}} { 2-g }
-% \Test:nnn { ?!A.3.n } {{},{},{},{?!A},{?!},{.3},{},{},{},{},{n},{},{}} { 2-h }
-% \Test:nnn { A++ }   {{},{},{},{A},{},{},{},{},{},{},{},{},{+}} { 3-a }
-% \Test:nnn { A.n++ }   {{},{},{},{A},{},{},{},{},{},{},{n},{},{+}} { 3-b }
-% \Test:nnn { ?!A++ } {{},{},{},{?!A},{?!},{},{},{},{},{},{},{},{+}} { 3-c }
-% \Test:nnn { ?!A.n++ } {{},{},{},{?!A},{?!},{},{},{},{},{},{n},{},{+}} { 3-d }
-% \Test:nnn { A.3++ } {{},{},{},{A},{},{.3},{},{},{},{},{},{},{+}} { 3-e }
-% \Test:nnn { A.3.n++ } {{},{},{},{A},{},{.3},{},{},{},{},{n},{},{+}} { 3-f }
-% \Test:nnn { ?!A.3++ } {{},{},{},{?!A},{?!},{.3},{},{},{},{},{},{},{+}} { 3-g }
-% \Test:nnn { ?!A.3.n++ } {{},{},{},{?!A},{?!},{.3},{},{},{},{},{n},{},{+}} { 3-h }
-% \Test:nnn { A.length }   {{},{},{},{A},{},{},{e},{},{},{},{},{},{}} { 4-a }
-% \Test:nnn { A.3.length }   {{},{},{},{A},{},{.3},{e},{},{},{},{},{},{}} { 4-b }
-% \Test:nnn { ?!A.length }   {{},{},{},{?!A},{?!},{},{e},{},{},{},{},{},{}} { 4-c }
-% \Test:nnn { ?!A.3.length }   {{},{},{},{?!A},{?!},{.3},{e},{},{},{},{},{},{}} { 4-d }
-% \Test:nnn { A.last }   {{},{},{},{A},{},{},{},{a},{},{},{},{},{}} { 5-a }
-% \Test:nnn { ?!A.last }   {{},{},{},{?!A},{?!},{},{},{a},{},{},{},{},{}} { 5-b }
-% \Test:nnn { A.3.last }   {{},{},{},{A},{},{.3},{},{a},{},{},{},{},{}} { 5-c }
-% \Test:nnn { ?!A.3.last }   {{},{},{},{?!A},{?!},{.3},{},{a},{},{},{},{},{}} { 5-d }
-% \Test:nnn { A.next }   {{},{},{},{A},{},{},{},{},{x},{},{},{},{}} { 6-a }
-% \Test:nnn { ?!A.next }   {{},{},{},{?!A},{?!},{},{},{},{x},{},{},{},{}} { 6-b }
-% \Test:nnn { A.3.next }   {{},{},{},{A},{},{.3},{},{},{x},{},{},{},{}} { 6-c }
-% \Test:nnn { ?!A.3.next }   {{},{},{},{?!A},{?!},{.3},{},{},{x},{},{},{},{}} { 6-d }
-% \Test:nnn { A.range }   {{},{},{},{A},{},{},{},{},{},{r},{},{},{}} { 7-a }
-% \Test:nnn { A.range }   {{},{},{},{A},{},{},{},{},{},{r},{},{},{}} { 7-a }
-% \Test:nnn { ?!A.range }   {{},{},{},{?!A},{?!},{},{},{},{},{r},{},{},{}} { 7-b }
-% \Test:nnn { A.3.range }   {{},{},{},{A},{},{.3},{},{},{},{r},{},{},{}} { 7-c }
-% \Test:nnn { ?!A.3.range }   {{},{},{},{?!A},{?!},{.3},{},{},{},{r},{},{},{}} { 7-d }
+% \Test:nnn { ++A }     {{A},{},{}} { 1-a }
+% \Test:nnn { ++?!A }   {{?!A},{?!},{}} { 1-b }
+% \Test:nnn { ++A.3 }   {{A},{},{.3}} { 1-c }
+% \Test:nnn { ++?!A.3 } {{?!A},{?!},{.3}} { 1-d }
+% \cs_set:Npn \Test:nnn #1 #2 #3 {
+%   \__bnvs_test_split:Nnnn \c__bnvs_split_regex
+%  { 1/#1/2 } { 1/,{},{},{},#2,/2 } { split-#3 }
+% }
+
+
+% \Test:nnn { A.++n }   {{A},{},{},{},{},{},{},{+},{},{},{},{},{}} { 2-a }
+% \Test:nnn { ?!A.++n } {{?!A},{?!},{},{},{},{},{},{+},{},{},{},{},{}} { 2-b }
+% \Test:nnn { A.3.++n } {{A},{},{.3},{},{},{},{},{+},{},{},{},{},{}} { 1-c }
+% \Test:nnn {?!A.3.++n} {{?!A},{?!},{.3},{},{},{},{},{+},{},{},{},{},{}} { 1-d }
+% \Test:nnn { A }   {{A},{},{},{},{},{},{},{},{},{},{},{},{}} { 2-a }
+% \Test:nnn { A.n } {{A},{},{},{},{},{},{},{},{n},{},{},{},{}} { 2-b }
+% \Test:nnn { ?!A } {{?!A},{?!},{},{},{},{},{},{},{},{},{},{},{}} { 2-c }
+% \Test:nnn { ?!A.n } {{?!A},{?!},{},{},{},{},{},{},{n},{},{},{},{}} { 2-d }
+% \Test:nnn { A.3 } {{A},{},{.3},{},{},{},{},{},{},{},{},{},{}} { 2-e }
+% \Test:nnn { A.3.n } {{A},{},{.3},{},{},{},{},{},{n},{},{},{},{}} { 2-f }
+% \Test:nnn { ?!A.3 } {{?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},{}} { 2-g }
+% \Test:nnn { ?!A.3.n } {{?!A},{?!},{.3},{},{},{},{},{},{n},{},{},{},{}} { 2-h }
+% \Test:nnn { A++ }   {{A},{},{},{},{},{},{},{},{},{},{},{},{+}} { 3-a }
+% \Test:nnn { A.n++ }   {{A},{},{},{},{},{},{},{},{n},{},{+},{},{}} { 3-b }
+% \Test:nnn { ?!A++ } {{?!A},{?!},{},{},{},{},{},{},{},{},{},{},{+}} { 3-c }
+% \Test:nnn { ?!A.n++ } {{?!A},{?!},{},{},{},{},{},{},{n},{},{+},{},{}} { 3-d }
+% \Test:nnn { A.3++ } {{A},{},{.3},{},{},{},{},{},{},{},{},{},{+}} { 3-e }
+% \Test:nnn { A.3.n++ } {{A},{},{.3},{},{},{},{},{},{n},{},{+},{},{}} { 3-f }
+% \Test:nnn { ?!A.3++ } {{?!A},{?!},{.3},{},{},{},{},{},{},{},{},{},{+}} { 3-g }
+% \Test:nnn { ?!A.3.n++ } {{?!A},{?!},{.3},{},{},{},{},{},{n},{},{+},{},{}} { 3-h }
+% \Test:nnn { A.length } {{A},{},{},{e},{},{},{},{},{},{},{},{},{}} { 4-a }
+% \Test:nnn { A.3.length } {{A},{},{.3},{e},{},{},{},{},{},{},{},{},{}} { 4-b }
+% \Test:nnn { ?!A.length } {{?!A},{?!},{},{e},{},{},{},{},{},{},{},{},{}} { 4-c }
+% \Test:nnn { ?!A.3.length } {{?!A},{?!},{.3},{e},{},{},{},{},{},{},{},{},{}} { 4-d }
+% \Test:nnn { A.last } {{A},{},{},{},{a},{},{},{},{},{},{},{},{}} { 5-a }
+% \Test:nnn { ?!A.last } {{?!A},{?!},{},{},{a},{},{},{},{},{},{},{},{}} { 5-b }
+% \Test:nnn { A.3.last } {{A},{},{.3},{},{a},{},{},{},{},{},{},{},{}} { 5-c }
+% \Test:nnn { ?!A.3.last } {{?!A},{?!},{.3},{},{a},{},{},{},{},{},{},{},{}} { 5-d }
+% \Test:nnn { A.next } {{A},{},{},{},{},{x},{},{},{},{},{},{},{}} { 6-a }
+% \Test:nnn { ?!A.next } {{?!A},{?!},{},{},{},{x},{},{},{},{},{},{},{}} { 6-b }
+% \Test:nnn { A.3.next } {{A},{},{.3},{},{},{x},{},{},{},{},{},{},{}} { 6-c }
+% \Test:nnn { ?!A.3.next } {{?!A},{?!},{.3},{},{},{x},{},{},{},{},{},{},{}} { 6-d },{},{},{}
+% \Test:nnn { A.range } {{A},{},{},{},{},{},{r},{},{},{},{},{},{}} { 7-a }
+% \Test:nnn { A.range } {{A},{},{},{},{},{},{r},{},{},{},{},{},{}} { 7-a }
+% \Test:nnn { ?!A.range } {{?!A},{?!},{},{},{},{},{r},{},{},{},{},{},{}} { 7-b }
+% \Test:nnn { A.3.range } {{A},{},{.3},{},{},{},{r},{},{},{},{},{},{}} { 7-c }
+% \Test:nnn { ?!A.3.range } {{?!A},{?!},{.3},{},{},{},{r},{},{},{},{},{},{}} { 7-d }
 % \end{bnvs.test}
 % \end{variable}
 %
@@ -4754,10 +5079,18 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
                   } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
+% \item Case \texttt{...++n}.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+                    \switch:nNTF { 11 } \l__bnvs_a_tl {
+                    } {
+                    }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
 % \item Case \texttt{...n}.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-                    \switch:nNTF { 12 } \l__bnvs_a_tl {
+                    \switch:nNTF { 13 } \l__bnvs_a_tl {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...+=\meta{integer}}.
@@ -4816,7 +5149,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 % \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-                      \switch:nNTF { 13 } \l__bnvs_a_tl {
+                      \switch:nNTF { 15 } \l__bnvs_a_tl {
                         \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
                           \seq_if_empty:NTF \l__bnvs_path_seq {
 \__bnvs_if_post:VnNF \l__bnvs_name_tl { 1 } \l__bnvs_ans_tl {
@@ -4828,7 +5161,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
                           }
                         }
                       } {
-                        \switch:nNTF { 11 } \l__bnvs_a_tl {
+                        \switch:nNTF { 12 } \l__bnvs_a_tl {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...n++}.
@@ -4891,7 +5224,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
 %</!gubed>
 % \end{bnvs.gobble}
 %    \begin{macrocode}
-        \int_add:Nn \l__bnvs_split_int { 14 }
+        \int_add:Nn \l__bnvs_split_int { 17 }
         \tl_put_right:Nx \l__bnvs_ans_tl {
           \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
         }
@@ -5238,7 +5571,7 @@ Notice that nesting \texttt{?(...)} expressions is not supported.
       \seq_put_right:NV \l__bnvs_ans_seq \l__bnvs_ans_tl
     } {
       \seq_map_break:n {
-\msg_fatal:nnn { beanoves } { :n } { Circular/Undefined~dependency~in~#1}
+        \msg_fatal:nnn { beanoves } { :n } { Circular/Undefined~dependency~in~#1}
       }
     }
   }
