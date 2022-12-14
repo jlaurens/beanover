@@ -194,9 +194,11 @@ The main slide list is a range of integers covering all the slide numbers, from 
 In general, a slide list is a range of positive integers identified by a unique name.
 The main practical interest is that such lists may be defined relative to one another, we can even have lists of slide ranges.
 Finally, we can use these lists to organize \pkg{beamer} overlay specifications logically.
-\subsection{One slide specifications}
-|A.1|, |C.2| are \emph{named one slide specifications} as well as |A| and |Y!C.2|. More precisely,
-they are string identifiers, each one representing a static integer to be used in \pkg{beamer} overlay specifications and can take one of the next forms.
+\subsection{Named slide reference}
+|A.1|, |C.2| are \emph{named slide references} as well as |A| and |Y!C.2|.
+More precisely, they are string identifiers, each one representing
+a static integer to be used in \pkg{beamer} overlay specifications
+and can take one of the next forms.
 \begin{description}
 \item[\texttt{\meta{short name}}]: like |A| and |C|,
 \item[\texttt{\meta{frame id}|!|\meta{short name}}]: denoted by \emph{qualified names}, like |X!A| and |Y!C|.
@@ -205,8 +207,10 @@ they are string identifiers, each one representing a static integer to be used i
 \item[\texttt{\meta{frame id}|!|\meta{short name}\meta{integer path}}]:
   denoted by \emph{qualified full names} like |X!A.1| and |Y!C.2|.
 \end{description}
-The \emph{short names} and \emph{frame ids} are case sensitive
-and must not contain any spaces or `|/|', `|!|', `|(|', `|)|' characters.
+The \emph{short names} and \emph{frame ids} are alphanumerical case sensitive
+identifiers, with possible underscores but no space nor leading digit.
+Unicode symbols above \texttt{U+00A0} are allowed if the underlying \TeX\ engine
+supports it.
 
 In order to avoid name conflicts with floating point functions like |sin| or |round|,
 it is highly recommanded to let them contain at least an uppercase letter
@@ -216,7 +220,7 @@ The \emph{integer path} is a string
 where the \meta{integer_i}'s are integers eventually signed,
 or a void string corresponding to \texttt{n}==0.
 
-The mapping from \emph{one slide specifications} to integers is defined
+The mapping from \emph{named slide references} to integers is defined
 at the global \TeX\ level because either we can
 include only a subset of one frame slides
 or we can share the same slide ranges between different frames.
@@ -230,69 +234,69 @@ This behaviour may be useful to input the very same source code into different f
 \begin{function}{beanoves}
   \begin{syntax}
     beanoves = \{
-    \phantom{xx}\meta{name spec_1}=\meta{range spec_1},
-    \phantom{xx}\meta{name spec_2}=\meta{range spec_2},
+    \phantom{xx}\meta{named ref_1}=\meta{range spec_1},
+    \phantom{xx}\meta{named ref_2}=\meta{range spec_2},
     \phantom{xx}...,
-    \phantom{xx}\meta{name spec_n}=\meta{range spec_n},
+    \phantom{xx}\meta{named ref_n}=\meta{range spec_n},
     \}
   \end{syntax}
 \end{function}
 \begin{function}{\Beanoves}
   \begin{syntax}
     \cs{Beanoves}\{
-    \phantom{xx}\meta{name spec_1}=\meta{range spec_1},
-    \phantom{xx}\meta{name spec_2}=\meta{range spec_2},
+    \phantom{xx}\meta{named ref_1}=\meta{range spec_1},
+    \phantom{xx}\meta{named ref_2}=\meta{range spec_2},
     \phantom{xx}...,
-    \phantom{xx}\meta{name_ specn}=\meta{range spec_n},
+    \phantom{xx}\meta{named ref_n}=\meta{range spec_n},
     \}
   \end{syntax}
 \end{function}
-Here \meta{name spec_i} is a \emph{named one slide specifications}.
+Each key \meta{named ref_i} is a \emph{named slide reference}.
 When the same key is used multiple times, only the last one is taken into account.
 Possible values for \meta{range spec_i} are the \emph{slide range specifiers} \meta{first},
 \meta{first}:\meta{length}, \meta{first}::\meta{last}, :\meta{length}::\meta{last}
 where \meta{first}, \meta{length} and \meta{last} are algebraic expression
-possibly involving any \emph{named one slide specifications} defined above.
+possibly involving any \emph{named slide references} defined above.
 
 Also possible values are \emph{slide list specifiers} which
 are comma separated lists of \emph{slide range specifiers}
 and \emph{slide list specifier} between square brackets.
 The definition
 \\[0.2ex]
-\hphantom{xx}\meta{name spec}|=[|\meta{range spec_1}|,|\meta{range spec_2}|,...,|\meta{range spec_n}|]|,
+\hphantom{xx}\meta{named ref}|=[|\meta{range spec_1}|,|\meta{range spec_2}|,...,|\meta{range spec_n}|]|,
 \\[0.2ex]
 is a convenient shortcut for
 \\[0.2ex]
-\hphantom{xx}\meta{name spec}|.1=|\meta{range spec_1}|,|
-\\\hphantom{xx}\meta{name spec}|.2=|\meta{range spec_2}|,|
+\hphantom{xx}\meta{named ref}|.1=|\meta{range spec_1}|,|
+\\\hphantom{xx}\meta{named ref}|.2=|\meta{range spec_2}|,|
 \\\hphantom{xx}|...,|
-\\\hphantom{xx}\meta{name spec}|.|\textit{n}|=|\meta{range spec_n}.
+\\\hphantom{xx}\meta{named ref}|.|\textit{n}|=|\meta{range spec_n}.
 \\[0.2ex]
 The rules above can apply individually to each
 \\[0.2ex]
-\hphantom{xx}\meta{name spec}|.|\rlap{\textit{i}}\phantom{|i|}|=|\meta{range spec_i}.
+\hphantom{xx}\meta{named ref}|.|\rlap{\textit{i}}\phantom{|i|}|=|\meta{range spec_i}.
 \\[0.2ex]
 Moreover we can go deeper: the definition
 \\[0.2ex]
-\hphantom{xx}\meta{name spec}|=[[|\meta{range spec_{1.1}}|,| \meta{range spec_{1.2}}|],[[|\meta{range spec_{2.1}}|,| \meta{range spec_{2.2}}|]]|
+\hphantom{xx}\meta{named ref}|=[[|\meta{range spec_{1.1}}|,| \meta{range spec_{1.2}}|],[[|\meta{range spec_{2.1}}|,| \meta{range spec_{2.2}}|]]|
 \\[0.2ex]
 happens to be a convenient shortcut for
 \\[0.2ex]
-\hphantom{xx}\meta{name spec}|.1.1=|\meta{range spec_{1.1}}|,|
-\\\hphantom{xx}\meta{name spec}|.1.2=|\meta{range spec_{1.2}}|,|
-\\\hphantom{xx}\meta{name spec}|.2.1=|\meta{range spec_{2.1}}|,|
-\\\hphantom{xx}\meta{name spec}|.2.2=|\meta{range spec_{2.2}}
+\hphantom{xx}\meta{named ref}|.1.1=|\meta{range spec_{1.1}}|,|
+\\\hphantom{xx}\meta{named ref}|.1.2=|\meta{range spec_{1.2}}|,|
+\\\hphantom{xx}\meta{named ref}|.2.1=|\meta{range spec_{2.1}}|,|
+\\\hphantom{xx}\meta{named ref}|.2.2=|\meta{range spec_{2.2}}
 \\[0.2ex]
 and so on.
 %
-\section{Named specification resolution}
-Turning a \emph{one slide specification} into the static integer it represents,
+\section{Named slide reference resolution}
+Turning a \emph{named slide reference} into the static integer it represents,
 as in \texttt{<?(A.1)>} above,
-to feed \pkg{beamer} with is denoted \emph{named specification resolution} or simply \emph{resolution}. This section is devoted to \emph{resolution rules}.
+to feed \pkg{beamer} with is denoted \emph{named slide reference resolution} or simply \emph{resolution}. This section is devoted to \emph{resolution rules}.
 %
 \subsection{Named slide ranges}
 When \meta{name} is defined as a slide range specification with a first index,
-the associate named one slide specifications are detailled
+the associate named slide references are detailled
 in the tables below together with
 their resolved value as \pkg{beamer} standard overlay specification.
 %
@@ -301,7 +305,7 @@ their resolved value as \pkg{beamer} standard overlay specification.
 \hline
 \multicolumn{2}{c}{\ttfamily \meta{name} == [\(i\), \(i+1\), \(i+2\),...]}
 \\\hline
-\bfseries \textrm{syntax} & \bfseries \textrm{resolution} 
+\bfseries \textrm{reference} & \bfseries \textrm{resolution} 
 \\\hline
 \meta{name}.1 & \(i\)\\
 \meta{name}.2 & \(i+1\) \\
@@ -310,7 +314,7 @@ their resolved value as \pkg{beamer} standard overlay specification.
 \end{tabular}
 \end{center}
 One particular value can be overriden by an explicit definition:
-if \meta{name}.\meta{integer} has been defined separately,
+if one \meta{name}.\meta{integer} has been defined separately,
 this definition takes precedence over the previous resolution rule.
 
 In the frame example below, we use the \cs{BeanovesEval} command for the demonstration.
@@ -346,7 +350,7 @@ like in the frame example below, we also have
 \hline
 \multicolumn{4}{c|}{\ttfamily \meta{name} == [\(i\), \(i+1\),..., \(j\)]}
 \\\hline
-\bfseries \textrm{syntax} & \bfseries \textrm{resolution} & \bfseries \textrm{example} & \bfseries \textrm{output}
+\bfseries \textrm{Reference} & \bfseries \textrm{resolution} & \bfseries \textrm{example} & \bfseries \textrm{output}
 \\\hline
 \meta{name}.length & \(j-i+1\) & A.length & 6\\
 \meta{name}.last & \(j\) & A.last & 8\\
@@ -355,7 +359,7 @@ like in the frame example below, we also have
 \hline
 \end{tabular}
 \end{center}
-Using these specifications on unfinite named slide ranges is unsupported and may cause a ``Circular/Undefined dependency'' error.
+Using these named references on unfinite named slide ranges is unsupported and may cause a ``Circular/Undefined dependency'' error.
 To avoid this, use at least a \texttt{:1} length definition.
 \begin{tcblisting} {
   listing only,
@@ -368,7 +372,7 @@ To avoid this, use at least a \texttt{:1} length definition.
   minted style = autumn,
 }
 \Beanoves {
-    A = 3:6, % or equivalently A = 3::8 or A = :6::8,
+    A = 3:6, % or equivalently A = 3::8, A = :6::8 or A = ::8:6
   }
 \begin{frame} {Frame \insertframenumber} {Slide \insertslidenumber}
 \ttfamily
@@ -383,33 +387,55 @@ To avoid this, use at least a \texttt{:1} length definition.
 \subsection{Named slide lists}
 After the definition
 \\[0.2ex]
-\hphantom{xx}\meta{name spec}|=[|\meta{range spec_1}|,|\meta{range spec_2}|,...,|\meta{range spec_n}|]|
+\hphantom{xx}\meta{named ref}|=[|\meta{range spec_1}|,|\meta{range spec_2}|,...,|\meta{range spec_n}|]|
 \\[0.2ex]
 the rules of the previous section apply recursively to each individual
 declaration
-\\[0.2ex]\hphantom{xx}\meta{name spec}|.|\rlap{\textit{i}}\hphantom{|i|}|=|\meta{range spec_i}.
+\\[0.2ex]\hphantom{xx}\meta{named ref}|.|\rlap{\textit{i}}\hphantom{|i|}|=|\meta{range spec_i}.
 %
 \subsection{Counters}
 For each name slide range defined, we have an implicit index counter starting at 1,
 its actual value is an integer denoted \meta{n}.
-The \texttt{\meta{name}.n} expression is resolved into \texttt{\meta{name}.\meta{n}},
+The \texttt{\meta{name}.n} \emph{named counter reference} is resolved into \texttt{\meta{name}.\meta{n}},
 which in turn is resolved according to preceding rules.
 %
 
 Each named slide range defined also has a dedicated value counter
 which is some kind of variable that can be used and incremented.
-A \texttt{\meta{name}} specification is resolved into
+A \texttt{\meta{name}} reference is resolved into
 the position of this counter, which is the value of the counter bounded from below by the lowest value of the range and from above by the largest value of the range.
 For unbounded ranges, these values may be infinite.
-%
+
+Additionnaly, resolution rules are provided for the \emph{named index references}:
+\begin{description}
+\item[\ttfamily\meta{name}.n+=\meta{integer expression}]: resolve \meta{integer expression} into \meta{integer}, advance the implicit index counter associate to \meta{name} by \meta{integer} and use the resolution of \texttt{\meta{name}.n}.
+
+Here \meta{integer expression} denotes the longest character sequence with no space%
+\footnote{The parser for algebraic expression is very rudimentary.}.
+\item[\ttfamily\meta{name}.++n]: advance the implicit index counter associate to \meta{name} by 1 and use the resolution of \texttt{\meta{name}.n},
+\item[\ttfamily\meta{name}.n++]: use the resolution of \texttt{\meta{name}.n} and increment the implicit index counter associate to \meta{name} by 1.
+\end{description}
+
+We have resolution rules as well for the \emph{named value references}:
+\begin{description}
+\item[\ttfamily\meta{name}+=\meta{integer expression}]: resolve \meta{integer expression} into \meta{integer}, advance the value counter by \meta{integer}
+and use the new position.
+Here again, \meta{integer expression} is the longest character sequence with no space.
+\item[\ttfamily++\meta{name}]: advance the value counter for \meta{name} by 1 and use the new position.
+\item[\ttfamily\meta{name}++]: use the actual position
+and advance the value counter for \meta{name} by 1.
+\end{description}
+For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been properly defined with a starting value and a length.
+
+In order to decrement a counter, one can increment with a negative value, no dedicated syntax is provided yet.
 \subsection{Frame id}
 Except for very special situations, the \emph{frame ids} can be left unspecified.
 When no \emph{frame id} was explicitly provided,
 \pkg{beanoves} uses the \emph{last frame id}. At the beginning of each frame,
 the \emph{last frame id} is set to the \emph{frame id} of the current frame,
 which is denoted \emph{current frame id} and defaults to |?|.
-Then it gets updated after each name specification  resolution.
-For example, the first time |A.1| specification is resolved within a given frame,
+Then it gets updated after each named reference resolution.
+For example, the first time |A.1| reference is resolved within a given frame,
 it is first translated to \texttt{\meta{current frame id}!A.1},
 but when used just after \texttt{Y!C.2}, it becomes a shortcut to
 \texttt{Y!A.1} because the \emph{last frame id} was then \texttt{Y}.
@@ -424,17 +450,18 @@ use the new \texttt{beanoves id} option of the \pkg{beamer} frame environment.
 %
 \subsection{Deeper integer paths}
 When an integer path has more than one component,
-a \emph{named one slide specifications} like |A.1.2| needs some well defined
+a \emph{named slide references} like |A.1.2| needs some well defined
 resolution rule to avoid ambiguity.
-To resolve one level of such a slide specification
+To resolve one level of such a slide reference
 \texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_n}},
 we replace the shortest \texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_k}}
 where 0$≤$k$≤$n by its definition \texttt{\meta{name'}.\meta{j_1}...\meta{j_p}}
-if any. \pkg{beanoves} uses this one level resolution
+if any (the path can be empty). \pkg{beanoves} uses this one level resolution
 as many times as possible, but no more than a predefined limit to catch
-circular reference that would lead to an infinite loop.
+circular reference that would lead to an infinite \TeX\ loop.
+One final resolution occurs with rules above if possible or an error is raised.
 
-For an \emph{indexed one slide specifications}
+For a \emph{named indexed reference} like
 \texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_n}.n},
 we must first resolve \texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_n}}
 into \texttt{\meta{name'}} with an empty integer path, then retrieve \texttt{\meta{name'}.n} denoted as \meta{n'} and finally use the resolved 
@@ -465,31 +492,10 @@ an algeabraic difference instead of a range.
 \end{tabular}
 \end{center}
 Here \meta{first expr}, \meta{length expr} and \meta{end expr}
-both denote algebraic expressions possibly involving named overlay specifications and counters.
+both denote algebraic expressions possibly involving named slide references and counters.
 As integers, they are respectively resolved into \meta{first}, \meta{length} and \meta{last}.
 
-Additionnaly, resolution rules are provided for index counters:
-\begin{description}
-\item[\ttfamily\meta{name}.n+=\meta{integer expression}]: resolve \meta{integer expression} into \meta{integer}, advance the implicit index counter by \meta{integer} and use the resoution of \texttt{\meta{name}.n}.
-\item[\ttfamily\meta{name}.++n]: advance the implicit index counter by 1 and use the resolution of \texttt{\meta{name}.n},
-Here \meta{integer expression} is the longest character sequence with no space.
-\item[\ttfamily\meta{name}.n++]: use the resolution of \texttt{\meta{name}.n} and increment the implicit index counter associate to \meta{name} by 1.
-\end{description}
-
-We have resolution rules as well for value counters:
-\begin{description}
-\item[\ttfamily\meta{name}+=\meta{integer expression}]: resolve \meta{integer expression} into \meta{integer}, advance the value counter by \meta{integer}
-and use the new position.
-Here again, \meta{integer expression} is the longest character sequence with no space.
-\item[\ttfamily++\meta{name}]: advance the value counter for \meta{name} by 1 and use the new position.
-\item[\ttfamily\meta{name}++]: use the actual position
-and advance the value counter for \meta{name} by 1.
-\end{description}
-For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been properly defined with a starting value and a length.
-
 Notice that nesting \texttt{?(...)} query expressions is not supported.
-
-
 \end{documentation}
 \DocInput{beanoves.dtx}
 \end{document}
@@ -3116,7 +3122,6 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % In the |_x| variant, the resolution is driven one step further:
 % if \meta{path seq var} is empty, \meta{name tl var} can contain anything.
 %
-% In the |_n| variant, the resolution is not driven if \meta{path seq var} would be empty.
 % \end{enumerate}
 % \end{function}
 % \begin{bnvs.macrocode}
@@ -3355,7 +3360,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \end{macrocode}
 % \begin{bnvs.gobble}
 %<*!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_resolve:NNNTF...TRUE/}
+\__bnvs_DEBUG:x { \string\__bnvs_resolve_x:NNNTF...TRUE/}
 \__bnvs_DEBUG:x { \string#1:#1/\string#2:#2/}
 \__bnvs_DEBUG:x { \string#3:\seq_use:Nn #3./}
 %</!gubed>
@@ -3400,10 +3405,10 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
       \seq_if_empty:NTF \l__bnvs_a_seq {
         \exp_args:Nx
         \__bnvs_get:nNTF { \l__bnvs_a_tl / L } \l__bnvs_b_tl {
-          \cs_set:Nn \loop: { \return_true: }        
+          \return_true:
         } {
           \seq_if_empty:NTF \l__bnvs_b_seq {
-            \cs_set:Nn \loop: { \return_true: }
+            \return_true:
           } {
             \get_extract:F {
 %    \end{macrocode}
@@ -3412,7 +3417,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % the value for key \meta{\cs{l_a_tl}}|/A| does not fit.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-              \cs_set:Nn \loop: { \return_true: }
+              \return_true:
             }
           }
         }
@@ -3458,17 +3463,18 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     } { ##1 }
   }
   \cs_set:Npn \return_true: {
-    \cs_set:Npn \:nnn ####1 ####2 ####3 {
-      \__bnvs_group_end:
-      \tl_set:Nn #1 { ####1 }
-      \tl_set:Nn #2 { ####2 }
-      \seq_set_split:Nnn #3 . { ####3 }
-      \seq_remove_all:Nn #3 { }
-    }
-    \exp_args:NVVx
-    \:nnn #1 #2 {
-      \seq_use:Nn #3 .
-    }
+    \cs_set:Npn \loop: { 
+      \cs_set:Npn \:nnn ########1 ########2 ########3 {
+        \__bnvs_group_end:
+        \tl_set:Nn #1 { ########1 }
+        \tl_set:Nn #2 { ########2 }
+        \seq_set_split:Nnn #3 . { ########3 }
+        \seq_remove_all:Nn #3 { }
+      }
+      \exp_args:NVVx
+      \:nnn #1 #2 {
+        \seq_use:Nn #3 .
+      }
 %    \end{macrocode}
 % \begin{bnvs.gobble}
 %<*!gubed>
@@ -3478,7 +3484,8 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %</!gubed>
 % \end{bnvs.gobble}
 %    \begin{macrocode}
-    \prg_return_true:
+      \prg_return_true:
+    }
   }
   \loop:
 }
@@ -4960,6 +4967,9 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    Storage for \cs{l_split_seq} items that represent integer paths.
 % \end{variable}
 % Catch circular definitions.
+% Open a main \TeX\ group to define local functions and variables,
+% sometimes another grouping level is used.
+% The main \TeX\ group is closed in the \cs{return_...} functions.
 % \end{function}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
@@ -5066,22 +5076,6 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % to close the group and return the proper value.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-    \cs_set:Npn \return_true: {
-      \fp_round:
-      \exp_args:NNNV
-      \__bnvs_group_end:
-      \tl_put_right:Nn #2 \l__bnvs_ans_tl
-%    \end{macrocode}
-% \begin{bnvs.gobble}
-%<*!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_if_append:nNTF...TRUE}
-\__bnvs_DEBUG:x { what=\tl_to_str:n { #1 } / }
-\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 / }
-%</!gubed>
-% \end{bnvs.gobble}
-%    \begin{macrocode}
-      \prg_return_true:
-    }
     \cs_set:Npn \fp_round: {
       \__bnvs_fp_round:N \l__bnvs_ans_tl
     }
@@ -5096,7 +5090,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %</!gubed>
 % \end{bnvs.gobble}
 %    \begin{macrocode}
-      \prg_return_false:
+      \cs_set:Npn \loop: { \prg_return_false: }
+    }
+    \cs_set:Npn \return_false:x ##1 {
+      \msg_error:nnx { beanoves } { :n } { ##1 }
+      \return_false:
     }
     \cs_set:Npn \:NnnT ##1 ##2 ##3 ##4 {
       \switch:nNTF { ##2 } \l__bnvs_id_tl { } {
@@ -5122,13 +5120,13 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
           ##4
         }
       } {
-        \cs_set:Npn \: { \cs_set_eq:NN \loop: \return_false: }
+        \cs_set:Npn \: { \return_false: }
       }
       \:
     }
     \cs_set:Npn \:T ##1 {
       \seq_if_empty:NTF \l__bnvs_path_seq { ##1 } {
-        \cs_set_eq:NN \loop: \return_false:
+        \return_false:
       }
     }
 %    \end{macrocode}
@@ -5155,11 +5153,16 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \end{bnvs.macrocode}
 % \begin{myList}
 % \item Case \texttt{++\meta{name}\meta{integer path}}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~++... }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
           \:NnnT \__bnvs_resolve_n:NNNTF 2 3 {
             \__bnvs_if_incr:VnNF \l__bnvs_name_tl 1 \l__bnvs_ans_tl {
-              \cs_set:Npn { \loop: \return_false: }
+              \return_false:
             }
           }
         } {
@@ -5168,13 +5171,18 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
               \:NnnT \__bnvs_resolve:NNNTF 5 6 {
                 \:T {
                   \__bnvs_raw_length:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
-                    \cs_set_eq:NN \loop: \return_false:
+                    \return_false:
                   }
                 }
               }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...length}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...length }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.test}[banner=append/length]
 % \reset:n { YES }
 % \Test_append:nnnn { :445 } { X.length } { 445 } { 1 }
@@ -5193,12 +5201,17 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...last}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...last }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
                 \:NnnT \__bnvs_resolve:NNNTF 5 6 {
                   \:T {
                     \__bnvs_raw_last:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
-                      \cs_set_eq:NN \loop: \return_false:
+                      \return_false:
                     }
                   }
                 }
@@ -5222,6 +5235,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...next}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...next }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.test}[banner=append/next]
 % \Test_append:nnnn { ::666 } { X.next } { 667 } { 1 }
 % \Test_append:nnnn { 222:445 } { X.next } { 667 } { 2 }
@@ -5238,7 +5256,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
                   \:NnnT \__bnvs_resolve:NNNTF 5 6 {
                     \:T {
                       \__bnvs_if_next:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
-                        \cs_set_eq:NN \loop: \return_false:
+                        \return_false:
                       }
                     }
                   }
@@ -5247,6 +5265,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...range}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...range }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.test}[banner=append]
 % \Test_append:nnnn { 222 } { X.range } { 222- } { 1 }
 % \Test_append:nnnn { ::666 } { X.range } { -666 } { 2 }
@@ -5267,21 +5290,21 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \__bnvs_if_range:VNTF \l__bnvs_name_tl \l__bnvs_ans_tl {
       \cs_set_eq:NN \fp_round: \prg_do_nothing:
     } {
-      \cs_set_eq:NN \loop: \return_false:
+      \return_false:
     }
   }
 }
                   } {
                     \switch:nNTF { 11 } \l__bnvs_a_tl {
 %    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...++n}.
 % \begin{bnvs.gobble}
 %<*!gubed>
 \__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...++n }
 %</!gubed>
 % \end{bnvs.gobble}
-% \end{bnvs.macrocode}
-% \item Case \texttt{...++n}.
-% \begin{bnvs.test}[banner={append/...++n}]
+% \begin{bnvs.test}[banner={append/...++n}, debug]
 % \reset:n { YES }
 % \Test_append:nnnn { 222 } { X.++n } { 223 } { 1-a }
 % \Test_append:nnnn { } { X.n   } { 223 } { 2-a }
@@ -5320,81 +5343,53 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
       \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
 \__bnvs_resolve_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
-  \seq_pop_left:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
-    \seq_if_empty:NTF \l__bnvs_path_seq {
-      \__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_b_tl \l__bnvs_ans_tl {
-        \cs_set_eq:NN \loop: \return_false:
-      }
-    } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
-    }
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
   } {
-%    \end{macrocode}
-% \begin{bnvs.gobble}
-%<*!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_if_append:nNTF...FULL~RESOLUTION }
-\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:N \l__bnvs_b_tl }
-%</!gubed>
-% \end{bnvs.gobble}
-%    \begin{macrocode}
-    \tl_clear:N \l__bnvs_ans_tl
-    \exp_args:NV
-    \__bnvs_if_append:nNTF \l__bnvs_name_tl \l__bnvs_ans_tl {
-      \cs_set_eq:NN \loop: \return_true:
-    } {
-      \cs_set_eq:NN \loop: \return_false:
-    }
+    \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 } {
-  \msg_error:nnx { beanoves } { :n } { Unknown~.<integer>~path:~#1 }
-  \cs_set_eq:NN \loop: \return_false:
+  \return_false:x { Unknown~.<integer>~path:~#1 }
 }
     } {
-      \__bnvs_group_end:
+       \__bnvs_group_end:
     }
   } {
     \__bnvs_group_end:
-    \msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-    \cs_set_eq:NN \loop: \return_false:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 } {
   \__bnvs_group_end:
-  \cs_set_eq:NN \loop: \return_false:
+  \return_false:
 }
                     } {
-%    \end{macrocode}
-% \end{bnvs.macrocode}
-% \item Case \texttt{...n...}.
-% \begin{bnvs.macrocode}
-%    \begin{macrocode}
                       \switch:nNTF { 13 } \l__bnvs_a_tl {
 %    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{....n+=\meta{integer}}.
 % \begin{bnvs.gobble}
 %<*!gubed>
 \__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n+=... }
 %</!gubed>
 % \end{bnvs.gobble}
-% \end{bnvs.macrocode}
-% \item Case \texttt{....n+=\meta{integer}}.
-% \begin{bnvs.test}[banner={append/...n+=...}, debug]
+% \begin{bnvs.test}[banner={append/...n+=...}]
 % \reset:n { YES }
 % \Test_append:nnnn { 222 } { X.n += 444 } { 666 } { 1 }
 % \Test_append:nnnn { } { X.n } { 666 } { 2 }
 % \Test_append:nnnn { } { X.n += -444 } { 222 } { 3 }
 % \Test_append:nnnn { } { X.n } { 222 } { 4 }
 % \reset:n { YES }
-% \Test_append:nnnn { } { X.n } { 222 } { A }
 % \Test_append:nnnn { FIRST } { X.n += 444 } { 666 } { B }
-% \Test_append:nnnn { } { FIRST } { 222 } { C }
-% \Test_append:nnnn { FIRST } { X.n -= 444 } { 666 } { D }
+% \Test_append:nnnn { } { X.n } { 666 } { C }
+% \Test_append:nnnn { } { X.n += -444 } { 222 } { D }
 % \Test_append:nnnn { } { X.n } { 222 } { E }
-% \Test_append:nnnn { FIRST } { X.n += (LENGTH - 1) } { 666 } { F }
+% \Test_append:nnnn { } { X.n += (LENGTH - 1) } { 666 } { F }
 % \Test_append:nnnn { } { X.n } { 666 } { G }
 % \Test_append:nnnn { } { X.n += (-(LENGTH-1)) } { 222 } { H }
 % \Test_append:nnnn { } { X.n } { 222 } { I }
-% \Test_append:nnnn { FIRST } { X.n += LENGTH - 1 } { 666 } { J }
+% \Test_append:nnnn { } { X.n += LENGTH - 1 } { 666 } { J }
 % \Test_append:nnnn { } { X.n } { 666 } { K }
+% \Test_append:nnnn { } { X.n += -444~4 } { 2224 } { L }
 % \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
@@ -5440,61 +5435,40 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
       \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
 \__bnvs_resolve_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
-  \seq_pop_left:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
-    \seq_if_empty:NTF \l__bnvs_path_seq {
-      \__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_b_tl \l__bnvs_ans_tl {
-        \cs_set_eq:NN \loop: \return_false:
-      }
-    } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
-    }
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
   } {
-%    \end{macrocode}
-% \begin{bnvs.gobble}
-%<*!gubed>
-\__bnvs_DEBUG:x { \string\__bnvs_if_append:nNTF...FULL~RESOLUTION }
-\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:N \l__bnvs_b_tl }
-%</!gubed>
-% \end{bnvs.gobble}
-%    \begin{macrocode}
-    \tl_clear:N \l__bnvs_ans_tl
-    \exp_args:NV
-    \__bnvs_if_append:nNTF \l__bnvs_name_tl \l__bnvs_ans_tl {
-      \cs_set_eq:NN \loop: \return_true:
-    } {
-      \cs_set_eq:NN \loop: \return_false:
-    }
+    \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 } {
-  \msg_error:nnx { beanoves } { :n } { Unknown~.<integer>~path:~#1 }
-  \cs_set_eq:NN \loop: \return_false:
+  \return_false:x { Unknown~.<integer>~path:~#1 }
 }
     } {
       \__bnvs_group_end:
     }
   } {
-    \__bnvs_group_end:
-    \msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-    \cs_set_eq:NN \loop: \return_false:
+  \__bnvs_group_end:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 } {
   \__bnvs_group_end:
-  \cs_set_eq:NN \loop: \return_false:
+  \return_false:
 }
                       } {
                         \switch:nNTF { 14 } \l__bnvs_a_tl {
 %    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...n++}.
 % \begin{bnvs.gobble}
 %<*!gubed>
 \__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n++ }
 %</!gubed>
 % \end{bnvs.gobble}
-% \end{bnvs.macrocode}
-% \item Case \texttt{...n++}.
-% \begin{bnvs.test}[banner={append/...n++}]
-% \Test_append:nnnn { 222 } { X.n ++ } { 222 } { 1-a }
-% \Test_append:nnnn { } { X.n   } { 223 } { 1-b }
+% We first resolve the named index reference, then we increment the index counter.
+% \begin{bnvs.test}[banner={append/...n++}, debug]
+% \Test_append:nnnn { 222 } { X.n } { 222 } { 1-a }
+% \Test_append:nnnn { } { X.n ++ } { 222 } { 1-b }
+% \Test_append:nnnn { } { X.n   } { 223 } { 1-c }
 % \reset:n { }
 % \Test_append:nnnn { FIRST } { X.n ++ } { 222 } { 2-a }
 % \Test_append:nnnn { } { X.n   } { 223 } { 2-b }
@@ -5535,57 +5509,48 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \__bnvs_n_get:VNF \l__bnvs_name_tl \l__bnvs_b_tl {
       \tl_set:Nn \l__bnvs_b_tl { 1 }
     }
+    \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl    
     \tl_put_right:Nn \l__bnvs_b_tl { +1 }
     \__bnvs_fp_round:N \l__bnvs_b_tl
     \__bnvs_n_gput:VV \l__bnvs_name_tl \l__bnvs_b_tl
-    \exp_args:NNNV
-    \__bnvs_group_end:
-    \tl_set:Nn \l__bnvs_b_tl \l__bnvs_b_tl
-    \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
-    \__bnvs_resolve_n:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
-      \seq_pop_left:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
-        \seq_if_empty:NTF \l__bnvs_path_seq {
-\__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_b_tl \l__bnvs_ans_tl {
-  \cs_set_eq:NN \loop: \return_false:
-}
-        } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
-        }
+    \__bnvs_resolve_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+      \seq_if_empty:NTF \l__bnvs_path_seq {
+        \exp_args:NNNV
+        \__bnvs_group_end:
+        \tl_put_right:Nn \l__bnvs_ans_tl \l__bnvs_name_tl
       } {
-\__bnvs_if_counter:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
-  \cs_set_eq:NN \loop: \return_false:
-}
+        \__bnvs_group_end:
+        \return_false:x { Too~many~.<integer>~components:~#1 }
       }
     } {
-\msg_error:nnx { beanoves } { :n } { Unknown~.<integer>~path:~#1 }
-\cs_set_eq:NN \loop: \return_false:
+      \__bnvs_group_end:
+      \return_false:x { Unknown~.<integer>~path:~#1 }
     }
   } {
-\__bnvs_group_end:
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
+    \__bnvs_group_end:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 } {
   \__bnvs_group_end:
-  \cs_set_eq:NN \loop: \return_false:
+  \return_false:
 }
                         } {
                           \switch:nNTF { 12 } \l__bnvs_a_tl {
 %    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...n}.
 % \begin{bnvs.gobble}
 %<*!gubed>
 \__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n }
 %</!gubed>
 % \end{bnvs.gobble}
-% \end{bnvs.macrocode}
-% \item Case \texttt{...n}.
 % The explanations given here also apply to other cases.
 % We start by recovering the frame id and the integer path.
 % Then we resolve the slide range name and path to
 % the last possible name and a void integer path.
 % We raise if we cannot obtain a void integer path.
 % \begin{bnvs.test}[banner={append/...n}]
+% \Test_append:nnnn { } { X.n } { 222 } { A }
 % \Test_append:nnnn { 222 } { X.n } { 222 } { 1-a }
 % \Test_append:nnnn { FIRST } { X.n } { 222 } { 1-b }
 % \Test_append:nnnn { LENGTH } { X.n } { 445 } { 1-c }
@@ -5632,42 +5597,36 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \end{bnvs.gobble}
 % \end{bnvs.macrocode}
       \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
-      \__bnvs_resolve:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
-        \seq_pop_left:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
-          \seq_if_empty:NTF \l__bnvs_path_seq {
-\__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_b_tl \l__bnvs_ans_tl {
-  \cs_set_eq:NN \loop: \return_false:
-}
-          } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
-          }
+      \__bnvs_resolve_x:NNNTF \l__bnvs_id_tl  \l__bnvs_path_seq {
+        \seq_if_empty:NTF \l__bnvs_path_seq {
+          \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
         } {
-\__bnvs_if_counter:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
-  \cs_set_eq:NN \loop: \return_false:
-}
+          \return_false:x { Too~many~.<integer>~components:~#1 }
         }
       } {
-\msg_error:nnx { beanoves } { :n } { Unknown~.<integer>~path:~#1 }
-\cs_set_eq:NN \loop: \return_false:
+        \return_false:x { Undefined~.<integer>~path:~#1 }
       }
     } {
-      \__bnvs_group_end:
+      \return_false:
     }
   } {
-\__bnvs_group_end:
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
+    \__bnvs_group_end:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 } {
   \__bnvs_group_end:
-  \cs_set_eq:NN \loop: \return_false:
+  \return_false:
 }
                           } {
                             \switch:nNTF { 15 } \l__bnvs_a_tl {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...+=\meta{integer}}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...+=... }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.test}[banner={append/+=}]
 % \Test_append:nnnn { 222 } { X += 444 } { 666 } { 1 }
 % \Test_append:nnnn { } { X } { 666 } { 2 }
@@ -5689,19 +5648,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
 \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
   \seq_if_empty:NTF \l__bnvs_path_seq {
-    \__bnvs_if_post:VnNF \l__bnvs_name_tl { 1 } \l__bnvs_ans_tl {
-      \cs_set_eq:NN \loop: \return_false:
+    \__bnvs_if_post:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
+      \return_false:
     }
   } {
-    \seq_pop_left:NN \l__bnvs_path_seq \l__bnvs_a_tl
-    \seq_if_empty:NTF \l__bnvs_path_seq {
-      \__bnvs_if_post:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
-        \cs_set_eq:NN \loop: \return_false:
-      }
-    } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
-    }
+    \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 }
                             } {
@@ -5709,6 +5660,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...++}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...++ }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.test}[banner={append/...++}]
 % \Test_append:nnnn { 222 } { X ++ } { 222 } { 1-a }
 % \Test_append:nnnn { } { X++ } { 223 } { 2-a }
@@ -5722,18 +5678,22 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
 \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
   \seq_if_empty:NTF \l__bnvs_path_seq {
-\__bnvs_if_post:VnNF \l__bnvs_name_tl { 1 } \l__bnvs_ans_tl {
-  \cs_set_eq:NN \loop: \return_false:
-}
+    \__bnvs_if_post:VnNF \l__bnvs_name_tl { 1 } \l__bnvs_ans_tl {
+      \return_false:
+    }
   } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
+     \return_false:x { Too~many~.<integer>~components:~#1 }
   }
 }
                               } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{No special attribute}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~... }
+%</!gubed>
+% \end{bnvs.gobble}
 % \begin{bnvs.test}[banner={append/counter}]
 % \Test_append:nnnn { 222 } { X } { 222 } { 1-a }
 % \reset:n { }
@@ -5744,19 +5704,17 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
-  \seq_if_empty:NTF \l__bnvs_path_seq {
-    \__bnvs_if_counter:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
-      \cs_set_eq:NN \loop: \return_false:
-    }
-  } {
-    \seq_pop_left:NN \l__bnvs_path_seq \l__bnvs_a_tl
+  \seq_pop_left:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
     \seq_if_empty:NTF \l__bnvs_path_seq {
-      \__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
-        \cs_set_eq:NN \loop: \return_false:
+      \__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_b_tl \l__bnvs_ans_tl {
+        \return_false:
       }
     } {
-\msg_error:nnx { beanoves } { :n } { Too~many~.<integer>~components:~#1 }
-\cs_set_eq:NN \loop: \return_false:
+      \return_false:x { Too~many~.<integer>~components:~#1 }
+    }
+  } {
+    \__bnvs_if_counter:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+      \return_false:x { Undefined~counter:~#1 }
     }
   }
 }
@@ -5809,7 +5767,20 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %</!gubed>
 % \end{bnvs.gobble}
 %    \begin{macrocode}
-        \return_true:
+        \fp_round:
+        \exp_args:NNNV
+        \__bnvs_group_end:
+        \tl_put_right:Nn #2 \l__bnvs_ans_tl
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_if_append:nNTF...TRUE}
+\__bnvs_DEBUG:x { what=\tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 / }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+        \prg_return_true:
       }
     }
     \loop:
