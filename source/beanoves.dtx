@@ -123,6 +123,35 @@ and the derived files           beanoves.ins,
   \end{trivlist}
 }
 \begin{document}
+\begin{bnvs.test}[banner=Medley]
+\reset:n { }
+\Test_append:nnnn { 222 } { X.1 } { 222 } { A }
+\Beanoves {
+  Air      = 1 :: Gannet.last,
+  Chameleo = Air.2:1,
+  Gannet   = Chameleo.next:1,
+  Water   = Air.next :: Picasso.last,
+  Octopus = Water.2:1,
+  Starfish = Octopus.next:1,
+  StickyStarfish = Starfish.1:1,
+  Picasso = Starfish.next:1,
+  PicassoTrans = 1 :: Picasso.0,
+  Summary  = Water.next:,
+}
+\Test_eval:nnnn {} {Chameleo.1} {2} { 1 }
+\Test_eval:nnnn {} {Gannet.1} {3} { 2 }
+\Test_eval:nnnn {} {Water.1} {4} { 3 }
+\Test_eval:nnnn {} {Water.range} {4-7} { 4 }
+\Test_eval:nnnn {} {Octopus.1} {5} { 5 }
+\Test_eval:nnnn {} {Starfish.1} {6} { 6 }
+\Test_eval:nnnn {} {Picasso.1} {7} { 10 }
+\Test_eval:nnnn {} {Picasso.range} {7-7} { 11 }
+\Test_eval:nnnn {} {PicassoTrans.range} {1-6} { 7 }
+\Test_eval:nnnn {} {Air.range} {1-3} { 8 }
+\Test_eval:nnnn {} {Air.last} {3} { 9 }
+\Test_eval:nnnn {} {Summary.range} {8-} { 12 }
+\Test_eval:nnnn {} {StickyStarfish.range} {6-6} { 13 }
+\end{bnvs.test}
 \maketitle
 \changes{v1.0}{2009/10/06}{First public release}
 \begin{abstract}
@@ -650,6 +679,27 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
   \cs_set_eq:NN \assert_equal:nnn \__bnvs_assert_equal:nnn
   \cs_set_eq:NN \test_fail:n \__bnvs_test_fail:n
   \cs_generate_variant:Nn \assert_equal:nnn { xxn }
+  \cs_set:Npn \preflight:nn ##1 ##2 {
+    \banner:n { ##2~/~##1 }
+    \tl_if_empty:nF { ##1 } {
+      \Beanoves { X = ##1 }
+      \__bnvs_log_gprop:
+    }
+    \__bnvs_group_begin:
+    \tl_clear:N \l__bnvs_ans_tl
+  }
+  \cs_set:Npn \preflight:nnn ##1 ##2 ##3 {
+    \banner:n { ##3 }
+    \tl_if_empty:nF { ##1 } {
+      \Beanoves { X = ##1 }
+      \__bnvs_log_gprop:
+    }
+    \__bnvs_group_begin:
+    \tl_clear:N \l__bnvs_ans_tl
+  }
+  \cs_set:Npn \postflight: {
+    \__bnvs_group_end:
+  }
   \cs_set:Npn \Test_resolve_x:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
     \banner:n { ##6 / ##1 }
     \tl_if_empty:nF { ##1 } {
@@ -698,13 +748,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \__bnvs_gclear:
   }
   \cs_set:Npn \Test_raw:nnnn ##1 ##2 ##3 ##4 {
-    \banner:n{##4~/~##2}
-    \tl_if_empty:nF { ##2 } {
-      \Beanoves { X = ##2 }
-      \__bnvs_log_gprop:
-    }
-    \__bnvs_group_begin:
-    \tl_clear:N \l__bnvs_ans_tl
+    \preflight:nn { ##2 } { ##4 }
     \cs_if_exist:cTF { __bnvs_raw_##1:nNTF } {
       \use:c { __bnvs_raw_##1:nNTF } { ?!X } \l__bnvs_ans_tl {
         \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-b }
@@ -714,16 +758,10 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     } {
       \test_fail:n { ##4-BAD~##1 }
     }
-    \__bnvs_group_end:
+    \postflight:
   }
   \cs_set:Npn \Test:nnnn ##1 ##2 ##3 ##4 {
-  \banner:n { ##4~/~##2 }
-    \tl_if_empty:nF { ##2 } {
-      \Beanoves { X = ##2 }
-      \__bnvs_log_gprop:
-    }
-    \__bnvs_group_begin:
-    \tl_clear:N \l__bnvs_ans_tl
+    \preflight:nn { ##2 } { ##4 }
     \cs_if_exist:cTF { __bnvs_if_##1:nNTF } {
       \use:c { __bnvs_if_##1:nNTF } { ?!X } \l__bnvs_ans_tl {
         \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-a }
@@ -755,40 +793,28 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
         \test_fail:n { ##4-BAD~##1 }
       }
     }
-    \__bnvs_group_end:
+    \postflight:
   }
   \cs_set:Npn \Test_index:nnnn ##1 ##2 ##3 ##4 {
-    \banner:n {##4~/~##1}
-    \tl_if_empty:nF { ##1 } {
-      \Beanoves { X = ##1 }
-      \__bnvs_log_gprop:
-    }
-    \__bnvs_group_begin:
-    \tl_clear:N \l__bnvs_ans_tl
+    \preflight:nn { ##1 } { ##4 }
     \__bnvs_if_index:nnNTF { ?!X } { ##2 } \l__bnvs_ans_tl {
       \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-a }
     } {
       \assert_fail:n { ##4-b }
     }
-    \__bnvs_group_end:
+    \postflight:
   }
   \cs_set:Npn \Test_raw_first:nnn {
     \Test_generic:Nnnn \__bnvs_raw_first:nNTF
   }
   \cs_set:Npn \Test_generic:Nnnn ##1 ##2 ##3 ##4 {
-    \banner:n { ##4~/~##2 }
-    \tl_if_empty:nF { ##2 } {
-      \Beanoves { X = ##2 }
-      \__bnvs_log_gprop:
-    }
-    \__bnvs_group_begin:
-    \tl_clear:N \l__bnvs_ans_tl
+    \preflight:nn { ##2 } { ##4 }
     ##1 { ?!X } \l__bnvs_ans_tl {
       \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-b }
     } {
       \test_fail:n { ##4-a }
     }
-    \__bnvs_group_end:
+    \postflight:
   }
   \cs_set:Npn \Test_free_counter:nnn {
     \Test_generic:Nnnn \__bnvs_if_free_counter:nNTF
@@ -806,13 +832,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \Test_generic:Nnnn \__bnvs_n_get:nNTF
   }
   \cs_set:Npn \Test_generic:Nnnnn ##1 ##2 ##3 ##4 ##5 {
-    \banner:n { ##5~/~##2+##3 }
-    \tl_if_empty:nF { ##2 } {
-      \Beanoves { X = ##2 }
-      \__bnvs_log_gprop:
-    }
-    \__bnvs_group_begin:
-    \tl_clear:N \l__bnvs_ans_tl
+    \preflight:nnn { ##2 } { ##3 } { ##5~/~##2~/~##3 }
     \__bnvs_if_free_counter:nNTF { ?!X } \l__bnvs_ans_tl {
       \tl_clear:N \l__bnvs_ans_tl
       ##1 { ?!X } { ##3 } \l__bnvs_ans_tl {
@@ -823,7 +843,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     } {
       \test_fail:n { ##5-d }
     }
-    \__bnvs_group_end:
+    \postflight:
   }
   \cs_set:Npn \Test_incr:nnnn {
     \Test_generic:Nnnnn \__bnvs_if_incr:nnNTF
@@ -838,19 +858,13 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \Test_generic:Nnnn \__bnvs_if_range:nNTF
   }
   \cs_set:Npn \Test_append:nnnn ##1 ##2 ##3 ##4 {
-    \banner:n { ##4~/~X=##1=>##2==##3~/ }
-    \tl_if_empty:nF { ##1 } {
-      \Beanoves { X = ##1 }
-      \__bnvs_log_gprop:
-    }
-    \__bnvs_group_begin:
-    \tl_clear:N \l__bnvs_ans_tl
+    \preflight:nnn { ##1 } { ##2 } { ##4~/~X=##1=>##2==##3~/ }
     \__bnvs_if_append:nNTF { ##2 } \l__bnvs_ans_tl {
       \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4-a }
     } {
       \test_fail:n { ##4-b }
     }
-    \__bnvs_group_end:
+    \postflight:
   }
   \cs_set:Npn \Test_regex:nnnn ##1 {
     \tl_if_exist:cTF { c__bnvs_##1_regex } {
@@ -861,8 +875,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     }
   }
   \cs_set:Npn \Test_query:nnnn ##1 ##2 ##3 ##4 {
-    \banner:n { ##4~/##1=>##2==##3~/ }
-    \Beanoves { ##1 }
+    \preflight:nnn { ##1 } { ##2 } { ##4~/##1=>##2==##3~/ }
     \tl_clear:N \l_tmpa_tl
     \tl_set:Nn \l_tmpb_tl { FAILURE }
     \__bnvs_if_eval_query:nNTF { ##2 } \l_tmpa_tl {
@@ -872,6 +885,13 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     } {
       \test_fail:n { ##4-CALL }
     }
+    \postflight:
+  }
+  \cs_set:Npn \Test_eval:nnnn ##1 ##2 ##3 ##4 {
+    \preflight:nn { ##1 } { ##4 }
+    \BeanovesEval[\l__bnvs_ans_tl]{ ##2 }
+    \assert_equal:xxn { \l__bnvs_ans_tl } { ##3 } { ##4 }
+    \postflight:
   }
   \cs_set:Npn \reset:n ##1 {
     \__bnvs_group_begin:
@@ -5570,7 +5590,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 \__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...+=... }
 %</!gubed>
 % \end{bnvs.gobble}
-% \begin{bnvs.test}[banner={append/+=}, debug]
+% \begin{bnvs.test}[banner={append/+=}]
 % \Test_append:nnnn { 222 } { X += 444 } { 666 } { 1 }
 % \Test_append:nnnn { } { X } { 666 } { 2 }
 % \Test_append:nnnn { } { X += -444 } { 222 } { 3 }
@@ -5992,16 +6012,16 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \begin{bnvs.test}[banner=\string\__bnvs_eval_query:nNTF]
-% \Test_query:nnnn { A=100 } { 1 } { 1 } { 1 }
-% \Test_query:nnnn { A=100 } { 1+1 } { 2 } { 2 }
-% \Test_query:nnnn { A=100 } { A.1+A.11 } { 210 } { 3 }
-% \Test_query:nnnn { A=100 } { A.1::A.111 } { 100-210 } { 4 }
-% \Test_query:nnnn { A=100 } { A.1:111 } { 100-210 } { 5 }
-% \Test_query:nnnn { A=4 } { A.1 } { 4 } { 6 }
-% \Test_query:nnnn { A=4 } { A.0 } { 3 } { 7 }
-% \Test_query:nnnn { A=4 } { A.-1 } { 2 } { 8 }
-% \Test_query:nnnn { A=4 } { A.-2 } { 1 } { 9 }
-% \Test_query:nnnn { A=4 } { A.-3 } { 0 } { 10 }
+% \Test_query:nnnn { 100 } { 1 } { 1 } { 1 }
+% \Test_query:nnnn { } { 1+1 } { 2 } { 2 }
+% \Test_query:nnnn { } { X.1+X.11 } { 210 } { 3 }
+% \Test_query:nnnn { } { X.1::X.111 } { 100-210 } { 4 }
+% \Test_query:nnnn { } { X.1:111 } { 100-210 } { 5 }
+% \Test_query:nnnn { 4 } { X.1 } { 4 } { 6 }
+% \Test_query:nnnn { } { X.0 } { 3 } { 7 }
+% \Test_query:nnnn { } { X.-1 } { 2 } { 8 }
+% \Test_query:nnnn { } { X.-2 } { 1 } { 9 }
+% \Test_query:nnnn { } { X.-3 } { 0 } { 10 }
 % \end{bnvs.test}
 %
 % \begin{function}{\__bnvs_eval:nN}
