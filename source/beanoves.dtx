@@ -210,11 +210,8 @@ and can take one of the next forms.
 The \emph{short names} and \emph{frame ids} are alphanumerical case sensitive
 identifiers, with possible underscores but no space nor leading digit.
 Unicode symbols above \texttt{U+00A0} are allowed if the underlying \TeX\ engine
-supports it.
+supports it. Identifiers consisting only of lowercase letters are reserved by the package.
 
-In order to avoid name conflicts with floating point functions like |sin| or |round|,
-it is highly recommanded to let them contain at least an uppercase letter
-or an underscore.
 The \emph{integer path} is a string
 \texttt{.\meta{integer_1}.\meta{integer_2}....\meta{integer_n}},
 where the \meta{integer_i}'s are integers eventually signed,
@@ -1430,6 +1427,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \regex_const:Nn \c__bnvs_path_regex {
+  (?: (?: \. \ur{c__bnvs_name_regex} )* (?: \. [-+]? \d+ ) )?
   (?: \. [-+]? \d+ )*
 }
 %    \end{macrocode}
@@ -2014,6 +2012,221 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \Test:nnn { ?!A.range } {{?!A},{?!},{},{},{},{},{},{r},{},{},{},{},{},{}} { 7-b }
 % \Test:nnn { A.3.range } {{A},{},{.3},{},{},{},{},{r},{},{},{},{},{},{}} { 7-c }
 % \Test:nnn { ?!A.3.range } {{?!A},{?!},{.3},{},{},{},{},{r},{},{},{},{},{},{}} { 7-d }
+% \end{bnvs.test}
+% \end{variable}
+%
+% \begin{variable}{\c__bnvs_split_pm_regex}
+% Used to parse slide list overlay specifications in queries.
+% Next are the 7 capture groups.
+% Group numbers are 1 based because the regex is used in splitting contexts
+% where only capture groups are considered and not the whole match.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\regex_const:Nn \c__bnvs_split_pm_regex {
+  \s* ( ? :
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% We start with `|++|' instrussions^^A
+% \footnote{At the same time an instruction and an expression... this is a synonym of exprection}.
+%   \begin{myList}
+%   \item 1: Optional pre incrementation
+%    \begin{macrocode}
+    ( \+\+ )?
+%    \end{macrocode}
+%   \item 2: \meta{name} of a slide range
+%   \item 3: \meta{id} of a slide range including the exclamation mark 
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    ( ( \ur{c__bnvs_id_regex}? ) \ur{c__bnvs_name_regex} )
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+%   \item 4: optionally followed by a dotted path
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    ( (?: \. \ur{c__bnvs_name_regex} | \. [-+]? \d+ )* )
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_pm_regex/]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_pm_regex
+%     { #1 }
+%     {{#2},#3,{},{},{}} { 1|2|3-#4 } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ABC } {} {{},{ABC},{},{}} {a}
+% \Test:nnnn { ABC.1.2~~ } {} {{},{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ?!ABC } {} {{},{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ?!ABC.1.2~~ } {} {{},{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!ABC.1.2~X~ } {?!ABC.1.2~} {{},{?!ABC},{?!},{.1.2}} {e}
+% \Test:nnnn { ++ABC } {} {{++},{ABC},{},{}} {a'}
+% \Test:nnnn { ++ABC.1.2~~ } {} {{++},{ABC},{},{.1.2}} {b'}
+% \Test:nnnn { ++?!ABC } {} {{++},{?!ABC},{?!},{}} {c'}
+% \Test:nnnn { ++?!ABC.1.2~~ } {} {{++},{?!ABC},{?!},{.1.2}} {d'}
+% \Test:nnnn { ++?!ABC.1.2~X~ } {++?!ABC.1.2~} {{++},{?!ABC},{?!},{.1.2}} {e'}
+% \end{bnvs.test}
+% We continue with other expressions
+%   \item 5: the \meta{++n} attribute
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    (?: \.(\+)\+n
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_pm_regex/.++n]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_pm_regex
+%     { #1 }
+%     { {#2},{},#3,{+},{},{} } { 5-#4~(.++n) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ABC.++n } {} {{ABC},{},{}} {a}
+% \Test:nnnn { ABC.1.2.++n~~ } {}  {{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ?!ABC.++n } {}  {{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ?!ABC.1.2.++n~~ } {}  {{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!ABC.1.2.++n~X~ } { ?!ABC.1.2.++n~}  {{?!ABC},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+%   \item 6: the poor man integer expression after `|+=|',
+%   which is the longest sequence of black characters,
+%   which ends just before a space or at the very last character.
+%   This tricky definition allows quite any algebraic expression,
+%   even those involving parenthesis.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    |  \s* \+= \s* ( \S+ )
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner={\string\c__bnvs_split_pm_regex/+=}]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_pm_regex
+%     { #1 }
+%     { {#2},{},#3,{} } { 6-#4~(+=) } 
+% }
+% \cs_set:Npn \Test:nnnnn #1 #2 #3 #4 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl { #3, {}, #4 }
+% }
+% \Test:nnnnn { ABC += 421 } {} {{ABC}, {}, {}} {421} {`+='~1}
+% \Test:nnnnn { ABC += 1+P.1 } {} {{ABC}, {}, {}} {1+P.1} {`+='~2}
+% \Test:nnnnn { ABC += 1+P.1~X } { ABC += 1+P.1~ } {{ABC}, {}, {}} {1+P.1} {`+='~3}
+% \Test:nnnnn { ABC += (P.1+1)~~^^A(
+% ) } { ABC += (P.1+1)~~ } {{ABC}, {}, {}} {(P.1+1)} {`+='~4}
+% \Test:nnnnn { ?!ABC += 421 } {} {{?!ABC}, {?!}, {}} {421} {`+='~5}
+% \Test:nnnnn { ?!ABC += 1+P.1 } {} {{?!ABC}, {?!}, {}} {1+P.1} {`+='~6}
+% \Test:nnnnn { ?!ABC += 1+P.1~X } {?!ABC += 1+P.1~} {{?!ABC}, {?!}, {}} {1+P.1} {`+='~7}
+% \Test:nnnnn { ?!ABC += (P.1+1)~~^^A(
+% ) } {?!ABC += (P.1+1)~~} {{?!ABC}, {?!}, {}} {(P.1+1)} {`+='~8}
+% \end{bnvs.test}
+%   \item 7: the post increment
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    | (\+)\+
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_pm_regex/...++]
+% \cs_set:Npn \:nnnn #1 #2 #3 #4 {
+%   \banner:n { #4 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_split_pm_regex
+%     { #1 }
+%     { {#2},{},#3,{},{},{+}} { 7-#4~(...++) } 
+% }
+% \cs_set:Npn \Test:nnnn #1 #2 {
+%   \tl_set:Nx \l__bnvs_a_tl { \tl_if_empty:nTF { #2 } {
+%     \exp_not:n { #1 }
+%   } {
+%     \exp_not:n { #2 }
+%   } }
+%   \exp_args:NnV
+%   \:nnnn { #1 } \l__bnvs_a_tl
+% }
+% \Test:nnnn { ABC++ } {} {{ABC},{},{}} {a}
+% \Test:nnnn { ABC.1.2++~~ } {} {{ABC},{},{.1.2}} {b}
+% \Test:nnnn { ?!ABC++ } {} {{?!ABC},{?!},{}} {c}
+% \Test:nnnn { ?!ABC.1.2++~~ } {} {{?!ABC},{?!},{.1.2}} {d}
+% \Test:nnnn { ?!ABC.1.2++~X~ } {?!ABC.1.2++~} {{?!ABC},{?!},{.1.2}} {e}
+% \end{bnvs.test}
+% \end{myList}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+  )? ) \s*
+}
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=\string\c__bnvs_split_pm_regex/split]
+% \cs_set:Npn \Test:nnn #1 #2 #3 {
+%   \__bnvs_test_split:Nnnn \c__bnvs_split_pm_regex
+%  { 1/#1/2 } { 1/,++,#2,{},{},{},/2 } { split-#3 }
+% }
+% \Test:nnn { ++A }     {{A},{},{}} { 1-a }
+% \Test:nnn { ++?!A }   {{?!A},{?!},{}} { 1-b }
+% \Test:nnn { ++A.3 }   {{A},{},{.3}} { 1-c }
+% \Test:nnn { ++?!A.3 } {{?!A},{?!},{.3}} { 1-d }
+% \cs_set:Npn \Test:nnn #1 #2 #3 {
+%   \__bnvs_test_split:Nnnn \c__bnvs_split_pm_regex
+%  { 1/#1/2 } { 1/,{},#2,/2 } { split-#3 }
+% }
+% \Test:nnn { A.++n }   {{A},{},{},{+},{},{}} { 2-a' }
+% \Test:nnn { ?!A.++n } {{?!A},{?!},{},{+},{},{}} { 2-b' }
+% \Test:nnn { A.3.++n } {{A},{},{.3},{+},{},{}} { 2-c' }
+% \Test:nnn {?!A.3.++n} {{?!A},{?!},{.3},{+},{},{}} { 2-d' }
+% \Test:nnn { A }   {{A},{},{},{},{},{}} { 2-a }
+% \Test:nnn { A.n } {{A},{},{.n},{},{},{}} { 2-b }
+% \Test:nnn { ?!A } {{?!A},{?!},{},{},{},{}} { 2-c }
+% \Test:nnn { ?!A.n } {{?!A},{?!},{.n},{},{},{}} { 2-d }
+% \Test:nnn { A.3 } {{A},{},{.3},{},{},{}} { 2-e }
+% \Test:nnn { A.3.n } {{A},{},{.3.n},{},{},{}} { 2-f }
+% \Test:nnn { ?!A.3 } {{?!A},{?!},{.3},{},{},{}} { 2-g }
+% \Test:nnn { ?!A.3.n } {{?!A},{?!},{.3.n},{},{},{}} { 2-h }
+% \Test:nnn { A++ }   {{A},{},{},{},{},{+}} { 3-a }
+% \Test:nnn { A.n++ }   {{A},{},{.n},{},{},{+}} { 3-b }
+% \Test:nnn { ?!A++ } {{?!A},{?!},{},{},{},{+}} { 3-c }
+% \Test:nnn { ?!A.n++ } {{?!A},{?!},{.n},{},{},{+}} { 3-d }
+% \Test:nnn { A.3++ } {{A},{},{.3},{},{},{+}} { 3-e }
+% \Test:nnn { A.3.n++ } {{A},{},{.3.n},{},{},{+}} { 3-f }
+% \Test:nnn { ?!A.3++ } {{?!A},{?!},{.3},{},{},{+}} { 3-g }
+% \Test:nnn { ?!A.3.n++ } {{?!A},{?!},{.3.n},{},{},{+}} { 3-h }
+% \Test:nnn { A.length } {{A},{},{.length},{},{},{}} { 4-a }
+% \Test:nnn { A.3.length } {{A},{},{.3.length},{},{},{}} { 4-b }
+% \Test:nnn { ?!A.length } {{?!A},{?!},{.length},{},{},{}} { 4-c }
+% \Test:nnn { ?!A.3.length } {{?!A},{?!},{.3.length},{},{},{}} { 4-d }
+% \Test:nnn { A.last } {{A},{},{.last},{},{},{}} { 5-a }
+% \Test:nnn { ?!A.last } {{?!A},{?!},{.last},{},{},{}} { 5-b }
+% \Test:nnn { A.3.last } {{A},{},{.3.last},{},{},{}} { 5-c }
+% \Test:nnn { ?!A.3.last } {{?!A},{?!},{.3.last},{},{},{}} { 5-d }
+% \Test:nnn { A.previous } {{A},{},{.previous},{},{},{}} { 6-a }
+% \Test:nnn { ?!A.previous } {{?!A},{?!},{.previous},{},{},{}} { 6-b }
+% \Test:nnn { A.3.previous } {{A},{},{.3.previous},{},{},{}} { 6-c }
+% \Test:nnn { ?!A.3.previous } {{?!A},{?!},{.3.previous},{},{},{}} { 6-d }
+% \Test:nnn { A.next } {{A},{},{.next},{},{},{}} { 6-a }
+% \Test:nnn { ?!A.next } {{?!A},{?!},{.next},{},{},{}} { 6-b }
+% \Test:nnn { A.3.next } {{A},{},{.3.next},{},{},{}} { 6-c }
+% \Test:nnn { ?!A.3.next } {{?!A},{?!},{.3.next},{},{},{}} { 6-d }
+% \Test:nnn { A.range } {{A},{},{.range},{},{},{}} { 7-a }
+% \Test:nnn { ?!A.range } {{?!A},{?!},{.range},{},{},{}} { 7-b }
+% \Test:nnn { A.3.range } {{A},{},{.3.range},{},{},{}} { 7-c }
+% \Test:nnn { ?!A.3.range } {{?!A},{?!},{.3.range},{},{},{}} { 7-d }
 % \end{bnvs.test}
 % \end{variable}
 %
@@ -5903,6 +6116,845 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 }
 \prg_generate_conditional_variant:Nnn
   \__bnvs_if_append:nN { VN, xN } { T, F, TF }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \end{myList}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\prg_new_conditional:Nnn \__bnvs_if_append_pm:nN { T, F, TF } {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_if_append_pm:nNTF...}
+\__bnvs_DEBUG:x { what= / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => / \tl_to_str:N #2 / }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+  \__bnvs_call:TF {
+    \__bnvs_group_begin:
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% Local variables:
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    \int_zero:N  \l__bnvs_split_int
+    \seq_clear:N \l__bnvs_split_seq
+    \tl_clear:N  \l__bnvs_id_tl
+    \tl_clear:N  \l__bnvs_name_tl
+    \tl_clear:N  \l__bnvs_path_tl
+    \tl_clear:N  \l__bnvs_group_tl
+    \tl_clear:N  \l__bnvs_ans_tl
+    \tl_clear:N  \l__bnvs_a_tl
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% Implementation:
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    \regex_split:NnN \c__bnvs_split_regex { #1 } \l__bnvs_split_seq
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF...}
+\__bnvs_DEBUG:x { \#\string \l__bnvs_split_seq => \seq_count:N \l__bnvs_split_seq / }
+\__bnvs_DEBUG:x { \string \l__bnvs_split_seq => \seq_use:Nn \l__bnvs_split_seq / / }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+    \int_set:Nn \l__bnvs_split_int { 1 }
+    \tl_set:Nx \l__bnvs_ans_tl {
+      \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
+    }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ANS: \l__bnvs_ans_tl }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{function}{\switch:nTF}
+% \begin{syntax}
+% \cs{switch:nTF} \marg{capture group number} \marg{black code} \marg{white code}
+% \end{syntax}
+% Helper function to locally set the |\l__bnvs_group_tl| variable
+% to the captured group \meta{capture group number}
+% and branch.
+% \end{function}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    \cs_set:Npn \switch:nNTF ##1 ##2 ##3 ##4 {
+      \tl_set:Nx ##2 {
+        \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int + ##1 }
+      }
+      \tl_if_empty:NTF ##2 {
+        ##4 } {
+        ##3
+      }
+    }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \cs{prg_return_true:} and \cs{prg_return_false:} are wrapped locally
+% to close the group and return the proper value.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    \cs_set:Npn \fp_round: {
+      \__bnvs_fp_round:N \l__bnvs_ans_tl
+    }
+    \cs_set:Npn \return_false: {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF...FALSE}
+\__bnvs_DEBUG:x { what=\tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 / }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+      \__bnvs_group_end:
+      \cs_set:Npn \loop: { \prg_return_false: }
+    }
+    \cs_set:Npn \return_false:x ##1 {
+      \msg_error:nnx { beanoves } { :n } { ##1 }
+      \return_false:
+    }
+    \cs_set:Npn \:NnnT ##1 ##2 ##3 ##4 {
+      \switch:nNTF { ##2 } \l__bnvs_id_tl { } {
+        \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+        \tl_put_left:NV \l__bnvs_name_tl \l__bnvs_id_tl
+      }
+      \switch:nNTF { ##3 } \l__bnvs_path_tl {
+        \seq_set_split:NnV \l__bnvs_path_seq { . } \l__bnvs_path_tl
+        \seq_remove_all:Nn \l__bnvs_path_seq { }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF...}
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+      } {
+        \seq_clear:N \l__bnvs_path_seq
+      }
+      ##1 \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+        \cs_set:Npn \: {
+          ##4
+        }
+      } {
+        \cs_set:Npn \: { \return_false: }
+      }
+      \:
+    }
+    \cs_set:Npn \:T ##1 {
+      \seq_if_empty:NTF \l__bnvs_path_seq { ##1 } {
+        \return_false:
+      }
+    }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% Main loop.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+    \cs_set:Npn \loop: {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF...}
+\__bnvs_DEBUG:x { LOOP:\int_use:N\l__bnvs_split_int /
+  \seq_count:N \l__bnvs_split_seq /
+}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+      \int_compare:nNnTF {
+        \l__bnvs_split_int } < { \seq_count:N \l__bnvs_split_seq
+      } {
+        \switch:nNTF 1 \l__bnvs_name_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{myList}
+% \item Case \texttt{++\meta{name}\meta{integer path}}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~++... }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+          \:NnnT \__bnvs_resolve_n:NNNTF 2 3 {
+            \__bnvs_if_incr:VnNF \l__bnvs_name_tl 1 \l__bnvs_ans_tl {
+              \return_false:
+            }
+          }
+        } {
+          \switch:nNTF 4 \l__bnvs_name_tl {
+            \switch:nNTF 7 \l__bnvs_a_tl {
+              \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+                \:T {
+                  \__bnvs_raw_length:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+                    \return_false:
+                  }
+                }
+              }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...length}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...length }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner=append/length]
+% \reset:n { YES }
+% \Test_append:nnnn { :445 } { X.length } { 445 } { 1 }
+% \Test_append:nnnn { 222:445 } { X.length } { 445 } { 2 }
+% \Test_append:nnnn { 222::666 } { X.length } { 445 } { 3 }
+% \Test_append:nnnn { :445::666 } { X.length } { 445 } { 4 }
+% \Test_append:nnnn { :LENGTH } { X.length } { 445 } { 5 }
+% \Test_append:nnnn { FIRST:LENGTH } { X.length } { 445 } { 6 }
+% \Test_append:nnnn { FIRST::LAST } { X.length } { 445 } { 7 }
+% \Test_append:nnnn { :LENGTH::LAST } { X.length } { 445 } { 8 }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+            } {
+              \switch:nNTF 8 \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...last}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...last }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+                \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+                  \:T {
+                    \__bnvs_raw_last:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+                      \return_false:
+                    }
+                  }
+                }
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \begin{bnvs.test}[banner=append/last]
+% \Test_append:nnnn { ::666 } { X.last } { 666 } { 1 }
+% \Test_append:nnnn { 222:445 } { X.last } { 666 } { 2 }
+% \Test_append:nnnn { 222::666 } { X.last } { 666 } { 3 }
+% \Test_append:nnnn { :445::666 } { X.last } { 666 } { 4 }
+% \reset:n { }
+% \Test_append:nnnn { ::LAST } { X.last } { 666 } { 5 }
+% \Test_append:nnnn { FIRST:LENGTH } { X.last } { 666 } { 6 }
+% \Test_append:nnnn { FIRST::LAST } { X.last } { 666 } { 7 }
+% \Test_append:nnnn { :LENGTH::LAST } { X.last } { 666 } { 8 }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+              } {
+                \switch:nNTF 9 \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...previous}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...previous }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner=append/previous]
+% \Test_append:nnnn { 222 } { X.previous } { 221 } { 1 }
+% \Test_append:nnnn { 222:445 } { X.previous } { 221 } { 2 }
+% \Test_append:nnnn { 222::666 } { X.previous } { 221 } { 3 }
+% \Test_append:nnnn { :445::666 } { X.previous } { 221 } { 4 }
+% \reset:n { }
+% \Test_append:nnnn { FIRST } { X.previous } { 221 } { 5 }
+% \Test_append:nnnn { FIRST:LENGTH } { X.previous } { 221 } { 6 }
+% \Test_append:nnnn { FIRST::LAST } { X.previous } { 221 } { 7 }
+% \Test_append:nnnn { :LENGTH::LAST } { X.previous } { 221 } { 8 }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+                  \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+                    \:T {
+                      \__bnvs_if_previous:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+                        \return_false:
+                      }
+                    }
+                  }
+                } {
+                  \switch:nNTF { 10 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...next}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...next }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner=append/next]
+% \Test_append:nnnn { ::666 } { X.next } { 667 } { 1 }
+% \Test_append:nnnn { 222:445 } { X.next } { 667 } { 2 }
+% \Test_append:nnnn { 222::666 } { X.next } { 667 } { 3 }
+% \Test_append:nnnn { :445::666 } { X.next } { 667 } { 4 }
+% \reset:n { }
+% \Test_append:nnnn { ::LAST } { X.next } { 667 } { 5 }
+% \Test_append:nnnn { FIRST:LENGTH } { X.next } { 667 } { 6 }
+% \Test_append:nnnn { FIRST::LAST } { X.next } { 667 } { 7 }
+% \Test_append:nnnn { :LENGTH::LAST } { X.next } { 667 } { 8 }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+                    \:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+                      \:T {
+                        \__bnvs_if_next:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+                          \return_false:
+                        }
+                      }
+                    }
+                  } {
+                    \switch:nNTF { 11 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...range}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...range }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner=append]
+% \Test_append:nnnn { 222 } { X.range } { 222- } { 1 }
+% \Test_append:nnnn { ::666 } { X.range } { -666 } { 2 }
+% \Test_append:nnnn { 222:445 } { X.range } { 222-666 } { 3 }
+% \Test_append:nnnn { 222::666 } { X.range } { 222-666 } { 4 }
+% \Test_append:nnnn { :445::666 } { X.range } { 222-666 } { 5 }
+% \reset:n { }
+% \Test_append:nnnn { FIRST } { X.range } { 222- } { 6 }
+% \Test_append:nnnn { ::LAST } { X.range } { -666 } { 7 }
+% \Test_append:nnnn { FIRST:LENGTH } { X.range } { 222-666 } { 8 }
+% \Test_append:nnnn { FIRST::LAST } { X.range } { 222-666 } { 9 }
+% \Test_append:nnnn { :LENGTH::LAST } { X.range } { 222-666 } { 10 }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+  \:T {
+    \__bnvs_if_range:VNTF \l__bnvs_name_tl \l__bnvs_ans_tl {
+      \cs_set_eq:NN \fp_round: \prg_do_nothing:
+    } {
+      \return_false:
+    }
+  }
+}
+                    } {
+                      \switch:nNTF { 12 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...++n}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...++n }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner={append/...++n}]
+% \reset:n { YES }
+% \Test_append:nnnn { 222 } { X.++n } { 223 } { 1-a }
+% \Test_append:nnnn { } { X.n   } { 223 } { 2-a }
+% \reset:n { YES }
+% \Test_append:nnnn { FIRST } { X.++n } { 223 } { 1-b }
+% \Test_append:nnnn { } { X.n   } { 223 } { 2-b }
+% \Test_append:nnnn { A,X.3=B,B=111,X.3.2=555 } { X.3.++n } { 555 } { 3-a }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\switch:nNTF { 5 } \l__bnvs_id_tl { } {
+  \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+  \tl_put_left:NV \l__bnvs_name_tl \l__bnvs_id_tl
+}
+\switch:nNTF { 6 } \l__bnvs_path_tl {
+  \seq_set_split:NnV \l__bnvs_path_seq { . } \l__bnvs_path_tl
+  \seq_remove_all:Nn \l__bnvs_path_seq { }
+} {
+  \seq_clear:N \l__bnvs_path_seq
+}
+\__bnvs_group_begin:
+\__bnvs_resolve_n:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \tl_clear:N \l__bnvs_b_tl
+    \__bnvs_if_n_incr:VnNTF \l__bnvs_name_tl { 1 } \l__bnvs_b_tl {
+      \exp_args:NNNV
+      \__bnvs_group_end:
+      \tl_set:Nn \l__bnvs_b_tl \l__bnvs_b_tl
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF... }
+\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:N \l__bnvs_b_tl }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+      \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
+\__bnvs_resolve_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
+  } {
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+} {
+  \return_false:x { Unknown~.<integer>~path:~#1 }
+}
+    } {
+       \__bnvs_group_end:
+    }
+  } {
+    \__bnvs_group_end:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+} {
+  \__bnvs_group_end:
+  \return_false:
+}
+                      } {
+                        \switch:nNTF { 14 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{....n+=\meta{integer}}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n+=... }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner={append/...n+=...}]
+% \reset:n { YES }
+% \Test_append:nnnn { 222 } { X.n += 444 } { 666 } { 1 }
+% \Test_append:nnnn { } { X.n } { 666 } { 2 }
+% \Test_append:nnnn { } { X.n += -444 } { 222 } { 3 }
+% \Test_append:nnnn { } { X.n } { 222 } { 4 }
+% \reset:n { YES }
+% \Test_append:nnnn { FIRST } { X.n += 444 } { 666 } { B }
+% \Test_append:nnnn { } { X.n } { 666 } { C }
+% \Test_append:nnnn { } { X.n += -444 } { 222 } { D }
+% \Test_append:nnnn { } { X.n } { 222 } { E }
+% \Test_append:nnnn { } { X.n += (LENGTH - 1) } { 666 } { F }
+% \Test_append:nnnn { } { X.n } { 666 } { G }
+% \Test_append:nnnn { } { X.n += (-(LENGTH-1)) } { 222 } { H }
+% \Test_append:nnnn { } { X.n } { 222 } { I }
+% \Test_append:nnnn { } { X.n += LENGTH - 1 } { 666 } { J }
+% \Test_append:nnnn { } { X.n } { 666 } { K }
+% \Test_append:nnnn { } { X.n += -444~4 } { 2224 } { L }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\switch:nNTF { 5 } \l__bnvs_id_tl { } {
+  \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+  \tl_put_left:NV \l__bnvs_name_tl \l__bnvs_id_tl
+}
+\switch:nNTF { 6 } \l__bnvs_path_tl {
+  \seq_set_split:NnV \l__bnvs_path_seq { . } \l__bnvs_path_tl
+  \seq_remove_all:Nn \l__bnvs_path_seq { }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+} {
+  \seq_clear:N \l__bnvs_path_seq
+}
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+\__bnvs_group_begin:
+\__bnvs_resolve_n:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \tl_clear:N \l__bnvs_b_tl
+    \__bnvs_if_n_incr:VVNTF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_b_tl {
+      \exp_args:NNNV
+      \__bnvs_group_end:
+      \tl_set:Nn \l__bnvs_b_tl \l__bnvs_b_tl
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF... }
+\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:N \l__bnvs_b_tl }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+      \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
+\__bnvs_resolve_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
+  } {
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+} {
+  \return_false:x { Unknown~.<integer>~path:~#1 }
+}
+    } {
+      \__bnvs_group_end:
+    }
+  } {
+  \__bnvs_group_end:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+} {
+  \__bnvs_group_end:
+  \return_false:
+}
+                        } {
+                          \switch:nNTF { 15 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...n++}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n++ }
+%</!gubed>
+% \end{bnvs.gobble}
+% We first resolve the named index reference, then we increment the index counter.
+% \begin{bnvs.test}[banner={__bnvs_if_append_pm:nNTF/...n++}]
+% \Test_append:nnnn { 222 } { X.n } { 222 } { 1-a }
+% \Test_append:nnnn { } { X.n ++ } { 222 } { 1-b }
+% \Test_append:nnnn { } { X.n   } { 223 } { 1-c }
+% \reset:n { YES }
+% \Test_append:nnnn { FIRST } { X.n ++ } { 222 } { 2-a }
+% \Test_append:nnnn { } { X.n   } { 223 } { 2-b }
+% \Test_append:nnnn { LENGTH-1 } { X.n ++ } { 444 } { 3-a }
+% \Test_append:nnnn { } { X.n   } { 445 } { 3-b }
+% \Test_append:nnnn { LAST-1 } { X.n ++ } { 665 } { 4-a }
+% \Test_append:nnnn { } { X.n   } { 666 } { 4-b }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\switch:nNTF { 5 } \l__bnvs_id_tl { } {
+  \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+  \tl_put_left:NV \l__bnvs_name_tl \l__bnvs_id_tl
+}
+\switch:nNTF { 6 } \l__bnvs_path_tl {
+  \seq_set_split:NnV \l__bnvs_path_seq { . } \l__bnvs_path_tl
+  \seq_remove_all:Nn \l__bnvs_path_seq { }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+} {
+  \seq_clear:N \l__bnvs_path_seq
+}
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+\__bnvs_group_begin:
+\__bnvs_resolve_n:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \__bnvs_if_n_counter:VNT \l__bnvs_name_tl \l__bnvs_b_tl { }
+    \seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl    
+    \__bnvs_resolve_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+      \seq_if_empty:NTF \l__bnvs_path_seq {
+        \cs_set:Npn \:nn ####1 ####2 {
+          \__bnvs_group_end:
+          \tl_put_right:Nn \l__bnvs_ans_tl { ####1 }
+          \__bnvs_n_gput:Vn \l__bnvs_name_tl { ####2 }
+        }
+        \tl_put_right:Nn \l__bnvs_b_tl { +1 }
+        \__bnvs_fp_round:N \l__bnvs_b_tl
+        \exp_args:NVV
+        \:nn \l__bnvs_name_tl \l__bnvs_b_tl
+      } {
+        \__bnvs_group_end:
+        \return_false:x { Too~many~.<integer>~components:~#1 }
+      }
+    } {
+      \__bnvs_group_end:
+      \return_false:x { Unknown~.<integer>~path:~#1 }
+    }
+  } {
+    \__bnvs_group_end:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+} {
+  \__bnvs_group_end:
+  \return_false:
+}
+                          } {
+                            \switch:nNTF { 13 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...n}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...n }
+%</!gubed>
+% \end{bnvs.gobble}
+% The explanations given here also apply to other cases.
+% We start by recovering the frame id and the integer path.
+% Then we resolve the slide range name and path to
+% the last possible name and a void integer path.
+% We raise if we cannot obtain a void integer path.
+% \begin{bnvs.test}[banner={append/...n}]
+% \reset:n { YES }
+% \Test_append:nnnn { 222 } { X.n } { 222 } { 1-a }
+% \Test_append:nnnn { FIRST+1 } { X.n } { 223 } { 1-b }
+% \Test_append:nnnn { LENGTH-1 } { X.n } { 444 } { 1-c }
+% \Test_append:nnnn { LAST } { X.n } { 666 } { 1-d }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\switch:nNTF { 5 } \l__bnvs_id_tl { } {
+  \tl_set_eq:NN \l__bnvs_id_tl \l__bnvs_id_last_tl
+  \tl_put_left:NV \l__bnvs_name_tl \l__bnvs_id_tl
+}
+\switch:nNTF { 6 } \l__bnvs_path_tl {
+  \seq_set_split:NnV \l__bnvs_path_seq { . } \l__bnvs_path_tl
+  \seq_remove_all:Nn \l__bnvs_path_seq { }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+} {
+  \seq_clear:N \l__bnvs_path_seq
+}
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { PATH_SEQ:\l__bnvs_path_tl==.\seq_use:Nn\l__bnvs_path_seq .}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+\__bnvs_group_begin:
+\__bnvs_resolve_n:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \exp_args:NNV
+    \__bnvs_group_end:
+    \__bnvs_if_n_counter:nNTF \l__bnvs_name_tl \l__bnvs_b_tl {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF... }
+\__bnvs_DEBUG:x { \string\l__bnvs_b_tl => \tl_to_str:N \l__bnvs_b_tl }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+\seq_put_right:NV \l__bnvs_path_seq \l__bnvs_b_tl
+\__bnvs_resolve_x:NNNTF \l__bnvs_id_tl  \l__bnvs_name_tl  \l__bnvs_path_seq {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \tl_put_right:NV \l__bnvs_ans_tl \l__bnvs_name_tl
+  } {
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+} {
+  \return_false:x { Undefined~.<integer>~path:~#1 }
+}
+    } {
+      \return_false:
+    }
+  } {
+    \__bnvs_group_end:
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+} {
+  \__bnvs_group_end:
+  \return_false:
+}
+                          } {
+                            \switch:nNTF { 16 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...+=\meta{integer}}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...+=... }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner={append/+=}]
+% \Test_append:nnnn { 222 } { X += 444 } { 666 } { 1 }
+% \Test_append:nnnn { } { X } { 666 } { 2 }
+% \Test_append:nnnn { } { X += -444 } { 222 } { 3 }
+% \Test_append:nnnn { } { X } { 222 } { 4 }
+% \reset:n { }
+% \Test_append:nnnn { FIRST } { X += 444 } { 666 } { A }
+% \Test_append:nnnn { } { FIRST } { 222 } { B }
+% \Test_append:nnnn { FIRST } { X += (LENGTH - 1) } { 666 } { 7 }
+% \Test_append:nnnn { } { X } { 666 } { 8 }
+% \Test_append:nnnn { } { X += (-(LENGTH-1)) } { 222 } { 9 }
+% \Test_append:nnnn { } { X } { 222 } { 10 }
+% \Test_append:nnnn { FIRST } { X += LENGTH - 1 } { 666 } { 11 }
+% \Test_append:nnnn { } { X } { 666 } { 12 }
+% \Test_append:nnnn { FIRST } { X += LENGTH ~ - 1 } { 666 } { 16 }
+% \Test_append:nnnn { } { X } { 667 } { 13 }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \__bnvs_if_incr:VVNF \l__bnvs_name_tl \l__bnvs_a_tl \l__bnvs_ans_tl {
+      \return_false:
+    }
+  } {
+    \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+}
+                            } {
+                              \switch:nNTF { 17 } \l__bnvs_a_tl {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{...++}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~...++ }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner={append/...++}]
+% \Test_append:nnnn { 222 } { X ++ } { 222 } { 1-a }
+% \Test_append:nnnn { } { X++ } { 223 } { 2-a }
+% \Test_append:nnnn { } { X   } { 224 } { 3-a }
+% \reset:n { }
+% \Test_append:nnnn { FIRST } { X ++ } { 222 } { 1-b }
+% \Test_append:nnnn { } { X++ } { 223 } { 2-b }
+% \Test_append:nnnn { } { X   } { 224 } { 3-b }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+  \seq_if_empty:NTF \l__bnvs_path_seq {
+    \__bnvs_if_post:VnNF \l__bnvs_name_tl { 1 } \l__bnvs_ans_tl {
+      \return_false:
+    }
+  } {
+     \return_false:x { Too~many~.<integer>~components:~#1 }
+  }
+}
+                              } {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% \item Case \texttt{No special attribute}.
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ▃▃▃▃▃~CASE~... }
+%</!gubed>
+% \end{bnvs.gobble}
+% \begin{bnvs.test}[banner={append/counter}]
+% \Test_append:nnnn { 222 } { X } { 222 } { 1-a }
+% \reset:n { }
+% \Test_append:nnnn { FIRST } { X } { 222 } { 1-b }
+% \Test_append:nnnn { LENGTH } { X } { 445 } { 1-c }
+% \Test_append:nnnn { LAST } { X } { 666 } { 1-d }
+% \end{bnvs.test}
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+\:NnnT \__bnvs_resolve_n:NNNTF 5 6 {
+  \seq_pop_left:NNTF \l__bnvs_path_seq \l__bnvs_b_tl {
+    \seq_if_empty:NTF \l__bnvs_path_seq {
+      \__bnvs_if_index:VVNF \l__bnvs_name_tl \l__bnvs_b_tl \l__bnvs_ans_tl {
+        \return_false:
+      }
+    } {
+      \return_false:x { Too~many~.<integer>~components:~#1 }
+    }
+  } {
+    \__bnvs_if_counter:VNF \l__bnvs_name_tl \l__bnvs_ans_tl {
+      \return_false:x { Undefined~counter:~#1 }
+    }
+  }
+}
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } {
+%    \end{macrocode}
+% \end{bnvs.macrocode}
+% No name. Unreachable code.
+% \begin{bnvs.macrocode}
+%    \begin{macrocode}
+          }
+        }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF...}
+\__bnvs_DEBUG:x { \string\l__bnvs_ans_tl = \tl_to_str:N \l__bnvs_ans_tl }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+        \int_add:Nn \l__bnvs_split_int { 18 }
+        \tl_put_right:Nx \l__bnvs_ans_tl {
+          \seq_item:Nn \l__bnvs_split_seq { \l__bnvs_split_int }
+        }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ITERATE~ANS=\l__bnvs_ans_tl }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+        \loop:
+      } {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x {END_OF_LOOP~ANS=\l__bnvs_ans_tl }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+        \fp_round:
+        \exp_args:NNNV
+        \__bnvs_group_end:
+        \tl_put_right:Nn #2 \l__bnvs_ans_tl
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { ...\string\__bnvs_if_append_pm:nNTF...TRUE}
+\__bnvs_DEBUG:x { what=\tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { \string #2 => \tl_to_str:N #2 / }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+        \prg_return_true:
+      }
+    }
+    \loop:
+  } {
+    \msg_error:nnx { beanoves } { :n } { Too~many~calls:~ #1 }
+    \prg_return_false:
+  }
+}
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \end{myList}
