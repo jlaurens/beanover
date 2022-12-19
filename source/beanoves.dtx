@@ -47,7 +47,7 @@ Time lines are very handy both during edition and to manage complex and variable
 \endpreamble
 \postamble
 
-beanoves --- beamer named overlay ranges
+beanoves --- beamer named overlay specifications
 
 Copyright (C) 2022 by Jérôme LAURENS <jerome.laurens@u-bourgogne.fr>
 
@@ -110,7 +110,7 @@ and the derived files           beanoves.ins,
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
-\title{\pkg{beamer} named overlay specification with \pkg{beanoves}}
+\title{\pkg{beamer} named overlay specifications with \pkg{beanoves}}
 \author{Jérôme Laurens}
 \GetFileInfo{\jobname-debug.sty}
 \date{\fileversion \qquad \filedate}
@@ -126,14 +126,29 @@ and the derived files           beanoves.ins,
 \maketitle
 \changes{v1.0}{2009/10/06}{First public release}
 \begin{abstract}
-This package allows the management of multiple slide lists in |beamer| documents.
-Slide lists are very handy both during edition and to manage complex and variable \pkg{beamer} overlay specifications.
+This package allows the management of multiple slide number lists in |beamer| documents.
+Slide number lists are very handy both during edition and to manage complex and variable \pkg{beamer} overlay specifications.
 \end{abstract}
 %
 \tableofcontents
 %
 \begin{documentation}
 %
+\section{TODO}
+This section will be removed.
+\begin{itemize}
+\item Overlay sets instead of slide ranges
+\item bounded and unbounded ranges
+\begin{itemize}
+\item \texttt{A=1}, \texttt{A.\meta{integer}} can take any value.
+\item \texttt{A=1:}, 1<=\texttt{A.\meta{integer}}.
+\item \texttt{A=::1}, \texttt{A.\meta{integer}}<=1.
+\item \texttt{A=1::10}, 1<=\texttt{A.\meta{integer}}<=10.
+\end{itemize}
+\item revisit \texttt{A = [...]} to allow explicit keys
+\item |\Beanoves| in the preamble.
+\end{itemize}
+
 \section{Minimal example}
 %
 The document below is a contrived example to show how the |beamer|
@@ -167,44 +182,46 @@ overlay specifications have been extended.
 \visible<?(A.2)> {Only on slide 2}\\
 \visible<?(B.2::B.last)> {Only on slide 4 to 5}\\
 \visible<?(C.2)> {Only on slide 7}\\
-\visible<?(A.3)-> {From slide 3}\\
+\visible<?(A.next)-> {From slide 3}\\
 \visible<?(B.3::B.last)> {Only on slide 5}\\
 \visible<?(C.3)> {Only on slide 8}\\
 \end{frame}
 \end{document}
 \end{tcblisting}
 %
-On line 4, we use the |\Beanoves| command to declare named slide ranges.
-On line 5, we declare a slide range named `A', starting at slide 1 and with length 2.
-On line 12, the extended \emph{named overlay specification} \texttt{?(A.1)} stands for 1,
-on line 15, \texttt{?(A.2)} stands for 2
-whereas on line 18, \texttt{?(A.3)} stands for 3.
+On line 4, we use the |\Beanoves| command to declare named overlay sets.
+On line 5, we declare an overlay set named `A', which is a range starting at slide 1 and with length 2.
+On line 12, the extended \emph{named overlay specification} \texttt{?(A.1)} stands for 1 because 1 is the first index of the overlay set named A.
+On line 15, \texttt{?(A.2)} stands for 2
+whereas on line 18, \texttt{?(A.next)} stands for 3.
 %
-On line 6, we declare a second slide range named `B',
+On line 6, we declare a second overlay set named `B',
 starting after the 2 slides of `A' namely 3.
 Its length is 3 meaning that its last slide number is 5,
 thus each \texttt{?(B.last)} is replaced by 5.
 The next slide number after slide range `B' is 6
 which is also the start of the third slide range
 due to line 7.
-\section{Named slide lists}
+\section{Named overlay sets}
 \subsection{Presentation}
-Within a \pkg{beamer} frame, there are different slides that appear in turn.
-The main slide list is a range of integers covering all the slide numbers, from one to the total amount of slides.
-In general, a slide list is a range of positive integers identified by a unique name.
-The main practical interest is that such lists may be defined relative to one another, we can even have lists of slide ranges.
-Finally, we can use these lists to organize \pkg{beamer} overlay specifications logically.
-\subsection{Named slide reference}
-|A.1|, |C.2| are \emph{named slide references} as well as |A| and |Y!C.2|.
+Within a \pkg{beamer} frame, there are different slides that appear in turn
+according to overlay specifications. The main overlay sets is a range of integers
+covering all the slide numbers, from one to the total amount of slides.
+In general, an overlay set is a range of positive integers identified by a unique name.
+The main practical interest is that such sets may be defined relative to one another, we can even have lists of overlay sets.
+Finally, we can use these lists to build and organize \pkg{beamer} overlay
+specifications logically.
+\subsection{Named overlay reference}
+|A.1|, |C.2| are \emph{named overlay references} as well as |A| and |Y!C.2|.
 More precisely, they are string identifiers, each one representing
-a static integer to be used in \pkg{beamer} overlay specifications
-and can take one of the next forms.
+a static integer to be used in \pkg{beamer} overlay specifications.
+They can take one of the next forms.
 \begin{description}
 \item[\texttt{\meta{short name}}]: like |A| and |C|,
 \item[\texttt{\meta{frame id}|!|\meta{short name}}]: denoted by \emph{qualified names}, like |X!A| and |Y!C|.
 \item[\texttt{\meta{short name}\meta{integer path}}]:
   denoted by \emph{full names} like |A.1| and |C.2|,
-\item[\texttt{\meta{frame id}|!|\meta{short name}\meta{integer path}}]:
+\item[\texttt{\meta{frame id}|!|\meta{short name}\meta{dotted path}}]:
   denoted by \emph{qualified full names} like |X!A.1| and |Y!C.2|.
 \end{description}
 The \emph{short names} and \emph{frame ids} are alphanumerical case sensitive
@@ -212,19 +229,19 @@ identifiers, with possible underscores but no space nor leading digit.
 Unicode symbols above \texttt{U+00A0} are allowed if the underlying \TeX\ engine
 supports it. Identifiers consisting only of lowercase letters are reserved by the package.
 
-The \emph{integer path} is a string
-\texttt{.\meta{integer_1}.\meta{integer_2}....\meta{integer_n}},
-where the \meta{integer_i}'s are integers eventually signed,
-or a void string corresponding to \texttt{n}==0.
+The \emph{dotted path} is a string
+\texttt{.\meta{component_1}.\meta{component_2}....\meta{component_n}},
+where each \meta{component_i} denotes either an integer, eventually signed,
+or a \meta{short name}. The \emph{dotted path} can be empty for which \texttt{n} is 0.
 
-The mapping from \emph{named slide references} to integers is defined
+The mapping from \emph{named overlay references} to integers is defined
 at the global \TeX\ level because either we can
 include only a subset of one frame slides
-or we can share the same slide ranges between different frames.
+or we can share the same overlay sets between different frames.
 Hence the \emph{frame id} due to the need to possibly target a particular frame.
 
-\subsection{Defining named slide lists}
-In order to define named slide lists, we can either use the next |\Beanoves| command  before a \pkg{beamer} frame environment, or use the |beanoves| option of this environment.
+\subsection{Defining named overlay sets}
+In order to define \emph{named overlay sets}s, we can either execute the next |\Beanoves| command  before a \pkg{beamer} frame environment, or use the |beanoves| option of this environment.
 The value of the |beanoves| option is similar to the argument of the |\Beanoves| commands, but the latter takes precedence on the former.
 This behaviour may be useful to input the very same source code into different frames and have different combinations of slides.
 %
@@ -248,12 +265,13 @@ This behaviour may be useful to input the very same source code into different f
     \}
   \end{syntax}
 \end{function}
-Each key \meta{named ref_i} is a \emph{named slide reference}.
+Each key \meta{named ref_i} is a \emph{named overlay reference}.
 When the same key is used multiple times, only the last one is taken into account.
 Possible values for \meta{range spec_i} are the \emph{slide range specifiers} \meta{first},
 \meta{first}:\meta{length}, \meta{first}::\meta{last}, :\meta{length}::\meta{last}
-where \meta{first}, \meta{length} and \meta{last} are algebraic expression
-possibly involving any \emph{named slide references} defined above.
+where \meta{first}, \meta{length} and \meta{last} are either empty
+or algebraic expression possibly involving any \emph{named overlay reference}
+defined above. At least one of \meta{first} or \meta{last} must be provided.
 
 When performed at the document level, the \cs{Beanoves} command starts by cleaning 
 what was set previous calls. When performed inside \LaTeX\ environments,
@@ -291,35 +309,28 @@ happens to be a convenient shortcut for
 \\[0.2ex]
 and so on.
 %
-\section{Named slide reference resolution}
-Turning a \emph{named slide reference} into the static integer it represents,
+\section{Named overlay resolution}
+Turning a \emph{named overlay reference} into the static integer it represents,
 as in \texttt{<?(A.1)>} above,
-to feed \pkg{beamer} with is denoted \emph{named slide reference resolution} or simply \emph{resolution}. This section is devoted to \emph{resolution rules}.
+to feed \pkg{beamer} with is denoted \emph{named overlay resolution} or simply \emph{resolution}. This section is devoted to \emph{resolution rules} depending
+on the definition of the named overlay set.
+Here \meta{i} denotes an integer whereas \meta{first}, \meta{length} and \meta{last} stand for integers, or integer valued expressions.
 %
-\subsection{Named slide ranges}
-\subsubsection{Unbounded ranges}
-When \meta{name} is defined as a slide range specification with a first index,
-the associate named slide references are detailled
-in the tables below together with
-their resolved value as \pkg{beamer} standard overlay specification.
-%
+\subsection{\ttfamily \meta{name} = \meta{first}}
+For an unlimited range
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
 \hline
-\multicolumn{2}{c}{\ttfamily \meta{name} == [\(i\), \(i+1\), \(i+2\),...]}
-\\\hline
 \bfseries \textrm{reference} & \bfseries \textrm{resolution} 
 \\\hline
-\meta{name}.1 & \(i\)\\
-\meta{name}.2 & \(i+1\) \\
-\meta{name}.\meta{integer} & \(i+ \meta{integer} - 1\) \\
+\meta{name}.1 & \(\meta{first}\)\\
+\meta{name}.2 & \(\meta{first}+1\) \\
+\meta{name}.\meta{i} & \(\meta{first}+ \meta{i} - 1\) \\
 \hline
 \end{tabular}
 \end{center}
-Negative integers are allowed.
-One particular value can be overriden by an explicit definition:
-if one \meta{name}.\meta{integer} has been defined separately,
-this definition takes precedence over the previous resolution rule.
+\subsection{\ttfamily \meta{name}.\meta{i} = \meta{range spec}}
+All the default rules above and below are overriden by this particular one and \texttt{\meta{name}.\meta{i}} resolves to the resolution of \meta{range spec}.
 
 In the frame example below, we use the \cs{BeanovesEval} command for the demonstration.
 It is mainly used for debugging and testing purposes.
@@ -347,31 +358,54 @@ It is mainly used for debugging and testing purposes.
 \end{frame}
 \end{tcblisting}
 %
-\subsubsection{Bounded ranges}
-When the slide range has been given a length or an end,
-like in the frame example below,
-the resolution of \texttt{\meta{name}.\meta{integer}} becomes
-the range integer in the range which is closest to \texttt{i+ \meta{integer} - 1}. 
-We have in addition
+\subsection{\ttfamily \meta{name} = \meta{first}:}
+For a range limited from below:
 \begin{center}
-\begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l|l|l}
+\begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
 \hline
-\multicolumn{4}{c|}{\ttfamily \meta{name} == [\(i\), \(i+1\),..., \(j\)]}
+\bfseries \textrm{reference} & \bfseries \textrm{resolution} 
 \\\hline
-\bfseries \textrm{Reference} & \bfseries \textrm{resolution} & \bfseries \textrm{example} & \bfseries \textrm{output}
-\\\hline
-\meta{name}.length & \(j-i+1\) & A.length & 6\\
-\meta{name}.last & \(j\) & A.last & 8\\
-\meta{name}.previous & \(i-1\) & A.previous & 2\\
-\meta{name}.next & \(j+1\) & A.next & 9\\
-\meta{name}.range & \(i\) ''-'' \(j\) & A.range & 3-8\\
+\meta{name}.1 & \(\meta{first}\)\\
+\meta{name}.2 & \(\meta{first}+1\) \\
+\meta{name}.\meta{i} & \(\max(\meta{first}, \meta{first} + \meta{i} - 1)\) \\
+\meta{name}.previous & \(\meta{first}-1\)\\
 \hline
 \end{tabular}
 \end{center}
-Using these named references on unbounded named slide ranges is unsupported and may cause a ``Circular/Undefined dependency'' error.
-To avoid this, use at least a \texttt{:1} length definition.
-
-Notice also that 
+The same applies to {\ttfamily \meta{name} = \meta{first}::}.
+\subsection{\ttfamily \meta{name} = ::\meta{last}}
+For a range limited from above:
+\begin{center}
+\begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
+\hline
+\bfseries \textrm{reference} & \bfseries \textrm{resolution} 
+\\\hline
+\meta{name}.1 & \(\meta{last}\)\\
+\meta{name}.0 & \(\meta{last}-1\) \\
+\meta{name}.\meta{i} & \(\min(\meta{last}, \meta{last} + \meta{i} - 1)\) \\
+\meta{name}.next & \(\meta{last}+1\)\\
+\hline
+\end{tabular}
+\end{center}
+\subsection{\ttfamily \meta{name} = \meta{first}::\meta{last}}
+For a range limited from both above and below:
+\begin{center}
+\begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
+\hline
+\bfseries \textrm{reference} & \bfseries \textrm{resolution} 
+\\\hline
+\meta{name}.1 & \(\meta{first}\)\\
+\meta{name}.2 & \(\meta{first}+1\) \\
+\meta{name}.\meta{i} & \(\max\bigl(\meta{first}, \min(\meta{last}, \meta{first} + \meta{i} - 1)\bigr)\) \\
+\meta{name}.previous & \(\meta{first}-1\)\\
+\meta{name}.last & \(\meta{last}\)\\
+\meta{name}.next & \(\meta{last}+1\)\\
+\meta{name}.length & \(\meta{last}-\meta{first}+1\)\\
+\meta{name}.range & \(\meta{first}\) ''-'' \(\meta{last}\)\\
+\hline
+\end{tabular}
+\end{center}
+For example
 \begin{tcblisting} {
   listing only,
   minted options={
@@ -383,21 +417,32 @@ Notice also that
   minted style = autumn,
 }
 \Beanoves {
-    A = 3:6, % or equivalently A = 3::8, A = :6::8 or A = ::8:6
+    A = 3:6, % or equivalently A = 3::8, A = :6::8 and A = ::8:6
   }
 \begin{frame} {Frame \insertframenumber} {Slide \insertslidenumber}
 \ttfamily
 \BeanovesEval(A.1)        == 3,
 \BeanovesEval(A.-1)       == 3,
-\BeanovesEval(A.length)   == 6,
-\BeanovesEval(A.last)     == 8,
 \BeanovesEval(A.previous) == 2,
+\BeanovesEval(A.last)     == 8,
 \BeanovesEval(A.next)     == 9,
+\BeanovesEval(A.length)   == 6,
 \BeanovesEval(A.range)    == 3-8,
 \end{frame}
 \end{tcblisting}
+The same applies to
+{\ttfamily \meta{name} = \meta{first}:\meta{length}}
+for which \meta{last} is \(\meta{first}+\meta{length}-1\) as well as
+{\ttfamily \meta{name} = :\meta{length}::\meta{last}}
+or {\ttfamily \meta{name} = ::\meta{last}:\meta{length}},
+for which \meta{first} is \(\meta{last}-\meta{length}+1\).
+\subsection{Bounded ranges}
+When the slide range has been given a length or an end,
+like in the frame example below,
+the resolution of \texttt{\meta{name}.\meta{integer}} becomes
+the range integer in the range which is closest to \texttt{i+ \meta{integer} - 1}. 
 %
-\subsection{Named slide lists}
+\subsection{Named overlay lists}
 After the definition
 \\[0.2ex]
 \hphantom{xx}\meta{named ref}|=[|\meta{range spec_1}|,|\meta{range spec_2}|,...,|\meta{range spec_n}|]|
@@ -407,15 +452,15 @@ declaration
 \\[0.2ex]\hphantom{xx}\meta{named ref}|.|\rlap{\textit{i}}\hphantom{|i|}|=|\meta{range spec_i}.
 %
 \subsection{Counters}
-For each name slide range defined, we have an implicit index counter starting at 1,
+For each name overlay set defined, we have an implicit index counter starting at 1,
 its actual value is an integer denoted \meta{n}.
 The \texttt{\meta{name}.n} \emph{named counter reference} is resolved into \texttt{\meta{name}.\meta{n}},
-which in turn is resolved according to preceding rules.
+which in turn is resolved according to the preceding rules.
 %
 
-Each named slide range defined also has a dedicated value counter
+Each named overlay set defined also has a dedicated value counter
 which is some kind of variable that can be used and incremented.
-A \texttt{\meta{name}} reference is resolved into
+A simple \texttt{\meta{name}} reference is resolved into
 the position of this counter, which is the value of the counter bounded from below by the lowest value of the range and from above by the largest value of the range.
 For unbounded ranges, these values may be infinite.
 
@@ -462,23 +507,23 @@ use the new \texttt{beanoves id} option of the \pkg{beamer} frame environment.
 \end{function}
 %
 \subsection{Deeper dotted paths}
-When an integer path has more than one component,
-a \emph{named slide references} like |A.1.2| needs some well defined
+When a dotted path has more than one component,
+a \emph{named overlay reference} like |A.1.2| needs some well defined
 resolution rule to avoid ambiguity.
-To resolve one level of such a slide reference
-\texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_n}},
-we replace the shortest \texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_k}}
-where 0$≤$k$≤$n by its definition \texttt{\meta{name'}.\meta{j_1}...\meta{j_p}}
+To resolve one level of such a reference
+\texttt{\meta{name}.\meta{c_1}.\meta{c_2}...\meta{c_n}},
+we replace the longest \texttt{\meta{name}.\meta{c_1}.\meta{c_2}...\meta{c_k}}
+where 0$≤$k$≤$n by its definition \texttt{\meta{name'}.\meta{c'_1}...\meta{c'_p}}
 if any (the path can be empty). \pkg{beanoves} uses this one level resolution
 as many times as possible, but no more than a predefined limit to catch
 circular reference that would lead to an infinite \TeX\ loop.
 One final resolution occurs with rules above if possible or an error is raised.
 
 For a \emph{named indexed reference} like
-\texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_n}.n},
-we must first resolve \texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_n}}
-into \texttt{\meta{name'}} with an empty integer path, then retrieve \texttt{\meta{name'}.n} denoted as \meta{n'} and finally use the resolved 
-\texttt{\meta{name}.\meta{i_1}.\meta{i_2}...\meta{i_n}.\meta{n'}}.
+\texttt{\meta{name}.\meta{c_1}.\meta{c_2}...\meta{c_n}.n},
+we must first resolve \texttt{\meta{name}.\meta{c_1}.\meta{c_2}...\meta{c_n}}
+into \texttt{\meta{name'}} with an empty dotted path, then retrieve the value of \texttt{\meta{name'}.n} denoted as \meta{n'} and finally use the resolved 
+\texttt{\meta{name}.\meta{c_1}.\meta{c_2}...\meta{c_n}.\meta{n'}}.
 %
 \section{\texttt{?(...)} query expressions}
 This is the key feature of the \pkg{beanoves} package, extending \pkg{beamer} \emph{overlay specifications} included between pointed brackets. Before the \emph{overlay specifications} are processed by the \pkg{beamer} class,
@@ -510,7 +555,7 @@ As integers, they are respectively resolved into \meta{first}, \meta{length} and
 
 Notice that nesting \texttt{?(...)} query expressions is not supported.
 \end{documentation}
-\DocInput{beanoves.dtx}
+%\DocInput{beanoves.dtx}
 \end{document}
 %</driver>
 % \fi
