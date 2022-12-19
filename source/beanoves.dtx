@@ -255,6 +255,11 @@ Possible values for \meta{range spec_i} are the \emph{slide range specifiers} \m
 where \meta{first}, \meta{length} and \meta{last} are algebraic expression
 possibly involving any \emph{named slide references} defined above.
 
+When performed at the document level, the \cs{Beanoves} command starts by cleaning 
+what was set previous calls. When performed inside \LaTeX\ environments,
+each call cumulates with the previous.
+Notice that the argument of this function can contain macros: they will be exhaustively expanded.
+
 Also possible values are \emph{slide list specifiers} which
 are comma separated lists of \emph{slide range specifiers}
 and \emph{slide list specifier} between square brackets.
@@ -3158,19 +3163,23 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \__bnvs_gclear:
   }
   \IfBooleanTF {#1} {
-    \keyval_parse:nnn {
-      \__bnvs_parse:Nn \__bnvs_range_alt:nVVV
-    } {
-      \__bnvs_parse:Nnn \__bnvs_range_alt:nVVV
+    \cs_set:Npn \__bnvs:n {
+      \keyval_parse:nnn {
+        \__bnvs_parse:Nn \__bnvs_range_alt:nVVV
+      } {
+        \__bnvs_parse:Nnn \__bnvs_range_alt:nVVV
+      }
     }
   } {
-    \keyval_parse:nnn {
-      \__bnvs_parse:Nn \__bnvs_range:nVVV
-    } {
-      \__bnvs_parse:Nnn \__bnvs_range:nVVV
+    \cs_set:Npn \__bnvs:n {
+      \keyval_parse:nnn {
+        \__bnvs_parse:Nn \__bnvs_range:nVVV
+      } {
+        \__bnvs_parse:Nnn \__bnvs_range:nVVV
+      }
     }
   }
-  { #2 }
+  \exp_args:Nx \__bnvs:n { #2 }
   \ignorespaces
 }
 %    \end{macrocode}
@@ -8400,7 +8409,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_reset:nn #1 #2 {
   \bool_if:nTF {
-    \__bnvs_if_in_p:n { #2/A } || \__bnvs_if_in_p:n { #2/Z }
+    \__bnvs_if_in_p:n { #2/A } || \__bnvs_if_in_p:n { #2/Z } || \__bnvs_if_in_p:n { #2/C }
   } {
     \__bnvs_gremove:n { #2/C }
     \__bnvs_gremove:n { #2//A }
