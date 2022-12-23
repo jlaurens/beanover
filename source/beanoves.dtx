@@ -651,6 +651,9 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
 \msg_new:nnn { beanoves } { :n } { #1 }
 \msg_new:nnn { beanoves } { :nn } { #1~(#2) }
+\cs_new:Npn \__bnvs_warning:n {
+  \msg_warning:nnn { beanoves } { :n }
+}
 \cs_new:Npn \__bnvs_error:n {
   \msg_error:nnn { beanoves } { :n }
 }
@@ -1264,6 +1267,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % This is a wrapper over \LaTeX3\ eponym functions,
 % except \cs{__bnvs_gprovide:nn} which meaning is straightforward.
 % The key argument is \texttt{\meta{key}/\meta{subkey}}.
+% \end{function}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_gput:nnn #1 #2 {
@@ -1304,6 +1308,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 }
 \cs_new:Npn \__bnvs_gremove:nn  #1 #2 {
   \prop_gremove:Nn \g__bnvs_prop { #2 / #1 }
+%    \end{macrocode}
 % \begin{bnvs.gobble}
 %<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_gremove:nn}
@@ -1312,6 +1317,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 \__bnvs_log_gprop:
 %</!gubed>
 % \end{bnvs.gobble}
+%    \begin{macrocode}
 }
 \cs_new:Npn \__bnvs_gclear:n #1 {
   \__bnvs_gremove:nn {} { #1 }
@@ -1319,6 +1325,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \__bnvs_gremove:nn { ##1 } { #1 }
  }
   \__bnvs_gclear_cache:n { #1 }
+%    \end{macrocode}
 % \begin{bnvs.gobble}
 %<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_gclear:n}
@@ -1326,20 +1333,22 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 \__bnvs_log_gprop:
 %</!gubed>
 % \end{bnvs.gobble}
+%    \begin{macrocode}
 }
 \cs_new:Npn \__bnvs_gclear: {
   \prop_gclear:N \g__bnvs_prop
+%    \end{macrocode}
 % \begin{bnvs.gobble}
 %<*!gubed>
 \__bnvs_DEBUG:x {\string\__bnvs_gclear:}
 \__bnvs_log_gprop:
 %</!gubed>
 % \end{bnvs.gobble}
+%    \begin{macrocode}
 }
 \cs_generate_variant:Nn \__bnvs_gput:nnn { nnV }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
-% \end{function}
 % \begin{function}[pTF]{\__bnvs_if_in:nn,\__bnvs_if_in:nV}
 % \begin{syntax}
 % \cs{__bnvs_if_in_p:nn} \marg{subkey} \marg{key}
@@ -4413,7 +4422,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 						\__bnvs_if_index:VVNTF #2 \l__bnvs_a_tl \l__bnvs_b_tl {
 						  \tl_set:NV #2 \l__bnvs_b_tl
         } {
-\msg_warning:nnx { beanoves } { :n } { Unknown~#2}
+          \__bnvs_warning:n { Unknown~#2}
 						  \tl_set:NV #2 \l__bnvs_a_tl
         }
       } {
@@ -7607,7 +7616,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \__bnvs_gremove:nn V { #2 }
     \__bnvs_gput_cache:nnn V { #2 } { #1 }
   } {
-    \msg_warning:nnn { beanoves } { :n } { Unknown~name:~#2 }
+    \__bnvs_warning:n { Unknown~name:~#2 }
   }
 }
 \cs_new:Npn \__bnvs_reset:nn #1 #2 {
@@ -7615,7 +7624,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \__bnvs_gremove:nn V { #2 }
     \__bnvs_gput_cache:nnn V { #2 } { #1 }
   } {
-    \msg_warning:nnn { beanoves } { :n } { Unknown~name:~#2 }
+    \__bnvs_warning:n { Unknown~name:~#2 }
   }
 }
 \makeatother
