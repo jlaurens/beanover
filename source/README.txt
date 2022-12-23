@@ -1,4 +1,3 @@
-%% File: beanoves.dtx
 ----------------------------------------------------------------
 beanoves --- beamer named overlay specifications
 E-mail: jerome.laurens@u-bourgogne.fr
