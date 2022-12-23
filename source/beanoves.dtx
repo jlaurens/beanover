@@ -863,7 +863,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
         \__bnvs_resolve_pm_x:NNNTF \l__bnvs_id_tl \l__bnvs_name_tl \l__bnvs_path_seq {
           \assert_equal:xxn { \l__bnvs_id_tl } { ?! } { ##6-id }
           \exp_args:NNV
-          \regex_match:NnTF \c__bnvs_A_key_Z_pm_regex \l__bnvs_name_tl {
+          \regex_match:NnTF \c__bnvs_A_key_Z_regex \l__bnvs_name_tl {
             \assert_equal:xxn { \l__bnvs_name_tl } { ?!##4 } { ##6-name }
           } {
             \assert_equal:xxn { \l__bnvs_name_tl } { ##4 } { ##6-target }
@@ -1726,13 +1726,13 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \end{bnvs.test}
 % \end{variable}
 %
-% \begin{variable}{\c__bnvs_A_key_Z_pm_regex}
+% \begin{variable}{\c__bnvs_A_key_Z_regex}
 % A key is the name of an overlay set possibly followed by a dotted path.
 % Matches the whole string.
 % \end{variable}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-\regex_const:Nn \c__bnvs_A_key_Z_pm_regex {
+\regex_const:Nn \c__bnvs_A_key_Z_regex {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \begin{itemize}
@@ -1753,7 +1753,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \end{itemize}
 % \begin{bnvs.test}{banner=key_regex_pm, ignore}
 % \cs_set:Npn \Test:nnn #1 #2 {
-%   \__bnvs_test_extract:Nnnn \c__bnvs_A_key_Z_pm_regex { #1 } { #1, #2 }
+%   \__bnvs_test_extract:Nnnn \c__bnvs_A_key_Z_regex { #1 } { #1, #2 }
 % }
 % \Test:nnn {A} {A,{},{}} {1}
 % \Test:nnn {_A1} {_A1, {},{}} {2}
@@ -2589,7 +2589,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_id_name_set:nNN #1 #2 #3 { T, F, TF } {
   \__bnvs_group_begin:
-  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_pm_regex {
+  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_regex {
     #1
  } \l__bnvs_match_seq {
     \tl_set:Nx #2 { \seq_item:Nn \l__bnvs_match_seq 3 }
@@ -3325,7 +3325,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %
 % \begin{function}[TF]{\__bnvs_inp:NNN}
 % \begin{syntax}
-% \cs{__bnvs_inp_pm:NNNTF} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{true code} \marg{false code}
+% \cs{__bnvs_inp:NNNTF} \meta{id tl var} \meta{name tl var} \meta{path seq var} \marg{true code} \marg{false code}
 % \end{syntax}
 % Auxiliary function. \meta{id tl var} contains a frame id whereas
 % \meta{name tl var} contains a range name.
@@ -3351,7 +3351,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %    \begin{macrocode}
   \__bnvs_group_begin:
   \exp_args:NNV
-  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_pm_regex #2 \l__bnvs_match_seq {
+  \regex_extract_once:NnNTF \c__bnvs_A_key_Z_regex #2 \l__bnvs_match_seq {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % This is a correct key, update the path sequence accordingly
@@ -6527,7 +6527,7 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
     \prg_return_false:
  }
 }
-\prg_generate_conditional_variant:Nnn \__bnvs_if_append:nN { VN } { T, F, TF }
+\prg_generate_conditional_variant:Nnn \__bnvs_if_append:nN { VN } { TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \end{myList}
