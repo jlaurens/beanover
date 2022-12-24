@@ -531,6 +531,8 @@ both denote algebraic expressions possibly involving named slide references and 
 As integers, they are respectively resolved into \meta{first}, \meta{length} and \meta{last}.
 
 Notice that nesting \texttt{?(...)} query expressions is not supported.
+\section{Support}
+See \url{https://github.com/jlaurens/beanoves}.
 \end{documentation}
 \DocInput{beanoves.dtx}
 \end{document}
@@ -543,47 +545,6 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %}
 %
 %
-%
-% \begin{bnvs.test}{banner=misc}
-% \cs_set:Npn \Test:nn #1 #2 {
-%   \banner:n { #1 => #2}
-%   \tl_clear:N \l__bnvs_ans_tl
-%   \__bnvs_if_append:nNTF { #1 } \l__bnvs_ans_tl {
-%     \assert_equal:xxn { \l__bnvs_ans_tl } { #2 } { A }
-%   } {
-%     \test_fail:n { B }
-%   }
-% }
-% \Beanoves {
-%   Air      = 1 :: Gannet.last,
-%   Chameleo = Air.2:1,
-%   Gannet   = Chameleo.next:1,
-%   Water    = Air.next :: Picasso.last,
-%   Octopus  = Water.2:1,
-%   Starfish = Octopus.next:1,
-%   StickyStarfish = Starfish.1:1,
-%   Picasso = Starfish.next:1,
-%   PicassoTrans = 1 :: Picasso.previous,
-%   Summary  = Water.next:1,
-% }
-% \Test:nn { Chameleo.previous } {1}
-% \Test:nn { Gannet.previous } {2}
-% \Test:nn { Water.previous } {3}
-% \Test:nn { Octopus.previous } {4}
-% \Test:nn { Starfish.previous } {5}
-% \Test:nn { PicassoTrans.range } {1-6}
-% \Test:nn { Air.range } {1-3}
-% \Test:nn { Chameleo.1 } {2}
-% \Test:nn { Gannet.1 } {3}
-% \Test:nn { Water.range } {4-7}
-% \Test:nn { Octopus.1 } {5}
-% \Test:nn { Starfish.1 } {6}
-% \Test:nn { Picasso.range } {7-7}
-% \Test:nn { Summary.range } {8-8}
-% \Test:nn { Picasso.1 } {7}
-% \Test:nn { Air.last } {3}
-% \Test:nn { StickyStarfish.range } {6-6}
-% \end{bnvs.test}
 %
 %
 % \begin{implementation}
@@ -635,6 +596,10 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 % \subsection{logging}
 %
 % Utility message.
+%
+%
+%
+%
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \msg_new:nnn { beanoves } { :n } { #1 }
@@ -4387,11 +4352,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
             \tl_put_right:Nn \l__bnvs_ans_tl { + 1 }
             \__bnvs_group_end_return_true:nnN A { #1 } #2
           } {
-            \__bnvs_error:n { Unreachable~code~__bnvs_raw_first:nNTF~2}
+            \__bnvs_error:n { Unavailable~length~for~#1~(\__bnvs_raw_first:nNTF/2) }
             \__bnvs_group_end_return_false:nn A { #1 }
           }
         } {
-          \__bnvs_error:n { Unreachable~code~__bnvs_raw_first:nNTF~1}
+          \__bnvs_error:n { Unavailable~last~for~#1~(\__bnvs_raw_first:nNTF/1) }
           \__bnvs_group_end_return_false:nn A { #1 }
         }
       } {
@@ -4528,11 +4493,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
             \tl_put_right:Nn \l__bnvs_ans_tl { + 1 }
             \__bnvs_group_end_return_true:nnN L { #1 } #2
           } {
-            \__bnvs_error:n { Unreachable~code~__bnvs_raw_length:nNTF~2}
+            \__bnvs_error:n { Unavailable~first~for~#1~(\__bnvs_raw_length:nNTF/2) }
             \__bnvs_group_end_return_false:nn L { #1 }
           }
         } {
-          \__bnvs_error:n { Unreachable~code~__bnvs_raw_length:nNTF~1}
+          \__bnvs_error:n { Unavailable~last~for~#1~(\__bnvs_raw_length:nNTF/1) }
           \__bnvs_group_end_return_false:nn L { #1 }
         }
       } {
@@ -4633,11 +4598,11 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
             \tl_put_right:Nn \l__bnvs_ans_tl { - 1 }
             \__bnvs_group_end_return_true:nnN Z { #1 } #2
           } {
-            \__bnvs_error:n { Unreachable~code~__bnvs_raw_last:nNTF~1 }
+            \__bnvs_error:n { Unavailable~length~for~#1~(\__bnvs_raw_last:nNTF/1) }
             \__bnvs_group_end_return_false:nn Z { #1 }
           }
         } {
-          \__bnvs_error:n { Unreachable~code~__bnvs_raw_last:nNTF~2 }
+          \__bnvs_error:n { Unavailable~start~for~#1~(\__bnvs_raw_last:nNTF/1) }
           \__bnvs_group_end_return_false:nn Z { #1 }
         }
       } {
@@ -7031,6 +6996,48 @@ Notice that nesting \texttt{?(...)} query expressions is not supported.
 %</package>
 %    \end{macrocode}
 % \end{bnvs.gobble}
+%
+% \begin{bnvs.test}{banner=misc}
+% \cs_set:Npn \Test:nn #1 #2 {
+%   \banner:n { #1 => #2}
+%   \tl_clear:N \l__bnvs_ans_tl
+%   \__bnvs_if_append:nNTF { #1 } \l__bnvs_ans_tl {
+%     \assert_equal:xxn { \l__bnvs_ans_tl } { #2 } { A }
+%   } {
+%     \test_fail:n { B }
+%   }
+% }
+% \Beanoves {
+%   Air      = 1 :: Gannet.last,
+%   Chameleo = Air.2:1,
+%   Gannet   = Chameleo.next:1,
+%   Water    = Air.next :: Picasso.last,
+%   Octopus  = Water.2:1,
+%   Starfish = Octopus.next:1,
+%   StickyStarfish = Starfish.1:1,
+%   Picasso = Starfish.next:1,
+%   PicassoTrans = 1 :: Picasso.previous,
+%   Summary  = Water.next:1,
+% }
+% \Test:nn { Chameleo.previous } {1}
+% \Test:nn { Gannet.previous } {2}
+% \Test:nn { Water.previous } {3}
+% \Test:nn { Octopus.previous } {4}
+% \Test:nn { Starfish.previous } {5}
+% \Test:nn { PicassoTrans.range } {1-6}
+% \Test:nn { Air.range } {1-3}
+% \Test:nn { Chameleo.1 } {2}
+% \Test:nn { Gannet.1 } {3}
+% \Test:nn { Water.range } {4-7}
+% \Test:nn { Octopus.1 } {5}
+% \Test:nn { Starfish.1 } {6}
+% \Test:nn { Picasso.range } {7-7}
+% \Test:nn { Summary.range } {8-8}
+% \Test:nn { Picasso.1 } {7}
+% \Test:nn { Air.last } {3}
+% \Test:nn { StickyStarfish.range } {6-6}
+% \end{bnvs.test}
+%
 % \end{implementation}
 %
 % \StopEventually{\setlength\IndexMin{200pt}  \PrintIndex }
