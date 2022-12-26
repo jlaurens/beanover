@@ -2,6 +2,7 @@
 % !TeX program = lualatex
 % !TeX root = ../demo.tex
 
+
 \begin{tikzpicture} [
   x=\baselineskip,
   y=0.85\baselineskip,
@@ -122,98 +123,93 @@
     }
   \end{scope}
 \end{tikzpicture}%
-%%
-\Sticky<?(Sticky1:6)>(current page.south){0.6\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• We had 8 slides\visible<?(Sticky1.3)->{ for 7 texts}\visible<?(Sticky1.5)->{ and 5 images}%
-}%
-\Sticky<?(Sticky1.7:2)>(current page.south){0.6\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• Blue dots for uncovered text%
-}%
-\Sticky<?(Sticky1.9:2)>(current page.south){0.6\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• orange squares for uncovered images
-}%
-\Sticky<?(Sticky1.11:2)>(current page.south){0.75\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• magenta squares for uncovered transparent images
-}%
-\Sticky<?(Sticky2.1)>(current page.south){0.3\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-Let us organize all this
-}%
-\Sticky<?(Sticky2.2:4)>(current page.south){0.75\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• 3 slides for the Air, 4 for the Water, 1 to summarize
-}%
-
-
-\begin{textblock}{8}[1,0.5](16,8)
-\begin{myCodeBox}%
-\ttfamily\small
-\setlength{\tabcolsep}{0mm}
-\begin{tabular}{l}
-\backslash Bealover \{\\
-\phantom{xx}{\only<?(CodeAir.range)>{\bfseries\color{MyGreen}}\rlap{Air}\phantom{Summary} = 1 : 3,}\\
-\phantom{xx}{\only<?(CodeWater.range)>{\bfseries\color{MyGreen}}\rlap{Water}\phantom{Summary} = Air.next : 4,}\\
-\phantom{xx}{\only<?(CodeSummary.range)>{\bfseries\color{MyGreen}}Summary = Water.next,}\\
-\}\\
-\end{tabular}
-\end{myCodeBox}
-\end{textblock}
-%
-\Sticky<?(Code)>(current page.south){0.75\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• This code declares the logical overlay ranges\\
-• At the top of the frame source
-}%
-\Sticky<?(CodeAir.range)>(current page.south){0.6\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• \texttt{\bfseries{Air}} is a variable like name\\
-• \texttt{\bfseries{1}} is the position of the first slide\\
-• \texttt{\bfseries{3}} is the duration (or length) of the range
-}%
-\Sticky<?(CodeWater.range)>(current page.south){0.75\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• The "Water" topic follows the "Air" topic:\\
-• \texttt{\bfseries{Air.next}} is the first slide after the \texttt{Air} range\\
-• \texttt{\bfseries{4}} is the duration (or length)
-}%
-\Sticky<?(CodeSummary.range)>(current page.south){0.75\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• The "Summary" follows the "Water" topic:\\
-• \texttt{\bfseries{Water.next}} is the first slide after the \texttt{Water} range\\
-• When not provided, the duration defaults to 1
-}%
-\Sticky<?(Usage)>(current page.south){0.75\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-To limit "Air" topic images to the \texttt{Air} and \texttt{Summary} ranges,
-use a logical overlay specification...
-}%
 %%%
-\only<?(Usage.1:2)> {
-\vbox to 0pt{\hbox{%
+\Sticky<?(Sticky1:6)>[anchor=south,yshift=1\baselineskip](current page.south){\begin{minipage}{0.75\textwidth}\bfseries%
+• We had 8 slides\visible<?(Sticky1.3)->{ for 7 texts}\visible<?(Sticky1.5)->{ and 5 images}%
+\end{minipage}}%
+\Sticky<?(Sticky1.7:2)>[anchor=south,yshift=1\baselineskip](current page.south){\begin{minipage}{0.75\textwidth}\bfseries%
+• Blue dots for uncovered text%
+\end{minipage}}%
+\Sticky<?(Sticky1.9:2)>[anchor=south,yshift=1\baselineskip](current page.south){\begin{minipage}{0.75\textwidth}{\bfseries%
+• orange squares for uncovered images
+}\end{minipage}}%
+\Sticky<?(Sticky1.11:2)>[anchor=south,yshift=1\baselineskip](current page.south){\begin{minipage}{0.85\textwidth}{\bfseries%
+• magenta squares for uncovered transparent images
+}\end{minipage}}%
+\Sticky<?(Sticky2.1)>[anchor=south,yshift=1\baselineskip](current page.south){\begin{minipage}{0.75\textwidth}{\bfseries%
+Let us organize all this
+}\end{minipage}}%
+\Sticky<?(Sticky2.2:4)>[anchor=south,yshift=1\baselineskip](current page.south){\begin{minipage}{0.85\textwidth}{\bfseries%
+• 3 slides for the Air, 4 for the Water, 1 to summarize
+}\end{minipage}}%
+\visible<?(Code.range, Usage.range)> {%
   \tikz [
     remember picture,
     overlay,
   ] {
-    \node [my code] at (current page.center) [text width=0.8\textwidth] {%
-\backslash only <
-  \textcolor{MyGreen}{\bfseries?(Air.range)},
-  \textcolor{MyGreen}{\bfseries?(Summary.range)}
-> \{\\
-\phantom{xx}\% code to display the images...\\
-\}\\
+    \node [
+      yshift=2\baselineskip,
+      xshift=-2\baselineskip,
+      anchor=east,
+    ] at (current page.east) [text width=0.8\textwidth] {%
+\begin{myCodeBox}{l}%
+\string\Beanoves \{\\
+\phantom{xx}{\only<?(Code.range)>{\bfseries\color{MyGreen}}\rlap{Air}\phantom{Summary} = 1 : 3,}\\
+\phantom{xx}{\only<?(CodeWater.range)>{\bfseries\color{MyGreen}}\rlap{Water}\phantom{Summary} = Air.next : 4,}\\
+\phantom{xx}{\only<?(CodeSummary.range)>{\bfseries\color{MyGreen}}Summary = Water.next : 1,}\\
+\}
+\end{myCodeBox}
     }%
   }
 }%
-}}%
-\begin{textblock}{12.8}[1,0.5](16,8)
-\begin{myCodeBox}%
-\ttfamily\small
-\setlength{\tabcolsep}{0mm}
-\begin{tabular}{l}
-\backslash Bealover \{\\
-\phantom{xx}{\only<?(CodeAir.range)>{\bfseries\color{MyGreen}}\rlap{Air}\phantom{Summary} = 1 : 3,}\\
-\phantom{xx}{\only<?(CodeWater.range)>{\bfseries\color{MyGreen}}\rlap{Water}\phantom{Summary} = Air.next : 4,}\\
-\phantom{xx}{\only<?(CodeSummary.range)>{\bfseries\color{MyGreen}}Summary = Water.next,}\\
-\}\\
-\end{tabular}
-\end{myCodeBox}
-\end{textblock}
 %
-\Sticky<?(Usage.2)>(current page.south){0.75\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
+\Sticky<?(Code.1)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{tabular}{p{0.75\textwidth}}
+• This code declares the logical overlay ranges\\
+• At the top of the frame source
+\end{tabular}}%
+\Sticky<?(CodeAir.range)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{tabular}{p{0.75\textwidth}}
+• \texttt{\bfseries{Air}} is a variable like name\\
+• \texttt{\bfseries{1}} is the position of the first slide\\
+• \texttt{\bfseries{3}} is the duration (or length) of the range
+\end{tabular}}%
+\Sticky<?(CodeWater.range)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{tabular}{p{0.75\textwidth}}
+• The "Water" topic follows the "Air" topic:\\
+• \texttt{\bfseries{Air.next}} is the first slide after the \texttt{Air} range\\
+• \texttt{\bfseries{4}} is the duration (or length)
+\end{tabular}}%
+\Sticky<?(CodeSummary.range)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{tabular}{p{0.75\textwidth}}
+• The "Summary" follows the "Water" topic:\\
+• \texttt{\bfseries{Water.next}} is the first slide after the \texttt{Water} range
+\end{tabular}}%
+\Sticky<?(Usage)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{tabular}{p{0.75\textwidth}}
+To limit "Air" topic images to the \texttt{Air} and \texttt{Summary} ranges,
+use a logical overlay specification...
+\end{tabular}}%
+\only<?(Usage.range)> {
+  \tikz [
+    remember picture,
+    overlay,
+  ] {
+    \node [
+      yshift=-1.5\baselineskip,
+      xshift=-1\baselineskip,
+      anchor=east,
+    ] at (current page.east) [text width=0.8\textwidth] {%
+\begin{myCodeBox}{l}
+\string\only <%
+\textcolor{MyGreen}{\bfseries?(Air.range)},%
+  \textcolor{MyGreen}{\bfseries?(Summary.range)}%
+> \{\\
+\phantom{xx}\% code to display the images...\\
+\}
+\end{myCodeBox}
+    }%
+  }
+}%
+%%
+\Sticky<?(Usage.2)>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{tabular}{p{0.85\textwidth}}%
 • \textcolor{MyGreen}{\texttt{\bfseries?(Air.range)}} is automatically replaced by \textcolor{MyGreen}{\bfseries\texttt{1-3}}\\
 • \textcolor{MyGreen}{\texttt{\bfseries?(Summary.range)}} is automatically replaced by \textcolor{MyGreen}{\bfseries\texttt{8-8}}
-}%
-%%%
+\end{tabular}}%
+%%%%
+

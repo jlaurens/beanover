@@ -1,0 +1,227 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX root = ...
+
+\ProvidesExplPackage
+  {demo}
+  {2022/10/28}
+  {1.0}
+  {Local style for Beanoves demo}
+\ExplSyntaxOff
+
+\let \BeanovesSticky \Sticky
+
+\RequirePackage[absolute,overlay]{textpos}
+\TPGrid[\baselineskip,\baselineskip]{16}{16}
+
+\RequirePackage{array}
+\RequirePackage{calc}
+\RequirePackage{emoji}
+\RequirePackage{graphicx}
+\newcommand\myBulb{%
+  \smash{\raisebox{-0.15\baselineskip}{\large\emoji{bulb}}}%
+}
+\newcommand\myWatch{%
+  \smash{\raisebox{-0.15\baselineskip}{\large\emoji{hourglass}}}%
+}
+\newcommand\myAnchor{%
+  \smash{\raisebox{-0.15\baselineskip}{\large\emoji{anchor}}}%
+}
+\newcommand\myGear{%
+  \smash{\raisebox{-0.15\baselineskip}{\large\emoji{gear}}}%
+}
+\newcommand\myToolbox{%
+  \smash{\raisebox{-0.15\baselineskip}{\large\emoji{toolbox}}}%
+}
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\tcbset{
+  myCodeBox/.style= {
+    colframe=gray,
+    sharpish corners,
+    boxrule=2pt,
+    skin=enhanced,
+    drop fuzzy shadow=lightgray,
+    boxsep=0.25\baselineskip,
+    left=0mm,
+    right=0mm,
+    top=0mm,
+    bottom=0mm,
+  },
+  myShortCode/.style= {
+    colframe=gray,
+    sharpish corners,
+    boxrule=2pt,
+    skin=enhanced,
+    drop fuzzy shadow=lightgray,
+    boxsep=0mm,
+    left=0.25\baselineskip,
+    right=0.25\baselineskip,
+    top=0.2\baselineskip,
+    bottom=0.0\baselineskip,
+    nobeforeafter,
+    baseline=2mm,
+  },
+}
+\NewDocumentCommand\myShortCodeBox{O{}mm} {%
+  {%
+    \ttfamily\small
+    \setlength{\tabcolsep}{0mm}%
+    \tcbox[myShortCode,#1]{\begin{tabular}{#2}#3\end{tabular}}%
+  }%
+}
+\NewDocumentEnvironment {myCodeBox} { O{} m } {%
+  \begin{tcolorbox}[myCodeBox,#1]%
+  \begin{myLongCode}{#2}%
+} {%
+  \end{myLongCode}%
+  \end{tcolorbox}
+}
+\NewDocumentEnvironment {myLongCode} { m } {%
+  \bgroup
+  \setlength{\tabcolsep}{0mm}\ttfamily\small
+  \renewcommand\arraystretch{1}%
+  \begin{tabular} {#1}
+} {%
+  \end{tabular}
+  \egroup
+}
+
+\NewDocumentCommand \myEmph { m } {%
+  \textit{\bfseries #1}%
+}
+
+\RequirePackage{tikz}
+\usetikzlibrary{
+  arrows.meta,
+  calc,
+  math,
+  shapes.geometric,
+}
+\RequirePackage{sticky}
+\RequirePackage{fontenc}
+\RequirePackage{unicode-math}
+\RequirePackage{verbatimbox}
+\RequirePackage{catchfile}
+\RequirePackage{beanoves-debug}
+
+\RequirePackage{xcolor}
+\colorlet{MyGreen}{green!50!black}
+\colorlet{MyRed}{red!75!black}
+
+\RequirePackage{transparent}
+\newenvironment{myTransparentenv}{\only{\transparent{0.3}}}{}
+
+\RequirePackage{graphicx}
+
+\newcommand{\tlap}[1]{\mbox{\vbox to 0pt{\vss\hbox{#1}}}}
+\newcommand{\tblap}[1]{\mbox{\vbox to 0pt{\vss\hbox{#1}\vss}}}
+\newcommand{\blap}[1]{\mbox{\vbox to 0pt{\hbox{#1}\vss}}}
+
+\setmonofont[Mapping=tex-text,Scale=0.85]{Menlo}
+
+\ExplSyntaxOn
+\NewDocumentCommand \myRoundCornerImg { O{} O{} m } {
+  \group_begin:
+    \tl_if_empty:nTF { #2 } {%
+      \hbox_set:Nn \g_tmpa_box {%
+        \includegraphics { #3 }%
+      }
+    } {%
+      \hbox_set:Nn \g_tmpa_box {%
+        \includegraphics [ #2 ] { #3 }%
+      }
+    }
+    \tikzmath {
+      \w = \dim_eval:n { \box_wd:N \g_tmpa_box };
+      \h = \dim_eval:n { \box_ht:N \g_tmpa_box };
+      \c = \dim_eval:n { 0.05 \box_wd:N \g_tmpa_box };
+    }
+    \tikz [
+      x=\w pt,
+      y=\h pt,
+    ] {
+      \clip [rounded~corners=\c pt] (-0.5,-0.5) rectangle (0.5,0.5); 
+      \node [inner~sep=0pt,#1] at (0,0) {\box_use:N \g_tmpa_box};
+    }
+    \group_end:
+}
+
+\NewDocumentCommand\myImgSticky { O{} r() O{} m } {
+  \group_begin:
+    \tl_if_empty:nTF { #3 } {
+      \hbox_set:Nn \g_tmpa_box {
+        \includegraphics { #4 }
+      }
+    } {
+      \hbox_set:Nn \g_tmpa_box {
+        \includegraphics [ #3 ] { #4 }
+      }
+    }
+    \tikzmath {
+      \w = \dim_eval:n { \box_wd:N \g_tmpa_box };
+      \h = \dim_eval:n { \box_ht:N \g_tmpa_box };
+      \c = \dim_eval:n { 0.05 \box_wd:N \g_tmpa_box };
+    }
+    \hbox_set:Nn \g_tmpb_box {
+      \tikz [
+        x=\w pt,
+        y=\h pt,
+      ] {
+        \clip [rounded~corners=\c pt] (-0.5,-0.5) rectangle (0.5,0.5); 
+        \node [inner~sep=0pt] at (0,0) {\box_use:N \g_tmpa_box};
+      }
+    }
+    \tikz [
+      overlay,
+      remember~picture,
+    ] {
+      \node [inner~sep=0pt,#1] at (#2) {\box_use:N \g_tmpb_box};
+    }
+  \group_end:
+  \ignorespaces
+}
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newsavebox{\myBoxAW}
+
+
+\tikzset {
+  my code/.style = {
+    inner sep=0.5\baselineskip,
+    fill=white,
+    draw=gray,
+    line width=2pt,
+    font=\ttfamily\small,
+  },
+  my arrow/.style= {
+    -{Stealth},
+    MyGreen,
+    thick,
+    densely dotted,
+  },
+}
+
+\newcommand\myCodek{\rlap{\raisebox{-0.5mm}{\scriptsize k}}\phantom{x}}
+\NewDocumentCommand\myInlineCode {sm} {%
+  \texttt{\bfseries\IfBooleanT{#1}{\color{MyGreen}}#2}%
+}
+%\newcommand\myMeta[1]{\phantom{<}\llap{$⟨$}\textit{#1}\rlap{$⟩$}\phantom{>}}
+\ExplSyntaxOn
+\newcommand\myMeta[1]{%
+  \group_begin:
+  \hbox_set:Nn \l_tmpa_box {x}
+  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
+  \clap{$⟨$}
+  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
+  \textit{#1}
+  %\hbox_set:Nn \l_tmpa_box {>}
+  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
+  \clap{$⟩$}
+  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
+  \group_end:
+}
+\ExplSyntaxOff
+

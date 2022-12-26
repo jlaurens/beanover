@@ -4,212 +4,11 @@
 
 \documentclass{beamer}
 
-\let \BeanovesSticky \Sticky
+\RequirePackage{demo}
 
-\RequirePackage[absolute,overlay]{textpos}
-\TPGrid[\baselineskip,\baselineskip]{16}{16}
-
-\RequirePackage{array}
-\RequirePackage{calc}
-\RequirePackage{emoji}
-\RequirePackage{graphicx}
-\newcommand\myBulb{%
-  \smash{\raisebox{-0.15\baselineskip}{\large\emoji{bulb}}}%
-}
-\newcommand\myWatch{%
-  \smash{\raisebox{-0.15\baselineskip}{\large\emoji{hourglass}}}%
-}
-
-\RequirePackage{tcolorbox}
-\tcbuselibrary{skins}
-\tcbset{
-  myCodeBox/.style= {
-    colframe=gray,
-    sharpish corners,
-    boxrule=2pt,
-    skin=enhanced,
-    drop fuzzy shadow=lightgray,
-    boxsep=0.25\baselineskip,
-    left=0mm,
-    right=0mm,
-    top=0mm,
-    bottom=0mm,
-  },
-  myShortCode/.style= {
-    colframe=gray,
-    sharpish corners,
-    boxrule=2pt,
-    skin=enhanced,
-    drop fuzzy shadow=lightgray,
-    boxsep=0mm,
-    left=0.25\baselineskip,
-    right=0.25\baselineskip,
-    top=0.2\baselineskip,
-    bottom=0.0\baselineskip,
-    nobeforeafter,
-    baseline=2mm,
-  },
-}
-\NewDocumentCommand\myShortCodeBox{O{}mm} {%
-  {%
-    \ttfamily\small
-    \setlength{\tabcolsep}{0mm}%
-    \tcbox[myShortCode,#1]{\begin{tabular}{#2}#3\end{tabular}}%
-  }%
-}
-\NewDocumentEnvironment {myCodeBox} { O{} m } {%
-  \begin{tcolorbox}[myCodeBox,#1]%
-  \begin{myLongCode}{#2}%
-} {%
-  \end{myLongCode}%
-  \end{tcolorbox}
-}
-\NewDocumentEnvironment {myLongCode} { m } {%
-  \bgroup
-  \setlength{\tabcolsep}{0mm}\ttfamily\small
-  \renewcommand\arraystretch{1}%
-  \begin{tabular} {#1}
-} {%
-  \end{tabular}
-  \egroup
-}
-
-\NewDocumentCommand \myEmph { m } {%
-  \textit{\bfseries #1}%
-}
-
-\RequirePackage{tikz}
-\usetikzlibrary{
-  arrows.meta,
-  calc,
-  math,
-  shapes.geometric,
-}
-\RequirePackage{sticky}
-\RequirePackage{fontenc}
-\RequirePackage{unicode-math}
-\RequirePackage{verbatimbox}
-\RequirePackage{catchfile}
-\RequirePackage{beanoves-debug}
-
-\RequirePackage{color}
-\definecolor{MyGreen}{RGB}{0,111,0}
-
-\RequirePackage{transparent}
-\newenvironment{myTransparentenv}{\only{\transparent{0.3}}}{}
-
-\RequirePackage{graphicx}
-
-\newcommand{\tlap}[1]{\mbox{\vbox to 0pt{\vss\hbox{#1}}}}
-\newcommand{\tblap}[1]{\mbox{\vbox to 0pt{\vss\hbox{#1}\vss}}}
-\newcommand{\blap}[1]{\mbox{\vbox to 0pt{\hbox{#1}\vss}}}
-
-\setmonofont[Mapping=tex-text,Scale=0.85]{Menlo}
-
-\ExplSyntaxOn
-\NewDocumentCommand \myRoundCornerImg { O{} O{} m } {
-  \group_begin:
-    \tl_if_empty:nTF { #2 } {%
-      \hbox_set:Nn \g_tmpa_box {%
-        \includegraphics { #3 }%
-      }
-    } {%
-      \hbox_set:Nn \g_tmpa_box {%
-        \includegraphics [ #2 ] { #3 }%
-      }
-    }
-    \tikzmath {
-      \w = \dim_eval:n { \box_wd:N \g_tmpa_box };
-      \h = \dim_eval:n { \box_ht:N \g_tmpa_box };
-      \c = \dim_eval:n { 0.05 \box_wd:N \g_tmpa_box };
-    }
-    \tikz [
-      x=\w pt,
-      y=\h pt,
-    ] {
-      \clip [rounded~corners=\c pt] (-0.5,-0.5) rectangle (0.5,0.5); 
-      \node [inner~sep=0pt,#1] at (0,0) {\box_use:N \g_tmpa_box};
-    }
-    \group_end:
-}
-
-\NewDocumentCommand\myImgSticky { O{} r() O{} m } {
-  \group_begin:
-    \tl_if_empty:nTF { #3 } {
-      \hbox_set:Nn \g_tmpa_box {
-        \includegraphics { #4 }
-      }
-    } {
-      \hbox_set:Nn \g_tmpa_box {
-        \includegraphics [ #3 ] { #4 }
-      }
-    }
-    \tikzmath {
-      \w = \dim_eval:n { \box_wd:N \g_tmpa_box };
-      \h = \dim_eval:n { \box_ht:N \g_tmpa_box };
-      \c = \dim_eval:n { 0.05 \box_wd:N \g_tmpa_box };
-    }
-    \hbox_set:Nn \g_tmpb_box {
-      \tikz [
-        x=\w pt,
-        y=\h pt,
-      ] {
-        \clip [rounded~corners=\c pt] (-0.5,-0.5) rectangle (0.5,0.5); 
-        \node [inner~sep=0pt] at (0,0) {\box_use:N \g_tmpa_box};
-      }
-    }
-    \tikz [
-      overlay,
-      remember~picture,
-    ] {
-      \node [inner~sep=0pt,#1] at (#2) {\box_use:N \g_tmpb_box};
-    }
-  \group_end:
-  \ignorespaces
-}
-\ExplSyntaxOff
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newsavebox{\myBoxAW}
-
-
-\tikzset {
-  my code/.style = {
-    inner sep=0.5\baselineskip,
-    fill=white,
-    draw=gray,
-    line width=2pt,
-    font=\ttfamily\small,
-  },
-  my arrow/.style= {
-    -{Stealth},
-    MyGreen,
-    thick,
-    densely dotted,
-  },
-}
-
-\newcommand\myCodek{\rlap{\raisebox{-0.5mm}{\scriptsize k}}\phantom{x}}
-\NewDocumentCommand\myInlineCode {sm} {%
-  \texttt{\bfseries\IfBooleanT{#1}{\color{MyGreen}}#2}%
-}
-%\newcommand\myMeta[1]{\phantom{<}\llap{$⟨$}\textit{#1}\rlap{$⟩$}\phantom{>}}
-\ExplSyntaxOn
-\newcommand\myMeta[1]{%
-  \group_begin:
-  \hbox_set:Nn \l_tmpa_box {x}
-  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
-  \clap{$⟨$}
-  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
-  \textit{#1}
-  %\hbox_set:Nn \l_tmpa_box {>}
-  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
-  \clap{$⟩$}
-  \skip_horizontal:n {0.5 \box_wd:N \l_tmpa_box}
-  \group_end:
-}
-\ExplSyntaxOff
-
+\CatchFileDef{\useMyFacts}{frames/2-beamer facts}{}
+\CatchFileDef{\useMyIntroduction}{frames/introduction}{}
+\CatchFileDef{\useMyStepI}{frames/step1}{}
 \CatchFileDef{\useMyStepII}{frames/step2}{}
 \CatchFileDef{\useMyStepIII}{frames/step3}{}
 \CatchFileDef{\useMyChronologyII}{frames/chronology2}{}
@@ -221,14 +20,12 @@
 %\transfade[duration=0.5]
 \transdissolve[duration=0.5]
 
-\CatchFileDef{\useMyIntroduction}{frames/introduction}{}
 \begin{frame}
 {Beanoves demonstration manual}
 {Introduction}
 \useMyIntroduction
 \end{frame}
 
-\CatchFileDef{\useMyFacts}{frames/2-beamer facts}{}
 \begin{frame}
 {Beanoves demonstration manual}
 {Beamer facts}
@@ -236,32 +33,30 @@
 \useMyFacts
 \end{frame}
 
-
 %
 % STEP 1
 %
-%\CatchFileDef{\useMyStepI}{frames/step1}{}
-%\begin{frame}
-%{Bealover example about animals: Simple items}
-%{Slide \insertslidenumber}
-%\transpush[direction=180]
-%\useMyStepI
-%\end{frame}
+\begin{frame}
+{Beanoves example about animals: Simple items}
+{Slide \insertslidenumber}
+\transpush[direction=180]
+\useMyStepI
+\end{frame}
 %%
 % STEP 2
 %
-%\begin{frame}
-%{Bealover example: Uncovered items}
-%{Slide \insertslidenumber}
-%\Beanoves {
-%  Sticky1 = 5,
-%  Sticky2 = Sticky1.next,
-%  Sticky3 = Sticky2.next : 3,
-%  Sticky4 = Sticky3.next : 3,
-%}
-%\transpush[direction=180]
-%\useMyStepII
-%\end{frame}
+\Beanoves {
+  Sticky1 = 5:1,
+  Sticky2 = Sticky1.next:1,
+  Sticky3 = Sticky2.next : 3,
+  Sticky4 = Sticky3.next : 3,
+}
+\begin{frame}
+{Beanoves example: Uncovered items}
+{Slide \insertslidenumber}
+\transpush[direction=180]
+\useMyStepII
+\end{frame}
 %
 % Step 2 chronology
 %
@@ -269,7 +64,7 @@
   Sticky1 = 1 : 7,
 }
 %\begin{frame}
-%{Bealover example: Uncovered items}
+%{Beanoves example: Uncovered items}
 %{\large Chronology}
 %%\transpush[direction=180]
 %\useMyChronologyII
@@ -277,229 +72,225 @@
 %
 % Step 3
 %
-\Beanoves {
-  Air      = 1 :: Gannet.last,
-  Chameleo = Air.2:1,
-  Gannet   = Chameleo.next:1,
-  Water   = Air.next :: Picasso.last,
-  Octopus = Water.2:1,
-  Starfish = Octopus.next:1,
-  StickyStarfish = Starfish.1,
-  Picasso = Starfish.next,
-  PicassoTrans = 1 :: Picasso.0,
-  Summary  = Water.next,
-}
-\begin{frame}
-{Bealover example: Uncovered items + images}
-{Slide \insertslidenumber}
-%\transpush[direction=180]
-\useMyStepIII
-\end{frame}
-\end{document}
+%\Beanoves {
+%  Air      = 1 :: Gannet.last,
+%  Chameleo = Air.2:1,
+%  Gannet   = Chameleo.next:2,
+%  Water   = Air.next :: Picasso.last,
+%  Octopus = Water.2:1,
+%  Starfish = Octopus.next:2,
+%  StickyStarfish = Starfish.2:1,
+%  Picasso = Starfish.next:1,
+%  PicassoTrans = 1 :: Picasso.previous,
+%  Summary  = Water.next:1,
+%}
+%\begin{frame}
+%{Beanoves example: Uncovered items + images}
+%{Slide \insertslidenumber}
+%%\transpush[direction=180]
+%\useMyStepIII
+%\end{frame}
 %
 %
 % Step 3 chronology
 %
-\Beanoves {
-  Sticky1 = 1 : 12,
-  Sticky2 = Sticky1.next : 5,
-  Code = Sticky2.next : CodeSummary.last - Code.0,
-  CodeAir = Code.2,
-  CodeWater = CodeAir.next,
-  CodeSummary = CodeWater.next,
-  Usage = Code.next,
-}
-\begin{frame}
-{Beanoves example: Uncovered items + images}
-{\large Chronology}
-\transpush[direction=180]
-\useMyChronologyIII
-\end{frame}
+%\Beanoves {
+%  Sticky1 = 1 : 12,
+%  Sticky2 = Sticky1.next : 5,
+%  Code = Sticky2.next :: CodeSummary.last,
+%  CodeAir = Code.2:1,
+%  CodeWater = CodeAir.next:1,
+%  CodeSummary = CodeWater.next:1,
+%  Usage = Code.next:1,
+%}
+%\begin{frame}
+%{Beanoves example: Uncovered items + images}
+%{\large Chronology}
+%\transpush[direction=180]
+%\useMyChronologyIII
+%\end{frame}
 
-\begin{frame}
-{Bealover example: Uncovered items + images}
-{\large Step back}
-\transpush[direction=270]
-\Beanoves {
-  Air      = 1:0,
-  Chameleo = 1,
-  Gannet   = 1,
-  Water   = 1:2,
-  Octopus = 1,
-  Starfish = 2,
-  StickyStarfish = 1:0,
-  Picasso = 2:0,
-  PicassoTrans = 1 : 2,
-  Summary  = 1:0,
-}
-\only<1-2> {
-  \useMyStepIII
-}
-\vbox to0pt{\hbox{%
-\only<2> {
-  \tikz [
-    remember picture,
-    overlay,
-  ] {
-    \node [my code,yshift=-2.5\baselineskip] at (current page.center) [text width=0.75\textwidth,anchor=north] {%
-\backslash only < \textcolor{MyGreen}{\bfseries?(Water.2)} - > \{\\
-\phantom{xx}\backslash only < \textcolor{MyGreen}{\bfseries?(Water.3)} - > \{\backslash transparent\{0.3\}\}\\
-\phantom{xx}\% code to display the Octopus...\\
-\}\\
-    }%
-  }
-}
-}}%
-\BeanovesSticky<1>(current page.south){0.8\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• On next slide, the "Octopus" image is expected to be transparent\\
-• Let us see the source code
-}%
-\BeanovesSticky<2>(current page.south){0.85\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-• \textcolor{MyGreen}{\texttt{\bfseries?(Water.2)}} is replaced by \textcolor{MyGreen}{\bfseries\texttt{5}}
-and \textcolor{MyGreen}{\texttt{\bfseries?(Water.3)}} by \textcolor{MyGreen}{\bfseries\texttt{6}}\\
-• The octopus is displayed from slide 5 and transparent from slide 6
-}%
-\end{frame}
-%
+%\Beanoves {
+%  Air      = 1:0,
+%  Chameleo = 1,
+%  Gannet   = 1,
+%  Water   = 1:2,
+%  Octopus = 1,
+%  Starfish = 2,
+%  StickyStarfish = 1:0,
+%  Picasso = 2:0,
+%  PicassoTrans = 1 : 2,
+%  Summary  = 1:0,
+%}
+%\begin{frame}
+%{Beanoves example: Uncovered items + images}
+%{\large Step back}
+%\transpush[direction=270]
+%\transpush[direction=270]
+%\only<1-2> {
+%  \useMyStepIII
+%}
+%\only<2> {
+%  \tikz [
+%    remember picture,
+%    overlay,
+%  ] {
+%    \node [yshift=1\baselineskip,anchor=north] at (current page.center) [text width=0.75\textwidth] {%
+%\begin{myCodeBox}{l}
+%\string\only < \textcolor{MyGreen}{\bfseries?(Water.2)} - > \{\\
+%\phantom{xx}\backslash only < \textcolor{MyGreen}{\bfseries?(Water.3)} - > \{\backslash transparent\{0.3\}\}\\
+%\phantom{xx}\% code to display the Octopus...\\
+%\}
+%\end{myCodeBox}
+%    }%
+%  }
+%}
+%\Sticky<1>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{minipage}{0.8\textwidth}%
+%\begin{itemize}
+%\item [\myBulb] On next slide, the "Octopus" image is expected to be transparent\\
+%\item [\myBulb] Let us see the source code
+%\end{itemize}
+%\end{minipage}
+%}%
+%\Sticky<2>[anchor=south,yshift=1\baselineskip](current page.south){\bfseries\begin{minipage}{0.85\textwidth}\begin{itemize}%
+%\item[\myGear] \textcolor{MyGreen}{\texttt{\bfseries?(Water.2)}} is replaced by \textcolor{MyGreen}{\bfseries\texttt{5}}
+%and \textcolor{MyGreen}{\texttt{\bfseries?(Water.3)}} by \textcolor{MyGreen}{\bfseries\texttt{6}}\\
+%\item[\myGear] The octopus is displayed from slide 5 and transparent from slide 6
+%\end{itemize}
+%\end{minipage}
+%}%
+%\end{frame}
+%%%%
+%%%%
+%%%%
 \Beanoves {
   Command = 1 : 2,
-  Example = Command.next : 2,
+  Example = Command.next : 4,
 }
 \begin{frame}
-{Bealover manual}
-{\large Named overlay specification}
-\begin{myCodeBox}{l}%
-\backslash begin \{frame\}\\
-\backslash Bealover \{\\
-\phantom{xx}%
-\alt<?(Example.range)>{%
-  {\only<?(Example.1)>{\color{MyGreen}}Air \phantom{xx}= 1\phantom{xxxxxxxx}: 2,}
-}{%
-  \myMeta{range name\myCodek} =
-  \myMeta{range start\myCodek}
-  [: \myMeta{range length\myCodek}],
-}\\
-\phantom{xx}%
-\alt<?(Example.range)>{%
-{\only<?(Example.2)>{\color{MyGreen}}Water = Air.next : 3,}
-}{%
-...
-}\\
-\}
-\end{myCodeBox}
-\begin{itemize}
-\item \myMeta{range name\myCodek} is like a variable name
-\item \myMeta{range start\myCodek} is an \emph{\bfseries extended integer expression},
-\item \myMeta{range length\myCodek} is an \emph{\bfseries extended integer expression},
-\item when not provided, \myMeta{range duration\myCodek}  defaults to 1
-\end{itemize}
-\vspace{6\baselineskip}
-\BeanovesSticky<?(Example.1)>(current page.south){0.8\textwidth}[anchor=south,yshift=2\baselineskip]{\bfseries%
-Revisit the example:\\
-• The Air topic is the first one: position is \texttt{\color{MyGreen}1}\\
-• 2 images for the Air topic: duration is \texttt{\color{MyGreen}2}
-}%
-\BeanovesSticky<?(Example.2)>(current page.south){0.8\textwidth}[anchor=south,yshift=2\baselineskip]{\bfseries%
-Revisit the example:\\
-• The Water topic follows the Air topic: position is \texttt{\color{MyGreen}Air.next}\\
-• 3 images for the Water topic: duration is \texttt{\color{MyGreen}3}
-}%
-\end{frame}
-%
-%
-%
-\begin{frame}
-{Bealover manual}
+{Beanoves manual}
 {\large Defining logical overlay ranges}
 \transpush[direction=180]
-\Beanoves {
-  Command = 1 : 2,
-  Example = Command.next : 3,
-}
 \begin{myCodeBox}{l}%
-\backslash begin \{frame\}\\
-\backslash Bealover \{\\
+\string\Beanoves \{\\
 \phantom{xx}%
 \alt<?(Example.range)>{%
   {\only<?(Example.1)>{\color{MyGreen}}Air \phantom{xx}= 1\phantom{xxxxxxxx}: 2,}
+\only<?(Example.last)>{\bfseries\color{MyRed}\smash{\raisebox{-1ex}{\huge☚}}}
 }{%
-  \myMeta{name\myCodek} = \myMeta{start\myCodek} : \myMeta{length\myCodek},
+  \alt<?(Example.next)>{%
+    \color{MyGreen}Air \phantom{xx}= 1\phantom{xxxxxxxx}: \only<?(Example.next)>{{\bfseries\color{MyRed}3},}
+  }{
+    \myMeta{name\myCodek} = \myMeta{start\myCodek} : \myMeta{length\myCodek},
+  }
 }\\
-\alt<?(Example.range)>{%
+\alt<?(Example.range, Example.next)>{%
 \phantom{xx}%
 {\only<?(Example.2)->{\color{MyGreen}}Water = Air.next : 3,}
 }{%
 \phantom{xx}...
 }\\
 \}
-\alt<?(Example.range)>{\}}{}
 \end{myCodeBox}
-Range starts and lengths are arithmetical expression involving raw integers as well as next \emph{\bfseries aliases}.\\
+Range starts and lengths are arithmetical expression involving raw integers as well as next \emph{\bfseries named overlay references}.\\
 \vspace{0.25\baselineskip}
 \begin{myLongCode}{l>{\quad$⟷$\quad}l}
 \hline
-\textnormal{Alias} & \textnormal{Integer value}\\\hline
+\textnormal{Reference} & \textnormal{Integer value}\\\hline
 \only<?(Example.1)>{\color{MyGreen}Air.1}%
-\only<?(Example.2)->{\color{MyGreen}Water.1}%
+\only<?(Example.2:4)>{\color{MyGreen}Water.1}%
 \only<?(Command.range)>{\myMeta{name\myCodek}.1}
 &
 \only<?(Example.1)>{ \color{MyGreen}1}%
-\only<?(Example.2)->{ \color{MyGreen}3}%
+\only<?(Example.2:3)>{ \color{MyGreen}3}%
+\only<?(Example.5)->{ \bfseries\color{MyRed}4}%
 \only<?(Command.range)>{\myMeta{start\myCodek}}
 \\
 \only<?(Example.1)>{\color{MyGreen}Air.2}%
-\only<?(Example.2)->{\color{MyGreen}Water.2}%
+\only<?(Example.2:4)>{\color{MyGreen}Water.2}%
 \only<?(Command.range)>{\myMeta{name\myCodek}.2}
 &
 \only<?(Example.1)>{ \color{MyGreen}2}%
-\only<?(Example.2)->{ \color{MyGreen}4}%
+\only<?(Example.2:3)>{ \color{MyGreen}4}%
+\only<?(Example.5)->{ \bfseries\color{MyRed}5}%
 \only<?(Command.range)>{\myMeta{start\myCodek}+ 1}
 \\
 \only<?(Example.1)>{{\color{MyGreen}Air.}\myMeta{i}}%
-\only<?(Example.2)->{{\color{MyGreen}Water.}\myMeta{i}}%
+\only<?(Example.2:4)>{{\color{MyGreen}Water.}\myMeta{i}}%
 \only<?(Command.range)>{\myMeta{name\myCodek}.\myMeta{i}}
 &
 \only<?(Example.1)>{\myMeta{i}}%
-\only<?(Example.2)->{\myMeta{i}+ 2}%
+\only<?(Example.2:3)>{\myMeta{i}+ \color{MyGreen}2}%
+\only<?(Example.5)->{\myMeta{i}+ \bfseries\color{MyRed}3}%
 \only<?(Command.range)>{\myMeta{start\myCodek}+\myMeta{i}- 1}
 \\
 \only<?(Example.1)>{\rlap{\color{MyGreen}Air.length}}%
-\only<?(Example.2)->{\rlap{\color{MyGreen}Water.length}}%
+\only<?(Example.2:4)>{\rlap{\color{MyGreen}Water.length}}%
 \visible<?(Command.range)>{\myMeta{name\myCodek}.length}
 &
 \only<?(Example.1)>{ \color{MyGreen}2}%
-\only<?(Example.2)->{ \color{MyGreen}3}%
+\only<?(Example.2:3)>{ \color{MyGreen}3}%
+\only<?(Example.5)->{ \bfseries\color{MyRed}4}%
 \only<?(Command.range)>{\myMeta{length\myCodek}}
 \\
 \only<?(Example.1)>{\color{MyGreen}Air.next}%
-\only<?(Example.2)->{\color{MyGreen}Water.next}%
+\only<?(Example.2:4)>{\color{MyGreen}Water.next}%
 \only<?(Command.range)>{\myMeta{name\myCodek}.next}
 &
 \only<?(Example.1)>{ \color{MyGreen}3}%
-\only<?(Example.2)->{ \color{MyGreen}6}%
+\only<?(Example.2:3)>{ \color{MyGreen}6}%
+\only<?(Example.5)->{ \bfseries\color{MyRed}7}%
 \only<?(Command.range)>{\myMeta{start\myCodek}+\myMeta{length\myCodek}}
 \\
 \only<?(Example.1)>{\color{MyGreen}Air.last}%
-\only<?(Example.2)->{\color{MyGreen}Water.last}%
+\only<?(Example.2:4)>{\color{MyGreen}Water.last}%
 \only<?(Command.range)>{\myMeta{name\myCodek}.last}
 &
 \only<?(Example.1)>{ \rlap{\color{MyGreen}2}}%
-\only<?(Example.2)->{ \rlap{\color{MyGreen}5}}%
+\only<?(Example.2:3)>{ \rlap{\color{MyGreen}5}}%
+\only<?(Example.5)->{ \rlap{\bfseries\color{MyRed}6}}%
 \visible<?(Command.range)>{\myMeta{start\myCodek}+\myMeta{length\myCodek}- 1}%
+\\
+\only<?(Example.1)>{\color{MyGreen}Air.previous}%
+\only<?(Example.2:4)>{\color{MyGreen}Water.previous}%
+\only<?(Command.range)>{\myMeta{name\myCodek}.previous}
+&
+\only<?(Example.1)>{ \color{MyGreen}0}%
+\only<?(Example.2:3)>{ \color{MyGreen}2}%
+\only<?(Example.5)->{ \bfseries\color{MyRed}3}%
+\only<?(Command.range)>{\myMeta{start\myCodek}-1}
 \\\hline
 \end{myLongCode}
 \vspace{1\baselineskip}
-\BeanovesSticky<?(Example.0)-?(Example.last)>(current page.south east){0.35\textwidth}[anchor=south east,yshift=3\baselineskip,xshift=-1.5\baselineskip]{\bfseries%
+\Sticky<?(Example.0)-?(Example.last-1)>[
+  anchor=south east,
+  yshift=3\baselineskip,
+  xshift=-1.5\baselineskip,
+](current page.south east){\bfseries%
+\begin{minipage}{0.45\textwidth}
 Revisit the example...\\
-\visible<?(Example.last)>{%
+\visible<?(Example.last-1)>{%
 \myInlineCode*{Water.1 = Air.next}\\
-\myInlineCode*{Air.last = Water.0}
+\myInlineCode*{Air.last = Water.0}\\
 }
+\end{minipage}
+}%
+\Sticky<?(Example.last)->[
+  anchor=south east,
+  yshift=3\baselineskip,
+  xshift=-1.5\baselineskip
+](current page.south east){\bfseries%
+\begin{minipage}{0.45\textwidth}
+If the duration of the Air section happens to change,\\
+\visible<?(Example.next)>{%
+all the integer value automatically apdate
+}
+\end{minipage}
 }%
 \end{frame}
 
 \begin{frame}
-{Bealover manual}
+{Beanoves manual}
 {\large Overlay specification query}
 \Beanoves {
   Normal = 1 : 1,
@@ -535,13 +326,13 @@ A query may be used in an overlay specification wherever an integer or a range c
 }%
 \end{frame}
 %
-\begin{frame}
-{Bealover manual}
-{\large Overlay specification query syntax}
 \Beanoves {
   Main = 1 : 2,
   Sticky = Main.next
 }
+\begin{frame}
+{Beanoves manual}
+{\large Overlay specification query syntax}
 \begin{itemize}
 \item Position specifications
 \begin{myCodeBox}{l}%
@@ -571,16 +362,18 @@ where ``\texttt{-}'' stands for a dash and not a minus sign.
 \visible<2->{%
 Range queries and beamer ranges must not be combined like in \myInlineCode{?(Air.range)-10}, leading to the incorrect syntax \myInlineCode{1-2-10}.
 }
-\BeanovesSticky<?(Sticky)>(current page.south){0.75\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\BeanovesSticky<?(Sticky)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
+\begin{minipage}{0.75\textwidth}
 \myBulb\ The middle slide of the Air topic is
 \begin{center}\myInlineCode*{?((Air.1+Air.last)/2)}.\end{center}
 \myBulb\ What corresponds to next query?
 \begin{center}\myInlineCode*{?(Water.0 : Water.length + 2)}\end{center}
+\end{minipage}
 }%
 \end{frame}
 %
 \begin{frame}
-{Bealover manual}
+{Beanoves manual}
 {\large Incremental specifications}
 \Beanoves {
   Main = 2 : 4,
@@ -589,7 +382,7 @@ Range queries and beamer ranges must not be combined like in \myInlineCode{?(Air
 }
 \begin{myCodeBox}{l}%
 \backslash begin \{frame\}\\
-\backslash Bealover \{\\
+\backslash Beanoves \{\\
 \phantom{xx}%
 \alt<?(Example.range)>{%
   {\only<?(Example.1)>{\color{MyGreen}}Air \phantom{xx}= 1\phantom{xxxxxxxx}: 2,}
@@ -621,8 +414,10 @@ Within a specification query:
 \myInlineCode*{\myMeta{name\myCodek}.reset} stands for the \myEmph{cursor} once reset.
 \end{itemize}
 %
-\BeanovesSticky<?(Sticky)>(current page.south){0.5\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\BeanovesSticky<?(Sticky)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
+\begin{minipage}{0.5\textwidth}
 \myWatch\ Revisit the example...
+\end{minipage}
 }%
 \vspace{2\baselineskip}
 %
@@ -630,7 +425,7 @@ Within a specification query:
 
 
 %\begin{frame}
-%{Bealover manual}
+%{Beanoves manual}
 %{\large Incremental specifications in practice}
 %\Beanoves {
 %  X1 = 1 : W1.last - X1.0,
@@ -650,7 +445,7 @@ Within a specification query:
 
 %
 \begin{frame}
-{Bealover manual}
+{Beanoves manual}
 {\large Why aliases are helpful}
 \Beanoves {
   Main = 1 : 2,
