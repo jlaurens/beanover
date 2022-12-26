@@ -1,0 +1,29 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX proot = ...
+
+\documentclass{beamer}
+\RequirePackage{demo}
+\newenvironment{checkenv}{\only{\setbeamertemplate{itemize item}{X}}}{}
+\begin{document}
+\begin{frame}[
+  beanoves = {A=2},
+]{Slide number \insertslidenumber}
+Two itemized lists uncovered in parallel
+\BeanovesReset{A}
+\begin{itemize}[<?(A++)>]
+\item 1
+\item 2
+\item 3
+\item 4
+\end{itemize}
+\BeanovesReset{A}
+\begin{itemize}[<?(A++)|check@?(A)>]
+\item A
+\item B
+\item C
+\item D
+\end{itemize}
+
+\end{frame}
+\end{document}

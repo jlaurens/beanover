@@ -134,20 +134,6 @@ Slide number lists are very handy both during edition and to manage complex and 
 %
 \begin{documentation}
 %
-\section{TODO}
-This section will be removed.
-\begin{itemize}
-\item Overlay sets instead of slide ranges
-\item bounded and unbounded ranges
-\begin{itemize}
-\item \texttt{A=1}, \texttt{A.\meta{integer}} can take any value.
-\item \texttt{A=1:}, 1<=\texttt{A.\meta{integer}}.
-\item \texttt{A=::1}, \texttt{A.\meta{integer}}<=1.
-\item \texttt{A=1::10}, 1<=\texttt{A.\meta{integer}}<=10.
-\end{itemize}
-\item revisit \texttt{A = [...]} to allow explicit keys
-\end{itemize}
-
 \section{Minimal example}
 %
 The document below is a contrived example to show how the |beamer|
@@ -596,8 +582,6 @@ See \url{https://github.com/jlaurens/beanoves}.
 % \subsection{logging}
 %
 % Utility message.
-%
-%
 %
 %
 % \begin{bnvs.macrocode}
@@ -1265,7 +1249,7 @@ See \url{https://github.com/jlaurens/beanoves}.
 % \end{bnvs.macrocode}
 % \end{variable}
 % \subsection{Basic functions}
-% \begin{function}{\__bnvs_gput:nnn,\__bnvs_gput:nnV,\__bnvs_gprovide:nnn,\__bnvs_gprovide:nVn,\__bnvs_item:nn,\__bnvs_gremove:nn,\__bnvs_gclear:n, \__bnvs_gclear:}
+% \begin{function}{\__bnvs_gput:nnn,\__bnvs_gput:nnV,\__bnvs_gprovide:nnn,\__bnvs_gprovide:nVn,\__bnvs_item:nn,\__bnvs_gremove:nn,\__bnvs_gremove:nV,\__bnvs_gclear:n, \__bnvs_gclear:}
 % \begin{syntax}
 % \cs{__bnvs_gput:nnn} \marg{subkey} \marg{key} \marg{value}
 % \cs{__bnvs_gprovide:nnn} \marg{subkey} \marg{key} \marg{value}
@@ -1359,6 +1343,7 @@ See \url{https://github.com/jlaurens/beanoves}.
 %    \begin{macrocode}
 }
 \cs_generate_variant:Nn \__bnvs_gput:nnn { nnV }
+\cs_generate_variant:Nn \__bnvs_gremove:nn { nV }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \begin{function}[pTF]{\__bnvs_if_in:nn,\__bnvs_if_in:nV}
@@ -1448,7 +1433,7 @@ See \url{https://github.com/jlaurens/beanoves}.
 % \end{bnvs.test}
 %
 % \subsection{Functions with cache}
-% \begin{function}{\__bnvs_gput_cache:nnn,\__bnvs_gput_cache:nnV, \__bnvs_item_cache:nn, \__bnvs_gremove_cache:nn,\__bnvs_gclear_cache:n}
+% \begin{function}{\__bnvs_gput_cache:nnn,\__bnvs_gput_cache:nnV,\__bnvs_gput_cache:nVn, \__bnvs_item_cache:nn, \__bnvs_gremove_cache:nn, \__bnvs_gremove_cache:nV,\__bnvs_gclear_cache:n,\__bnvs_v_gclear:}
 % \begin{syntax}
 % \cs{__bnvs_gput_cache:nnn} \marg{subkey} \marg{key} \marg{value}
 % \cs{__bnvs_item_cache:nn} \marg{subkey} \marg{key}
@@ -1472,7 +1457,21 @@ See \url{https://github.com/jlaurens/beanoves}.
     \__bnvs_gremove_cache:nn { ##1 } { #1 }
   }
 }
-\cs_generate_variant:Nn \__bnvs_gput_cache:nnn { nnV }
+\cs_new:Npn \__bnvs_v_gclear: {
+  \__bnvs_group_begin:
+  \seq_clear:N \l__bnvs_a_seq
+  \prop_map_inline:Nn \g__bnvs_prop {
+    \regex_match:nnT { //V$ } { ##1 } {
+      \seq_put_right:Nn \l__bnvs_a_seq { ##1 }
+    }
+  }
+  \seq_map_inline:Nn \l__bnvs_a_seq {
+    \prop_gremove:Nn \g__bnvs_prop { ##1 } 
+  }
+  \__bnvs_group_end:
+}
+\cs_generate_variant:Nn \__bnvs_gremove_cache:nn { nV }
+\cs_generate_variant:Nn \__bnvs_gput_cache:nnn { nVn, nnV }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \end{function}
@@ -2072,15 +2071,14 @@ See \url{https://github.com/jlaurens/beanoves}.
 %    \end{macrocode}
 % \begin{bnvs.gobble}
 %<*!gubed>
-  \__bnvs_DEBUG_on:
-  \__bnvs_DEBUG:x {THIS_IS_KEY}
-  \__bnvs_DEBUG_off:
+  \__bnvs_DEBUG_a:nn {THIS_IS_KEY} {}
 %</!gubed>
 % \end{bnvs.gobble}
 %    \begin{macrocode}
 }
 \AddToHook{env/beamer@frameslide/before}{
   \__bnvs_n_gclear:
+  \__bnvs_v_gclear:
   \bool_set_true:N \l__bnvs_in_frame_bool
 %    \end{macrocode}
 % \begin{bnvs.gobble}
@@ -5562,6 +5560,9 @@ See \url{https://github.com/jlaurens/beanoves}.
 % \end{bnvs.macrocode}
 % \begin{bnvs.test}{banner=\string \__bnvs_if_incr:nnTF, noigre}
 % \Test_incr:nnnn { 123 } { 123 } { 246 } { 1 }
+% \Test_raw:nnnn { value } {} { 246 } { 1' }
+% \__bnvs_v_gclear:
+% \Test_raw:nnnn { value } {} { 123 } { 1'' }
 % \Test_incr:nnnn { 123 } { 100+20+3 } { 246 } { 2 }
 % \reset:n { YES }
 % \Test_incr:nnnn { FIRST } { LENGTH-1 } { 666 } { 2 }
@@ -6938,15 +6939,26 @@ See \url{https://github.com/jlaurens/beanoves}.
 %   \end{syntax}
 % Forwards to \cs{__bnvs_reset:nn} or \cs{__bnvs_reset_all:nn} when starred.
 % \end{function}
+% \begin{bnvs.test}{banner=\string\BeanovesReset}
+% \reset:n { YES }
+% \Test_raw:nnnn { value }{ FIRST } { 222 } { 1 }
+% \Test_incr:nnnn { } { 123 } { 345 } { 1 }
+% \BeanovesReset{X}
+% \Test_raw:nnnn { value }{ } { 222 } { 1 }
+% \end{bnvs.test}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-\NewDocumentCommand \BeanovesReset { s O{1} m } {
-  \IfBooleanTF { #1 } {
-    \__bnvs_reset_all:nn
+\NewDocumentCommand \BeanovesReset { s O{} m } {
+  \__bnvs_id_name_set:nNNTF { #3 } \l__bnvs_id_tl \l__bnvs_name_tl {
+    \IfBooleanTF { #1 } {
+      \exp_args:NV \__bnvs_reset_all:nn
+    } {
+      \exp_args:NV \__bnvs_reset:nn
+    }
+    \l__bnvs_name_tl { #2 }
   } {
-    \__bnvs_reset:nn
+    \__bnvs_warning:n { Unknown~name:~#1 }
   }
-                     { #2 } { #3 }
   \ignorespaces
 }
 %    \end{macrocode}
@@ -6954,8 +6966,9 @@ See \url{https://github.com/jlaurens/beanoves}.
 %
 % \begin{function}{\__bnvs_reset:nn, \__bnvs_reset_all:nn}
 % \begin{syntax}
-% \cs{__bnvs_reset:nn} \marg{first value} \marg{key}
+% \cs{__bnvs_reset:nn} \marg{key} \marg{first value}
 % \end{syntax}
+% The key must include the frame id.
 % Reset the value counter to the given \meta{first value}.
 % The |_all| version also cleans the cached values.
 % \end{function}
@@ -6963,27 +6976,49 @@ See \url{https://github.com/jlaurens/beanoves}.
 %    \begin{macrocode}
 \cs_new:Npn \__bnvs_reset_all:nn #1 #2 {
   \bool_if:nTF {
-       \__bnvs_if_in_p:nn A { #2 }
-    || \__bnvs_if_in_p:nn Z { #2 }
-    || \__bnvs_if_in_p:nn V { #2 }
+       \__bnvs_if_in_p:nn A { #1 }
+    || \__bnvs_if_in_p:nn Z { #1 }
+    || \__bnvs_if_in_p:nn V { #1 }
   } {
-    \__bnvs_gremove_cache:nn A { #2 }
-    \__bnvs_gremove_cache:nn L { #2 }
-    \__bnvs_gremove_cache:nn Z { #2 }
-    \__bnvs_gremove_cache:nn P { #2 }
-    \__bnvs_gremove_cache:nn N { #2 }
-    \__bnvs_gremove:nn V { #2 }
-    \__bnvs_gput_cache:nnn V { #2 } { #1 }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_reset_all:nn }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+    \__bnvs_gremove_cache:nn A { #1 }
+    \__bnvs_gremove_cache:nn L { #1 }
+    \__bnvs_gremove_cache:nn Z { #1 }
+    \__bnvs_gremove_cache:nn P { #1 }
+    \__bnvs_gremove_cache:nn N { #1 }
+    \__bnvs_gremove_cache:nn V { #1 }
+    \tl_if_empty:nF { #2 } {
+      \__bnvs_gput_cache:nnn V { #1 } { #2 }
+    }
   } {
-    \__bnvs_warning:n { Unknown~name:~#2 }
+    \__bnvs_warning:n { Unknown~name:~#1 }
   }
 }
 \cs_new:Npn \__bnvs_reset:nn #1 #2 {
-  \__bnvs_if_in:nnTF V { #2 } {
-    \__bnvs_gremove:nn V { #2 }
-    \__bnvs_gput_cache:nnn V { #2 } { #1 }
+  \__bnvs_if_in:nnTF V { #1 } {
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string\__bnvs_reset:nn }
+\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
+\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
+    \__bnvs_gremove_cache:nn V { #1 }
+    \tl_if_empty:nF { #2 } {
+      \__bnvs_gput_cache:nnn V { #1 } { #2 }
+    }
   } {
-    \__bnvs_warning:n { Unknown~name:~#2 }
+    \__bnvs_warning:n { Unknown~name:~#1 }
   }
 }
 \makeatother
