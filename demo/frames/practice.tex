@@ -6,7 +6,7 @@
 \begin{tabular}{p{0.275\textwidth}p{0.725\textwidth}}
 %
 \only<?(X1.range)>{%
-  \BealoverReset{W1}%
+  \BeanovesReset{W1}%
   \begin{itemize} [<?(++W1)->]
     \item Octopus
     \item Starfish
@@ -15,7 +15,7 @@
 }%
 %
 \only<?(X2.range)>{%
-  \BealoverReset{W2}%
+  \BeanovesReset{W2}%
   {
   \setbeamercovered{transparent=30}
   \begin{itemize} [<?(++W2)>]
@@ -28,7 +28,7 @@
 &
 \begin{myCodeBox}[baseline=5.5\baselineskip]{l}%
     \backslash begin \{ frame \}\\
-    \backslash Bealover \{\\
+    \backslash Beanoves \{\\
      \ \ {\color{MyGreen}\bfseries Water = 1 : 3,}\\
     \}\\
     \alt<?(X1.range)>{%
@@ -63,7 +63,8 @@
     \backslash end \{frame\}
   \end{myCodeBox}
 \end{tabular}
-\BealoverSticky<?(Sticky1a.range)>(current page.south){0.75\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\Sticky<?(Sticky1a.range)>(current page.south)[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\begin{minipage}{0.75\textwidth}
 \vspace{-0.5\baselineskip}%
 \begin{itemize}
 \item[\myBulb]To uncover items one at a time,
@@ -74,16 +75,19 @@
 advanced overlay specifications.
 }
 \end{itemize}
+\end{minipage}
 }%
-\BealoverSticky<?(Sticky1b.range)>(current page.south){0.7\textwidth}[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\Sticky<?(Sticky1b.range)>(current page.south)[anchor=south,yshift=1.5\baselineskip]{\bfseries%
+\begin{minipage}{0.7\textwidth}
 \vspace{-0.5\baselineskip}%
 \begin{itemize}
 \item[\myBulb]Notice how the lines of code are hilighted\\at the same time the items are uncovered...
 \end{itemize}
+\end{minipage}
 }%
 \transpush<?(Sticky2a.1)>[direction=90]
-\BealoverReset{Sticky2a}
-\BealoverSticky<?(Sticky2a.range)>(current page.south){0.7\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
+\BeanovesReset{Sticky2a}
+\Sticky<?(Sticky2a.range)>(current page.south)[anchor=south,yshift=1\baselineskip]{\bfseries\begin{minipage}{0.7\textwidth}%
 \vspace{-0.5\baselineskip}%
 \begin{itemize}
 \item[\myBulb]Managing transparency is straightforward
@@ -94,11 +98,11 @@ advanced overlay specifications.
 beamer's facilities.%
 }%
 \end{itemize}
-}%
-\BealoverSticky<?(Sticky2b.range)>(current page.south){0.7\textwidth}[anchor=south,yshift=1\baselineskip]{\bfseries%
-\vspace{-0.5\baselineskip}%
+\end{minipage}}%
+\Sticky<?(Sticky2b.range)>(current page.south)[anchor=south,yshift=1\baselineskip]{\bfseries\begin{minipage}{0.7\textwidth}%
 \begin{itemize}
 \item[\myBulb]Once again the code is properly hilighted to\\illustrate the behavior of the itemized list...
 \end{itemize}
+\end{minipage}
 }%
 %

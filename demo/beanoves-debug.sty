@@ -672,6 +672,15 @@
   \seq_map_inline:Nn \l__bnvs_a_seq {
     \prop_gremove:Nn \g__bnvs_prop { ##1 }
   }
+  \seq_clear:N \l__bnvs_a_seq
+  \prop_map_inline:Nn \g__bnvs_prop {
+    \regex_match:nnT { /V$ } { ##1 } {
+      \seq_put_right:Nn \l__bnvs_a_seq { ##1 }
+    }
+  }
+  \seq_map_inline:Nn \l__bnvs_a_seq {
+    \prop_put:Nnn \g__bnvs_prop { ##1 } { \q_nil }
+  }
   \__bnvs_group_end:
 }
 \cs_generate_variant:Nn \__bnvs_gremove_cache:nn { nV }
@@ -777,6 +786,7 @@
   \__bnvs_v_gclear:
   \bool_set_true:N \l__bnvs_in_frame_bool
   \__bnvs_DEBUG_a:nn {THIS_IS_BEFORE} {}
+  \BeanovesLogGProp
 }
 \AddToHook{env/beamer@frameslide/after}{
   \bool_set_false:N \l__bnvs_in_frame_bool
@@ -2014,6 +2024,7 @@
         }
       } {
         \quark_if_no_value:NTF \l__bnvs_a_tl {
+\BeanovesLogGProp
           \__bnvs_fatal:n {Circular~definition:~#1}
         } {
 \__bnvs_DEBUG:x { ...\string \__bnvs_raw_value:nNTF...NOT~CACHED~RETURN...}

@@ -6,12 +6,12 @@
 
 \RequirePackage{demo}
 
-\CatchFileDef{\useMyFacts}{frames/2-beamer facts}{}
 \CatchFileDef{\useMyIntroduction}{frames/introduction}{}
+\CatchFileDef{\useMyFacts}{frames/2-beamer facts}{}
 \CatchFileDef{\useMyStepI}{frames/step1}{}
 \CatchFileDef{\useMyStepII}{frames/step2}{}
-\CatchFileDef{\useMyStepIII}{frames/step3}{}
 \CatchFileDef{\useMyChronologyII}{frames/chronology2}{}
+\CatchFileDef{\useMyStepIII}{frames/step3}{}
 \CatchFileDef{\useMyChronologyIII}{frames/chronology3}{}
 \CatchFileDef{\useMyPractice}{frames/practice}
 
@@ -126,7 +126,6 @@
 %{Beanoves example: Uncovered items + images}
 %{\large Step back}
 %\transpush[direction=270]
-%\transpush[direction=270]
 %\only<1-2> {
 %  \useMyStepIII
 %}
@@ -169,7 +168,7 @@
 }
 \begin{frame}
 {Beanoves manual}
-{\large Defining logical overlay ranges}
+{\large Defining named overlay sets}
 \transpush[direction=180]
 \begin{myCodeBox}{l}%
 \string\Beanoves \{\\
@@ -283,7 +282,7 @@ Revisit the example...\\
 \begin{minipage}{0.45\textwidth}
 If the duration of the Air section happens to change,\\
 \visible<?(Example.next)>{%
-all the integer value automatically apdate
+all the integer value automatically update
 }
 \end{minipage}
 }%
@@ -362,7 +361,7 @@ where ``\texttt{-}'' stands for a dash and not a minus sign.
 \visible<2->{%
 Range queries and beamer ranges must not be combined like in \myInlineCode{?(Air.range)-10}, leading to the incorrect syntax \myInlineCode{1-2-10}.
 }
-\BeanovesSticky<?(Sticky)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
+\Sticky<?(Sticky)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
 \begin{minipage}{0.75\textwidth}
 \myBulb\ The middle slide of the Air topic is
 \begin{center}\myInlineCode*{?((Air.1+Air.last)/2)}.\end{center}
@@ -372,14 +371,14 @@ Range queries and beamer ranges must not be combined like in \myInlineCode{?(Air
 }%
 \end{frame}
 %
-\begin{frame}
-{Beanoves manual}
-{\large Incremental specifications}
 \Beanoves {
   Main = 2 : 4,
   Example = 0:0,
   Sticky = Main.next,
 }
+\begin{frame}
+{Beanoves manual}
+{\large Incremental specifications}
 \begin{myCodeBox}{l}%
 \backslash begin \{frame\}\\
 \backslash Beanoves \{\\
@@ -397,24 +396,24 @@ Range queries and beamer ranges must not be combined like in \myInlineCode{?(Air
 }\\
 \}
 \end{myCodeBox}
-Each logical overlay range has a current slide which number is \myEmph{cursor}, with dedicated alias and operations.
+Each logical overlay range has a current slide which number is \myEmph{counter}, with dedicated alias and operations.
 Within a specification query:
 \begin{itemize}
 \item
 \only<-?(++Main-1)>{\transparent{0.3}}%
-\myInlineCode*{\myMeta{name\myCodek}}, with not following ``\myInlineCode{.}'', is an alias for the \myEmph{cursor}
+\myInlineCode*{\myMeta{name\myCodek}}, with no trailing ``\myInlineCode{.}'', is an alias for the \myEmph{counter}
 \item
 \only<-?(++Main-1)>{\transparent{0.3}}%
-\myInlineCode*{++\myMeta{name\myCodek}} stands for the \myEmph{cursor} once incremented by 1
+\myInlineCode*{++\myMeta{name\myCodek}} stands for the \myEmph{counter} once incremented by 1
 \item
 \only<-?(++Main-1)>{\transparent{0.3}}%
-\myInlineCode*{\myMeta{name\myCodek}+=\myMeta{i}} stands for the \myEmph{cursor} once incremented by \myMeta{i}.
+\myInlineCode*{\myMeta{name\myCodek}+=\myMeta{i}} stands for the \myEmph{counter} once incremented by \myMeta{i}.
 \item
 \only<-?(++Main-1)>{\transparent{0.3}}%
-\myInlineCode*{\myMeta{name\myCodek}.reset} stands for the \myEmph{cursor} once reset.
+\myInlineCode*{\myMeta{name\myCodek}.reset} stands for the \myEmph{counter} once reset to its initial value.
 \end{itemize}
 %
-\BeanovesSticky<?(Sticky)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
+\Sticky<?(Sticky)>[anchor=south,yshift=1.5\baselineskip](current page.south){\bfseries%
 \begin{minipage}{0.5\textwidth}
 \myWatch\ Revisit the example...
 \end{minipage}

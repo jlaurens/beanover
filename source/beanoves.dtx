@@ -127,7 +127,7 @@ and the derived files           beanoves.ins,
 \changes{v1.0}{2023/01/07}{First public release}
 \begin{abstract}
 This package allows the management of multiple named slide number sets in \pkg{beamer} documents.
-Named slide number sets are very handy both during edition and to manage complex and variable \pkg{beamer} overlay specifications. In particular, they allow to replace raw numbers in \pkg{beamer} |<...>| overlay specifications by logical identifiers. Demonstration files are \href[pdfnewwindow]{https://github.com/jlaurens/beanoves/tree/main/demo}{available online} as part of the
+Named slide number sets are very handy both during edition and to manage complex and variable \pkg{beamer} overlay specifications. In particular, they allow to replace raw numbers in \pkg{beamer} |<...>| overlay specifications by logical identifiers. Demonstration files are \href[pdfnewwindow]{https://github.com/jlaurens/beanoves/tree/main/demo}{available for download} as part of the
 \href[pdfnewwindow]{https://github.com/jlaurens/beanoves/}{development repository}.
 \end{abstract}
 %
@@ -380,40 +380,42 @@ For example
 %
 \end{description}
 \subsection{Counters}
-For each named overlay set defined, we have an implicit index counter starting at 1,
+Each named overlay set defined has a dedicated value counter
+which is some kind of variable that can be used and incremented.
+A simple \texttt{\meta{name}} \emph{named value reference} is resolved into
+the position of this value counter.
+For each frame, this variable is initialized to \texttt{\meta{name}.first} when finite or \texttt{\meta{name}.last} otherwise.
+
+For each named overlay set defined, we also have an implicit index counter always starting at 1,
 its actual value is an integer denoted \meta{n}.
-The \texttt{\meta{name}.n} \emph{named counter reference} is resolved into \texttt{\meta{name}.\meta{n}},
+The \texttt{\meta{name}.n} \emph{named index reference} is resolved into \texttt{\meta{name}.\meta{n}},
 which in turn is resolved according to the preceding rules.
 %
 
-Each named overlay set defined also has a dedicated value counter
-which is some kind of variable that can be used and incremented.
-A simple \texttt{\meta{name}} reference is resolved into
-the position of this counter, which is the value of the counter bounded from below by the lowest value of the range and from above by the largest value of the range.
-For unbounded ranges, these values may be infinite.
-
-Additionnaly, resolution rules are provided for the \emph{named index references}:
-\begin{description}
-\item[\ttfamily\meta{name}.n+=\meta{integer expression}]: resolve \meta{integer expression} into \meta{integer}, advance the implicit index counter associate to \meta{name} by \meta{integer} and use the resolution of \texttt{\meta{name}.n}.
-
-Here \meta{integer expression} denotes the longest character sequence with no space%
-\footnote{The parser for algebraic expression is very rudimentary.}.
-\item[\ttfamily\meta{name}.++n] as well as \texttt{++\meta{name}.n}: advance the implicit index counter associate to \meta{name} by 1 and use the resolution of \texttt{\meta{name}.n},
-\item[\ttfamily\meta{name}.n++]: use the resolution of \texttt{\meta{name}.n} and increment the implicit index counter associate to \meta{name} by 1.
-\end{description}
-
-We have resolution rules as well for the \emph{named value references}:
+Additionnaly, resolution rules are provided for the \emph{named value references}:
 \begin{description}
 \item[\ttfamily\meta{name}+=\meta{integer expression}]: resolve \meta{integer expression} into \meta{integer}, advance the value counter by \meta{integer}
 and use the new position.
-Here again, \meta{integer expression} is the longest character sequence with no space.
+Here \meta{integer expression} is the longest character sequence with no space%
+\footnote{The parser for algebraic expression is very rudimentary.}.
 \item[\ttfamily++\meta{name}]: advance the value counter for \meta{name} by 1 and use the new position.
 \item[\ttfamily\meta{name}++]: use the actual position
 and advance the value counter for \meta{name} by 1.
 \end{description}
 For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been properly defined with a starting value and a length.
 
+We have resolution rules as well for the \emph{named index references}:
+\begin{description}
+\item[\ttfamily\meta{name}.n+=\meta{integer expression}]: resolve \meta{integer expression} into \meta{integer}, advance the implicit index counter associate to \meta{name} by \meta{integer} and use the resolution of \texttt{\meta{name}.n}.
+
+Here again, \meta{integer expression} denotes the longest character sequence with no space.
+\item[\ttfamily\meta{name}.++n] as well as \texttt{++\meta{name}.n}: advance the implicit index counter associate to \meta{name} by 1 and use the resolution of \texttt{\meta{name}.n},
+\item[\ttfamily\meta{name}.n++]: use the resolution of \texttt{\meta{name}.n} and increment the implicit index counter associate to \meta{name} by 1.
+\end{description}
+
 In order to decrement a counter, one can increment with a negative value, no dedicated syntax is provided yet.
+
+These counters are reset to their default value for each new frame, which is 1 for the \texttt{\meta{name}.n} counter, and whichever \texttt{\meta{name}.first} or \texttt{\meta{name}.last} is defined for the \texttt{\meta{name}} counter.
 \subsection{Dotted paths}
 \begin{description}
 \item[\texttt{\meta{name}.\meta{i} = \meta{range spec}}]
@@ -612,8 +614,13 @@ See \url{https://github.com/jlaurens/beanoves}.
 % use whereas the latter contains supplemental debugging and testing
 % facilities which are intentionally left undocumented. 
 % \begin{bnvs.gobble}
+%<*!debug>
+\cs_new:Npn \BeanovesDebugOn {
+  \__bnvs_warning:x { Debugging~mode~requires~\jobname-debug.sty,~typeset~\jobname.dtx}
+}
+\cs_new:Npn \BeanovesDebugOff { \BeanovesDebugOn }
+%</!debug>
 %<*!gubed>
-
 \cs_set:Npn \__bnvs_log_gprop:n #1 {
   \int_compare:nNnT { \prop_count:N \g__bnvs_prop } < {
     \tl_if_empty:nTF { #1 } { 20 } { #1 }
@@ -648,10 +655,9 @@ See \url{https://github.com/jlaurens/beanoves}.
 \cs_new:Npn \__bnvs_DEBUG_off: {
   \cs_set:Npn \__bnvs_DEBUG:n { \use_none:n }
 }
-\cs_new:Npn \__bnvs_DEBUG_off_wrong: {
-  \cs_set_eq:NN \__bnvs_DEBUG:n \use_none:n
-}
 \__bnvs_DEBUG_off:
+\cs_set_eq:NN \BeanovesDebugOn \__bnvs_DEBUG_on:
+\cs_set_eq:NN \BeanovesDebugOff \__bnvs_DEBUG_off:
 \cs_generate_variant:Nn \__bnvs_DEBUG:n { x, V }
 \int_zero_new:N \l__bnvs_group_int
 \cs_set:Npn \__bnvs_group_begin: {
@@ -700,7 +706,7 @@ See \url{https://github.com/jlaurens/beanoves}.
   reset .code:n = \reset:n { #1 },
   ignore .bool_set:N = \l__bnvs_test_ignore_bool,
   ignore .default:n = true,
-  noigre .code:n = {},
+  ignore .code:n = {}, % comment this line to ignore tests
 }
 \cs_new:Npn \__bnvs_test:n #1 {
   \cs_set:Npn \reset:n ##1 {
@@ -1139,9 +1145,9 @@ See \url{https://github.com/jlaurens/beanoves}.
 % We make heavy use of local variables and function scopes.
 % Many functions are executed within a \TeX\ group,
 % which ensures no name collision with the caller stack.
-% In that case, variables need not follow exactly the \LaTeX3\ naming convention:
-% we do not specialize with the module name.
-% On execution, next initialization instructions declare the variables as side effect.
+% The number of variables used has not been optimized,
+% nor the \TeX\ groups used.
+% Optimization often goes against readability.
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
 \tl_new:N \l__bnvs_id_last_tl
@@ -1317,7 +1323,6 @@ See \url{https://github.com/jlaurens/beanoves}.
 %    \begin{macrocode}
 }
 \cs_new:Npn \__bnvs_gclear:n #1 {
-  \__bnvs_gremove:nn {} { #1 }
   \clist_map_inline:nn { A, L, Z, V, n } {
     \__bnvs_gremove:nn { ##1 } { #1 }
   }
@@ -1352,7 +1357,7 @@ See \url{https://github.com/jlaurens/beanoves}.
 % \cs{__bnvs_if_in_p:nn} \marg{subkey} \marg{key}
 % \cs{__bnvs_if_in:nnTF} \marg{subkey} \marg{key} \Arg{true code} \Arg{false code}
 % \end{syntax}
-% Convenient shortcuts to test for the existence of \texttt{\meta{subkey}/\meta{key}}, it makes the code more concise and readable.
+% Convenient shortcuts to test for the existence of \texttt{\meta{key}/\meta{subkey}}, it makes the code more concise and readable.
 % \end{function}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
@@ -1369,7 +1374,7 @@ See \url{https://github.com/jlaurens/beanoves}.
 % \end{bnvs.macrocode}
 % \begin{function}[TF]{\__bnvs_get:nnN}
 % \begin{syntax}
-% \cs{__bnvs_get:nnNTF} \marg{key} \meta{tl variable} \Arg{true code} \Arg{false code}
+% \cs{__bnvs_get:nnNTF} \marg{subkey} \marg{key} \meta{tl variable} \Arg{true code} \Arg{false code}
 % \end{syntax}
 % Convenient shortcuts to retrieve the value with branching, it makes the code more concise and readable.
 % Execute \meta{true code} when the item is found, \meta{false code} otherwise.
@@ -1469,6 +1474,27 @@ See \url{https://github.com/jlaurens/beanoves}.
   \seq_map_inline:Nn \l__bnvs_a_seq {
     \prop_gremove:Nn \g__bnvs_prop { ##1 } 
   }
+  \seq_clear:N \l__bnvs_a_seq
+  \prop_map_inline:Nn \g__bnvs_prop {
+    \regex_match:nnT { /V$ } { ##1 } {
+      \seq_put_right:Nn \l__bnvs_a_seq { ##1 }
+    }
+  }
+  \seq_map_inline:Nn \l__bnvs_a_seq {
+    \prop_get:NnNT \g__bnvs_prop { ##1 } \l__bnvs_a_tl {
+      \quark_if_no_value:NTF \l__bnvs_a_tl {
+        \prop_put:Nnn \g__bnvs_prop { ##1 } { \q_nil }
+      }
+    }
+  }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
+%<*!gubed>
+\__bnvs_DEBUG:x { \string \__bnvs_v_gclear: }
+\__bnvs_log_gprop:n {}
+%</!gubed>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
   \__bnvs_group_end:
 }
 \cs_generate_variant:Nn \__bnvs_gremove_cache:nn { nV }
@@ -2329,20 +2355,17 @@ See \url{https://github.com/jlaurens/beanoves}.
 % \begin{bnvs.test}{banner=\string\__bnvs_parse:n, noigre}
 % \bool_set_true:N \l__bnvs_parse_bool
 % \__bnvs_parse:n X
-% \cs_set:Npn \Test:nnn #1 #2 #3 {
+% \cs_set:Npn \Test:nn #1 #2 {
 %   \__bnvs_assert_equal:xxn { \__bnvs_item:nn V  { ?!#1 } } { #2 } { #1 }
-%   \__bnvs_assert_equal:xxn { \__bnvs_item:nn {} { ?!#1 } } { #3 } { #1' }
 % }
-% \Test:nnn { X } { 1 } { 1 }
+% \Test:nn { X } { 1 }
 % \__bnvs_gput:nnn V  { ?!Y } { 2 }
-% \__bnvs_gput:nnn {} { ?!Y } { 3 }
 % \__bnvs_parse:n Y
-% \Test:nnn { Y } { 1 } { 1 }
+% \Test:nn { Y } { 1 }
 % \__bnvs_gput:nnn V  { ?!Z } { 2 }
-% \__bnvs_gput:nnn {} { ?!Z } { 3 }
 % \bool_set_false:N \l__bnvs_parse_bool
 % \__bnvs_parse:n Z
-% \Test:nnn { Z } { 2 } { 3 }
+% \Test:nn { Z } { 2 }
 % \end{bnvs.test}
 %
 % \begin{function}[TF]{\__bnvs_parse_range:nNNN}
@@ -2523,10 +2546,8 @@ See \url{https://github.com/jlaurens/beanoves}.
   \bool_if:NTF \l__bnvs_parse_bool {
     \__bnvs_gclear:n { #1 }
     \__bnvs_gput:nnn V  { #1 } { 1 }
-    \__bnvs_gput:nnn {} { #1 } { 1 }
   } {
     \__bnvs_gprovide:nnn V  { #1 } { 1 }
-    \__bnvs_gprovide:nnn {} { #1 } { 1 }
   }
 %    \end{macrocode}
 % \begin{bnvs.gobble}
@@ -2566,10 +2587,8 @@ See \url{https://github.com/jlaurens/beanoves}.
     \bool_if:NTF \l__bnvs_parse_bool {
       \__bnvs_gclear:n { #1 }
       \__bnvs_gput:nnn V  { #1 } { #2 }
-      \__bnvs_gput:nnn {} { #1 } { #2 }
     } {
       \__bnvs_gprovide:nnn V  { #1 } { #2 }
-      \__bnvs_gprovide:nnn {} { #1 } { #2 }
     }
 %    \end{macrocode}
 % \begin{bnvs.gobble}

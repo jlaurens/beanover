@@ -1,0 +1,44 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX proot = ...
+
+\documentclass{beamer}
+
+\RequirePackage{demo}
+
+\begin{document}
+\Beanoves {
+  Main = 2 : 4,
+}
+\ExplSyntaxOn
+\__bnvs_DEBUG_off:
+\ExplSyntaxOff
+\begin{frame}
+{Beanoves demo}
+{\large Counters}
+Frame: \insertframenumber /
+Slide: \insertslidenumber /
+\begin{myCodeBox}{l}%
+\string\Beanoves \{
+  Main = 2 : 4,
+\}
+\end{myCodeBox}
+On slide transparent
+\begin{itemize}
+\item
+\only<-?(Main++-1)>{\transparent{0.3}}%
+\myInlineCode*{\myMeta{name\myCodek}}, with no trailing ``\myInlineCode{.}'', is an alias for the \myEmph{counter}
+\item
+\only<-?(Main++-1)>{\transparent{0.3}}%
+\myInlineCode*{++\myMeta{name\myCodek}} stands for the \myEmph{counter} once incremented by 1
+\item
+\only<-?(Main++-1)>{\transparent{0.3}}%
+\myInlineCode*{\myMeta{name\myCodek}+=\myMeta{i}} stands for the \myEmph{counter} once incremented by \myMeta{i}.
+\item
+\only<-?(Main++-1)>{\transparent{0.3}}%
+\myInlineCode*{\myMeta{name\myCodek}.reset} stands for the \myEmph{counter} once reset to its initial value.
+\end{itemize}
+\only<-?(Main-1)>{}
+\end{frame}
+
+\end{document}
