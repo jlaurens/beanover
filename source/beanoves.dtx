@@ -96,7 +96,7 @@ and the derived files           beanoves.ins,
 %<*driver>
 % !TeX encoding = UTF-8
 % !TeX program = lualatex
-% ! TeX proot = ...
+% !TeX proot = ...
 \PassOptionsToPackage{enable-debug}{expl3}
 \documentclass{l3doc}
 \RequirePackage{hyperref}
@@ -115,7 +115,7 @@ and the derived files           beanoves.ins,
 \GetFileInfo{\jobname-debug.sty}
 \date{\fileversion \qquad \filedate}
 \NewDocumentEnvironment{bnvs.macrocode}{}{
- \setlength{\topsep}{0.4em plus 0.15 em minus 0.15 em}
+  \setlength{\topsep}{0.4em plus 0.15 em minus 0.15 em}
   \begin{trivlist}
   \setlist[trivlist]{nosep}
   \item\vspace{-\baselineskip}
@@ -126,8 +126,8 @@ and the derived files           beanoves.ins,
 \maketitle
 \changes{v1.0}{2009/10/06}{First public release}
 \begin{abstract}
-This package allows the management of multiple slide number lists in |beamer| documents.
-Slide number lists are very handy both during edition and to manage complex and variable \pkg{beamer} overlay specifications.
+This package allows the management of multiple named slide number sets in \pkg{beamer} documents.
+Named slide number sets are very handy both during edition and to manage complex and variable \pkg{beamer} overlay specifications. In particular, they allow to replace raw numbers in \pkg{beamer} |<...>| overlay specifications by logical identifiers.
 \end{abstract}
 %
 \tableofcontents
@@ -174,7 +174,7 @@ overlay specifications have been extended.
 \end{document}
 \end{tcblisting}
 %
-On line 4, we use the |\Beanoves| command to declare named overlay sets.
+On line 4, we use the |\Beanoves| command to declare \emph{named overlay sets}.
 On line 5, we declare an overlay set named `A', which is a range starting at slide 1 and with length 2.
 On line 12, the extended \emph{named overlay specification} \texttt{?(A.1)} stands for 1 because 1 is the first index of the overlay set named A.
 On line 15, \texttt{?(A.2)} stands for 2
@@ -197,14 +197,14 @@ The main practical interest is that such sets may be defined relative to one ano
 Finally, we can use these lists to build and organize \pkg{beamer} overlay
 specifications logically.
 \subsection{Named overlay reference}
-|A.1|, |C.2| are \emph{named overlay references} as well as |A| and |Y!C.2|.
+|A.1|, |C.2| are \emph{named overlay references}, as well as |A| and |Y!C.2|.
 More precisely, they are string identifiers, each one representing
-a welle defined static integer to be used in \pkg{beamer} overlay specifications.
+a well defined static integer to be used in \pkg{beamer} overlay specifications.
 They can take one of the next forms.
 \begin{description}
 \item[\texttt{\meta{short name}}]: like |A| and |C|,
 \item[\texttt{\meta{frame id}|!|\meta{short name}}]: denoted by \emph{qualified names}, like |X!A| and |Y!C|.
-\item[\texttt{\meta{short name}\meta{integer path}}]:
+\item[\texttt{\meta{short name}\meta{dotted path}}]:
   denoted by \emph{full names} like |A.1| and |C.2|,
 \item[\texttt{\meta{frame id}|!|\meta{short name}\meta{dotted path}}]:
   denoted by \emph{qualified full names} like |X!A.1| and |Y!C.2|.

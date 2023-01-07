@@ -620,7 +620,6 @@
 \__bnvs_log_gprop:n {}
 }
 \cs_generate_variant:Nn \__bnvs_gput:nnn { nnV }
-\cs_generate_variant:Nn \__bnvs_gremove:nn { nV }
 \prg_new_conditional:Npnn \__bnvs_if_in:nn #1 #2 { p, T, F, TF } {
   \prop_if_in:NnTF \g__bnvs_prop { #2 / #1 } {
     \prg_return_true:
@@ -661,21 +660,7 @@
     \__bnvs_gremove_cache:nn { ##1 } { #1 }
   }
 }
-\cs_new:Npn \__bnvs_v_gclear: {
-  \__bnvs_group_begin:
-  \seq_clear:N \l__bnvs_a_seq
-  \prop_map_inline:Nn \g__bnvs_prop {
-    \regex_match:nnT { //V$ } { ##1 } {
-      \seq_put_right:Nn \l__bnvs_a_seq { ##1 }
-    }
-  }
-  \seq_map_inline:Nn \l__bnvs_a_seq {
-    \prop_gremove:Nn \g__bnvs_prop { ##1 }
-  }
-  \__bnvs_group_end:
-}
-\cs_generate_variant:Nn \__bnvs_gremove_cache:nn { nV }
-\cs_generate_variant:Nn \__bnvs_gput_cache:nnn { nVn, nnV }
+\cs_generate_variant:Nn \__bnvs_gput_cache:nnn { nnV }
 \prg_new_conditional:Npnn \__bnvs_if_in_cache:nn #1 #2 { p, T, F, TF } {
   \__bnvs_if_in:nnTF { / #1 } { #2 } {
     \prg_return_true:
@@ -770,11 +755,12 @@
 \RequirePackage{keyval}
 \define@key{beamerframe}{beanoves~id}[]{
   \tl_set:Nx \l__bnvs_id_last_tl { #1 ! }
-  \__bnvs_DEBUG_a:nn {THIS_IS_KEY} {}
+  \__bnvs_DEBUG_on:
+  \__bnvs_DEBUG:x {THIS_IS_KEY}
+  \__bnvs_DEBUG_off:
 }
 \AddToHook{env/beamer@frameslide/before}{
   \__bnvs_n_gclear:
-  \__bnvs_v_gclear:
   \bool_set_true:N \l__bnvs_in_frame_bool
   \__bnvs_DEBUG_a:nn {THIS_IS_BEFORE} {}
 }
@@ -2747,52 +2733,38 @@
     \__bnvs_group_end: \l__bnvs_ans_tl
   }
 }
-\NewDocumentCommand \BeanovesReset { s O{} m } {
-  \__bnvs_id_name_set:nNNTF { #3 } \l__bnvs_id_tl \l__bnvs_name_tl {
-    \IfBooleanTF { #1 } {
-      \exp_args:NV \__bnvs_reset_all:nn
-    } {
-      \exp_args:NV \__bnvs_reset:nn
-    }
-    \l__bnvs_name_tl { #2 }
+\NewDocumentCommand \BeanovesReset { s O{1} m } {
+  \IfBooleanTF { #1 } {
+    \__bnvs_reset_all:nn
   } {
-    \__bnvs_warning:n { Unknown~name:~#1 }
+    \__bnvs_reset:nn
   }
+                     { #2 } { #3 }
   \ignorespaces
 }
 \cs_new:Npn \__bnvs_reset_all:nn #1 #2 {
   \bool_if:nTF {
-       \__bnvs_if_in_p:nn A { #1 }
-    || \__bnvs_if_in_p:nn Z { #1 }
-    || \__bnvs_if_in_p:nn V { #1 }
+       \__bnvs_if_in_p:nn A { #2 }
+    || \__bnvs_if_in_p:nn Z { #2 }
+    || \__bnvs_if_in_p:nn V { #2 }
   } {
-\__bnvs_DEBUG:x { \string\__bnvs_reset_all:nn }
-\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
-\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
-    \__bnvs_gremove_cache:nn A { #1 }
-    \__bnvs_gremove_cache:nn L { #1 }
-    \__bnvs_gremove_cache:nn Z { #1 }
-    \__bnvs_gremove_cache:nn P { #1 }
-    \__bnvs_gremove_cache:nn N { #1 }
-    \__bnvs_gremove_cache:nn V { #1 }
-    \tl_if_empty:nF { #2 } {
-      \__bnvs_gput_cache:nnn V { #1 } { #2 }
-    }
+    \__bnvs_gremove_cache:nn A { #2 }
+    \__bnvs_gremove_cache:nn L { #2 }
+    \__bnvs_gremove_cache:nn Z { #2 }
+    \__bnvs_gremove_cache:nn P { #2 }
+    \__bnvs_gremove_cache:nn N { #2 }
+    \__bnvs_gremove:nn V { #2 }
+    \__bnvs_gput_cache:nnn V { #2 } { #1 }
   } {
-    \__bnvs_warning:n { Unknown~name:~#1 }
+    \__bnvs_warning:n { Unknown~name:~#2 }
   }
 }
 \cs_new:Npn \__bnvs_reset:nn #1 #2 {
-  \__bnvs_if_in:nnTF V { #1 } {
-\__bnvs_DEBUG:x { \string\__bnvs_reset:nn }
-\__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
-\__bnvs_DEBUG:x { VALUE = / \tl_to_str:n { #2 } / }
-    \__bnvs_gremove_cache:nn V { #1 }
-    \tl_if_empty:nF { #2 } {
-      \__bnvs_gput_cache:nnn V { #1 } { #2 }
-    }
+  \__bnvs_if_in:nnTF V { #2 } {
+    \__bnvs_gremove:nn V { #2 }
+    \__bnvs_gput_cache:nnn V { #2 } { #1 }
   } {
-    \__bnvs_warning:n { Unknown~name:~#1 }
+    \__bnvs_warning:n { Unknown~name:~#2 }
   }
 }
 \makeatother
