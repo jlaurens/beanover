@@ -9,7 +9,7 @@
 \NeedsTeXFormat{LaTeX2e}[2020/01/01]
 \ProvidesExplPackage
   {beanoves-debug}
-  {2022/10/28}
+  {2023/01/07}
   {1.0}
   {Named overlay specifications for beamer}
 \msg_new:nnn { beanoves } { :n } { #1 }
@@ -29,7 +29,6 @@
 \cs_new:Npn \__bnvs_fatal:x {
   \msg_fatal:nnx { beanoves } { :n }
 }
-
 \cs_set:Npn \__bnvs_log_gprop:n #1 {
   \int_compare:nNnT { \prop_count:N \g__bnvs_prop } < {
     \tl_if_empty:nTF { #1 } { 20 } { #1 }
@@ -64,10 +63,9 @@
 \cs_new:Npn \__bnvs_DEBUG_off: {
   \cs_set:Npn \__bnvs_DEBUG:n { \use_none:n }
 }
-\cs_new:Npn \__bnvs_DEBUG_off_wrong: {
-  \cs_set_eq:NN \__bnvs_DEBUG:n \use_none:n
-}
 \__bnvs_DEBUG_off:
+\cs_set_eq:NN \BeanovesDebugOn \__bnvs_DEBUG_on:
+\cs_set_eq:NN \BeanovesDebugOff \__bnvs_DEBUG_off:
 \cs_generate_variant:Nn \__bnvs_DEBUG:n { x, V }
 \int_zero_new:N \l__bnvs_group_int
 \cs_set:Npn \__bnvs_group_begin: {
@@ -111,7 +109,7 @@
   reset .code:n = \reset:n { #1 },
   ignore .bool_set:N = \l__bnvs_test_ignore_bool,
   ignore .default:n = true,
-  noigre .code:n = {},
+  ignore .code:n = {}, % comment this line to ignore tests
 }
 \cs_new:Npn \__bnvs_test:n #1 {
   \cs_set:Npn \reset:n ##1 {
@@ -605,7 +603,6 @@
 \__bnvs_log_gprop:n {}
 }
 \cs_new:Npn \__bnvs_gclear:n #1 {
-  \__bnvs_gremove:nn {} { #1 }
   \clist_map_inline:nn { A, L, Z, V, n } {
     \__bnvs_gremove:nn { ##1 } { #1 }
   }
@@ -679,8 +676,14 @@
     }
   }
   \seq_map_inline:Nn \l__bnvs_a_seq {
-    \prop_put:Nnn \g__bnvs_prop { ##1 } { \q_nil }
+    \prop_get:NnNT \g__bnvs_prop { ##1 } \l__bnvs_a_tl {
+      \quark_if_no_value:NT \l__bnvs_a_tl {
+        \prop_put:Nnn \g__bnvs_prop { ##1 } { \q_nil }
+      }
+    }
   }
+\__bnvs_DEBUG:x { \string \__bnvs_v_gclear: }
+\__bnvs_log_gprop:n {}
   \__bnvs_group_end:
 }
 \cs_generate_variant:Nn \__bnvs_gremove_cache:nn { nV }
@@ -786,7 +789,6 @@
   \__bnvs_v_gclear:
   \bool_set_true:N \l__bnvs_in_frame_bool
   \__bnvs_DEBUG_a:nn {THIS_IS_BEFORE} {}
-  \BeanovesLogGProp
 }
 \AddToHook{env/beamer@frameslide/after}{
   \bool_set_false:N \l__bnvs_in_frame_bool
@@ -987,10 +989,8 @@
   \bool_if:NTF \l__bnvs_parse_bool {
     \__bnvs_gclear:n { #1 }
     \__bnvs_gput:nnn V  { #1 } { 1 }
-    \__bnvs_gput:nnn {} { #1 } { 1 }
   } {
     \__bnvs_gprovide:nnn V  { #1 } { 1 }
-    \__bnvs_gprovide:nnn {} { #1 } { 1 }
   }
 \__bnvs_DEBUG:x { ...\string\__bnvs_parse_record:n }
 \__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
@@ -1009,10 +1009,8 @@
     \bool_if:NTF \l__bnvs_parse_bool {
       \__bnvs_gclear:n { #1 }
       \__bnvs_gput:nnn V  { #1 } { #2 }
-      \__bnvs_gput:nnn {} { #1 } { #2 }
     } {
       \__bnvs_gprovide:nnn V  { #1 } { #2 }
-      \__bnvs_gprovide:nnn {} { #1 } { #2 }
     }
 \__bnvs_DEBUG:x { ...\string\__bnvs_parse_record:nn...VALUE }
 \__bnvs_DEBUG:x { KEY = / \tl_to_str:n { #1 } / }
@@ -2024,7 +2022,6 @@
         }
       } {
         \quark_if_no_value:NTF \l__bnvs_a_tl {
-\BeanovesLogGProp
           \__bnvs_fatal:n {Circular~definition:~#1}
         } {
 \__bnvs_DEBUG:x { ...\string \__bnvs_raw_value:nNTF...NOT~CACHED~RETURN...}
@@ -2811,7 +2808,7 @@
 %% 
 %% beanoves --- beamer named overlay specifications
 %% 
-%% Copyright (C) 2022 by Jérôme LAURENS <jerome.laurens@u-bourgogne.fr>
+%% Copyright (C) 2023 by Jérôme LAURENS <jerome.laurens@u-bourgogne.fr>
 %% 
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License (LPPL), either
