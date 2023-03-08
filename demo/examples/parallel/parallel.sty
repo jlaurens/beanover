@@ -1,0 +1,74 @@
+% !TeX encoding = UTF-8
+% !TeX program = xelatex
+% !TeX root = ./parallel.tex
+
+\ProvidesExplPackage
+  {demo}
+  {2022/10/28}
+  {1.0}
+  {Local style for Beanoves demo}
+\ExplSyntaxOff
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\tcbset{
+  myCodeBox/.style= {
+    colframe=gray,
+    sharpish corners,
+    boxrule=2pt,
+    skin=enhanced,
+    drop fuzzy shadow=lightgray,
+    boxsep=0.25\baselineskip,
+    left=0mm,
+    right=0mm,
+    top=0mm,
+    bottom=0mm,
+  },
+  myShortCode/.style= {
+    colframe=gray,
+    sharpish corners,
+    boxrule=2pt,
+    skin=enhanced,
+    drop fuzzy shadow=lightgray,
+    boxsep=0mm,
+    left=0.25\baselineskip,
+    right=0.25\baselineskip,
+    top=0.2\baselineskip,
+    bottom=0.0\baselineskip,
+    nobeforeafter,
+    baseline=2mm,
+  },
+}
+\NewDocumentCommand\myShortCodeBox{O{}mm} {%
+  {%
+    \ttfamily\small
+    \setlength{\tabcolsep}{0mm}%
+    \tcbox[myShortCode,#1]{\begin{tabular}{#2}#3\end{tabular}}%
+  }%
+}
+\NewDocumentEnvironment {myCodeBox} { O{} m } {%
+  \begin{tcolorbox}[myCodeBox,#1]%
+  \begin{myLongCode}{#2}%
+} {%
+  \end{myLongCode}%
+  \end{tcolorbox}
+}
+\NewDocumentEnvironment {myLongCode} { m } {%
+  \bgroup
+  \setlength{\tabcolsep}{0mm}\ttfamily\small
+  \renewcommand\arraystretch{1}%
+  \begin{tabular} {#1}
+} {%
+  \end{tabular}
+  \egroup
+}
+
+\RequirePackage{../../beanoves}
+\RequirePackage{../../sticky}
+
+\RequirePackage{xcolor}
+\colorlet{MyGreen}{green!50!black}
+\colorlet{MyRed}{red!75!black}
+
+\DeclareRobustCommand \myPkg {\textsf}
+
