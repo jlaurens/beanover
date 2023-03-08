@@ -28,7 +28,7 @@
 }
 \usepgfmodule {nonlineartransformations}
 
-\DeclareHookRule{shipout/foreground}{textpos}{before}{my-sticky}
+\DeclareHookRule{shipout/foreground}{textpos}{before}{sticky}
 
 \pgfkeys {
   /Sticky/.style=/Sticky/.cd,
@@ -201,7 +201,7 @@
     \node [
       inner sep = 0mm,
       rotate=\myA,
-    ] at (C) {\tikz[baseline=(A.base)]\node[/Sticky/Note,#3](A){#4};};  
+    ] at (C) {\usebox{\@StickyBox}};  
   \end{tikzpicture}%
   \egroup
 }%

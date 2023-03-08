@@ -1,6 +1,6 @@
 % !TeX encoding = UTF-8
 % !TeX program = lualatex
-% !TeX root = ...
+% !TeX root = ./demo.tex
 
 \ProvidesExplPackage
   {demo}
@@ -103,6 +103,7 @@
 \RequirePackage{verbatimbox}
 \RequirePackage{catchfile}
 \RequirePackage{beanoves-debug}
+%\RequirePackage{beanoves}
 
 \RequirePackage{xcolor}
 \colorlet{MyGreen}{green!50!black}
@@ -222,4 +223,5 @@
   \group_end:
 }
 \ExplSyntaxOff
+\DeclareRobustCommand \myPkg {\textsf}
 
