@@ -1,10 +1,9 @@
 % !TeX encoding = UTF-8
-% !TeX program = pdflatex
+% !TeX program = xelatex
 % !TeX proot = ...
 
 \documentclass{beamer}
 \RequirePackage{parallel}
-\newenvironment{checkenv}{\only{\setbeamertemplate{itemize item}{X}}}{}
 \begin{document}
 \begin{frame}[
   beanoves = {A=1},
@@ -19,6 +18,25 @@ Two itemized lists uncovered in parallel
 \BeanovesReset{A}
 \setbeamercovered{transparent}
 \begin{itemize}[<?(++A)|check@?(A)>]
+\item A
+\item B
+\item C
+\item D
+\end{itemize}
+\end{frame}
+\begin{frame}[
+  beanoves = {A=2},
+]{Slide number \insertslidenumber}
+Post incrementation variant.
+\begin{itemize}[<?(A++)>]
+\item 1
+\item 2
+\item 3
+\item 4
+\end{itemize}
+\BeanovesReset{A}
+\setbeamercovered{transparent}
+\begin{itemize}[<?(A++)|check@?(A-1)>]
 \item A
 \item B
 \item C
