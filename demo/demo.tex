@@ -378,7 +378,6 @@ Range queries and beamer ranges must not be combined like in \myInlineCode{?(Air
 {Beanoves manual}
 {\large Incremental specifications}
 \begin{myCodeBox}{l}%
-\backslash begin \{frame\}\\
 \backslash Beanoves \{\\
 \phantom{xx}%
 \alt<?(Example.range)>{%
@@ -393,6 +392,7 @@ Range queries and beamer ranges must not be combined like in \myInlineCode{?(Air
 \phantom{xx}...
 }\\
 \}
+\backslash begin \{frame\}\\
 \end{myCodeBox}
 Each logical overlay range has a \myEmph{counter}, with dedicated alias and operations.
 Within a specification query:
@@ -438,9 +438,18 @@ Within a specification query:
 \begin{frame}
 {Beanoves manual}
 {\large Why aliases are helpful}
-\Beanoves {
-  Main = 1 : 2,
-}
+\begin{itemize}
+\item
+As soon as one leaves basic frame layouts to make presentations more attractive and efficient, then \myPkg{beanoves} aliases should come into play.
+\item
+One can organize the slides with logical names for a better understanding: aliases and integer expressions rather than raw integers make specifications more explicit
+\item
+Adding or removing a slide from one slide range does not significantly affect the other slide ranges.
+\end{itemize}
+\end{frame}
+\begin{frame}
+{Beanoves manual}
+{\large Where to go next}
 \begin{itemize}
 \item
 As soon as one leaves basic frame layouts to make presentations more attractive and efficient, then \myPkg{beanoves} aliases should come into play.
