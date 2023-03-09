@@ -674,6 +674,7 @@
   }
 }
 \prop_new:N \g__bnvs_prop
+\NewDocumentCommand\BeanovesLogGProp {O{20}} { \__bnvs_error:n {Only~with~beanoves-debug} }
 \BNVS_new:cpn { gput:nnn } #1 #2 {
   \prop_gput:Nnn \g__bnvs_prop { #2 / #1 }
 }

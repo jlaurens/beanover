@@ -3808,10 +3808,15 @@ end
   \BNVS_DEBUG_log_v_gprop:n {#1}
   \BNVS_DEBUG_log_n_gprop:n {#1}
 }
-\NewDocumentCommand\BeanovesLogGProp {O{20}} { \BNVS_DEBUG_log_gprop:n {#1} }
+\NewDocumentCommand\BeanovesLogGProp {O{20}} {
+  \BNVS_begin:
+  \BNVS_DEBUG_on:
+  \BNVS_DEBUG_log_gprop:n {#1}
+  \BNVS_end:
+}
 %</!final>
 %<*final>
-\NewDocumentCommand\BeanovesLogGProp {O{20}} { \BNVS_DEBUG_log_gprop:n {#1} }
+\NewDocumentCommand\BeanovesLogGProp {O{20}} { \__bnvs_error:n {Only~with~beanoves-debug} }
 %</final>
 % \end{bnvs.gobble}
 % \begin{function}{
