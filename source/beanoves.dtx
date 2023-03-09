@@ -1721,58 +1721,6 @@ end
 \cs_generate_variant:Nn \prg_generate_conditional_variant:Nnn { c }
 %    \end{macrocode}
 %    \begin{macrocode}
-\cs_new:Npn \BNVS_new_conditional_vn:cNnn #1 #2 #3 #4 {
-  \BNVS_new_conditional:cpnn { #1:vn } ##1 ##2 { #4 } {
-    \BNVS_use:Nvn #2 { ##1 } { #3 } { ##2 } {
-      \prg_return_true:
-    } {
-      \prg_return_false:
-    }
-  }
-}
-%    \end{macrocode}
-%    \begin{macrocode}
-\cs_new:Npn \BNVS_new_conditional_vn:cnn #1 #2 {
-  \BNVS_use:nc {
-    \BNVS_new_conditional_vn:cNnn { #1 }
-  } { #1:nn TF } { #2 }
-}
-%    \end{macrocode}
-% \begin{bnvs.test}{:N=\BNVS_new_conditional_vn:cnn, noigre}
-% \tl_set:Nn \l__bnvs_TEST_A_tl { S }
-% \BNVS_new_conditional:cpnn { TEST:nn } #1 #2 { T, F, TF } {
-%   \tl_if_eq:nnTF { #1 } { #2 } {
-%     \prg_return_true:
-%   } {
-%     \prg_return_false:
-%   }
-% }
-% \BNVS_new_conditional_vn:cnn { TEST } { tl } { T, F, TF }
-% \BNVS_use:c { TEST:vnTF } { TEST_A } { S } { } { \test_fail:n { 2 } }
-% \BNVS_use:c { TEST:vnT  } { TEST_A } { S } { }
-% \BNVS_use:c { TEST:vnF  } { TEST_A } { S }     { \test_fail:n { 3 } }
-% \BNVS_use:c { TEST:vnTF } { TEST_A } { F } { \test_fail:n { 4 } } { }
-% \BNVS_use:c { TEST:vnT  } { TEST_A } { F } { \test_fail:n { 5 } }
-% \BNVS_use:c { TEST:vnF  } { TEST_A } { F }                        { }
-% \BNVS_undefine_conditional:c { TEST:nn }
-% \BNVS_undefine_conditional:c { TEST:Vn }
-% \BNVS_undefine_conditional:c { TEST:vn }
-% \end{bnvs.test}
-%    \begin{macrocode}
-\cs_new:Npn \BNVS_new_conditional_vc:cNnn #1 #2 #3 #4 {
-  \BNVS_new_conditional:cpnn { #1:vc } ##1 ##2 { #4 } {
-    \BNVS_use:Nvn #2 { ##1 } { #3 } { ##2 } {
-      \prg_return_true:
-    } {
-      \prg_return_false:
-    }
-  }
-}
-\cs_new:Npn \BNVS_new_conditional_vc:cnn #1 {
-  \BNVS_use:nc {
-    \BNVS_new_conditional_vc:cNnn { #1 }
-  } { #1:ncTF }
-}
 \cs_new:Npn \BNVS_new_conditional_vc:cNn #1 #2 #3 {
   \BNVS_new_conditional:cpnn { #1:vc } ##1 ##2 { #3 } {
     \BNVS_tl_use:Nv #2 { ##1 } { ##2 } {
@@ -1811,35 +1759,6 @@ end
 % \BNVS_TEST:n {  F }                        { }
 % \cs_undefine:N \BNVS_TEST:n
 % \BNVS_undefine_conditional:c { TEST:nc }
-% \BNVS_undefine_conditional:c { TEST:vc }
-% \end{bnvs.test}
-% \begin{bnvs.test}{:N=\BNVS_new_conditional_vc:cnn, noigre}
-% \tl_set:Nn \l__bnvs_TEST_A_tl { SUCCESS }
-% \BNVS_new_conditional:cpnn { TEST:n } #1 { TF } {
-%   \tl_if_eq:nnTF { #1 } { SUCCESS } {
-%     \prg_return_true:
-%   } {
-%     \prg_return_false:
-%   }
-% }
-% \BNVS_new_conditional:cpnn { TEST:nc } #1 #2 { T, F, TF } {
-%   \BNVS_use:c { #2 } { #1 } {
-%     \prg_return_true:
-%   } {
-%     \prg_return_false:
-%   }
-% }
-% \BNVS_new_conditional_vc:cnn { TEST } { tl } { T, F, TF }
-% \BNVS_use:c { TEST:vcTF } { TEST_A } { TEST:nTF } { } { \test_fail:n { 1 } }
-% \BNVS_use:c { TEST:vcT  } { TEST_A } { TEST:nTF } { }
-% \BNVS_use:c { TEST:vcF  } { TEST_A } { TEST:nTF }     { \test_fail:n { 2 } }
-% \tl_set:Nn \l__bnvs_TEST_A_tl { FAILURE }
-% \BNVS_use:c { TEST:vcTF } { TEST_A } { TEST:nTF } { \test_fail:n { 3 } } { }
-% \BNVS_use:c { TEST:vcT  } { TEST_A } { TEST:nTF } { \test_fail:n { 4 } }
-% \BNVS_use:c { TEST:vcF  } { TEST_A } { TEST:nTF }                        { }
-% \BNVS_undefine_conditional:c { TEST:n  }
-% \BNVS_undefine_conditional:c { TEST:nN }
-% \BNVS_undefine_conditional:c { TEST:VN }
 % \BNVS_undefine_conditional:c { TEST:vc }
 % \end{bnvs.test}
 % \end{bnvs.macrocode}
@@ -2097,7 +2016,7 @@ end
 % \BNVS_undefine_conditional:c { BNVS_TEST:vnc }
 % \end{bnvs.test}
 %    \begin{macrocode}
-\cs_new:Npn \BNVS_new_conditional_vvc:cNn #1 #2 #3 {
+\cs_new:Npn \BNVS_new_conditional_tl_vvc:cNn #1 #2 #3 {
   \BNVS_new_conditional:cpnn { #1:vvc } ##1 ##2 ##3 { #3 } {
     \BNVS_tl_use:nv {
       \BNVS_tl_use:Nv #2 { ##1 }
@@ -2108,9 +2027,9 @@ end
     }
   }
 }
-\cs_new:Npn \BNVS_new_conditional_vvc:cn #1 {
+\cs_new:Npn \BNVS_new_conditional_tl_vvc:cn #1 {
   \BNVS_use:nc {
-    \BNVS_new_conditional_vvc:cNn { #1 }
+    \BNVS_new_conditional_tl_vvc:cNn { #1 }
   } { #1:nncTF }
 }
 %    \end{macrocode}
@@ -9806,7 +9725,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
 %    \end{macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional_vc:cn { n_index_append } { T, F, TF }
-\BNVS_new_conditional_vvc:cn { n_index_append } { T, F, TF }
+\BNVS_new_conditional_tl_vvc:cn { n_index_append } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \begin{bnvs.test}{:N=\__bnvs_n_index_append:ncTF, noigre}
@@ -9979,7 +9898,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
   }
 }
 \BNVS_new_conditional_vnc:cn { v_incr_append } { T, F, TF }
-\BNVS_new_conditional_vvc:cn { v_incr_append } { T, F, TF }
+\BNVS_new_conditional_tl_vvc:cn { v_incr_append } { T, F, TF }
 %    \end{macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { v_post_resolve:nnc } #1 #2 #3 { T, F, TF } {
@@ -10079,7 +9998,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
       \prg_return_false:
   }
 }
-\BNVS_new_conditional_vvc:cn { v_post_resolve } { T, F, TF }
+\BNVS_new_conditional_tl_vvc:cn { v_post_resolve } { T, F, TF }
 %    \end{macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { v_post_append:nnc } #1 #2 #3 { T, F, TF } {
@@ -10146,7 +10065,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
   }
 }
 \BNVS_new_conditional_vnc:cn { v_post_append } { T, F, TF }
-\BNVS_new_conditional_vvc:cn { v_post_append } { T, F, TF }
+\BNVS_new_conditional_tl_vvc:cn { v_post_append } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \begin{bnvs.test}{bnvs:cn={v_post_append:nncTF}{/:*}, noigre}
@@ -10492,7 +10411,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
   }
 }
 \BNVS_new_conditional_vnc:cn { n_incr_resolve } { T, F, TF }
-\BNVS_new_conditional_vvc:cn { n_incr_resolve } { T, F, TF }
+\BNVS_new_conditional_tl_vvc:cn { n_incr_resolve } { T, F, TF }
 %    \end{macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { n_incr_append:nnnc } #1 #2 #3 #4 { T, F, TF } {
@@ -10620,7 +10539,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
   }
 }
 \BNVS_new_conditional_vnc:cn { n_incr_append } { T, F, TF }
-\BNVS_new_conditional_vvc:cn { n_incr_append } { T, F, TF }
+\BNVS_new_conditional_tl_vvc:cn { n_incr_append } { T, F, TF }
 %    \end{macrocode}
 % \begin{bnvs.test}{bnvs:cn={n_incr_append:nncTF}{/:*}, noigre}
 % \reset:n{ YES }
@@ -10882,7 +10801,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
   }
 }
 \BNVS_new_conditional_vnc:cn { n_post_append } { T, F, TF }
-\BNVS_new_conditional_vvc:cn { n_post_append } { T, F, TF }
+\BNVS_new_conditional_tl_vvc:cn { n_post_append } { T, F, TF }
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \begin{bnvs.test}{:Nn=\__bnvs_v_post_append:nncTF{/:*}, noigre}
@@ -12582,7 +12501,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { match_pop_left:c } #1 { F, TF } {
+\BNVS_new_conditional:cpnn { match_pop_left:c } #1 { T, F, TF } {
   \BNVS_tl_use:nc {
     \BNVS_seq_use:Nc \seq_pop_left:NNTF { match }
   } { #1 } {
@@ -12609,7 +12528,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
 %    \end{macrocode}
 % \begin{bnvs.gobble}
 %<*!final>
-\BNVS_new:cpn { match_pop_left:cT } #1 #2 {
+\BNVS_set:cpn { match_pop_left:cT } #1 #2 {
   \BNVS_use:c { match_pop_left:cTF }
     { #1 } { #2 } { \__bnvs_query_eval_unreachable: }
 }
@@ -13438,8 +13357,22 @@ end
 
 function Command:parse_BNVS_action(s, action)
   local n = 0
-  local pattern = "\\BNVS_"..action..":cpn%s*{"..
-"%s*([a-zA-Z_@:]*)%s*}"
+  local pattern = "\\BNVS_"..action..":cpn%s*{%s*"..
+"([a-zA-Z_@:]*)%s*}"
+  local status = 1
+  for name in string.gmatch ([[
+ABCD
+]].."\\BNVS_"..action..":cpn "..
+"{ match_pop_left:cT } #1 #2 { ... }"..[[
+]], pattern) do
+    status = 0
+    if name ~= "match_pop_left:cT" then
+      status = 1
+    end
+  end
+  if status == 1 then
+    error("Bad pattern")
+  end
   for name in string.gmatch (s, pattern) do
     name = "__bnvs_"..name
     local cmd = self:make(name)
@@ -13592,7 +13525,41 @@ function Command:parse_new_conditional(s)
       end
     end
   end
-  self:output("-> "..n.." bnvs conditionals created")
+  self:output("-> "..n.." raw bnvs conditional generated")
+end
+
+function Command:parse_BNVS_new_conditional_cpnn(s)
+  local n = 0
+  local pattern = "BNVS_new_conditional:cpnn%s*{%s*"..
+"([a-zA-Z_@]*):([a-zA-Z_@]*)%s*}[^{"..--}
+"]*{%s*"..
+"([pTF,%s]*)%s*}"
+  local pattern_pTF = "([pTF]+)"
+  for base, signature, pTFs in string.gmatch(s, pattern) do
+    for pTF in string.gmatch(pTFs, pattern_pTF) do
+      local name = "__bnvs_"..base
+      if pTF == "p" then
+        name = name.."_p:"..signature
+      else
+        name = name..":"..signature..pTF
+      end
+      local generated = self:already(name)
+      if generated then
+        generated.is_defined = true
+        generated.is_TF = pTF == "TF"
+        n = n+1
+      else
+        generated = self:make(name)
+        if generated then
+          generated.is_defined = true
+          generated.is_TF = pTF == "TF"
+          generated.is_unused_conditional = true
+          n = n+1
+        end
+      end
+    end
+  end
+  self:output("-> "..n.." bnvs raw conditional variants generated")
 end
 
 function Command:parse_BNVS_new_conditional_signed(s, signature)
@@ -13684,35 +13651,7 @@ function Command:parse_BNVS_new_conditional_nc(s)
   self:output("-> "..n.." bnvs ncn conditional variants generated")
 end
 
-function Command:parse_BNVS_new_conditional_cc_alt(s)
-  local n = 0
-  local pattern = "BNVS_new_conditional_cc:ncnn%s*{%s*"..
-"([a-zA-Z_@]*)%s*}%s*{%s*"..
-"([a-zA-Z_@]*)%s*}"
-  local pattern_pTF = "([pTF]+)"
-  for module, base in string.gmatch (s, pattern) do
-    for _,c in ipairs({"T", "F", "TF"}) do
-      local name = "__bnvs_"..module.."_"..base..":cc"..c
-      local generated = self:already(name)
-      if generated then
-        generated.is_defined = true
-        generated.is_TF = c == "TF"
-        n = n+1
-      else
-        generated = self:make(name)
-        if generated then
-          generated.is_defined = true
-          generated.is_TF = c == "TF"
-          generated.is_unused_conditional = true
-          n = n+1
-        end
-      end
-    end
-  end
-  self:output("-> "..n.." bnvs cc conditional variants generated")
-end
-
-function Command:parse_BNVS_new_conditional_cc(s)
+function Command:parse_BNVS_new_conditional_module_cc(s)
   local n = 0
   local pattern = "BNVS_new_conditional_cc:ncnn%s*{%s*"..
 "([a-zA-Z_@]*)%s*}%s*{%s*"..
@@ -13765,13 +13704,14 @@ end
 function Command:parse_BNVS_new_conditional_tl_signed(s, signature, is_tl)
   is_tl = is_tl == nil and false or is_tl
   local n = 0
-  local pattern = "BNVS_new_conditional_tl_"..signature..":cn%s*{%s*"..
-"([a-zA-Z_@]*)%s*}"
+  local pattern = "\\BNVS_new_conditional_tl_"..signature..":cn%s*{%s*"..
+"([a-zA-Z_@]*)%s*}%s*{%s*"..
+"([pTF,%s]-)%s*}"
+  local pattern_pTF = "([pTF]+)"
   local prefix = is_tl and "__bnvs_tl_" or "__bnvs_"
-  for base in string.gmatch (s, pattern) do
-    for _,c in ipairs({"T", "F", "TF"}) do
+  for base, pTFs in string.gmatch (s, pattern) do
+    for c in string.gmatch (pTFs, pattern_pTF) do
       local name = prefix..base..":"..signature..c
-  self:output("-> "..name)
       local generated = self:already(name)
       if generated then
         generated.is_defined = true
@@ -13788,41 +13728,7 @@ function Command:parse_BNVS_new_conditional_tl_signed(s, signature, is_tl)
       end
     end
   end
-  self:output("-> "..n.." bnvs cn conditional variants generated")
-end
-
-function Command:parse_BNVS_new_conditional_cpnn(s)
-  local n = 0
-  local pattern = "BNVS_new_conditional:cpnn%s*{%s*"..
-"([a-zA-Z_@]*):([a-zA-Z_@]*)%s*}[^{"..--}
-"]*{%s*"..
-"([pTF,%s]*)%s*}"
-  local pattern_pTF = "([pTF]+)"
-  for base, signature, pTFs in string.gmatch(s, pattern) do
-    for pTF in string.gmatch(pTFs, pattern_pTF) do
-      local name = "__bnvs_"..base
-      if pTF == "p" then
-        name = name.."_p:"..signature
-      else
-        name = name..":"..signature..pTF
-      end
-      local generated = self:already(name)
-      if generated then
-        generated.is_defined = true
-        generated.is_TF = pTF == "TF"
-        n = n+1
-      else
-        generated = self:make(name)
-        if generated then
-          generated.is_defined = true
-          generated.is_TF = pTF == "TF"
-          generated.is_unused_conditional = true
-          n = n+1
-        end
-      end
-    end
-  end
-  self:output("-> "..n.." bnvs raw conditional variants generated")
+  self:output("-> "..n.." bnvs tl "..signature.." conditional variants generated")
 end
 
 function Command:check_unused_variants()
@@ -13882,23 +13788,18 @@ function Command:check_variants(s) --> [String]
   self:parse_BNVS_new_tl_signed(s, "cn")
   self:parse_BNVS_new_tl_signed(s, "cv")
   self:parse_BNVS_new_conditional_cpnn(s)
-  self:parse_BNVS_new_conditional_signed(s, "nn")
-  self:parse_BNVS_new_conditional_signed(s, "c")
-  self:parse_BNVS_new_conditional_signed(s, "cv")
   self:parse_BNVS_new_conditional_signed(s, "vc")
   self:parse_BNVS_new_conditional_signed(s, "vnc")
   self:parse_BNVS_new_conditional_signed(s, "nvc")
-  self:parse_BNVS_new_conditional_signed(s, "vvc")
   self:parse_BNVS_new_conditional_signed(s, "vvnc")
   self:parse_BNVS_new_conditional_signed(s, "vvvc")
   self:parse_BNVS_new_conditional_module_signed(s, "c")
   self:parse_BNVS_new_conditional_module_signed(s, "cn")
-  self:parse_BNVS_new_conditional_module_signed(s, "cnn")
-  self:parse_BNVS_new_conditional_tl_signed(s, "cn", true)
-  self:parse_BNVS_new_conditional_tl_signed(s, "cv", true)
-  self:parse_BNVS_new_conditional_tl_signed(s, "vnc", false)
+  self:parse_BNVS_new_conditional_module_signed(s, "cv")
+  self:parse_BNVS_new_conditional_module_signed(s, "vn")
+  self:parse_BNVS_new_conditional_module_signed(s, "vv")
   self:parse_BNVS_new_conditional_tl_signed(s, "vvc", false)
-  self:parse_BNVS_new_conditional_cc(s)
+  self:parse_BNVS_new_conditional_module_cc(s)
   self:check_unused_variants()
   self:check_unused_conditional_variants(true)
   self:check_undefined()
