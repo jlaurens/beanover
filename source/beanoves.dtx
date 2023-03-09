@@ -601,27 +601,18 @@ end
 %
 % \begin{bnvs.test}{bnvs:cn={parse:...}{[...]}}
 % \Beanoves{
-%   A = 1,
-%   B = 2,
-%   C = [2,1],
-%   D = [B,A],
+%   A.1 = 1,
 % }
 % \cs_new:Npn \BNVS_Test:nnn #1 #2 #3 {
-%   \__bnvs_query_eval:ncTF { #1 } { ans } {
+%   \__bnvs_if_resolve:ncTF { #1 } { ans } {
 %     \assert_equal_ans:nn { #2 } { #3 }
 %   } {
 %     \test_fail:n { NO_WAY-#3 }
 %   }
 % }
 % \BNVS_DEBUG_on:
-% \BNVS_Test:nnn { C.1 } { 2 } { 1 }
-% \BNVS_Test:nnn { C.2 } { 1 } { 2 }
-% \BNVS_Test:nnn { D.1 } { 2 } { 3 }
-% \BNVS_Test:nnn { D.2 } { 1 } { 4 }
-% \BNVS_DEBUG_on:
-% \BNVS_Test:nnn { C.1.3 } { 4 } { 5 }
-% \BNVS_Test:nnn { D.1.3 } { 4 } { 5 }
-% \BNVS_Test:nnn { D.2.3 } { 3 } { 6 }
+% \BeanovesLogGProp
+% \BNVS_Test:nnn { A.1.3 } { 4 } { 5 }
 % \cs_undefine:N \BNVS_Test:nnn
 % \end{bnvs.test}
 % \show\relax
@@ -1390,7 +1381,7 @@ end
 %    \begin{macrocode}
 \cs_new:Npn \BNVS_new_cnn:ncN #1 #2 #3 {
   \BNVS_new:cpn { #2:cnn } ##1 {
-    \BNVS_use:Ncn { #3 } { ##1 } { #1 }
+    \BNVS_use:Ncn #3 { ##1 } { #1 }
   }
 }
 \cs_new:Npn \BNVS_new_cnn:nc #1 #2 {
@@ -7467,9 +7458,9 @@ end
   \__bnvs_get:nvcTF { #1 } { a } { b } {
     \BNVS_quark_if_nil:vTF { b } {
       \__bnvs_cache_get:nvcTF { #1 } { a } { b } {
-        \__bnvs_kip_n_path_resolve_or_end_return:
+        \__bnvs_kip_n_path_resolve_nil_end_return_true:v { b }
       } {
-\__bnvs_end_unreachable_return_false:n { kip_n_path_resolve... }
+\BNVS_end_unreachable_return_false:n { kip_n_path_resolve... }
       }
     } {
       \__bnvs_kip_n_path_resolve_or_end_return: 
@@ -10949,7 +10940,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
 % \end{function}
 % \begin{bnvs.macrocode}
 %    \begin{macrocode}
-\BNVS_set:cpn { round_ans: } {
+\BNVS_new:cpn { round_ans: } {
   \__bnvs_round:c { ans }
 }
 %    \end{macrocode}
@@ -11022,7 +11013,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_set:cpn { resolve_x:T } #1 {
+\BNVS_new:cpn { resolve_x:T } #1 {
   \__bnvs_kip_x_path_resolve:TFF {
     #1
   } {
@@ -11154,10 +11145,10 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
           #2
         }
       } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_kip:TTF/2 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_kip:TTF/2 }
       }
     } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_kip:TTF/1 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_kip:TTF/1 }
     }
   } { #3 }
 }
@@ -11189,7 +11180,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
 % \end{function}
 % \begin{bnvs.test}{bnvs:c=if_resolve_pop_kip:TTF, noigre}
 % \cs_set:Npn \BNVS_DEBUG_log_if_resolve_ncTF:nn #1 #2 {}
-% \cs_set:Npn \__bnvs_end_unreachable_return_false:n #1 {
+% \cs_set:Npn \BNVS_end_unreachable_return_false:n #1 {
 %   \__bnvs_tl_set:cn { ans } { #1 }
 % }
 % \cs_set:Npn \BNVS_Test:nnn #1 #2 #3 #4 #5 #6 {
@@ -11226,13 +11217,13 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
       \__bnvs_split_pop_left:cTF { post } {
         #1
       } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_white:T/3 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_white:T/3 }
       }
     } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_white:T/2 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_white:T/2 }
     }
   } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_white:T/1 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_white:T/1 }
   }
 }
 %    \end{macrocode}
@@ -11246,22 +11237,22 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
             \__bnvs_split_pop_left:cTF { a } {
               #1
             } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/6 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/6 }
             }
           } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/5 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/5 }
           }
         } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/4 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/4 }
         }
       } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/3 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/3 }
       }
     } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/2 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/2 }
     }
   } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/1 }
+\BNVS_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/1 }
   }
 }
 %    \end{macrocode}
@@ -11335,21 +11326,29 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
   \BNVS_begin:
   \__bnvs_if_resolve:ncTF { #1 } { #2 } {
     \BNVS_end_tl_put_right:cv { #2 } { #2 }
+%    \end{macrocode}
+% \begin{bnvs.gobble}
 %<*!final>
 \BNVS_DEBUG_log_if_append_ncTF:nn { ... } { ...TRUE }
 %</!final>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
     \prg_return_true:
   } {
     \BNVS_end:
+%    \end{macrocode}
+% \begin{bnvs.gobble}
 %<*!final>
 \BNVS_DEBUG_log_if_append_ncTF:nn { ... } { ...FALSE }
 %</!final>
+% \end{bnvs.gobble}
+%    \begin{macrocode}
     \prg_return_false:
   }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { end_unreachable_return_false:n } #1 {
+\cs_new:Npn \BNVS_end_unreachable_return_false:n #1 {
   \__bnvs_error:x { UNREACHABLE/#1 }
   \BNVS_end:
   \prg_return_false:
@@ -11481,7 +11480,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     \__bnvs_tl_put_right:cv { ans } { a }
     \__bnvs_if_resolve_pop_kip:TTF {
       \__bnvs_if_resolve_pop_kip:TTF {
-\__bnvs_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/3 }
+\BNVS_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/3 }
       } {
         \__bnvs_if_resolve_pop_complete_white:T {
           \__bnvs_tl_if_blank:vTF { n_incr } {
@@ -11526,7 +11525,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
         }
       } {
 % split sequence empty
-\__bnvs_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/2 }
+\BNVS_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/2 }
       }
     } {
       \__bnvs_if_resolve_pop_complete_black:T {
@@ -11540,12 +11539,12 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
       \__bnvs_if_resolve_end_return_true:
     }
   } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/1 }
+\BNVS_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/1 }
   }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_set:cpn { if_resolve_value_loop_or_end_return_true:F } #1 {
+\BNVS_new:cpn { if_resolve_value_loop_or_end_return_true:F } #1 {
   \__bnvs_tl_set:cx { a } {
     \BNVS_tl_use:c { key } \BNVS_tl_use:c { path }
   }
@@ -11883,7 +11882,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     \__bnvs_value_append:vcTF { key } { ans } {
 % \begin{bnvs.gobble}
 %<*!final>
-\BNVS_DEBUG_log_if_resolve_ncTF:nn { ... } { .../reset }
+\BNVS_DEBUG_log_if_resolve_ncTF:nn { ... } { .../v_greset }
 %</!final>
 % \end{bnvs.gobble}
       \__bnvs_if_resolve_loop_or_end_return:
@@ -11926,7 +11925,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     \__bnvs_value_append:vcTF { key } { ans } {
 % \begin{bnvs.gobble}
 %<*!final>
-\BNVS_DEBUG_log_if_resolve_ncTF:nn { ... } { .../reset }
+\BNVS_DEBUG_log_if_resolve_ncTF:nn { ... } { .../greset_all }
 %</!final>
 % \end{bnvs.gobble}
       \__bnvs_if_resolve_loop_or_end_return:
@@ -11935,7 +11934,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     }
   }
 }
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...<integer>]: } {
+\BNVS_new:cpn { if_resolve_loop_or_end_return[...<integer>]: } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...\meta{integer}}.
@@ -11977,7 +11976,7 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     }
   }
 }
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...]: } {
+\BNVS_new:cpn { if_resolve_loop_or_end_return[...]: } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...}.
@@ -12018,7 +12017,9 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     }
   }
 }
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...++]: } {
+%    \end{macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { if_resolve_loop_or_end_return[...++]: } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{...++}.
@@ -12106,7 +12107,9 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     }
   }
 }
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...n+=...]: } {
+%    \end{macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { if_resolve_loop_or_end_return[...n+=...]: } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{....n+=\meta{integer}}.
@@ -12152,7 +12155,9 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     }
   }
 }
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...+=...]: } {
+%    \end{macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { if_resolve_loop_or_end_return[...+=...]: } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{A+=\meta{integer}}.
@@ -12281,7 +12286,9 @@ Unavailable~last~for~#1~(\__bnvs_length_resolve:ncTF/1) }
     }
   }
 }
-\BNVS_set:cpn { if_resolve_loop_or_end_return[++...n]: } {
+%    \end{macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { if_resolve_loop_or_end_return[++...n]: } {
 %    \end{macrocode}
 % \end{bnvs.macrocode}
 % \item Case \texttt{++...n}.
@@ -13711,7 +13718,7 @@ function Command:parse_BNVS_new_conditional_cc(s)
 "([a-zA-Z_@]*)%s*}%s*{%s*"..
 "([a-zA-Z_@]*)%s*}%s*{%s*"..
 ".-}%s*{%s*"..
-"([pTF,%s]+)%s*}"
+"([pTF,%s]-)%s*}"
   local pattern_pTF = "([pTF]+)"
   local status = 1
   for module, base, pTFs in string.gmatch ([[
@@ -13734,7 +13741,6 @@ EFGH
     error("Bad pattern cc")
   end
   for module, base, pTFs in string.gmatch (s, pattern) do
-    self:output("CANDIDATE-> "..module..base..pTFs)
     for c in string.gmatch (pTFs, pattern_pTF) do
       local name = "__bnvs_"..module.."_"..base..":cc"..c
       local generated = self:already(name)
@@ -13886,11 +13892,8 @@ function Command:check_variants(s) --> [String]
   self:parse_BNVS_new_conditional_signed(s, "vvnc")
   self:parse_BNVS_new_conditional_signed(s, "vvvc")
   self:parse_BNVS_new_conditional_module_signed(s, "c")
-  self:parse_BNVS_new_conditional_module_signed(s, "nc")
   self:parse_BNVS_new_conditional_module_signed(s, "cn")
   self:parse_BNVS_new_conditional_module_signed(s, "cnn")
-  self:parse_BNVS_new_conditional_module_signed(s, "cnv")
-  self:parse_BNVS_new_conditional_module_signed(s, "cnx")
   self:parse_BNVS_new_conditional_tl_signed(s, "cn", true)
   self:parse_BNVS_new_conditional_tl_signed(s, "cv", true)
   self:parse_BNVS_new_conditional_tl_signed(s, "vnc", false)
