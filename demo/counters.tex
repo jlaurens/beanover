@@ -4,44 +4,146 @@
 
 \documentclass{beamer}
 
-\RequirePackage{beanoves-debug}
-
-\begin{document}
+\RequirePackage{demo}
+\BeanovesDebugOn
 \Beanoves {
-  Main = 2,
-  B = 2:4,
+  BBB = [ 421, 666, CCC=[111, foo=777, 222], 246 ],
 }
+\typein{Press <ENTER> to continue}
+
+\Beanoves {
+  AAA = {{ 111, xxx=XXX, 222, yyy=YYY, 333, zzz=ZZZ }},
+}
+\typein{Press <ENTER> to continue}
+\BeanovesEval[in:N=\FOO]{AAA.1}
+\show\FOO
+\Beanoves {
+  A = {{ 421, 666 }},
+}
+\BeanovesEval[in:N=\FOO]{A.2}
+\Beanoves {
+  B = [ 421, 666, C=[111, foo=777, 222], 246 ],
+}
+\typein{Press <ENTER> to continue}
+
+\BeanovesEval[in:N=\FOO]{B.3}
+\show\FOO
+\BeanovesEval[in:N=\FOO]{B.C}
+\show\FOO
+\BeanovesEval[in:N=\FOO]{B.C.foo}
+\show\FOO
+\BeanovesEval[in:N=\FOO]{B.C.1}
+\show\FOO
+
 \ExplSyntaxOn
-\__bnvs_DEBUG_on:
+\def\BeanovesEvaluated{}
+\def\myTEST#1#2{
+  \BeanovesEval[in:N=\BeanovesEvaluated]{#1}
+  \texttt{?(#1)$\to$\BeanovesEvaluated\exp_args:NV\tl_if_eq:nnF\BeanovesEvaluated{#2}{\color{red}≠#2}}
+}
 \ExplSyntaxOff
+\begin{document}
 \begin{frame}
-{Beanoves demo}
-{\large Counters}
-\BeanovesEval{B}
-\only<2>{2}
-Frame: \insertframenumber /
-Slide: \insertslidenumber /
-%\begin{myCodeBox}{l}%
-%\string\Beanoves \{
-%  Main = 2,
-%\}
-%\end{myCodeBox}
-%On slide transparent
-%\begin{itemize}
-%\item
-%\only<-?(Main++-1)>{\transparent{0.3}}%
-%\myInlineCode*{\myMeta{name\myCodek}}, with no trailing ``\myInlineCode{.}'', is an alias for the \myEmph{counter}
-%\item
-%\only<-?(Main++-1)>{\transparent{0.3}}%
-%\myInlineCode*{++\myMeta{name\myCodek}} stands for the \myEmph{counter} once incremented by 1
-%\item
-%\only<-?(Main++-1)>{\transparent{0.3}}%
-%\myInlineCode*{\myMeta{name\myCodek}+=\myMeta{i}} stands for the \myEmph{counter} once incremented by \myMeta{i}.
-%\item
-%\only<-?(Main++-1)>{\transparent{0.3}}%
-%\myInlineCode*{\myMeta{name\myCodek}.reset} stands for the \myEmph{counter} once reset to its initial value.
-%\end{itemize}
-\only<-?(Main-1)>{}
+{\insertframenumber/\insertslidenumber/Named overlay sets}
+{\large Open}
+\BeanovesDebugOn
+\Beanoves {
+  A  = 421,
+  AL = 421::246,
+  AZ = 421:666,
+  ZL = :666::246,
+}
+\ExplSyntaxOff
+\begin{myCodeBox}{l}%
+\string\Beanoves \{\\
+~~A  = 421,\\
+~~AL = 421::246,\\
+~~AZ = 421:666,\\
+~~ZL = :666::246,\\
+\}
+\end{myCodeBox}
+\ExplSyntaxOn
+\texttt{?(A)}=\BeanovesEval[see]{A}=421,\\
+\texttt{?(A.1) }=\BeanovesEval[see]{A.1 }=421,\\
+\texttt{?(AL.1)}=\BeanovesEval[see]{AL.1}=421,\\
+\texttt{?(AZ.1)}=\BeanovesEval[see]{AZ.1}=421,\\
+\texttt{?(ZL.1)}=\BeanovesEval[see]{ZL.1}=421,\\
 \end{frame}
+%
+\begin{frame}
+{\insertframenumber/\insertslidenumber/Named overlay sets}
+{\large range}
+\Beanoves {
+  A = 421::246,
+}
+\ExplSyntaxOff
+\begin{myCodeBox}{l}%
+\string\Beanoves \{\\
+~~A = 421::246,\\
+\}
+\end{myCodeBox}
+\ExplSyntaxOn
+\myTEST{A}{421},\\
+\myTEST{A.1}{421},\\
+\myTEST{A.previous}{420},\\
+\myTEST{A.next}{667},\\
+\myTEST{A.last}{666},\\
+\myTEST{A.length}{246},\\
+\myTEST{A.range}{421-666},\\
+\end{frame}
+\begin{frame}
+{\insertframenumber/\insertslidenumber/Named overlay sets}
+{\large value}
+\Beanoves {
+  A = 33,
+}
+
+\ExplSyntaxOff
+\begin{myCodeBox}{l}%
+\string\Beanoves \{\\
+~~A = 33,\\
+\}
+\end{myCodeBox}
+\ExplSyntaxOn
+\myTEST{A}{33},\\
+\myTEST{++A}{34},\\
+\myTEST{A++}{34},\\
+\myTEST{A}{35},\\
+\myTEST{A.1}{33},\\
+\myTEST{A.reset}{33},\\
+\myTEST{A+=66}{99},\\
+\myTEST{++A}{100},\\
+\myTEST{A.reset++}{33},\\
+\myTEST{A}{34},\\
+\myTEST{++A.reset}{35},\\
+\myTEST{A}{33},\\
+\end{frame}
+%
+\Beanoves {
+  A = { 1=421, chi=421, foo=666, 2=666, 3=246, mi=246 },
+}
+
+\begin{frame}
+{\insertframenumber/\insertslidenumber/Named overlay sets}
+{\large value}
+\ExplSyntaxOff
+\begin{myCodeBox}{l}%
+\string\Beanoves \{\\
+~~A = \{ 1=421, chi=421, foo=666, 2=666, 3=246, mi=246\},\\
+\}
+\end{myCodeBox}
+\ExplSyntaxOn
+\BeanovesDebugOn
+\Beanoves {
+  A = { chi=421 },
+}
+\myTEST{A.chi}{421},\\
+%\myTEST{A.2}{666},\\
+%\myTEST{A.3}{246},\\
+%\myTEST{A.chi}{421},\\
+%\myTEST{A.foo}{666},\\
+%\myTEST{A.mi}{246},\\
+\end{frame}
+%
 
 \end{document}
