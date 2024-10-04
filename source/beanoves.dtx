@@ -12887,7 +12887,7 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
 % Puts the proper items of |\l__bnvs_match_seq| into the variables
 % |\l__bnvs_V_tl|, |\l__bnvs_A_tl|, |\l__bnvs_Z_tl|, |\l__bnvs_L_tl|
 % then branches accordingly on one of the returning 
-% |\__bnvs_resolve_return[|\meta{description}|]:| functions.
+% |\__bnvs_resolve_query_return[|\meta{description}|]:| functions.
 % All these functions properly set the |\l__bnvs_ans_tl| variable and they end with either
 % |\prg_return_true:| or |\prg_return_false:|.
 % This is used only once but is not inlined for readability.
@@ -12916,9 +12916,9 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
                       \__bnvs_match_pop_left:cT Z {
                         \__bnvs_match_pop_left:cT L {
                           \__bnvs_if_blank:cTF L {
-                            \BNVS_use:c { resolve_return[:Z]: }
+                            \BNVS_use:c { resolve_query_return[:Z]: }
                           } {
-                            \BNVS_use:c { resolve_return[:Z::L]: }
+                            \BNVS_use:c { resolve_query_return[:Z::L]: }
                           }
                         }
                       }
@@ -12926,7 +12926,7 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
                       \__bnvs_if_blank:cTF Z {
 \__bnvs_resolve_query_error_end_return_false:n { Missing~first~or~last }
                       } {
-                        \BNVS_use:c { resolve_return[:Z::L]: }
+                        \BNVS_use:c { resolve_query_return[:Z::L]: }
                       }
                     }
                   }
@@ -12934,13 +12934,13 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
               } {
                 \__bnvs_if_blank:cTF Z {
                   \__bnvs_if_blank:cTF L {
-                    \BNVS_use:c { resolve_return[A:]: }
+                    \BNVS_use:c { resolve_query_return[A:]: }
                   } {
-                    \BNVS_use:c { resolve_return[A::L]: }
+                    \BNVS_use:c { resolve_query_return[A::L]: }
                   }
                 } {
                   \__bnvs_if_blank:cTF L {
-                    \BNVS_use:c { resolve_return[A:Z]: }
+                    \BNVS_use:c { resolve_query_return[A:Z]: }
                   } {
 %    \end{macrocode}
 % Logically unreachable code, the regular expression does not match this.
@@ -12953,20 +12953,20 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
           }
         }
       } {
-        \BNVS_use:c { resolve_return[V]: }
+        \BNVS_use:c { resolve_query_return[V]: }
       }
     }
   }
 }
-\BNVS_new:cpn { resolve_return[V]: } {
+\BNVS_new:cpn { resolve_query_return[V]: } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \emoji{left-speech-bubble} Single value
-% \begin{BNVS/test}{bnvs:c={resolve_return[V]:}, noigre}
+% \begin{BNVS/test}{bnvs:c={resolve_query_return[V]:}, noigre}
 % \reset:n { Y }
 % \__bnvs_tl_set:cn { V } { FIRST + LENGTH - 1}
 % \BNVS_new_conditional:cpnn { TEST: } { TF } {
-%   \BNVS_use:c { resolve_return[V]: }
+%   \BNVS_use:c { resolve_query_return[V]: }
 % }
 % \__bnvs_TEST:TF {
 %   \assert_equal_ans:nn { 666 } { 1 }
@@ -12997,16 +12997,16 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new:cpn { resolve_return[A:Z]: } {
+\BNVS_new:cpn { resolve_query_return[A:Z]: } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \emoji{left-speech-bubble} \texttt{\meta{first}:\meta{last}} range
-% \begin{BNVS/test}{bnvs:c={resolve_return[A:Z]:}, noigre}
+% \begin{BNVS/test}{bnvs:c={resolve_query_return[A:Z]:}, noigre}
 % \reset:n { Y }
 % \__bnvs_tl_set:cn { A } { LAST - LENGTH + 1}
 % \__bnvs_tl_set:cn { Z } { FIRST + LENGTH - 1}
 % \BNVS_new_conditional:cpnn { TEST: } { TF } {
-%   \BNVS_use:c { resolve_return[A:Z]: }
+%   \BNVS_use:c { resolve_query_return[A:Z]: }
 % }
 % \__bnvs_TEST:TF {
 %   \assert_equal_ans:nn { 222-666 } { 1 }
@@ -13049,16 +13049,16 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new:cpn { resolve_return[A::L]: } {
+\BNVS_new:cpn { resolve_query_return[A::L]: } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \emoji{left-speech-bubble} \texttt{\meta{first}::\meta{length}} range
-% \begin{BNVS/test}{bnvs:c={resolve_return[A::L]:}, noigre}
+% \begin{BNVS/test}{bnvs:c={resolve_query_return[A::L]:}, noigre}
 % \reset:n { Y }
 % \__bnvs_tl_set:cn { A } { LAST - LENGTH + 1}
 % \__bnvs_tl_set:cn { L } { LAST - FIRST + 1}
 % \BNVS_new_conditional:cpnn { TEST: } { TF } {
-%   \BNVS_use:c { resolve_return[A::L]: }
+%   \BNVS_use:c { resolve_query_return[A::L]: }
 % }
 % \__bnvs_TEST:TF {
 %   \assert_equal_ans:nn { 222-666 } { 1 }
@@ -13085,15 +13085,15 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new:cpn { resolve_return[A:]: } {
+\BNVS_new:cpn { resolve_query_return[A:]: } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \emoji{left-speech-bubble} \texttt{\meta{first}:} and \texttt{\meta{first}::} range
-% \begin{BNVS/test}{bnvs:c={resolve_return[A:]:}, noigre}
+% \begin{BNVS/test}{bnvs:c={resolve_query_return[A:]:}, noigre}
 % \reset:n { Y }
 % \__bnvs_tl_set:cn { A } { LAST - LENGTH + 1}
 % \BNVS_new_conditional:cpnn { TEST: } { TF } {
-%   \BNVS_use:c { resolve_return[A:]: }
+%   \BNVS_use:c { resolve_query_return[A:]: }
 % }
 % \__bnvs_TEST:TF {
 %   \assert_equal_ans:nn { 222- } { 1 }
@@ -13111,16 +13111,16 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new:cpn { resolve_return[:Z::L]: } {
+\BNVS_new:cpn { resolve_query_return[:Z::L]: } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \emoji{left-speech-bubble} \texttt{:\meta{last}::\meta{length}} or \texttt{::\meta{length}:\meta{last}} range
-% \begin{BNVS/test}{bnvs:c={resolve_return[:Z::L]:}, noigre}
+% \begin{BNVS/test}{bnvs:c={resolve_query_return[:Z::L]:}, noigre}
 % \reset:n { Y }
 % \__bnvs_tl_set:cn { Z } { FIRST + LENGTH - 1}
 % \__bnvs_tl_set:cn { L } { LAST - FIRST + 1}
 % \BNVS_new_conditional:cpnn { TEST: } { TF } {
-%   \BNVS_use:c { resolve_return[:Z::L]: }
+%   \BNVS_use:c { resolve_query_return[:Z::L]: }
 % }
 % \__bnvs_TEST:TF {
 %   \assert_equal_ans:nn { 222-666 } { 1 }
@@ -13147,14 +13147,14 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new:cpn { resolve_return[:]: } {
+\BNVS_new:cpn { resolve_query_return[:]: } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \emoji{left-speech-bubble} \texttt{:} or \texttt{::} range
-% \begin{BNVS/test}{bnvs:c={resolve_return[:]:}, noigre}
+% \begin{BNVS/test}{bnvs:c={resolve_query_return[:]:}, noigre}
 % \reset:n { Y }
 % \BNVS_new_conditional:cpnn { TEST: } { TF } {
-%   \BNVS_use:c { resolve_return[:]: }
+%   \BNVS_use:c { resolve_query_return[:]: }
 % }
 % \__bnvs_TEST:TF {
 %   \assert_equal_ans:nn { - } { 1 }
@@ -13168,15 +13168,15 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
   \__bnvs_tl_set:cn { ans } { - }
   \prg_return_true:
 }
-\BNVS_new:cpn { resolve_return[:Z]: } {
+\BNVS_new:cpn { resolve_query_return[:Z]: } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \emoji{left-speech-bubble} \texttt{:\meta{last}} range
-% \begin{BNVS/test}{bnvs:c={resolve_return[:Z]:}, noigre}
+% \begin{BNVS/test}{bnvs:c={resolve_query_return[:Z]:}, noigre}
 % \reset:n { Y }
 % \__bnvs_tl_set:cn { Z } { FIRST + LENGTH - 1}
 % \BNVS_new_conditional:cpnn { TEST: } { TF } {
-%   \BNVS_use:c { resolve_return[:Z]: }
+%   \BNVS_use:c { resolve_query_return[:Z]: }
 % }
 % \__bnvs_TEST:TF {
 %   \assert_equal_ans:nn { -666 } { 1 }
