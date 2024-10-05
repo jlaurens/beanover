@@ -3996,7 +3996,7 @@ end
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \end{function}
-% \begin{function}[TF]{\__bnvs_call:}
+% \begin{function}[TF]{\__bnvs_if_call:}
 % \begin{syntax}
 % \cs{__bnvs_call_do:TF} \marg{yes code} \marg{no code}
 % \end{syntax}
@@ -4005,7 +4005,7 @@ end
 % \meta{no code} otherwise.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { call: } { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_call: } { T, F, TF } {
   \int_gdecr:N \g__bnvs_call_int
   \int_compare:nNnTF \g__bnvs_call_int > 0 {
     \prg_return_true:
@@ -4313,9 +4313,9 @@ end
 % }
 % \end{BNVS/test}
 % \end{BNVS/macrocode}
-% \begin{function}[TF]{\__bnvs_get:nnc}
+% \begin{function}[TF]{\__bnvs_if_get:nnc}
 % \begin{syntax}
-% \cs{__bnvs_get:nncTF} \marg{subkey} \marg{FQ name} \marg{tl core} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_get:nncTF} \marg{subkey} \marg{FQ name} \marg{tl core} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Convenient shortcuts to retrieve the value with branching, it makes the code more concise and readable.
 % Execute \meta{yes code} when the item is found, \meta{no code} otherwise.
@@ -4324,14 +4324,14 @@ end
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { get:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_get:nnc } #1 #2 #3 { T, F, TF } {
   \BNVS_tl_use:nc {
     \prop_get:NnNTF \g__bnvs_prop { #2 / #1 }
   } { #3 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:cnnnnnnc { get:nncTF } { ...TRUE } { SUBKEY } { #1 } { KEY } { #2 } { => } { #3 }
+\BNVS_DEBUG_log_f:cnnnnnnc { if_get:nncTF } { ...TRUE } { SUBKEY } { #1 } { KEY } { #2 } { => } { #3 }
 \BNVS_DEBUG_log_tl:c { #3 }
 %</!final>
 % \end{BNVS/gobble}
@@ -4341,7 +4341,7 @@ end
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:cnnnnnnc { get:nncTF } { ...FALSE } { SUBKEY } { #1 } { KEY } { #2 } { => } { #3 }
+\BNVS_DEBUG_log_f:cnnnnnnc { if_get:nncTF } { ...FALSE } { SUBKEY } { #1 } { KEY } { #2 } { => } { #3 }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -4349,13 +4349,13 @@ end
   }
 }
 %    \end{macrocode}
-% \begin{BNVS/test}{bnvs:c=\BNVS:c{get:nncTF}, noigre}
+% \begin{BNVS/test}{bnvs:c=\BNVS:c{if_get:nncTF}, noigre}
 % \__bnvs_gclear:
 % \__bnvs_tl_clear:c { TEST }
-% \__bnvs_get:nncTF { subkey } { key } { TEST } { \test_fail:n { A/1 } } { }
+% \__bnvs_if_get:nncTF { subkey } { key } { TEST } { \test_fail:n { A/1 } } { }
 % \__bnvs_tl_clear:c { TEST }
 % \cs_new:Npn \BNVS_Test:n #1 {
-%   \BNVS_use_raw:c { __bnvs_get:nnc#1 } { subkey } { key } { TEST }
+%   \BNVS_use_raw:c { __bnvs_if_get:nnc#1 } { subkey } { key } { TEST }
 % }
 % \BNVS_Test:n { TF } { \test_fail:n { A/1 } } { }
 % \BNVS_Test:n { T  } { \test_fail:n { A/2 } }
@@ -4372,7 +4372,7 @@ end
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { get:nvc } #1 #2 #3 { T, F, TF } {
   \BNVS_tl_use:nv {
-    \__bnvs_get:nncTF { #1 }
+    \__bnvs_if_get:nncTF { #1 }
   } { #2 } { #3 } {
     \prg_return_true:
   } {
@@ -4397,10 +4397,10 @@ end
 % \BNVS_Test:xxn { \bool_if:nTF { \__bnvs_if_in_p:nn X {B} } TF } { F } { 10 }
 % \BNVS_Test:xxn { \bool_if:nTF { \__bnvs_if_in_p:nn X {B} || \__bnvs_if_in_p:nn X {A} } TF } { T } { 11 }
 % \__bnvs_tl_clear:c { b }
-% \__bnvs_get:nncF X {A} { b } {
+% \__bnvs_if_get:nncF X {A} { b } {
 %   \test_fail:n { 13 }
 % }
-% \__bnvs_get:nncT X {B} { b } {
+% \__bnvs_if_get:nncT X {B} { b } {
 %   \test_fail:n { 13 }
 % }
 % \end{BNVS/test}
@@ -4532,10 +4532,10 @@ end
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{function}[TF]{
-%   \__bnvs_cache_get:nnc
+%   \__bnvs_cache_if_get:nnc
 % }
 % \begin{syntax}
-% \cs{__bnvs_cache_get:nncTF} \marg{subkey} \marg{FQ name} \marg{tl core} \marg{yes code} \marg{no code}
+% \cs{__bnvs_cache_if_get:nncTF} \marg{subkey} \marg{FQ name} \marg{tl core} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Convenient shortcuts to retrieve the value with branching, it makes the code more concise and readable.
 % Execute \meta{yes code} when the item is found, \meta{no code} otherwise.
@@ -4544,7 +4544,7 @@ end
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { cache_get:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { cache_if_get:nnc } #1 #2 #3 { T, F, TF } {
   \BNVS_tl_use:nc {
     \prop_get:NnNTF \g__bnvs_cache_prop { #2 / #1 }
   } { #3 } {
@@ -4571,10 +4571,10 @@ end
 % \BNVS_Test:xxn { \bool_if:nTF { \__bnvs_cache_if_in_p:nn X {B} } TF } { F } { 10 }
 % \BNVS_Test:xxn { \bool_if:nTF { \__bnvs_cache_if_in_p:nn X {B} || \__bnvs_cache_if_in_p:nn X {A} } TF } { T } { 11 }
 % \__bnvs_tl_clear:c { b }
-% \__bnvs_cache_get:nncF X {A} { b } {
+% \__bnvs_cache_if_get:nncF X {A} { b } {
 %   \test_fail:n { 13 }
 % }
-% \__bnvs_cache_get:nncT X {B} { b } {
+% \__bnvs_cache_if_get:nncT X {B} { b } {
 %   \test_fail:n { 13 }
 % }
 % \end{BNVS/test}
@@ -4822,9 +4822,9 @@ end
 % \end{BNVS/gobble}
 %    \begin{macrocode}
     \clist_map_inline:nn { V, A, Z, L } {
-      \__bnvs_get:nncT { ##1 } { #1 } { a } {
+      \__bnvs_if_get:nncT { ##1 } { #1 } { a } {
         \__bnvs_quark_if_nil:cT { a } {
-          \__bnvs_cache_get:nncTF { ##1 } { #1 } { a } {
+          \__bnvs_cache_if_get:nncTF { ##1 } { #1 } { a } {
             \__bnvs_gput:nnv { ##1 } { #1 } { a }
           } {
             \__bnvs_gput:nnn { ##1 } { #1 } { 1 }
@@ -6514,14 +6514,14 @@ end
 %   \__bnvs_range:nnnn { ?!X } { 1 } { 2 } { }
 %   \clist_map_inline:nn { A, L, Z } {
 %     \__bnvs_tl_set:cn { a } { ?!X/#1 }
-%     \__bnvs_get:nncF { #1 } { ?!X } { b } {
+%     \__bnvs_if_get:nncF { #1 } { ?!X } { b } {
 %       \test_fail:n { Missing~key~\l__bnvs_a_tl }
 %     }
 %   }
 %   \__bnvs_parse:nn {X} {}
 %   \clist_map_inline:nn { A, L, Z } {
 %     \__bnvs_tl_set:cn { a } { ?!X/#1 }
-%     \__bnvs_get:nncT { #1 } { ?!X } { b } {
+%     \__bnvs_if_get:nncT { #1 } { ?!X } { b } {
 %       \test_fail:n { Unexpected~key~\l__bnvs_a_tl }
 %     }
 %   }
@@ -6570,30 +6570,30 @@ end
 % Next character is not a group begin token.
 % \begin{BNVS/test}{bnvs:cn={parse:nn}{/KEY=VALUE}, noigre}
 % \__bnvs_parse:nn { X } { FIRST: }
-% \__bnvs_get:nncTF A { ?!X } { a } {
+% \__bnvs_if_get:nncTF A { ?!X } { a } {
 %   \assert_equal:xxn { \l__bnvs_a_tl } { FIRST } {1}
 % } {
 %   \test_fail:n { MISSING~KEY~?!X/A }
 % }
 % \__bnvs_parse:nn { X } { FIRST::LENGTH }
-% \__bnvs_get:nncTF A { ?!X } { a } {
+% \__bnvs_if_get:nncTF A { ?!X } { a } {
 %   \assert_equal:xxn { \l__bnvs_a_tl } { FIRST } {1}
 % } {
 %   \test_fail:n { MISSING~KEY~?!X/A }
 % }
 % \BNVS_DEBUG_log_gprop:n { 100 }
-% \__bnvs_get:nncTF L { ?!X } { a } {
+% \__bnvs_if_get:nncTF L { ?!X } { a } {
 %   \assert_equal:xxn { \l__bnvs_a_tl } { LENGTH } {1}
 % } {
 %   \test_fail:n { MISSING~KEY~?!X/L }
 % }
 % \__bnvs_parse:nn { X } { FIRST:LAST }
-% \__bnvs_get:nncTF A { ?!X } { a } {
+% \__bnvs_if_get:nncTF A { ?!X } { a } {
 %   \assert_equal:xxn { \l__bnvs_a_tl } { FIRST } {1}
 % } {
 %   \test_fail:n { MISSING~KEY~?!X/A }
 % }
-% \__bnvs_get:nncTF Z { ?!X } { a } {
+% \__bnvs_if_get:nncTF Z { ?!X } { a } {
 %   \assert_equal:xxn { \l__bnvs_a_tl } { LAST } {1}
 % } {
 %   \test_fail:n { MISSING~KEY~?!X/Z }
@@ -6619,14 +6619,14 @@ end
 %   \__bnvs_range:nnnn { ?!X } { 1 } { 2 } { }
 %   \clist_map_inline:nn { A, L, Z } {
 %     \__bnvs_tl_set:cn { a } { ?!X/#1 }
-%     \__bnvs_get:nncF { #1 } { ?!X } { b } {
+%     \__bnvs_if_get:nncF { #1 } { ?!X } { b } {
 %       \test_fail:n { Missing~key~\l__bnvs_a_tl }
 %    }
 %  }
 %   \__bnvs_parse:nn {X} {}
 %   \clist_map_inline:nn { A, L, Z } {
 %     \__bnvs_tl_set:cn { a } { ?!X/#1 }
-%     \__bnvs_get:nncT { #1 } { ?!X } { b } {
+%     \__bnvs_if_get:nncT { #1 } { ?!X } { b } {
 %       \test_fail:n { Unexpected~key~\l__bnvs_a_tl }
 %    }
 %  }
@@ -7714,7 +7714,7 @@ end
   \__bnvs_resolve_kip_x_path_loop_or_end_return:
 }
 \BNVS_new:cpn { resolve_kip_x_path_loop_or_end_return: } {
-  \__bnvs_call:TF {
+  \__bnvs_if_call:TF {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -7858,7 +7858,7 @@ end
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { resolve_kip_n_path_loop_or_end_return: } {
-  \__bnvs_call:TF {
+  \__bnvs_if_call:TF {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -8147,7 +8147,7 @@ end
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_cache_get:nncTF V { #1 } { #2 } {
+  \__bnvs_cache_if_get:nncTF V { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -8157,7 +8157,7 @@ end
 %    \begin{macrocode}
     \prg_return_true:
   } {
-    \__bnvs_get:nncTF V { #1 } { #2 } {
+    \__bnvs_if_get:nncTF V { #1 } { #2 } {
       \__bnvs_quark_if_nil:cTF { #2 } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
@@ -8300,7 +8300,7 @@ end
 % \cs_new:Npn \BNVS_Test:nn #1 #2 {
 %   \__bnvs_resolve_value:ncTF { X } { ans } {
 %     \assert_equal_tl:vnn { ans } { #1 } { #2/A }
-%     \__bnvs_cache_get:nncTF V { X } { ans } {
+%     \__bnvs_cache_if_get:nncTF V { X } { ans } {
 %       \assert_equal_tl:vnn { ans } { #1 } { #2/B }
 %     } {
 %       \test_fail:n { #2/C }
@@ -8355,7 +8355,7 @@ end
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_cache_get:nncTF A { #1 } { #2 } {
+  \__bnvs_cache_if_get:nncTF A { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/test}{:N=\__bnvs_if_resolve_first:ncTF/C, noigre}
 % \__bnvs_cache_gput:nnn A { X } { 421 }
@@ -8373,7 +8373,7 @@ end
 %    \begin{macrocode}
     \prg_return_true:
   } {
-    \__bnvs_get:nncTF A { #1 } { #2 } {
+    \__bnvs_if_get:nncTF A { #1 } { #2 } {
       \__bnvs_quark_if_nil:cTF { #2 } {
         \__bnvs_gput:nnn A { #1 } { \q_no_value }
 %    \end{macrocode}
@@ -8559,7 +8559,7 @@ Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_first:ncTF/1) }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_cache_get:nncTF Z { #1 } { #2 } {
+  \__bnvs_cache_if_get:nncTF Z { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -8569,7 +8569,7 @@ Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_first:ncTF/1) }
 %    \begin{macrocode}
     \prg_return_true:
   }  {
-    \__bnvs_get:nncTF Z { #1 } { #2 } {
+    \__bnvs_if_get:nncTF Z { #1 } { #2 } {
       \__bnvs_quark_if_nil:cTF { #2 } {
         \__bnvs_gput:nnn Z { #1 } { \q_no_value }
 %    \end{macrocode}
@@ -8766,7 +8766,7 @@ Unavailable~first~for~#1~(\token_to_str:N \__bnvs_resolve_last:ncTF/1) }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_cache_get:nncTF L { #1 } { #2 } {
+  \__bnvs_cache_if_get:nncTF L { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -8776,7 +8776,7 @@ Unavailable~first~for~#1~(\token_to_str:N \__bnvs_resolve_last:ncTF/1) }
 %    \begin{macrocode}
     \prg_return_true:
   } {
-    \__bnvs_get:nncTF L { #1 } { #2 } {
+    \__bnvs_if_get:nncTF L { #1 } { #2 } {
       \__bnvs_quark_if_nil:cTF { #2 } {
         \__bnvs_gput:nnn L { #1 } { \q_no_value }
 %    \end{macrocode}
@@ -9156,7 +9156,7 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_cache_get:nncTF P { #1 } { #2 } {
+  \__bnvs_cache_if_get:nncTF P { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -9278,7 +9278,7 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_cache_get:nncTF N { #1 } { #2 } {
+  \__bnvs_cache_if_get:nncTF N { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -11872,7 +11872,7 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_call:TF {
+  \__bnvs_if_call:TF {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -14676,9 +14676,9 @@ local function check_variants (path) --> string?
 \bnvs_TEST_B:nn
 \cs_set:Npn \bnvs_TEST_B:nn {}
 \cs_new:Npn \bnvs_C:nn {}
-\BNVS_new_conditional:cpnn { get:nnc } #1 #2 #3 { p, T, F, TF } {}
+\BNVS_new_conditional:cpnn { if_get:nnc } #1 #2 #3 { p, T, F, TF } {}
 \_generate_conditional_variant:Nnn
-  \__bnvs_get:nnc {nV} { p, T, F, TF }
+  \__bnvs_if_get:nnc {nV} { p, T, F, TF }
 ]])
   local ra2 = Command:check_variants(s)
   for _,v in ipairs(ra2) do
