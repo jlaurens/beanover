@@ -2872,12 +2872,12 @@ end
 %
 % \subsubsection{Prop}
 % \begin{function}[TF]{
-%   \__bnvs_prop_get:Nnc,
+%   \__bnvs_if_prop_get:Nnc,
 % }
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { prop_get:Nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_prop_get:Nnc } #1 #2 #3 { T, F, TF } {
   \BNVS_use:ncn {
     \prop_get:NnNTF #1 { #2 }
   } { #3 } { tl } {
@@ -2887,10 +2887,10 @@ end
   }
 }
 %    \end{macrocode}
-% \begin{BNVS/test}{:N=\__bnvs_prop_get:NncTF, noigre}
+% \begin{BNVS/test}{:N=\__bnvs_if_prop_get:NncTF, noigre}
 % \prop_clear:N \l__bnvs_TEST_prop
 % \cs_set:Npn \BNVS_Test:nn #1 #2 {
-%   \BNVS_use_raw:c { __bnvs_prop_get:Nnc#1 }
+%   \BNVS_use_raw:c { __bnvs_if_prop_get:Nnc#1 }
 %     \l__bnvs_TEST_prop { #2 } { TEST }
 % }
 % \BNVS_Test:nn { TF } { key } { \test_fail:n { A/1 } } { }
@@ -5033,7 +5033,7 @@ end
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \prg_new_conditional:Npnn \__bnvs_n_get:nc #1 #2 { T, F, TF } {
-  \__bnvs_prop_get:NncTF \g__bnvs_n_prop { #1 } { #2 } {
+  \__bnvs_if_prop_get:NncTF \g__bnvs_n_prop { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
