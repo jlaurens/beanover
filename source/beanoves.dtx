@@ -139,69 +139,69 @@ and the derived files           beanoves.ins,
   \end{trivlist}
 }
 %\OnlyDescription
-%\Beanoves {
-%  B = [ 421, 666, C=[111, foo=777, 222], 246 ],
-%}
-%\typein{Press <enter> to continue}
-%\BeanovesDebugOn
-%\BeanovesResolve[in:N=\FOO]{B}
-%\show\FOO
-%\BeanovesDebugOn
-%\BeanovesResolve[in:N=\FOO]{++B}
-%\ExplSyntaxOn
-%\BNVS_DEBUG_log:n {*****}
-%\ExplSyntaxOff
-%\show\FOO
-%\BeanovesResolve[in:N=\FOO]{B.C}
-%\ExplSyntaxOn
-%\BNVS_DEBUG_log:n {*****}
-%\ExplSyntaxOff
-%\show\FOO
-%\ExplSyntaxOn
-%\BNVS_DEBUG_log:n {*****}
-%\ExplSyntaxOff
-%\typein{Press <enter> to continue}
-% \begin{BNVS/test}{bnvs:cn={parse:n}{/:nn}, noigre, debug}
-% \BeanovesDebugOn
-% \cs_set:Npn \BNVS_Test:nnnnn #1 #2 #3 #4 #5 {
-%   \banner:n { #5 }
-%   \__bnvs_if_in:nnTF A {?!X.#5} {
-%     \assert_equal:xxn {\__bnvs_item:nn A {?!X.#5} } {#1} {#4-a}
-%     \assert_equal:xxn {\__bnvs_item:nn Z {?!X.#5} } {#2} {#4-b}
-%     \assert_equal:xxn {\__bnvs_item:nn L {?!X.#5} } {#3} {#4-c}
-%   } {
-%     \__bnvs_if_in:nnTF V {?!X.#5} {
-%       \assert_equal:xxn {\__bnvs_item:nn V {?!X.#5} } {#1} {#4-v}
-%     } {
-%       \test_fail:n {#4-F}
-%     }
-%   }
-% }
-% \__bnvs_parse:nn {X.3} {::C:B}
-% \__bnvs_parse:nn {X.3} {{A:,A:B,A::C,:B::C,::C:B, D}}
-% \BNVS_Test:nnnnn {A} {} {} {4-1} {3.1}
-% \BNVS_Test:nnnnn {A} {B} { \exp_not:N \q_nil } {4-2} {3.2}
-% \BNVS_Test:nnnnn {A} { \exp_not:N \q_nil } {C} {4-3} {3.3}
-% \BNVS_Test:nnnnn { \exp_not:N \q_nil } {B} {C} {4-4} {3.4}
-% \BNVS_Test:nnnnn { \exp_not:N \q_nil } {B} {C} {4-5} {3.5}
-% \BNVS_Test:nnnnn {D} {} {} {4-6} {3.6}
-% \cs_undefine:N \BNVS_Test:nnnnn
-% \end{BNVS/test}
-%\ExplSyntaxOn
-%\BNVS_DEBUG_log:n {*****}
-%\ExplSyntaxOff
-%\typein{Press <enter> to continue}
-%\Beanoves{KEY={{SUBKEY=421}}}
-%\ExplSyntaxOn
-%\BNVS_DEBUG_log:n {*****}
-%\ExplSyntaxOff
-%\typein{Press <enter> to continue}
-%\BeanovesResolve[in:N=\FOO]{KEY.SUBKEY}
-%\ExplSyntaxOn
-%\BNVS_DEBUG_log:n {*****}
-%\ExplSyntaxOff
-%\show\FOO
-%\BeanovesDebugOff
+\Beanoves {
+  B = [ 421, 666, C=[111, foo=777, 222], 246 ],
+}
+\typein{Press <enter> to continue}
+\BeanovesDebugOn
+\BeanovesResolve[in:N=\FOO]{B}
+\show\FOO
+\BeanovesDebugOn
+\BeanovesResolve[in:N=\FOO]{++B}
+\ExplSyntaxOn
+\BNVS_DEBUG_log:n {*****}
+\ExplSyntaxOff
+\show\FOO
+\BeanovesResolve[in:N=\FOO]{B.C}
+\ExplSyntaxOn
+\BNVS_DEBUG_log:n {*****}
+\ExplSyntaxOff
+\show\FOO
+\ExplSyntaxOn
+\BNVS_DEBUG_log:n {*****}
+\ExplSyntaxOff
+\typein{Press <enter> to continue}
+ \begin{BNVS/test}{bnvs:cn={parse:n}{/:nn}, noigre, debug}
+ \BeanovesDebugOn
+ \cs_set:Npn \BNVS_Test:nnnnn #1 #2 #3 #4 #5 {
+   \banner:n { #5 }
+   \__bnvs_if_in:nnTF A {?!X.#5} {
+     \assert_equal:xxn {\__bnvs_item:nn A {?!X.#5} } {#1} {#4-a}
+     \assert_equal:xxn {\__bnvs_item:nn Z {?!X.#5} } {#2} {#4-b}
+     \assert_equal:xxn {\__bnvs_item:nn L {?!X.#5} } {#3} {#4-c}
+   } {
+     \__bnvs_if_in:nnTF V {?!X.#5} {
+       \assert_equal:xxn {\__bnvs_item:nn V {?!X.#5} } {#1} {#4-v}
+     } {
+       \test_fail:n {#4-F}
+     }
+   }
+ }
+ \__bnvs_parse:nn {X.3} {::C:B}
+ \__bnvs_parse:nn {X.3} {{A:,A:B,A::C,:B::C,::C:B, D}}
+ \BNVS_Test:nnnnn {A} {} {} {4-1} {3.1}
+ \BNVS_Test:nnnnn {A} {B} { \exp_not:N \q_nil } {4-2} {3.2}
+ \BNVS_Test:nnnnn {A} { \exp_not:N \q_nil } {C} {4-3} {3.3}
+ \BNVS_Test:nnnnn { \exp_not:N \q_nil } {B} {C} {4-4} {3.4}
+ \BNVS_Test:nnnnn { \exp_not:N \q_nil } {B} {C} {4-5} {3.5}
+ \BNVS_Test:nnnnn {D} {} {} {4-6} {3.6}
+ \cs_undefine:N \BNVS_Test:nnnnn
+ \end{BNVS/test}
+\ExplSyntaxOn
+\BNVS_DEBUG_log:n {*****}
+\ExplSyntaxOff
+\typein{Press <enter> to continue}
+\Beanoves{KEY={{SUBKEY=421}}}
+\ExplSyntaxOn
+\BNVS_DEBUG_log:n {*****}
+\ExplSyntaxOff
+\typein{Press <enter> to continue}
+\BeanovesResolve[in:N=\FOO]{KEY.SUBKEY}
+\ExplSyntaxOn
+\BNVS_DEBUG_log:n {*****}
+\ExplSyntaxOff
+\show\FOO
+\BeanovesDebugOff
 \begin{document}
 \maketitle
 \textcolor{red}{0 -> 1 initialize value counter}
@@ -10402,7 +10402,15 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_if_append_v_incr_nncTF:nn { } { ...FALSE }
+  \BNVS_DEBUG_end:n { if_append_v_incr:nnc }
 %</!final>
+%<*!debug>
+% \end{BNVS/gobble}
+%    \begin{macrocode}
+  \BNVS_end:
+%    \end{macrocode}
+% \begin{BNVS/gobble}
+%</!debug>
 % \end{BNVS/gobble}
 % \begin{BNVS/test}{:Nn=\__bnvs_if_append_v_incr:nncTF{/:2}, noigre}
 % \reset:n { Y }
