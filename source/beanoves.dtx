@@ -8854,7 +8854,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional_vc:cn { if_if_resolve_length } { T, F, TF }
+\BNVS_new_conditional_vc:cn { if_resolve_length } { T, F, TF }
 %    \end{macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { if_append_length:nc } #1 #2 { T, F, TF } {
@@ -12040,7 +12040,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
           \__bnvs_tl_if_blank:vTF { n_incr } {
             \__bnvs_tl_if_blank:vTF { incr } {
               \__bnvs_tl_if_blank:vTF { post } {
-                \__bnvs_if_if_resolve_value_loop_or_end_return_true:F {
+                \__bnvs_if_resolve_value_loop_or_end_return_true:F {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % Only the dotted path, branch according to the last component.
@@ -12098,7 +12098,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_set:cpn { if_if_resolve_value_loop_or_end_return_true:F } #1 {
+\BNVS_set:cpn { if_resolve_value_loop_or_end_return_true:F } #1 {
   \__bnvs_tl_set:cx { a } {
     \BNVS_tl_use:c { key } \BNVS_tl_use:c { path }
   }
