@@ -3078,7 +3078,7 @@ end
     \token_to_str:c { \use_i:nn #1 } \use_ii:nn #1
   },
   bnvs:c  .code:n = \tl_set:No \l__bnvs_TEST_banner_tl {
-    \token_to_str:c { \BNVS:c { \use_i:nn #1 } }
+    \token_to_str:c { \BNVS:c { #1 } }
   },
   bnvs:cn .code:n = \tl_set:No \l__bnvs_TEST_banner_tl {
     \token_to_str:c { \BNVS:c { \use_i:nn #1 } } \use_ii:nn #1
@@ -3307,7 +3307,7 @@ end
 % Utilities
     \cs_set:Npn \Test_generic_ncTF:Nnnnn ##1 ##2 ##3 ##4 ##5 {
       \flight:nnT { ##2 } { ##5 } {
-        \__bnvs_int_set:cv { TEST_A } { DEBUG_group }
+        \__bnvs_int_set:cn { TEST_A } { \int_use:N \l__BNVS_DEBUG_group_int }
         \exp_args:Nx
         ##1 { \tl_if_empty:nTF { ##3 } { ?!X } { ##3 } } { ans } {
           \assert_equal_ans:nn { ##4 } { ##5-TRUE }
@@ -3327,7 +3327,7 @@ end
         \test_fail:x { ##6-NO~\token_to_str:N\__bnvs_##1_##2:ncTF }
       }
     }
-%   Usage \Test_generic_X_ncTF:Nnnn \__bnvs_if_append_previous::ncTF {X=123} {122} {label}
+%   Usage \Test_generic_X_ncTF:Nnnn \__bnvs_if_append_previous:ncTF {X=123} {122} {label}
     \cs_set:Npn \Test_generic_X_ncTF:Nnnn ##1 ##2 {
       \Test_generic_ncTF:Nnnnn ##1 { ##2 } {}
     }
@@ -3426,35 +3426,35 @@ end
       }
     }
     \cs_set:Npn \Test_what_resolve_X_ncTF:nnnn ##1 {
-      \Test_what_action_X_ncTF:nnnnn { ##1 } { resolve }
+      \Test_what_action_X_ncTF:nnnnn { if_resolve } { ##1 }
     }
     \cs_set:Npn \Test_what_append_X_ncTF:nnnn ##1 {
-      \Test_what_action_X_ncTF:nnnnn { ##1 } { append }
+      \Test_what_action_X_ncTF:nnnnn { if_append } { ##1 }
     }
     \cs_set:Npn \Test_what_resolve_ncTF:nnnnn ##1 {
-      \Test_what_action_ncTF:nnnnnn { ##1 } { resolve }
+      \Test_what_action_ncTF:nnnnnn { if_resolve } { ##1 }
     }
     \cs_set:Npn \Test_what_append_ncTF:nnnnn ##1 {
-      \Test_what_action_ncTF:nnnnnn { ##1 } { append }
+      \Test_what_action_ncTF:nnnnnn { if_append } { ##1 }
     }
 % General
     \cs_set:Npn \Test_if_resolve_index_X:nnnn {
-      \Test_what_action_X_nncTF:nnnnnn { index } { resolve }
+      \Test_what_action_X_nncTF:nnnnnn { if_resolve } { index }
     }
-    \cs_set:Npn \Test_index_append_X:nnnn {
-      \Test_what_action_X_nncTF:nnnnnn { index } { append }
+    \cs_set:Npn \Test_if_append_index_X:nnnn {
+      \Test_what_action_X_nncTF:nnnnnn { if_append } { index }
     }
     \cs_set:Npn \Test_if_resolve_index:nnnnn {
-      \Test_what_action_nncTF:nnnnnnn { index } { resolve }
+      \Test_what_action_nncTF:nnnnnnn { if_resolve } { index }
     }
-    \cs_set:Npn \Test_index_append:nnnnn {
-      \Test_what_action_nncTF:nnnnnnn { index } { append }
+    \cs_set:Npn \Test_if_append_index:nnnnn {
+      \Test_what_action_nncTF:nnnnnnn { if_append } { index }
     }
     \cs_set:Npn \Test_if_resolve_range:nnn {
-      \Test_what_action_X_ncTF:nnnnn { range } { resolve }
+      \Test_what_action_X_ncTF:nnnnn { if_resolve } { range }
     }
     \cs_set:Npn \Test_if_append_range:nnn {
-      \Test_what_action_X_ncTF:nnnnn { range } { append }
+      \Test_what_action_X_ncTF:nnnnn { if_append } { range }
     }
 % n index
     \cs_set:Npn \Test_n_get:nnnn {
@@ -3464,53 +3464,53 @@ end
       \Test_generic_X_ncTF:Nnnn \__bnvs_n_get:ncTF
     }
     \cs_set:Npn \Test_if_resolve_n:nnnn {
-      \Test_what_action_ncTF:nnnnnn { n } { resolve }
+      \Test_what_action_ncTF:nnnnnn { if_resolve } { n }
     }
     \cs_set:Npn \Test_if_append_n:nnnn {
-      \Test_what_action_ncTF:nnnnnn { n } { append }
+      \Test_what_action_ncTF:nnnnnn { if_append } { n }
     }
     \cs_set:Npn \Test_resolve_n_X:nnn {
-      \Test_what_action_X_ncTF:nnnnn { n } { resolve }
+      \Test_what_action_X_ncTF:nnnnn { if_resolve } { n }
     }
-    \cs_set:Npn \Test_n_append_X:nnn {
-      \Test_what_action_X_ncTF:nnnnn { n } { append }
+    \cs_set:Npn \Test_if_append_n_X:nnn {
+      \Test_what_action_X_ncTF:nnnnn { if_append } { n }
     }
     \cs_set:Npn \Test_if_resolve_n_index_X:nnn {
-      \Test_what_action_X_ncTF:nnnnn { n_index } { resolve }
+      \Test_what_action_X_ncTF:nnnnn { if_resolve } { n_index }
     }
     \cs_set:Npn \Test_if_append_n_index_X:nnn {
-      \Test_what_action_X_ncTF:nnnnn { n_index } { append }
+      \Test_what_action_X_ncTF:nnnnn  { if_append }{ n_index }
     }
     \cs_set:Npn \Test_if_resolve_n_index:nnnn {
-      \Test_what_action_ncTF:nnnnnn { n_index } { resolve }
+      \Test_what_action_ncTF:nnnnnn { if_resolve } { n_index }
     }
     \cs_set:Npn \Test_if_append_n_index:nnnn {
-      \Test_what_action_ncTF:nnnnnn { n_index } { append }
+      \Test_what_action_ncTF:nnnnnn  { if_append }{ n_index }
     }
     \cs_set:Npn \Test_if_resolve_n_incr:nnnnn {
-      \Test_what_action_nncTF:nnnnnnn { n_incr } { resolve }
+      \Test_what_action_nncTF:nnnnnnn { if_resolve } { n_incr }
     }
     \cs_set:Npn \Test_if_append_n_incr:nnnnn {
-      \Test_what_action_nncTF:nnnnnnn { n_incr } { append }
+      \Test_what_action_nncTF:nnnnnnn { if_append } { n_incr }
     }
     \cs_set:Npn \Test_if_resolve_n_post:nnnnn {
-      \Test_what_action_nncTF:nnnnnnn { n_post } { resolve }
+      \Test_what_action_nncTF:nnnnnnn { if_resolve } { n_post }
     }
     \cs_set:Npn \Test_if_append_n_post:nnnnn {
-      \Test_what_action_nncTF:nnnnnnn { n_post } { append }
+      \Test_what_action_nncTF:nnnnnnn { if_append } { n_post }
     }
 % v
     \cs_set:Npn \Test_if_resolve_v_incr:nnnnn {
-      \Test_what_action_check_value_nncTF:nnnnnnn { v_incr } { resolve }
+      \Test_what_action_check_value_nncTF:nnnnnnn { if_sresolve } { v_incr }
     }
     \cs_set:Npn \Test_if_append_v_incr:nnnnn {
-      \Test_what_action_check_value_nncTF:nnnnnnn { v_incr } { append }
+      \Test_what_action_check_value_nncTF:nnnnnnn { if_append } { v_incr }
     }
     \cs_set:Npn \Test_if_resolve_v_post:nnnnn {
-      \Test_what_action_check_value_nncTF:nnnnnnn { v_post } { resolve }
+      \Test_what_action_check_value_nncTF:nnnnnnn { if_resolve } { v_post }
     }
     \cs_set:Npn \Test_if_append_v_post:nnnnn {
-      \Test_what_action_check_value_nncTF:nnnnnnn { v_post } { append }
+      \Test_what_action_check_value_nncTF:nnnnnnn { if_append } { v_post }
     }
 % query
     \cs_set:Npn \Test_if_append:nnnn {
@@ -5601,7 +5601,7 @@ end
   \BNVS_DEBUG_log_arg:nn { IN } { #4 }
   \BNVS_DEBUG_log_gprop:n {}
 }
-\BNVS_DEBUG_log_range_set_cccnTF:nn { } { ... }
+\BNVS_DEBUG_log_range_if_set_cccnTF:nn { } { ... }
   \BNVS_DEBUG_begin:n { range_if_set:cccn }
 %</!final>
 %<*!debug>
@@ -5729,7 +5729,7 @@ end
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_range_set_cccnTF:nn { ... } { ...FALSE }
+\BNVS_DEBUG_log_range_if_set_cccnTF:nn { ... } { ...FALSE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -7402,7 +7402,7 @@ end
   \BNVS_DEBUG_log_tl:c  { #2 }
   \BNVS_DEBUG_log_seq:c { #3 }
 }
-\BNVS_DEBUG_log_kip_ccc:nn { } { ... }
+\BNVS_DEBUG_log_if_kip_ccc:nn { } { ... }
   \BNVS_DEBUG_begin:n { if_kip:ccc }
 %</!final>
 %<*!debug>
@@ -7424,7 +7424,7 @@ end
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_kip_ccc:nn { } {...ID...}
+\BNVS_DEBUG_log_if_kip_ccc:nn { } {...ID...}
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -7432,7 +7432,7 @@ end
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_kip_ccc:nn {...} {...TRUE}
+\BNVS_DEBUG_log_if_kip_ccc:nn {...} {...TRUE}
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -7442,7 +7442,7 @@ end
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_kip_ccc:nn {...} {...UNREACHABLE}
+\BNVS_DEBUG_log_if_kip_ccc:nn {...} {...UNREACHABLE}
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -7453,7 +7453,7 @@ end
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_kip_ccc:nn {...} {...FALSE/NOT~A~KEY}
+\BNVS_DEBUG_log_if_kip_ccc:nn {...} {...FALSE/NOT~A~KEY}
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -7661,7 +7661,7 @@ end
     \__bnvs_seq_if_empty:cTF { path } {
       \__bnvs_tl_clear:c { b }
       \__bnvs_index_can:vTF { key } {
-        \__bnvs_index_append:vvcTF { key } { a } { b } {
+        \__bnvs_if_append_index:vvcTF { key } { a } { b } {
           \__bnvs_tl_set:cv { key } { b }
         } {
           \__bnvs_tl_set:cv { key } { a }
@@ -7963,7 +7963,7 @@ end
 % \__bnvs_round_ans:n { }
 % \assert_equal_tl:vnn { ans } { -990 } { 2 }
 % \end{BNVS/test}
-% \begin{BNVS/test}{bnvs:c=round:c, noigre}
+% \begin{BNVS/test}{bnvs:c={round:c}, noigre}
 % \banner:n {1}
 % \__bnvs_tl_set:cn { a } {11+(1)-111}
 % \__bnvs_round:c { a }
@@ -9105,10 +9105,10 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %
 % \begin{function}[TF]{
 %   \__bnvs_if_resolve_previous:nc,
-%   \__bnvs_if_append_previous::nc
+%   \__bnvs_if_append_previous:nc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_append_previous::ncTF} \marg{key} \meta{tl variable} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_previous:ncTF} \marg{key} \meta{tl variable} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Resolve the index after the \meta{key} slide range into the \meta{tl variable},
 % or append this index to the variable.
@@ -9116,7 +9116,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % In the latter case, the \meta{tl variable} is undefined
 % on resolution only.
 % \end{function}
-% \begin{BNVS/test}{:N=\__bnvs_if_append_previous::ncTF, noigre}
+% \begin{BNVS/test}{:N=\__bnvs_if_append_previous:ncTF, noigre}
 % \reset:n { Y }
 % \Test_what_append_X_ncTF:nnnn { previous } { 222: } { 221 } { 2 }
 % \Test_what_append_X_ncTF:nnnn { previous } { 222:: } { 221 } { 3 }
@@ -9127,7 +9127,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \Test_what_append_X_ncTF:nnnn { previous } { ::LENGTH:LAST } { 221 } { 6 }
 % \Test_what_append_X_ncTF:nnnn { previous } { ::LENGTH:LAST } { 221 } { 6' }
 % \end{BNVS/test}
-% \begin{BNVS/test}{:N=\__bnvs_if_append_previous::ncTF, noigre}
+% \begin{BNVS/test}{:N=\__bnvs_if_append_previous:ncTF, noigre}
 % \reset:n { Y }
 % \Beanoves { X = :LAST::LENGTH }
 % \Test_what_append_X_ncTF:nnnn { last } { } { 666 } { A }
@@ -9137,11 +9137,11 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \Test_what_append_X_ncTF:nnnn { previous } { :LAST+1::LENGTH } { 222 } { 7' }
 % \Beanoves {X=:LAST}
 % \__bnvs_tl_clear:c { a }
-% \__bnvs_if_append_previous::ncT { ?!X } { a } {
+% \__bnvs_if_append_previous:ncT { ?!X } { a } {
 %   \test_fail:n {Unexpected~previous}
 % }
 % \__bnvs_tl_clear:c { a }
-% \__bnvs_if_append_previous::ncT { ?!X } { a } {
+% \__bnvs_if_append_previous:ncT { ?!X } { a } {
 %   \test_fail:n {Unexpected~previous}
 % }
 % \end{BNVS/test}
@@ -9195,13 +9195,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 \BNVS_new_conditional_vc:cn { if_resolve_previous } { T, F, TF }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { if_append_previous::nc } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_append_previous:nc } #1 #2 { T, F, TF } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_set:cnnc { if_append_previous:_ncTF } { KEY } { #1 } { #2 }
-\BNVS_DEBUG_log_if_append_previous:_ncTF:nn { } { ... }
-  \BNVS_DEBUG_begin:n { if_append_previous::nc }
+\BNVS_DEBUG_log_set:cnnc { if_append_previous:ncTF } { KEY } { #1 } { #2 }
+\BNVS_DEBUG_log_if_append_previous_ncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_previous:nc }
 %</!final>
 %<*!debug>
 % \end{BNVS/gobble}
@@ -9217,7 +9217,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_if_append_previous:_ncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_if_append_previous_ncTF:nn { ... } { ...TRUE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9226,7 +9226,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_if_append_previous:_ncTF:nn { ... } { ...FALSE }
+\BNVS_DEBUG_log_if_append_previous_ncTF:nn { ... } { ...FALSE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9236,7 +9236,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional_vc:cn { if_append_previous: } { T, F, TF }
+\BNVS_new_conditional_vc:cn { if_append_previous } { T, F, TF }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 %
@@ -9274,7 +9274,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_set:cnnc { if_resolve_next:ncTF } { KEY } { #1 } { #2 }
-\BNVS_DEBUG_log_resolve_next_ncTF:nn { } { ... }
+\BNVS_DEBUG_log_if_resolve_next_ncTF:nn { } { ... }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9282,7 +9282,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_next_ncTF:nn { ... } { ...TRUE/CACHED }
+\BNVS_DEBUG_log_if_resolve_next_ncTF:nn { ... } { ...TRUE/CACHED }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9295,7 +9295,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_next_ncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_if_resolve_next_ncTF:nn { ... } { ...TRUE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9304,7 +9304,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_next_ncTF:nn { ... } { ...FALSE }
+\BNVS_DEBUG_log_if_resolve_next_ncTF:nn { ... } { ...FALSE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9314,7 +9314,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional_vc:cn { resolve_next } { T, F, TF }
+\BNVS_new_conditional_vc:cn { if_resolve_next } { T, F, TF }
 %    \end{macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { if_append_next:nc } #1 #2 { T, F, TF } {
@@ -9387,7 +9387,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_set:cnnc { if_resolve_v:ncTF } { KEY } { #1 } { #2 }
-\BNVS_DEBUG_log_resolve_v_ncTF:nn { } { ... }
+\BNVS_DEBUG_log_if_resolve_v_ncTF:nn { } { ... }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9399,7 +9399,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_v_ncTF:nn { ... } { ...TRUE/ALREADY }
+\BNVS_DEBUG_log_if_resolve_v_ncTF:nn { ... } { ...TRUE/ALREADY }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9448,7 +9448,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \end{BNVS/test}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_v_ncTF:nn { ... } { ...TRUE/VALUE }
+\BNVS_DEBUG_log_if_resolve_v_ncTF:nn { ... } { ...TRUE/VALUE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9459,7 +9459,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_v_ncTF:nn { ... } { ...TRUE/A }
+\BNVS_DEBUG_log_if_resolve_v_ncTF:nn { ... } { ...TRUE/A }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9470,7 +9470,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_v_ncTF:nn { ... } { ...TRUE/Z }
+\BNVS_DEBUG_log_if_resolve_v_ncTF:nn { ... } { ...TRUE/Z }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9480,7 +9480,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_v_ncTF:nn { ... } { ...FALSE/Z }
+\BNVS_DEBUG_log_if_resolve_v_ncTF:nn { ... } { ...FALSE/Z }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9501,7 +9501,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_set:cnnc { if_append_v:ncTF } { KEY } { #1 } { #2 }
-\BNVS_DEBUG_log_v_append_ncTF:nn { } { ... }
+\BNVS_DEBUG_log_if_append_v_ncTF:nn { } { ... }
   \BNVS_DEBUG_begin:n { if_append_v:nc }
 %</!final>
 %<*!debug>
@@ -9518,7 +9518,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_v_append_ncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_if_append_v_ncTF:nn { ... } { ...TRUE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9527,7 +9527,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_v_append_ncTF:nn { ... } { ...FALSE }
+\BNVS_DEBUG_log_if_append_v_ncTF:nn { ... } { ...FALSE }
 %</!final>
 % \end{BNVS/gobble}
 % \begin{BNVS/test}{:N=\__bnvs_if_append_value:ncTF, noigre}
@@ -9572,7 +9572,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional_vc:cn { v_append } { T, F, TF }
+\BNVS_new_conditional_vc:cn { if_append_v } { T, F, TF }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 %
@@ -9581,13 +9581,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %   \__bnvs_index_can:v,
 %   \__bnvs_if_resolve_index:nnc,
 %   \__bnvs_if_resolve_index:vvc,
-%   \__bnvs_index_append:nnc,
-%   \__bnvs_index_append:vvc
+%   \__bnvs_if_append_index:nnc,
+%   \__bnvs_if_append_index:vvc
 % }
 % \begin{syntax}
 % \cs{__bnvs_index_can:nTF} \marg{key} \marg{yes code} \marg{no code}
 % \cs{__bnvs_if_resolve_index:nncTF} \marg{key} \marg{integer} \meta{tl core name} \marg{yes code} \marg{no code}
-% \cs{__bnvs_index_append:nncTF} \marg{key} \marg{integer} \meta{tl core name} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_index:nncTF} \marg{key} \marg{integer} \meta{tl core name} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Resolve the index associated to the \meta{key} and \meta{integer} slide range
 % into the \meta{tl variable} or
@@ -9674,7 +9674,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % Limited overlay set.
-% \begin{BNVS/test}{bnvs:c=if_resolve_index:nncTF, noigre}
+% \begin{BNVS/test}{bnvs:c={if_resolve_index:nncTF}, noigre}
 % \Test_if_resolve_index:nnnnn { 3 } {} { -2 } {  0 } { A-1 }
 % \Test_if_resolve_index:nnnnn { } {} { 0 } { 2 } { A-2 }
 % \Test_if_resolve_index:nnnnn { } {} { 1 } { 3 } { A-3 }
@@ -9777,13 +9777,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { index_append:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_append_index:nnc } #1 #2 #3 { T, F, TF } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_set:cnnnnc { index_append:nncTF } { KEY } { #1 } { INDEX } { #2 } { #3 }
-\BNVS_DEBUG_log_index_append_nncTF:nn { } { ... }
-  \BNVS_DEBUG_begin:n { index_append:nnc }
+\BNVS_DEBUG_log_set:cnnnnc { if_append_index:nncTF } { KEY } { #1 } { INDEX } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_index_nncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_index:nnc }
 %</!final>
 %<*!debug>
 % \end{BNVS/gobble}
@@ -9799,23 +9799,23 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_index_append_nncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_if_append_index_nncTF:nn { ... } { ...TRUE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
     \prg_return_true:
 %    \end{macrocode}
-% \begin{BNVS/test}{:N=\__bnvs_index_append:nncTF, noigre}
-% \Test_index_append:nnnnn { 3 } {} { -2 } {  0 } { A-1 }
-% \Test_index_append:nnnnn { } {} { 0 } { 2 } { A-2 }
-% \Test_index_append:nnnnn { } {} { 1 } { 3 } { A-3 }
-% \Test_index_append:nnnnn { } {} { 2 } { 4 } { A-4 }
+% \begin{BNVS/test}{:N=\__bnvs_if_append_index:nncTF, noigre}
+% \Test_if_append_index:nnnnn { 3 } {} { -2 } {  0 } { A-1 }
+% \Test_if_append_index:nnnnn { } {} { 0 } { 2 } { A-2 }
+% \Test_if_append_index:nnnnn { } {} { 1 } { 3 } { A-3 }
+% \Test_if_append_index:nnnnn { } {} { 2 } { 4 } { A-4 }
 % \reset:n { Y }
 % \cs_set:Npn \BNVS_Test:n #1 {
-%   \Test_index_append:nnnnn { } { ?!#1 } { -2 } { 219 } { #1-1 }
-%   \Test_index_append:nnnnn { } { ?!#1 } {  0 } { 221 } { #1-2 }
-%   \Test_index_append:nnnnn { } { ?!#1 } {  1 } { 222 } { #1-3 }
-%   \Test_index_append:nnnnn { } { ?!#1 } {  2 } { 223 } { #1-4 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } { -2 } { 219 } { #1-1 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } {  0 } { 221 } { #1-2 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } {  1 } { 222 } { #1-3 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } {  2 } { 223 } { #1-4 }
 % }
 % \reset_X:
 % \BNVS_Test:n { A1   }
@@ -9835,10 +9835,10 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \BNVS_Test:n { LZ21 }
 % \BNVS_Test:n { LZ22 }
 % \cs_set:Npn \BNVS_Test:n #1 {
-%   \Test_index_append:nnnnn { } { ?!#1 } { -2 } { 663 } { #1-1 }
-%   \Test_index_append:nnnnn { } { ?!#1 } {  0 } { 665 } { #1-2 }
-%   \Test_index_append:nnnnn { } { ?!#1 } {  1 } { 666 } { #1-3 }
-%   \Test_index_append:nnnnn { } { ?!#1 } {  2 } { 667 } { #1-4 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } { -2 } { 663 } { #1-1 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } {  0 } { 665 } { #1-2 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } {  1 } { 666 } { #1-3 }
+%   \Test_if_append_index:nnnnn { } { ?!#1 } {  2 } { 667 } { #1-4 }
 % }
 % \BNVS_Test:n { Z1 }
 % \BNVS_Test:n { Z2 }
@@ -9849,7 +9849,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_index_append_nncTF:nn { ... } { ...FALSE }
+\BNVS_DEBUG_log_if_append_index_nncTF:nn { ... } { ...FALSE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9858,9 +9858,9 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { index_append:vvc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_append_index:vvc } #1 #2 #3 { T, F, TF } {
   \BNVS_tl_use:nv {
-    \BNVS_tl_use:Nv \__bnvs_index_append:nncTF { #1 }
+    \BNVS_tl_use:Nv \__bnvs_if_append_index:nncTF { #1 }
   } { #2 } { #3 } {
     \prg_return_true:
   } {
@@ -9887,7 +9887,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_set:cnnc { if_resolve_n:ncTF } { KEY } { #1 } { #2 }
-\BNVS_DEBUG_log_resolve_n_ncTF:nn { } { ... }
+\BNVS_DEBUG_log_if_resolve_n_ncTF:nn { } { ... }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9898,7 +9898,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_resolve_n_ncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_if_resolve_n_ncTF:nn { ... } { ...TRUE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9911,7 +9911,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_set:cnnc { if_append_n:ncTF } { KEY } { #1 } { #2 }
-\BNVS_DEBUG_log_n_append_ncTF:nn { } { ... }
+\BNVS_DEBUG_log_if_append_n_ncTF:nn { } { ... }
   \BNVS_DEBUG_begin:n { if_append_n:nc }
 %</!final>
 %<*!debug>
@@ -9928,7 +9928,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_n_append_ncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_if_append_n_ncTF:nn { ... } { ...TRUE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9938,7 +9938,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_n_append_ncTF:nn { ... } { ...FALSE }
+\BNVS_DEBUG_log_if_append_n_ncTF:nn { ... } { ...FALSE }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -9947,13 +9947,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional_vc:cn { n_append } { T, F, TF }
+\BNVS_new_conditional_vc:cn { if_append_n } { T, F, TF }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{BNVS/test}{:N=\__bnvs_if_append_n:ncTF, noigre}
-% \Test_n_append_X:nnn { 1 } { 1 } { 1 }
+% \Test_if_append_n_X:nnn { 1 } { 1 } { 1 }
 % \__bnvs_n_gput:nn { ?!X } { 123 }
-% \Test_n_append_X:nnn { } { 123 } { 2 }
+% \Test_if_append_n_X:nnn { } { 123 } { 2 }
 % \cs_set:Npn \BNVS_Test:n #1 {
 %   \Test_if_append_n:nnnn { } { ?!#1 } { 1 } { #1 }
 % }
@@ -10246,7 +10246,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \reset:n { YES }
 % \Test_if_append_n_index_X:nnn { FIRST } { 222 } { 1 }
 % \__bnvs_n_gput:nn { ?!X } { 445 }
-% \Test_n_append_X:nnn { } { 445 } { 2 }
+% \Test_if_append_n_X:nnn { } { 445 } { 2 }
 % \Test_if_append_n_index_X:nnn { } { 666 } { 1 }
 % \end{BNVS/test}
 %
@@ -11593,7 +11593,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { if_resolve_pop_kip_complete: } {
+\BNVS_new:cpn { if_resolve_pop_kip[complete]: } {
   \__bnvs_tl_if_blank:vT { id } {
     \__bnvs_tl_put_left:cv { key } { id_last }
     \__bnvs_tl_set:cv { id } { id_last }
@@ -11642,7 +11642,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %    \begin{macrocode}
           #1
         } {
-          \__bnvs_if_resolve_pop_kip_complete:
+          \BNVS_use:c { if_resolve_pop_kip[complete]: }
           #2
         }
       } {
@@ -12364,7 +12364,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
   \__bnvs_if_resolve_path_n:T {
-    \__bnvs_if_append_previous::vcTF { key } { ans } {
+    \__bnvs_if_append_previous:vcTF { key } { ans } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -12532,7 +12532,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
   \__bnvs_if_resolve_path_n:T {
-    \__bnvs_index_append:vvcTF { key } { a } { ans } {
+    \__bnvs_if_append_index:vvcTF { key } { a } { ans } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -13683,7 +13683,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \end{BNVS/test}
 %
 % \begin{function}{
-%   \__bnvs_resolve:nc
+%   \__bnvs_resolve_queries:nc
 % }
 % \begin{syntax}
 % \cs{__bnvs_resolve:nc} \marg{overlay query list} \marg{core tl name}
@@ -13714,13 +13714,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { resolve:nc } #1 #2 {
+\BNVS_new:cpn { resolve_queries:nc } #1 #2 {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_set:cnnc { resolve:nc } { IN } { #1 } { #2 }
-\BNVS_DEBUG_log_resolve_nc:nn { } { ... }
-  \BNVS_DEBUG_begin:n { resolve:nc }
+\BNVS_DEBUG_log_set:cnnc { resolve_queries:nc } { IN } { #1 } { #2 }
+\BNVS_DEBUG_log_resolve_queries_nc:nn { } { ... }
+  \BNVS_DEBUG_begin:n { resolve_queries:nc }
 %</!final>
 %<*!debug>
 % \end{BNVS/gobble}
@@ -13775,13 +13775,12 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 % and append them to the tl variable.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-  \typeout{*****~AFTER~Circular/Undefined}
   \exp_args:Nnx
   \use:n {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-    \BNVS_DEBUG_end:n { resolve:nc }
+    \BNVS_DEBUG_end:n { resolve_queries:nc }
 %</!final>
 %<*!debug>
 % \end{BNVS/gobble}
@@ -13846,7 +13845,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
   }
   \keys_set:nn { BeanovesResolve } { #1 }
   \__bnvs_tl_clear:c { ans }
-  \__bnvs_resolve:nc { #2 } { ans }
+  \__bnvs_resolve_queries:nc { #2 } { ans }
   \typein{Press<enter>~to~continue}
   \__bnvs_tl_if_empty:cTF { resolve_in } {
     \bool_if:nTF { \l__bnvs_resolve_see_bool } {
