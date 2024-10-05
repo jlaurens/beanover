@@ -1987,15 +1987,15 @@ end
 %   \__bnvs_if_match_once:Nn,
 %   \__bnvs_if_match_once:Nv,
 %   \__bnvs_if_match_once:nn,
-%   \__bnvs_regex_split:cn,
+%   \__bnvs_if_regex_split:cn,
 % }
 % \begin{syntax}
 % \cs{__bnvs_if_match_once:NnTF} \meta{regex variable} \marg{expression}
 % \marg{yes code} \marg{no code}
 % \cs{__bnvs_if_match_once:nnTF} \marg{regex} \marg{expression}
 % \marg{yes code} \marg{no code}
-% \cs{__bnvs_regex_split:cncTF} \marg{regex core} \marg{expression} \meta{seq core} \marg{yes code} \marg{no code}
-% \cs{__bnvs_regex_split:cnTF} \marg{regex core} \marg{expression} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_regex_split:cncTF} \marg{regex core} \marg{expression} \meta{seq core} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_regex_split:cnTF} \marg{regex core} \marg{expression} \marg{yes code} \marg{no code}
 % \end{syntax}
 % These are shortcuts to
 % \begin{itemize}
@@ -2119,7 +2119,7 @@ end
 % }
 % \end{BNVS/test}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { regex_split:cnc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_regex_split:cnc } #1 #2 #3 { T, F, TF } {
   \BNVS_seq_use:nc {
     \BNVS_regex_use:Nc \regex_split:NnNTF { #1 } { #2 }
   } { #3 } {
@@ -2128,7 +2128,7 @@ end
     \prg_return_false:
   }
 }
-\BNVS_new_conditional:cpnn { regex_split:cn } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_regex_split:cn } #1 #2 { T, F, TF } {
   \BNVS_seq_use:nc {
     \BNVS_regex_use:Nc \regex_split:NnNTF { #1 } { #2 }
   } { split } {
@@ -2138,7 +2138,7 @@ end
   }
 }
 %    \end{macrocode}
-% \begin{BNVS/test}{:N=\__bnvs_regex_split:cnTF, noigre}
+% \begin{BNVS/test}{:N=\__bnvs_if_regex_split:cnTF, noigre}
 % \cs_set:Npn \BNVS_Test:nT #1 #2 {
 %   \seq_pop_left:NNTF \l__bnvs_split_seq \l__bnvs_TEST_A_tl {
 %     \assert_equal_tl:vnn { TEST_A } { #1 } { #1/1 }
@@ -2147,7 +2147,7 @@ end
 %     \test_fail:n { #1/2 }
 %   }
 % }
-% \__bnvs_regex_split:cnTF { TEST_comma } { A,B,C } {
+% \__bnvs_if_regex_split:cnTF { TEST_comma } { A,B,C } {
 %   \BNVS_Test:nT { A } { \BNVS_Test:nT { B } { \BNVS_Test:nT { C } { } } }
 % } {
 %   \test_fail:n { A/3 }
@@ -5616,7 +5616,7 @@ end
   \__bnvs_tl_clear:c { a }
   \__bnvs_tl_clear:c { b }
   \__bnvs_tl_clear:c { c }
-  \__bnvs_regex_split:cnTF { colons } { #4 } {
+  \__bnvs_if_regex_split:cnTF { colons } { #4 } {
     \__bnvs_seq_pop_left:ccT { split } { a } {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
@@ -11904,7 +11904,7 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
 % Implementation:
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-  \__bnvs_regex_split:cnTF { split } { #1 } {
+  \__bnvs_if_regex_split:cnTF { split } { #1 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
