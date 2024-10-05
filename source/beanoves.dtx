@@ -1984,29 +1984,29 @@ end
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{function}[TF]{
-%   \__bnvs_match_once:Nn,
-%   \__bnvs_match_once:Nv,
-%   \__bnvs_match_once:nn,
+%   \__bnvs_if_match_once:Nn,
+%   \__bnvs_if_match_once:Nv,
+%   \__bnvs_if_match_once:nn,
 %   \__bnvs_regex_split:cn,
 % }
 % \begin{syntax}
-% \cs{__bnvs_match_once:NnTF} \meta{regex variable} \marg{expression}
+% \cs{__bnvs_if_match_once:NnTF} \meta{regex variable} \marg{expression}
 % \marg{yes code} \marg{no code}
-% \cs{__bnvs_match_once:nnTF} \marg{regex} \marg{expression}
+% \cs{__bnvs_if_match_once:nnTF} \marg{regex} \marg{expression}
 % \marg{yes code} \marg{no code}
 % \cs{__bnvs_regex_split:cncTF} \marg{regex core} \marg{expression} \meta{seq core} \marg{yes code} \marg{no code}
 % \cs{__bnvs_regex_split:cnTF} \marg{regex core} \marg{expression} \marg{yes code} \marg{no code}
 % \end{syntax}
 % These are shortcuts to
 % \begin{itemize}
-% \item \cs{regex_match_once:NnNTF} with the |match| sequence as N argument
-% \item \cs{regex_match_once:nnNTF} with the |match| sequence as N argument
+% \item \cs{regex_if_match_once:NnNTF} with the |match| sequence as N argument
+% \item \cs{regex_if_match_once:nnNTF} with the |match| sequence as N argument
 % \item \cs{regex_split:NnNTF} with the |split| sequence as last N argument
 % \end{itemize}
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { match_once:Ncn } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_match_once:Ncn } #1 #2 #3 { T, F, TF } {
   \BNVS_use:ncn {
     \regex_extract_once:NnNTF #1 { #3 }
   } { #2 } { seq } {
@@ -2015,7 +2015,7 @@ end
     \prg_return_false:
   }
 }
-\BNVS_new_conditional:cpnn { match_once:Nn } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_match_once:Nn } #1 #2 { T, F, TF } {
   \BNVS_use:ncn {
     \regex_extract_once:NnNTF #1 { #2 }
   } { match } { seq } {
@@ -2025,9 +2025,9 @@ end
   }
 }
 %    \end{macrocode}
-% \begin{BNVS/test}{:N=\__bnvs_match_once:NcnTF, noigre}
+% \begin{BNVS/test}{:N=\__bnvs_if_match_once:NcnTF, noigre}
 % \BNVS_seq_new:c { A_TEST }
-% \__bnvs_match_once:NcnTF \c__bnvs_TEST_comma_regex { A_TEST } { , } {
+% \__bnvs_if_match_once:NcnTF \c__bnvs_TEST_comma_regex { A_TEST } { , } {
 %   \seq_pop_left:NNTF \l__bnvs_A_TEST_seq \l__bnvs_TEST_A_tl {
 %     \assert_equal_tl:vnn { TEST_A } { , } { A/1 }
 %   } {
@@ -2037,8 +2037,8 @@ end
 %   \test_fail:n { A/3 }
 % }
 % \end{BNVS/test}
-% \begin{BNVS/test}{:N=\__bnvs_match_once:NnTF, noigre}
-% \__bnvs_match_once:NnTF \c__bnvs_TEST_comma_regex { , } {
+% \begin{BNVS/test}{:N=\__bnvs_if_match_once:NnTF, noigre}
+% \__bnvs_if_match_once:NnTF \c__bnvs_TEST_comma_regex { , } {
 %   \seq_pop_left:NNTF \l__bnvs_match_seq \l__bnvs_TEST_A_tl {
 %     \assert_equal_tl:vnn { TEST_A } { , } { A/1 }
 %   } {
@@ -2049,7 +2049,7 @@ end
 % }
 % \end{BNVS/test}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { match_once:Ncv } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_match_once:Ncv } #1 #2 #3 { T, F, TF } {
   \BNVS_seq_use:nc {
     \BNVS_tl_use:nv {
       \regex_extract_once:NnNTF #1 
@@ -2060,7 +2060,7 @@ end
     \prg_return_false:
   }
 }
-\BNVS_new_conditional:cpnn { match_once:Nv } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_match_once:Nv } #1 #2 { T, F, TF } {
   \BNVS_seq_use:nc {
     \BNVS_tl_use:nv {
       \regex_extract_once:NnNTF #1 
@@ -2072,9 +2072,9 @@ end
   }
 }
 %    \end{macrocode}
-% \begin{BNVS/test}{:N=\__bnvs_match_once:NcvTF, noigre}
+% \begin{BNVS/test}{:N=\__bnvs_if_match_once:NcvTF, noigre}
 % \tl_set:Nn \l__bnvs_TEST_B_tl { , }
-% \__bnvs_match_once:NcvTF \c__bnvs_TEST_comma_regex { A_TEST }{ TEST_B } {
+% \__bnvs_if_match_once:NcvTF \c__bnvs_TEST_comma_regex { A_TEST }{ TEST_B } {
 %   \seq_pop_left:NNTF \l__bnvs_A_TEST_seq \l__bnvs_TEST_A_tl {
 %     \assert_equal_tl:vnn { TEST_A } { , } { A/1 }
 %   } {
@@ -2084,9 +2084,9 @@ end
 %   \test_fail:n { A/3 }
 % }
 % \end{BNVS/test}
-% \begin{BNVS/test}{:N=\__bnvs_match_once:NvTF, noigre}
+% \begin{BNVS/test}{:N=\__bnvs_if_match_once:NvTF, noigre}
 % \tl_set:Nn \l__bnvs_TEST_B_tl { , }
-% \__bnvs_match_once:NvTF \c__bnvs_TEST_comma_regex { TEST_B } {
+% \__bnvs_if_match_once:NvTF \c__bnvs_TEST_comma_regex { TEST_B } {
 %   \seq_pop_left:NNTF \l__bnvs_match_seq \l__bnvs_TEST_A_tl {
 %     \assert_equal_tl:vnn { TEST_A } { , } { A/1 }
 %   } {
@@ -2097,7 +2097,7 @@ end
 % }
 % \end{BNVS/test}
 %    \begin{macrocode}
-\BNVS_new_conditional:cpnn { match_once:nn } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_match_once:nn } #1 #2 { T, F, TF } {
   \BNVS_seq_use:nc {
     \regex_extract_once:nnNTF { #1 } { #2 }
   } { match } {
@@ -2107,8 +2107,8 @@ end
   }
 }
 %    \end{macrocode}
-% \begin{BNVS/test}{:N=\__bnvs_match_once:nnTF, noigre}
-% \__bnvs_match_once:nnTF { A } { A } {
+% \begin{BNVS/test}{:N=\__bnvs_if_match_once:nnTF, noigre}
+% \__bnvs_if_match_once:nnTF { A } { A } {
 %   \seq_pop_left:NNTF \l__bnvs_match_seq \l__bnvs_TEST_A_tl {
 %     \assert_equal_tl:vnn { TEST_A } { A } { A/1 }
 %   } {
@@ -3564,11 +3564,11 @@ end
 \cs_set:Npn \BNVS_TEST_extract:nnnn #1 #2 #3 #4 {
   \BNVS_begin:
   \tl_if_empty:nT { #3 } {
-    \__bnvs_match_once:nnT { #1 } { #2 } {
+    \__bnvs_if_match_once:nnT { #1 } { #2 } {
       \test_fail:n { #4-a }
     }
   } {
-    \__bnvs_match_once:nnTF { #1 } { #2 } {
+    \__bnvs_if_match_once:nnTF { #1 } { #2 } {
       \tl_set:Nx \l__bnvs_a_tl { \__bnvs_seq_use:cn { match } , }
       \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
       \seq_pop_left:NNT \l__bnvs_match_seq \l__bnvs_b_tl {
@@ -6082,7 +6082,7 @@ end
 %</!debug>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_match_once:NnTF \c__bnvs_A_FQ_name_n_Z_regex { #1 } {
+  \__bnvs_if_match_once:NnTF \c__bnvs_A_FQ_name_n_Z_regex { #1 } {
     \__bnvs_if_match_pop_left:cTF { key } {
       \__bnvs_if_match_pop_left:cTF { key } {
         \__bnvs_if_match_pop_left:cTF { id } {
@@ -6138,7 +6138,7 @@ end
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{BNVS/test}{:N=\__bnvs_id_name_n_get:nTF, noigre, noigre}
-% \__bnvs_match_once:NnTF \c__bnvs_A_FQ_name_n_Z_regex { ?!X } { } { }
+% \__bnvs_if_match_once:NnTF \c__bnvs_A_FQ_name_n_Z_regex { ?!X } { } { }
 % \__bnvs_id_name_n_get:nTF { ?!X } { } { }
 % \cs_set:Npn \BNVS_Test:nnnnnn #1 #2 #3 #4 #5 #6 {
 %   \banner:n { #6 }
@@ -7414,7 +7414,7 @@ end
 %</!debug>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_match_once:NvTF \c__bnvs_A_FQ_name_Z_regex { #1 }  {
+  \__bnvs_if_match_once:NvTF \c__bnvs_A_FQ_name_Z_regex { #1 }  {
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % This is a correct key, update the path sequence accordingly.
@@ -13579,7 +13579,7 @@ Unavailable~last~for~#1~(\__bnvs_resolve_length:ncTF/1) }
 % \end{BNVS/gobble}
 %    \begin{macrocode}
   \__bnvs_call_greset:
-  \__bnvs_match_once:NnTF \c__bnvs_A_cln_Z_regex { #1 } {
+  \__bnvs_if_match_once:NnTF \c__bnvs_A_cln_Z_regex { #1 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
