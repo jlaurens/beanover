@@ -3457,11 +3457,11 @@ end
       \Test_what_action_X_ncTF:nnnnn { if_append } { range }
     }
 % n index
-    \cs_set:Npn \Test_n_get:nnnn {
-      \Test_generic_ncTF:Nnnnn \__bnvs_n_get:ncTF
+    \cs_set:Npn \Test_n_if_get:nnnn {
+      \Test_generic_ncTF:Nnnnn \__bnvs_n_if_get:ncTF
     }
-    \cs_set:Npn \Test_n_get_X:nnn {
-      \Test_generic_X_ncTF:Nnnn \__bnvs_n_get:ncTF
+    \cs_set:Npn \Test_n_if_get_X:nnn {
+      \Test_generic_X_ncTF:Nnnn \__bnvs_n_if_get:ncTF
     }
     \cs_set:Npn \Test_if_resolve_n:nnnn {
       \Test_what_action_ncTF:nnnnnn { if_resolve } { n }
@@ -5021,9 +5021,9 @@ end
 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
-% \begin{function}[TF]{\__bnvs_n_get:nc}
+% \begin{function}[TF]{\__bnvs_n_if_get:nc}
 % \begin{syntax}
-% \cs{__bnvs_n_get:ncTF} \marg{Q name} \meta{tl core} \marg{yes code} \marg{no code}
+% \cs{__bnvs_n_if_get:ncTF} \marg{Q name} \meta{tl core} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Convenient shortcuts to retrieve the value with branching, it makes the code more concise and readable.
 % Execute \meta{yes code} when the item is found, \meta{no code} otherwise.
@@ -5032,12 +5032,12 @@ end
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\prg_new_conditional:Npnn \__bnvs_n_get:nc #1 #2 { T, F, TF } {
+\prg_new_conditional:Npnn \__bnvs_n_if_get:nc #1 #2 { T, F, TF } {
   \__bnvs_if_prop_get:NncTF \g__bnvs_n_prop { #1 } { #2 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:cnnnc { n_get:ncTF } { ...TRUE } { KEY } { #1 } { #2 }
+\BNVS_DEBUG_log_f:cnnnc { n_if_get:ncTF } { ...TRUE } { KEY } { #1 } { #2 }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -5046,7 +5046,7 @@ end
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:cnnnc { n_get:ncTF } { ...FALSE } { KEY } { #1 } { #2 }
+\BNVS_DEBUG_log_f:cnnnc { n_if_get:ncTF } { ...FALSE } { KEY } { #1 } { #2 }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -5063,10 +5063,10 @@ end
 % \__bnvs_n_gput:nn { A } { B }
 % \BNVS_Test:xxn { \__bnvs_n_item:n {A} } { B } { 1 }
 % \__bnvs_tl_clear:c { b }
-% \__bnvs_n_get:ncF {A} { b } {
+% \__bnvs_n_if_get:ncF {A} { b } {
 %   \test_fail:n { 13 }
 % }
-% \__bnvs_n_get:ncT {B} { b } {
+% \__bnvs_n_if_get:ncT {B} { b } {
 %   \test_fail:n { 13 }
 % }
 % \end{BNVS/test}
@@ -9891,7 +9891,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_n_get:ncF { #1 } { #2 } {
+  \__bnvs_n_if_get:ncF { #1 } { #2 } {
     \__bnvs_tl_set:cn { #2 } { 1 }
     \__bnvs_n_gput:nn { #1 } { 1 }
   }
@@ -10692,7 +10692,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 %   \test_fail:n { NO_WAY }
 % }
 % \Test_if_append_n_incr:nnnnn { 123 } {} { 123 } { 246 } { 1 }
-% \Test_n_get:nnnn {} {} { 124 } { 2 }
+% \Test_n_if_get:nnnn {} {} { 124 } { 2 }
 % \Test_if_append_n_incr:nnnnn { 123 } {} { 500+40+3 } { 666 } { 3 }
 % \reset:n { YES }
 % \Test_if_append_n_incr:nnnnn { FIRST } {} { LENGTH-1 } { 666 } { 4 }
