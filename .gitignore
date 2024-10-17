@@ -288,3 +288,5 @@ source/example.tex
 source/beanoves copie.dtx
 source/beanoves-test.lua
 source/beanoves copie.pdf
+
+source/luatex.*
