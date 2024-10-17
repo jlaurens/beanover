@@ -1,0 +1,83 @@
+% !TeX encoding = UTF-8
+% !TeX program = xelatex
+% !TeX proot = ...
+
+\documentclass{beamer}
+\RequirePackage{pentagon}
+\begin{document}
+\newcommand\pentagon{
+\begin{tikzpicture}[
+  scale=3,
+]
+  \tikzset{
+    mark coordinate/.style={
+      inner sep=0pt,
+      outer sep=0pt,
+      minimum size=3pt,
+      fill=####1,
+      circle
+    }
+  }
+  \coordinate (O) at (0,0);
+  \coordinate (W) at (-1,0);
+  \coordinate (E) at (1,0);
+  \coordinate (S) at (0,-1);
+  \coordinate (N) at (0,1);
+  \coordinate (A) at (-0.25,0);
+  \coordinate (B) at (0,0.5);
+  \coordinate (P0) at (0:1);
+  \coordinate (P1) at (72:1);
+  \coordinate (P2) at (144:1);
+  \coordinate (P3) at (216:1);
+  \coordinate (P4) at (288:1);
+  \visible<?(Step.1.range)>{
+    \draw (0,0) circle [radius=1];
+  }
+  \visible<?(Step.2.range)>{
+    \draw (W) -- (E);
+  }
+  \visible<?(Step.3.range)>{
+    \draw (S) -- (N);
+  }
+  \visible<?(Step.4.range)>{
+    \draw (A) -- (B);
+  }
+  \visible<?(Step.5.range)>{
+    \draw (P1) -- (P4);
+  }
+  \visible<?(Step.6.range)>{
+    \draw (P2) -- (P3);
+  }
+  \visible<?(Step.7.range)>{
+    \draw (P0) -- (P1) -- (P2) -- (P3) -- (P4) -- cycle;
+  }
+  \visible<?(Step.8.range)>{
+    \node [draw] at (A) [circle through={(B)}] {};
+  }
+  \end{tikzpicture}
+}
+\begin{frame}[
+  beanoves = {
+    Step=[
+      1:,
+      2:,
+      3:,
+      4:,
+      5:,
+      6:,
+      7:,
+      8:,
+    ]
+  },
+]{Frame number \insertframenumber/\inserttotalframenumber}{Slide number \insertslidenumber}
+\begin{center}
+\BeanovesLogGProp
+ABC
+\BeanovesEval[see]{Step.1}
+\BeanovesEval[see]{Step.2}
+\BeanovesEval[see]{Step.3.1}
+%\pentagon
+\end{center}
+\end{frame}
+
+\end{document}
