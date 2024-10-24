@@ -5052,9 +5052,9 @@ end
 %   \__bnvs_n_gclear:
 % }
 % \begin{syntax}
-% \cs{__bnvs_n_gput:nn} \marg{Q name} \marg{value}
-% \cs{__bnvs_n_item:n} \marg{Q name}
-% \cs{__bnvs_n_gremove:n} \marg{Q name}
+% \cs{__bnvs_n_gput:nn} \marg{QF name} \marg{value}
+% \cs{__bnvs_n_item:n} \marg{QF name}
+% \cs{__bnvs_n_gremove:n} \marg{QF name}
 % \cs{__bnvs_n_gclear:}
 % \end{syntax}
 % Convenient shortcuts to manage the storage,
@@ -5144,11 +5144,11 @@ end
 % \end{BNVS/macrocode}
 % \begin{function}[pTF]{\__bnvs_n_if_in:n}
 % \begin{syntax}
-% \cs{__bnvs_n_if_in_p:nn} \marg{Q name}
-% \cs{__bnvs_n_if_in:nTF} \marg{Q name} \marg{yes code} \marg{no code}
+% \cs{__bnvs_n_if_in_p:nn} \marg{QF name}
+% \cs{__bnvs_n_if_in:nTF} \marg{QF name} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Convenient shortcuts to test for the existence of
-% the  \texttt{\meta{Q name}} value counter.
+% the  \texttt{\meta{QF name}} value counter.
 % \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
@@ -5163,11 +5163,11 @@ end
 % \end{BNVS/macrocode}
 % \begin{function}[TF]{\__bnvs_n_if_get:nc}
 % \begin{syntax}
-% \cs{__bnvs_n_if_get:ncTF} \marg{Q name} \meta{tl core} \marg{yes code} \marg{no code}
+% \cs{__bnvs_n_if_get:ncTF} \marg{QF name} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Convenient shortcuts to retrieve the value with branching, it makes the code more concise and readable.
 % Execute \meta{yes code} when the item is found, \meta{no code} otherwise.
-% In the latter case, the content of the \meta{tl core} variable is undefined.
+% In the latter case, the content of the \meta{ans} |tl| variable is undefined.
 % NB: the predicate won't work because |\prop_get:NnNTF| is not expandable.
 % \end{function}
 % \begin{BNVS/macrocode}
@@ -5656,16 +5656,6 @@ end
 %   \BNVS_TEST_split:Nnnn \c__bnvs_split_regex
 %  { 1/#1/2 } { 1/,{},{},{},#2,/2 } { split-#3 }
 % }
-% 1.1: qualified name
-% 1.2: id
-% 1.3: path
-% 2.1: qualified name
-% 2.2: id
-% 2.3: path
-% 2.4: ...++n
-% 2.5: ...(+?)=
-% 2.6: ...+?=(...)
-% 2.7: ...(+)+
 % \BNVS_Test:nnn { A.++n }   {{A},{},{},{+},{},{},{}} { 2-a' }
 % \BNVS_Test:nnn { ?!A.++n } {{?!A},{?!},{},{+},{},{},{}} { 2-b' }
 % \BNVS_Test:nnn { A.3.++n } {{A},{},{.3},{+},{},{},{}} { 2-c' }
@@ -5713,16 +5703,6 @@ end
 %   \BNVS_TEST_split:Nnnn \c__bnvs_split_regex
 %  { 1/#1~1/2 } { 1/,{},{},{},#2,1/2 } { split-#3 }
 % }
-% 1.1: qualified name
-% 1.2: id
-% 1.3: path
-% 2.1: qualified name
-% 2.2: id
-% 2.3: path
-% 2.4: ...++n
-% 2.5: ...(+?)=
-% 2.6: ...+?=(...)
-% 2.7: ...++
 % \BNVS_Test:nnn { A=42 }   {{A},{},{},{},{},{42},{}} { a }
 % \BNVS_Test:nnn { A+=42 } {{A},{},{},{},{+},{42},{}} { a }
 % \cs_undefine:N \BNVS_Test:nnn
@@ -6377,11 +6357,11 @@ end
 %
 % \begin{function}{\__bnvs_parse:n, \__bnvs_parse:nn}
 %   \begin{syntax}
-%     \cs{__bnvs_parse:n} \marg{F/Q name}
-%     \cs{__bnvs_parse:nn} \marg{F/Q name} \marg{definition}
+%     \cs{__bnvs_parse:n} \marg{QF name}
+%     \cs{__bnvs_parse:nn} \marg{QF name} \marg{definition}
 %   \end{syntax}
 % Auxiliary functions called within a group by |\keyval_parse:nnn|.
-% \meta{F/Q name} is the overlay (eventually fully) qualified name, 
+% \meta{QF name} is the overlay (eventually fully) qualified name, 
 % including eventually a dotted path and a frame identifier,
 % \meta{definition} is the corresponding definition.
 % \begin{variable}{\l__bnvs_match_seq}
@@ -6663,7 +6643,7 @@ end
 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
-% Helper for |\keyval_parse:nnn| use in \cs{Beanoves} command.
+% Helper for |\keyval_parse:nnn| used in \cs{Beanoves} command.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { parse:nn } #1 #2 {
@@ -6994,6 +6974,8 @@ end
   }
 }
 %    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand \Beanoves { sm } {
 %    \end{macrocode}
@@ -7129,6 +7111,10 @@ end
   \BNVS_set:cpn { :n } ##1 { \BNVS_end: \__bnvs_saved@frame < ##1 > }
   \BNVS_tl_use:cv { :n } { ans }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_set:Npn \__bnvs@masterdecode #1 {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
@@ -7159,14 +7145,26 @@ end
     \__bnvs_saved@masterdecode
   } { ans }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BeanovesOff {
   \cs_set_eq:NN \beamer@frame \__bnvs_saved@frame 
   \cs_set_eq:NN \beamer@masterdecode \__bnvs_saved@masterdecode
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BeanovesOn {
   \cs_set_eq:NN \beamer@frame \__bnvs@frame
   \cs_set_eq:NN \beamer@masterdecode \__bnvs@masterdecode
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \AddToHook{begindocument/before}{
   \cs_if_exist:NTF \beamer@frame {
     \cs_set_eq:NN \__bnvs_saved@frame \beamer@frame
@@ -7211,7 +7209,7 @@ end
 % \end{function}
 % \begin{function}[TF]{\__bnvs_scan:nNc}
 % \begin{syntax}
-% \cs{__bnvs_scan:nNc} \marg{overlay query} \meta{resolve} \meta{ans} \meta{yes code} \meta {no code}
+% \cs{__bnvs_scan:nNcTF} \marg{overlay query} \meta{resolve} \marg{ans} \meta{yes code} \meta{no code}
 % \end{syntax}
 % \end{function}
 % Next are helpers.
@@ -7722,6 +7720,10 @@ end
   }
 }
 \quark_new:N \q__bnvs
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \BNVS_new:cpn { end_Fip_export:ccc } #1 #2 #3 {
   \exp_args:Nnx
   \use:n {
@@ -7730,6 +7732,10 @@ end
     } { #2 } 
   } { \__bnvs_seq_use:cn { #3 } { \q__bnvs } } { #1 } { #2 } { #3 }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \BNVS_new:cpn { end_Fip_export:nnnccc } #1 #2 #3 #4 #5 #6 {
   \BNVS_end:
   \tl_if_empty:nTF { #2 } {
@@ -7743,8 +7749,10 @@ end
   \__bnvs_seq_remove_all:cn { #6 } { }
 }
 %    \end{macrocode}
+% \end{BNVS/macrocode}
 % Sets the |QF_name| and |id| to the heading items of the match sequence.
 % Sets the |path| sequence to the components of the |path| variable as dotted path.
+% \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { if_match_pop_Qip:ccc } #1 #2 #3 { TF } {
   \__bnvs_if_match_pop_left:cTF { #1 } {
@@ -7820,13 +7828,6 @@ end
 % if \meta{path seq var} is empty, \meta{name tl var} can contain anything,
 % including an integer for example.
 % \end{function}
-% \begin{function}{
-%   \__bnvs_if_resolve_Fip_x_path:TFF
-% }
-% \begin{syntax}
-% \cs{__bnvs_if_resolve_Fip_x_path:TFF} \marg{yes code} \marg{no code 1} \marg{no code 2}
-% \end{syntax}
-% \end{function}
 % \begin{BNVS/test}{bnvs:c={if_resolve_Fip_n:TF}, noigre}
 % \Test_if_resolve_path_n:nnnnnn { X } { X } { } { X } { } { 1A }
 % \Test_if_resolve_path_n:nnnnnn { X } { X } { 1 } { X } { 1 } { 2A }
@@ -7884,15 +7885,6 @@ end
 % \Test_resolve_x_path:nnnnnn { X.1.2.3=Y, X.1.2=Z, Y.4=4 } { X } { 1.2.3.4 } { 4 } { } { 8A }
 % \Test_resolve_x_path:nnnnnn { X.1.2.3=Y, Y=Z } { X } { 1.2.3 } { Z } { } { 9A }
 % \end{BNVS/test}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\BNVS_new:cpn { if_resolve_Fip_x_path:TFF } #1 #2 {
-  \__bnvs_if_resolve_Fip_x_path:TF {
-    \__bnvs_seq_if_empty:cTF { path } { #1 } { #2 }
-  }
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
 % Local variables:
 % \begin{itemize}
 % \item \cs{l__bnvs_a_tl} contains the name with a partial index path currently resolved.
@@ -12327,21 +12319,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 }
 \BNVS_new:cpn { if_resolve_path_n_end_return_false_or:T } #1 {
   \__bnvs_if_resolve_path_n:TFF {
-    #1
-  } {
-    \__bnvs_if_resolve_end_return_false:n {
-      Too~many~dotted~components
-    }
-  } {
-    \__bnvs_if_resolve_end_return_false:n {
-      Unknown~dotted~path
-    }
-  }
-}
-%    \end{macrocode}
-%    \begin{macrocode}
-\BNVS_set:cpn { resolve_x:T } #1 {
-  \__bnvs_if_resolve_Fip_x_path:TFF {
     #1
   } {
     \__bnvs_if_resolve_end_return_false:n {
