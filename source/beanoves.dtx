@@ -120,6 +120,7 @@ and the derived files           beanoves.ins,
 \RequirePackage{emoji}
 \RequirePackage{minted}
 \tcbuselibrary{minted}
+\setminted{style=autumn}
 \RequirePackage{hyperref}
 \ExplSyntaxOn
 \debug_on:n {} % 
@@ -172,13 +173,14 @@ This should install files \pkg{beanoves.sty} and its debug version
 \pkg{beanoves-debug.sty} as well as \pkg{beanoves-doc.pdf} documentation.
 
 \subsection{Manual installation}
-The \pkg{beanoves} source files are available at \url{https://github.com/jlaurens/beanoves}. There is also \url{https://ctan.org/pkg/beanoves}.
+The \pkg{beanoves} source files are available from the \href[pdfnewwindow]{https://github.com/jlaurens/beanoves}{source repository}.
+They can also be fetched from the \href[pdfnewwindow]{https://ctan.org/pkg/beanoves}{CTAN repository}.
 
 \subsection{Usage}
-The \pkg{beanoves} package is imported by putting \mintinline[style = autumn]{latex}{\RequirePackage{beanoves}}
+The \pkg{beanoves} package is imported by putting \mintinline{latex}{\RequirePackage{beanoves}}
 in the preamble of a \LaTeX\ document that uses the \pkg{beamer} class.
-
-The features of \pkg{beanoves} can be temporarily deactivated with
+Should the package cause problems, 
+its features can be temporarily deactivated with
 simple commands \cs{BeanovesOff} and \cs{BeanovesOn}.
 
 \section{Minimal example}
@@ -196,7 +198,7 @@ More demonstration files are available from the
     linenos,
     numbersep=0.5\baselineskip,
   },
-  minted style = autumn,
+  minted language=latex,
 }
 \documentclass{beamer}
 \RequirePackage{beanoves}
@@ -276,23 +278,28 @@ at the global \TeX\ level to allow its use in |\begin{frame}<...>| and to share 
 Hence the \emph{frame id} due to the need to possibly target a particular frame.
 
 \subsection{Defining named overlay sets}
-In order to define \emph{named overlay sets}, we can either execute the next |\Beanoves| command  before a \pkg{beamer} \text{frame} environment, or use the |beanoves| option of this environment.
-The value of the |beanoves| option is similar to the argument of the |\Beanoves| commands, but the latter takes precedence on the former.
-This behaviour may be useful to input the very same source code into different frames and have different combinations of slides.
+In order to define \emph{named overlay sets}, we can either execute the next |\Beanoves| command  before a \pkg{beamer} \text{frame} environment, or use the new |beanoves| option of this environment.
 %
-\begin{function}{beanoves}
-  \begin{syntax}
-    beanoves = \{\meta{ref_1}=\meta{spec_1}, \meta{ref_2}=\meta{spec_2},..., \meta{ref_j}=\meta{spec_j}\}
-  \end{syntax}
-\end{function}
-\begin{function}{\Beanoves}
+\begin{function}{\Beanoves, \Beanoves*}
   \begin{syntax}
     \cs{Beanoves}\{\meta{ref_1}=\meta{spec_1}, \meta{ref_2}=\meta{spec_2},..., \meta{ref_j}=\meta{spec_j}\}
+  \end{syntax}
+\end{function}
+\begin{function}{beanoves}
+  \begin{syntax}
+    beanoves = \{\meta{ref_1}[=\meta{spec_1}], \meta{ref_2}[=\meta{spec_2}],..., \meta{ref_j}[=\meta{spec_j}]\}
   \end{syntax}
 \end{function}
 Each \meta{ref_i} key is a \emph{named overlay reference} whereas each \meta{spec} value
 is an \emph{overlay set specifier}.
 When the same \meta{ref} key is used multiple times, only the last one is taken into account.
+
+Notice that \texttt{\meta{ref_i}=1} can be shortened to \text{\meta{ref_i}}.
+%
+The \cs{Beanoves} arguments take precedence over both the \cs{Beanoves*} arguments
+and the \texttt{beanoves} options. This allows to provide an overlay name
+only when not already defined, which is helpfull when the very same frame source
+is included multiple times in different contexts.
 %
 \subsubsection{Basic specifiers}
 In the possible values for \meta{spec} hereafter, \meta{value}, \meta{first}, \meta{length} and \meta{last} are numerical expression
@@ -359,7 +366,7 @@ When the \emph{query reference} is a previously declared \texttt{\meta{ref}}, li
 it is simply replaced by the corresponding declared \texttt{\meta{value}}.
 Otherwise, we use \emph{implicit overlay queries} and their \emph{resolution rules} depending
 on the definition of the named overlay set.
-Here \meta{i} denotes a signed integer whereas \meta{value}, \meta{first}, \meta{last} and \meta{length} stand for raw integers or more general numerical expressions.
+Here \meta{i} denotes a signed integer whereas \meta{value}, \meta{first}, \meta{last} and \meta{length} stand for raw integers or more general numerical expressions. We assume that \(\meta{first}≤\meta{last}\) and \(\meta{length}≥0\).
 %
 \subsection{Number and range overlay queries}
 \begin{description}
@@ -387,6 +394,7 @@ For a range limited from below:
 \meta{ref}.2 & \(\meta{first}+1\) \\
 \meta{ref}.\meta{i} & \(\meta{first} + \meta{i} - 1\) \\
 \meta{ref}.previous & \(\meta{first}-1\)\\
+\meta{ref}.first & \(\meta{first}\)\\
 \hline
 \end{tabular}
 \end{center}
@@ -422,6 +430,7 @@ For a range limited from both above and below:
 \meta{ref}.2 & \(\meta{first}+1\) \\
 \meta{ref}.\meta{i} & \(\meta{first} + \meta{i} - 1\) \\
 \meta{ref}.previous & \(\meta{first}-1\)\\
+\meta{ref}.first & \(\meta{first}\)\\
 \meta{ref}.last & \(\meta{last}\)\\
 \meta{ref}.next & \(\meta{last}+1\)\\
 \meta{ref}.length & \(\meta{length}\)\\
@@ -443,7 +452,6 @@ It is mainly used for debugging and testing purposes.
     linenos,
     numbersep=0.5\baselineskip,
   },
-  minted style = autumn,
 }
 \Beanoves {
   A = 3:8, % or similarly A = 3::6, A = ::6:8 and A = :8::6
@@ -453,6 +461,7 @@ It is mainly used for debugging and testing purposes.
 \BeanovesResolve[show](A.1)        == 3,
 \BeanovesResolve[show](A.-1)       == 1,
 \BeanovesResolve[show](A.previous) == 2,
+\BeanovesResolve[show](A.first)    == 3,
 \BeanovesResolve[show](A.last)     == 8,
 \BeanovesResolve[show](A.next)     == 9,
 \BeanovesResolve[show](A.length)   == 6,
@@ -470,7 +479,7 @@ which is some kind of integer variable that can be used and incremented.
 A standalone \texttt{\meta{name}} \emph{overlay query} is resolved into
 the position of this value counter.
 For each frame, this variable is initialized to the first available
-resolution amongst \meta{value}, \texttt{\meta{name}.1} or \texttt{\meta{name}.last}.
+resolution amongst \meta{value}, \texttt{\meta{name}.first}, \texttt{\meta{name}.1} or \texttt{\meta{name}.last}.
 If none is available, the counter is initialized to 1.
 
 Additionnaly, resolution rules are provided for dedicated \emph{overlay queries}:
@@ -507,7 +516,19 @@ In order to decrement a counter, one can increment with a negative value, no ded
 These counters are reset to their default value for each new frame,
 which is 1 for the \texttt{\meta{name}.n} counter, and
 whichever \texttt{\meta{name}} first or last value is defined
-for the \texttt{\meta{name}} counter.
+for the \texttt{\meta{name}} counter. Sometimes, resetting the counter
+manually is necessary, for example when managing \pkg{tikz} overlay material.
+%
+\begin{function}{\BeanovesReset}
+  \begin{syntax}
+    \cs{BeanovesReset} \{\meta{ref_1}=\meta{spec_1}, \meta{ref_2}=\meta{spec_2},..., \meta{ref_j}=\meta{spec_j}\}
+  \end{syntax}
+This command is very similar to \cs{Beanoves},
+except that a standalone \texttt{\meta{ref_i}} resets the counter to
+its default value and that it is meant to be used inside a
+\texttt{frame} environment. The \cs{BeanovesReset*} also resets internals that
+were cached for performance reasons.
+\end{function}
 %
 \subsection{Dotted paths}
 In previous overlay queries, \texttt{\meta{name}} can be formally replaced by
@@ -516,13 +537,20 @@ If it does not correspond to a definition or an assignment,
 the longest qualified full name
 \texttt{\meta{name}.\meta{c_1}.\meta{c_2}...\meta{c_k}}
 where 0$≤$k$≤$j is first replaced by its definition \texttt{\meta{name'}.\meta{c'_1}...\meta{c'_l}} if any and then the modified overlay query is resolved with preceding rules as well as this one. For example, with
-\mintinline[style = autumn]{latex}{\Beanoves{A.B=D, D.C=E}},
+\mintinline{latex}{\Beanoves{A.B=D, D.C=E}},
 |A.B.C| is resolved like |E|.
 %
+Inside a \texttt{frame} environment, when the instruction
+\mintinline[escapeinside=||]{latex}{\Beanoves{|\meta{ref}|=pauses}}
+is executed, it saves the current value of the \pkg{beamer} pauses
+counter into the \texttt{\meta{ref}} counter. Later on,
+\texttt{?(\meta{ref})} can refer to this value.
+
 \subsection{The \texttt{beamerpauses} counter}
-It is possible to save the current value of the \texttt{beamerpauses} counter that controls whether elements should appear on the current slide.
-For that, we can execute one of |\BeanovesSavePauses{|\meta{ref}|}| or in a query
-|?(...(|\meta{ref}|=pauses)...)|.
+While inside a \texttt{frame} environment,
+it is possible to save the current value of the \texttt{beamerpauses} counter that controls whether elements should appear on the current slide.
+For that, we can execute one of \mintinline[escapeinside=||]{latex}{\Beanoves{|\meta{ref}|=pauses}} or in a query
+\mintinline[escapeinside=||]{latex}{?(...(|\meta{ref}|=pauses)...)}.
 Then later on, we can use |?(...|\meta{ref}|...)| to refer to this saved value
 in the same frame\footnote{See
 \href[pdfnewwindow]{https://tex.stackexchange.com/questions/34458/reference-overlay-numbers-with-names}{stackexchange}
@@ -536,19 +564,19 @@ Next frame source is an example of usage.
     linenos,
     numbersep=0.5\baselineskip,
   },
-  minted style = autumn,
 }
 \begin{frame}
 \visible<+->{A}\\
-\visible<+->{B\BeanovesSavePauses{afterB}}\\
+\visible<+->{B\Beanoves{afterB=pauses}}\\
 \visible<+->{C}\\
-\visible<?(afterB)>{C'}\\
-\visible<?(afterB.previous)>{B'}\\
+\visible<?(afterB)>{other C}\\
+\visible<?(afterB.previous)>{other B}\\
 \end{frame}
 \end{tcblisting}
 ``A'' first appears on slide 1, ``B'' on slide 2 and ``C'' on slide 3.
 On line 2, |afterB| takes the value of the \texttt{beamerpauses}
 counter once updated, \emph{id est} 3.
+``B'' and ``other B'' as well as ``C'' and ``other C'' appear at the same time.
 %
 \subsection{Multiple queries}
 It is possible to replace the comma separated list |?(|\meta{query_1}|),...?(|\meta{query_j}|)| with the shorter |?(|\meta{query_1}|,...|\meta{query_j}|)|.
@@ -574,9 +602,24 @@ use the new \texttt{beanoves id} option of the \pkg{beamer} frame environment.
 \end{function}
 We can use the same \emph{frame id} for different frames to share named overlay sets. 
 %
+\subsection{Resolution command}
+\begin{function}{\BeanovesResolve}
+  \begin{syntax}
+    \cs{BeanovesResolve} \oarg{setup} \marg{overlay queries}
+  \end{syntax}
+This function resolves the \meta{overlay queries},
+which are like the argument of |?(...)| instructions:
+a comma separated list of single \meta{overlay query}'s.
+The optional \meta{setup} is a key--value:
+\begin{itemize}
+\item[\texttt{show}] the result is left into the input stream
+\item[\texttt{in:N=\meta{command}}] the result is stored into \meta{command}.
+\end{itemize}
+\end{function}
+%
 \section{Support}
-See \url{https://github.com/jlaurens/beanoves}.
-One can report issues.
+See the \href[pdfnewwindow]{https://github.com/jlaurens/beanoves}{source repository}.
+One can report issues there.
 
 \end{documentation}
 \DocInput{beanoves.dtx}
@@ -732,6 +775,10 @@ end
   \exp_last_unbraced:No
   \BNVS_use_raw:N { \cs:w #1 \cs_end: }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_use:c #1 {
   \BNVS_use_raw:c { \BNVS:c { #1 } }
 }
@@ -744,24 +791,46 @@ end
 % }
 % \BNVS_undefine:c { TEST:n }
 % \end{BNVS/test}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \cs_new:Npn \BNVS_use_raw:NN #1 #2 {
   #1 #2
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_use_raw:nN #1 #2 {
   #1 #2
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_use_raw:Nc #1 #2 {
   \exp_last_unbraced:NNo
   \BNVS_use_raw:NN #1 { \cs:w #2 \cs_end: }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_use_raw:nc #1 #2 {
   \exp_last_unbraced:Nno
   \BNVS_use_raw:nN { #1 } { \cs:w #2 \cs_end: }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_use:Nc #1 #2 {
   \BNVS_use_raw:Nc #1 { \BNVS:c { #2 } }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_use:nc #1 #2 {
   \BNVS_use_raw:nc { #1 } { \BNVS:c { #2 } }
 }
@@ -876,9 +945,17 @@ end
 %    \begin{macrocode}
 \cs_new:Npn \BNVS_log:n #1 { }
 \cs_generate_variant:Nn \BNVS_log:n { x }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_DEBUG_on: {
   \cs_set:Npn \BNVS_DEBUG_log:n { \BNVS_log:n }
 }
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \cs_new:Npn \BNVS_DEBUG_off: {
   \cs_set:Npn \BNVS_DEBUG_log:n { \use_none:n }
 }
@@ -1129,6 +1206,8 @@ end
 }
 %</!final>
 % \end{BNVS/gobble}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_N_new:c { bool }
 %    \end{macrocode}
@@ -1316,6 +1395,7 @@ end
     \BNVS_use:Ncn   #1   { #2 } { #3 }
   }
 }
+%    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
@@ -1324,6 +1404,7 @@ end
     \BNVS_use:ncn { #1 } { #2 } { #3 }
   }
 }
+%    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
@@ -1332,6 +1413,7 @@ end
     \BNVS_use:Nvn   #1   { #2 } { #3 }
   }
 }
+%    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
@@ -3360,7 +3442,7 @@ end
     \begin{BNVS/test}
   } {
     \cs_set:Npn \banner:n ##1 {
-      \__bnvs_call_greset:
+      \__bnvs_greset:
       \BNVS_log_a:xn { ▶︎▶︎▶︎▶︎▶︎~TEST~##1~/~line:~\the\inputlineno} {}
     }
     \RenewDocumentEnvironment{BNVS/failure}{}
@@ -4220,8 +4302,22 @@ end
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
+\BNVS_new:cpn { set_true:c } #1 {
+  \exp_args:Nc \bool_set_true:N { l__bnvs_#1_bool }
+}
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { set_false:c } #1 {
+  \exp_args:Nc \bool_set_false:N { l__bnvs_#1_bool }
+}
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
 \BNVS_new:cpn { provide_on: } {
-  \bool_set_true:N \l__bnvs_provide_bool
+  \__bnvs_set_true:c { provide }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -4235,7 +4331,7 @@ end
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { provide_off: } {
-  \bool_set_false:N \l__bnvs_provide_bool
+  \__bnvs_set_false:c { provide }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -4245,23 +4341,6 @@ end
 %    \begin{macrocode}
 }
 \__bnvs_provide_off:
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% \begin{function}[TF]{\__bnvs_if_provide: }
-% \begin{syntax}
-% \cs{__bnvs_if_provide:TF} \marg{yes code} \marg{no code}
-% \end{syntax}
-% Execute \meta{yes code} when in provide mode (see |\Beanoves*{...}|), \meta{no code} otherwise.
-% \end{function}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\BNVS_new_conditional:cpnn { if_provide: } { p, T, F, TF } {
-  \bool_if:NTF \l__bnvs_provide_bool {
-    \prg_return_true:
-  } {
-    \prg_return_false:
-  }
-}
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \subsection{Infinite loop management}
@@ -4276,18 +4355,18 @@ end
 \int_const:Nn \c__bnvs_max_call_int { 8192 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
-% \begin{function}{\__bnvs_call_greset:}
+% \begin{function}{\__bnvs_greset:}
 % \begin{syntax}
-% \cs{__bnvs_call_greset:}
+% \cs{__bnvs_greset:}
 % \end{syntax}
 % Reset globally the call stack counter to its maximum value.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn  { call_greset: } {
+\BNVS_new:cpn  { greset: } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:c { call_greset: }
+\BNVS_DEBUG_log_f:c { greset: }
 \BNVS_DEBUG_log:x { \token_to_str:N \g__bnvs_call_int: \int_use:N \g__bnvs_call_int }
 %</!final>
 % \end{BNVS/gobble}
@@ -5199,12 +5278,16 @@ end
     { \prg_return_true: } { \prg_return_false: }
 }
 %    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { v_if_greset:vn } #1 #2 { T, F, TF } {
   \BNVS_tl_use:Nv \__bnvs_v_if_greset:nnTF { #1 } { #2 }
     { \prg_return_true: } { \prg_return_false: }
 }
 %    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new_conditional:cpnn { v_if_greset:vv } #1 #2 { T, F, TF } {
   \BNVS_tl_use:Nv \__bnvs_v_if_greset:nvTF { #1 } { #2 }
@@ -5358,7 +5441,7 @@ end
 % When used for the first time, it defaults to 1.
 % \begin{variable} {\g__bnvs_n_prop}
 % \meta{key}--\meta{value} property list to store the contents of the named index counters.
-% The keys are qualified names \meta{id}!\meta{short name}.
+% The keys are qualified full names.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \prop_new:N \g__bnvs_n_prop
@@ -6165,17 +6248,10 @@ end
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \AddToHook{env/beamer@frameslide/before}{
-  \__bnvs_call_greset:
+  \__bnvs_greset:
   \__bnvs_n_gclear:
   \__bnvs_v_gclear:
   \bool_set_true:N \l__bnvs_in_frame_bool
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-  \BNVS_log_a:nn {THIS_IS_BEFORE} {}
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
@@ -6183,13 +6259,6 @@ end
 %    \begin{macrocode}
 \AddToHook{env/beamer@frameslide/after}{
   \bool_set_false:N \l__bnvs_in_frame_bool
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-  \BNVS_log_a:nn {THIS_IS_AFTER} {}
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
@@ -6198,7 +6267,7 @@ end
 %
 % \begin{function}[TF]{\__bnvs_range_if_set:cccn}
 %   \begin{syntax}
-%     \cs{__bnvs_range_if_set:cccnTF} \marg{core first}  \marg{core end} \marg{core length} \marg{tl} \marg{yes code} \marg{no code}
+%     \cs{__bnvs_range_if_set:cccnTF} \marg{core first} \marg{core end} \marg{core length} \marg{tl} \marg{yes code} \marg{no code}
 %   \end{syntax}
 % Parse \meta{tl} as a range according to \cs{c__bnvs_colons_regex} and set the variables accordingly.
 % \meta{tl} is expected to only contain colons and integers.
@@ -6221,6 +6290,7 @@ end
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_f:ncn { } { split_if_pop_left:cTF } { ...FALSE }
+\BNVS_DEBUG_log_seq:c { split }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
@@ -6233,6 +6303,13 @@ end
 %    \begin{macrocode}
 \BNVS_new:cpn { split_if_pop_left:cTn } #1 #2 #3 {
   \__bnvs_split_if_pop_left:cTF { #1 } { #2 } { \BNVS:n { #3 } }
+}
+%    \end{macrocode}
+% \end{BNVS/macrocode}
+% \begin{BNVS/macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { split_if_pop_left_or:cT } #1 #2 {
+  \__bnvs_split_if_pop_left:cTF { #1 } { #2 } { \BNVS:n { #1 } }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -6451,7 +6528,7 @@ end
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_if_provide:TF {
+  \__bnvs_if:cTF { provide } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -6532,7 +6609,7 @@ end
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_if_provide:TF {
+  \__bnvs_if:cTF { provide } {
     \__bnvs_gprovide:nnnT V { #1 } { 1 } {
       \__bnvs_gclear:n { #1 }
     }
@@ -6581,7 +6658,7 @@ end
 % \end{BNVS/gobble}
 %    \begin{macrocode}
   } {
-    \__bnvs_if_provide:TF {
+    \__bnvs_if:cTF { provide } {
       \__bnvs_gprovide:nnnT V { #1 } { #2 } {
         \__bnvs_gclear_all:n { #1 }
       }
@@ -6658,11 +6735,11 @@ end
   \__bnvs_range_if_set:cccnTF { a } { b } { c } { #2 } {
     \BNVS_error:n { Unexpected~range:~#2 }
   } {
-    \__bnvs_if_provide:TF {
-      \__bnvs_n_gprovide:nn { #1 } { #2 }
+    \__bnvs_if:cTF { provide } {
+      \__bnvs_n_gprovide:nn
     } {
-      \__bnvs_n_gput:nn { #1 } { #2 }
-    }
+      \__bnvs_n_gput:nn
+    } { #1 } { #2 }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -6891,7 +6968,7 @@ end
 %    \begin{macrocode}
         \__bnvs_int_incr:c { i }
         \__bnvs_tl_put_right:cx { root } { \__bnvs_int_use:c { i } . }
-        \cs_set:Npn \bnvs:w ####1 ####2 \s_stop {
+        \cs_set:Npn \BNVS:w ####1 ####2 \s_stop {
           \regex_match:nnT { \S* } { ####2 } {
             \BNVS_error:n { Unexpected~####2 }
           }
@@ -6902,7 +6979,7 @@ end
           } { ####1 }
           \BNVS_end:
         }
-        \bnvs:w #1 \s_stop
+        \BNVS:w #1 \s_stop
       }
     } {
       \__bnvs_tl_if_empty:cTF { root } {
@@ -6971,7 +7048,7 @@ end
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { do_range:nnnn } #1 #2 #3 #4 {
-    \__bnvs_gclear_all:n { #1 }
+  \__bnvs_gclear_all:n { #1 }
 %    \end{macrocode}
 % \begin{BNVS/test}{:N=\__bnvs_range:nnnn, noigre}
 % \cs_set:Npn \BNVS_Test:nnnnnnnn #1 #2 #3 #4 #5 #6 #7 #8 {
@@ -7677,7 +7754,7 @@ end
 % \end{BNVS/macrocode}
 % \begin{function}{\__bnvs_scan:nNc}
 % \begin{syntax}
-% \cs{__bnvs_scan:nNc} \marg{overlay query} \meta{resolve} \meta{ans}
+% \cs{__bnvs_scan:nNc} \marg{overlay query} \meta{resolve} \marg{ans}
 % \end{syntax}
 % Scan the \meta{overlay query} argument and feed the \meta{ans} |tl| variable replacing |?(...)| instructions by their static counterpart
 % with help from the \meta{resolve} function, which is \cs{__bnvs_if_resolve:ncTF}.
@@ -7728,7 +7805,7 @@ end
 %    \begin{macrocode}
   \__bnvs_seq_pop_left:ccTF { token } { token } {
     \__bnvs_tl_if_eq:cnTF { token } { ? } {
-      \__bnvs_scan_require_open_then_end_return:
+      \__bnvs_scan_require_open_end_return:
     } {
       \__bnvs_tl_put_right:cv { ans } { token }
 %    \end{macrocode}
@@ -7754,10 +7831,10 @@ end
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{function}{
-%   \__bnvs_scan_require_open_then_end_return:
+%   \__bnvs_scan_require_open_end_return:
 % }
 % \begin{syntax}
-% \cs{__bnvs_scan_require_open_then_end_return:}
+% \cs{__bnvs_scan_require_open_end_return:}
 % \end{syntax}
 % We just found a `|?|',
 % we first gobble tokens until the next `|(|', ^^A ---)
@@ -7766,11 +7843,11 @@ end
 % \end{function}
 
 %    \begin{macrocode}
-\BNVS_new:cpn { scan_require_open_then_end_return: } {
+\BNVS_new:cpn { scan_require_open_end_return: } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:ncn { } { scan_require_open_then_end_return: } { }
+\BNVS_DEBUG_log_f:ncn { } { scan_require_open_end_return: } { }
 %</!final>
 % \end{BNVS/gobble}
 % Get next token.
@@ -7801,13 +7878,13 @@ end
 % Ignore this token and loop.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-      \__bnvs_scan_require_open_then_end_return:
+      \__bnvs_scan_require_open_end_return:
     }
   } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:ncn { } { scan_require_open_then_end_return: } { ...? }
+\BNVS_DEBUG_log_f:ncn { } { scan_require_open_end_return: } { ...? }
 %</!final>
 % \end{BNVS/gobble}
 % \end{BNVS/macrocode}
@@ -7880,8 +7957,8 @@ end
 % \end{BNVS/macrocode}
 % We found a `|(|', ^^A---)
 % increment the depth and append the token to |query|,
-% then scan again for a^^A---(
-% |)|.
+% then scan for a ^^A---(
+% `|)|'.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
         \__bnvs_int_incr:c { }
@@ -7911,7 +7988,7 @@ end
 % The depth level has reached 0: we found our balancing parenthesis
 % of the |?(...)| instruction.
 % We can append the evaluated slide ranges token list to |ans|
-% and look for the next |?|.
+% and look for the next `|?|'.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
           \__bnvs_scan_handle_query_then_end_return:
@@ -8179,7 +8256,7 @@ end
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-      \__bnvs_end_Fip_export:ccc { #1 } { #2 } { #3 }
+      \__bnvs_end_Qip_export:ccc { #1 } { #2 } { #3 }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -8217,11 +8294,11 @@ end
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { end_Fip_export:ccc } #1 #2 #3 {
+\BNVS_new:cpn { end_Qip_export:ccc } #1 #2 #3 {
   \exp_args:Nnx
   \use:n {
     \BNVS_tl_use:nv {
-      \BNVS_tl_use:cv { end_Fip_export:nnnccc } { #1 }
+      \BNVS_tl_use:cv { end_Qip_export:nnnccc } { #1 }
     } { #2 } 
   } { \__bnvs_seq_use:cn { #3 } { \q__bnvs } } { #1 } { #2 } { #3 }
 }
@@ -8229,7 +8306,7 @@ end
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { end_Fip_export:nnnccc } #1 #2 #3 #4 #5 #6 {
+\BNVS_new:cpn { end_Qip_export:nnnccc } #1 #2 #3 #4 #5 #6 {
   \BNVS_end:
   \tl_if_empty:nTF { #2 } {
     \__bnvs_tl_set:cn { #4 } { #1 }
@@ -8271,68 +8348,21 @@ end
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 %
-% \begin{function}[TF]{
-%   \__bnvs_if_resolve_Fip:,
-% }
-% \begin{syntax}
-% \cs{__bnvs_if_resolve_Fip:TF} \marg{yes code} \marg{no code}
-% \end{syntax}
-% \marg{yes code} will be executed once resolution has occurred,
-% \marg{no code} otherwise.
-% The |key| and |id| variables as well as the |path| sequence
-% are meant to contain proper information on input and on output as well.
-% On input, |\l__bnvs_QF_name_tl| contains an overlay set name, 
-% |\l__bnvs_id_tl| contains a frame id and
-% |\l__bnvs_path_seq| contains the components of a dotted path, possibly empty.
-% On return, the variable |\l__bnvs_QF_name_tl| contains the resolved range name,
-% |\l__bnvs_id_tl| contains the frame id used and
-% |\l__bnvs_path_seq| contains the list of path components that could not be resolved.
-%
-% To resolve one level of a named one slide specification like
-% \meta{name}.\meta{c_1}...\meta{c_j},
-% we replace the longest \meta{name}.\meta{c_1}...\meta{c_k}
-% where 0$≤$k$≤$n by its definition \meta{name'}.\meta{c'_1}...\meta{c'_l}
-% if any.
-%
-% \begin{enumerate}
-%
-% \item If |\l__bnvs_QF_name_tl| content is the name of an unlimited set,
-% and the first item of this range is exactly another name range with
-% eventually a heading frame identifier or a trailing dotted path,
-% then |\l__bnvs_QF_name_tl| is replaced by this name, the |\l__bnvs_id_tl|
-% and |\l__bnvs_id_tl| are updated accordingly and
-% the \meta{path seq var} is prepended with the dotted path.
-%
-% \item If \meta{path seq var} is not empty,
-% append to the right of |\l__bnvs_QF_name_tl| after a separating dot,
-% all its left elements but the last one and loop.
-% Otherwise return.
-%
-% \end{enumerate}
-%
-% In the |_n| variant, the resolution is driven only when there is a non empty
-% dotted path.
-%
-% In the |_x| variant, the resolution is driven one step further:
-% if \meta{path seq var} is empty, \meta{name tl var} can contain anything,
-% including an integer for example.
-% \end{function}
-%
 % Local variables:
 % \begin{itemize}
 % \item \cs{l__bnvs_a_tl} contains the name with a partial index path currently resolved.
-% \item \cs{l__bnvs_head_seq} contains the index path components currently resolved.
+% \item \cs{l__bnvs_path_head_seq} contains the index path components currently resolved.
 % \item \cs{l__bnvs_b_tl} contains the resolution.
-% \item \cs{l__bnvs_tail_seq} contains the index path components to be resolved.
+% \item \cs{l__bnvs_path_tail_seq} contains the index path components to be resolved.
 % \end{itemize}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { end_Fip_export: } {
-  \__bnvs_end_Fip_export:ccc { QF_name } { id } { path }
+\BNVS_new:cpn { end_Qip_export: } {
+  \__bnvs_end_Qip_export:ccc { QF_name } { id } { path }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log_f:ncn {} { end_Fip_export: } {}
+\BNVS_DEBUG_log_f:ncn {} { end_Qip_export: } {}
 \BNVS_DEBUG_log_tl:c { QF_name }
 \BNVS_DEBUG_log_tl:c { id }
 \BNVS_DEBUG_log_seq:c { path }
@@ -8355,122 +8385,6 @@ end
 %    \end{macrocode}
 % \end{BNVS/macrocode}
 % 
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\BNVS_new:cpn { if_resolve_Fip_or_end_return:nTF } #1 #2 #3 {
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_if_resolve_Fip_TF:nn { ... } { ...RESOLUTION/#1... }
-\BNVS_DEBUG_log_tl:c { a }
-\BNVS_DEBUG_log_seq:c { path_head }
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-  \__bnvs_if_get:nvcTF { #1 } { a } { b } {
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% The |a| |tl| variable is known, its value is in |b|.
-% We check if it is exactly an overlay set name.
-% If true, the new |QF_name| is |b|.
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-    \__bnvs_if_Qip:cccTF { b } { id } { path } {
-      \__bnvs_tl_set_eq:cc { QF_name } { b }
-      \__bnvs_seq_merge:cc { path } { path_tail }
-      \__bnvs_seq_set_eq:cc { path_head } { path }
-      \__bnvs_seq_clear:c { path_tail }
-      \__bnvs_if_resolve_Fip_loop_or_end_return:
-    } {
-      \__bnvs_seq_pop_right:ccTF { path_head } { b } {
-        \__bnvs_seq_put_left:cv { path_tail } { b }
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_if_resolve_Fip_TF:nn { ... } { ...next~trial... }
-\BNVS_DEBUG_log_seq:c { path_head }
-\BNVS_DEBUG_log_seq:c { path_tail }
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-        \__bnvs_if_resolve_Fip_loop_or_end_return:
-      } {
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_if_resolve_Fip_TF:nn { ... } { ...Unknown~QF~name~... }
-\BNVS_DEBUG_log_tl:c { a }
-\BNVS_DEBUG_log_seq:c { path_head }
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-        \__bnvs_if_resolve_Fip_end_return_true:
-      }
-    }
-  } {
-    #3
-  }
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\BNVS_new:cpn { if_resolve_Fip_or_end_return:nF } #1 #2 {
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_if_resolve_Fip_TF:nn { ... } { ...RESOLUTION/#1... }
-\BNVS_DEBUG_log_tl:c { a }
-\BNVS_DEBUG_log_seq:c { path_head }
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-  \__bnvs_if_get:nvcTF { #1 } { a } { b } {
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% The |a| |tl| variable is known, its value is in |b|.
-% We check if it is exactly an overlay set name.
-% If true, the new |QF_name| is |b|.
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-    \__bnvs_if_Qip:cccTF { b } { id } { path } {
-      \__bnvs_tl_set_eq:cc { QF_name } { b }
-      \__bnvs_seq_merge:cc { path } { path_tail }
-      \__bnvs_seq_set_eq:cc { path_head } { path }
-      \__bnvs_seq_clear:c { path_tail }
-      \__bnvs_if_resolve_Fip_loop_or_end_return:
-    } {
-      \__bnvs_seq_pop_right:ccTF { path_head } { b } {
-        \__bnvs_seq_put_left:cv { path_tail } { b }
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_if_resolve_Fip_TF:nn { ... } { ...next~trial... }
-\BNVS_DEBUG_log_seq:c { path_head }
-\BNVS_DEBUG_log_seq:c { path_tail }
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-        \__bnvs_if_resolve_Fip_loop_or_end_return:
-      } {
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_if_resolve_Fip_TF:nn { ... } { ...Unknown~QF~name~... }
-\BNVS_DEBUG_log_tl:c { a }
-\BNVS_DEBUG_log_seq:c { path_head }
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-        \__bnvs_if_resolve_Fip_end_return_true:
-      }
-    }
-  } {
-    #2
-  }
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { if_resolve_Fip_n_or_end_return:nF } #1 #2 {
@@ -8610,17 +8524,6 @@ end
     }
   }
 }
-\BNVS_new:cpn { if_resolve_Fip_end_return_false: } {
-  \BNVS_end:
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_f:ncn { ... } { if_resolve_Fip_??path:?TF } { ...FALSE }
-%</!final>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-  \prg_return_false:
-}
 \BNVS_new:cpn { if_resolve_Fip_end_return_true: } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
@@ -8629,7 +8532,7 @@ end
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_end_Fip_export:ccc { QF_name } { id } { path }
+  \__bnvs_end_Qip_export:ccc { QF_name } { id } { path }
   \prg_return_true:
 }
 %    \end{macrocode}
@@ -8750,40 +8653,6 @@ end
 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\BNVS_new_conditional:cpnn { if_resolve_Fip: } { TF } {
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%<*!final>
-\BNVS_DEBUG_log_set:cn { if_resolve_Fip:TF } {
-  \BNVS_DEBUG_tl:c { QF_name }
-  \BNVS_DEBUG_tl:c { id }
-  \BNVS_DEBUG_log_seq:c { path }
-  \BNVS_DEBUG_tl:c { path }
-}
-\BNVS_DEBUG_log_if_resolve_Fip_TF:nn { } { ... }
-  \BNVS_DEBUG_begin:n { if_resolve_Fip:TF }
-%</!final>
-%<*!debug>
-% \end{BNVS/gobble}
-%    \begin{macrocode}
-  \BNVS_begin:
-%    \end{macrocode}
-% \begin{BNVS/gobble}
-%</!debug>
-% \end{BNVS/gobble}
-% \end{BNVS/macrocode}
-% Initialize |a| to |path| sequence, clears the |b| sequence.
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-  \__bnvs_seq_set_eq:cc { path_head } { path }
-  \__bnvs_seq_clear:c { path_tail }
-  \__bnvs_tl_clear:c { a }
-  \__bnvs_if_resolve_Fip_loop_or_end_return:
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
 %
 % \subsection{Evaluation bricks}
 % We start by helpers.
@@ -8792,7 +8661,6 @@ end
 %}
 % \begin{syntax}
 % \cs{__bnvs_round:c} \meta{tl core name}
-% \cs{__bnvs_round_ans:}
 % \end{syntax}
 % The first function replaces the variable content
 % with its rounded floating point evaluation.
@@ -9125,6 +8993,28 @@ end
           \prg_return_true:
         } {
 %    \end{macrocode}
+% \makeatletter
+% \begin{BNVS/test}{bnvs:cn={if_resolve:ncTF}{...=pauses}, noigre}
+% \cs_if_exist:NF \c@beamerpauses {
+%   \newcounter{beamerpauses}
+%   \cs_if_exist:NF \c@beamerpauses {
+%     \test_fail:n { A }
+%   }
+% }
+% \setcounter{beamerpauses}{421}
+% \__bnvs_if_resolve:ncTF { PAUSES = pauses } { ans } {
+%   \assert_equal_ans:nn { 421 } { B }
+% } {
+%   \test_fail:n { C }
+% }
+% \__bnvs_tl_clear:c { ans }
+% \__bnvs_if_resolve:ncTF { PAUSES } { ans } {
+%   \assert_equal_ans:nn { 421 } { D }
+% } {
+%   \test_fail:n { E }
+% }
+% \end{BNVS/test}
+% \makeatother
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_f:ncn { ... } { if_resolve_V:ncTF } { ...NO~PAUSES }
@@ -9671,8 +9561,8 @@ Unavailable~first~for~#1~(\token_to_str:N \__bnvs_if_resolve_Z:ncTF/1) }
 % \Test_if_append:nnnn { 222:666 } { X.1 } { 222 } { B }
 % \Test_if_append:nnnn { 222:666 } { X.last - X.1 } { 444 } { C }
 % \Test_if_append:nnnn { 222:666 } { X.last - (X.1) } { 444 } { D }
-% \Test_if_append:nnnn { FIRST:LAST } { X.last } {-1000 } { A2i }
-% \Test_if_append:nnnn { FIRST:LAST } { X.1 } {-1000 } { B2i }
+% \Test_if_append:nnnn { FIRST:LAST } { X.last } { -1000 } { A2i }
+% \Test_if_append:nnnn { FIRST:LAST } { X.1 } { -1000 } { B2i }
 % \Test_if_append:nnnn { FIRST:LAST } { X.last - X.1 } { 0 } { C2i }
 % \Test_if_append:nnnn { FIRST:LAST } { X.last - (X.1) } { 0 } { D2i }
 % \reset:n { Y }
@@ -9897,12 +9787,19 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % \begin{BNVS/gobble}
 %<*!final>
 \BNVS_DEBUG_log_set:cnnc { if_resolve_first:ncTF } { QF_NAME } { #1 } { #2 }
-\BNVS_DEBUG_log_if_resolve_previous_ncTF:nn { } { ... }
+\BNVS_DEBUG_log_if_resolve_first_ncTF:nn { } { ... }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_if_resolve_A:ncTF { #1 } { #2 }
-    { \prg_return_true: } { \prg_return_false: }
+  \exp_args:Nx \__bnvs_if_resolve_V:ncTF {
+      \__bnvs_tl_use:c { QF_name }.first
+  } { #2 } { \prg_return_true: } {
+    \__bnvs_if_resolve_A:ncTF { #1 } { #2 } { \prg_return_true: } {
+      \exp_args:Nx \__bnvs_if_resolve_v:ncTF {
+        \__bnvs_tl_use:c { QF_name }.1
+      } { #2 } { \prg_return_true: } { \prg_return_false: }
+  }
+  }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -9919,9 +9816,15 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 \BNVS_DEBUG_log_if_append_first_ncTF:nn { } { ... }
 %</!final>
 % \end{BNVS/gobble}
+% \begin{BNVS/test}{:N=\__bnvs_if_resolve_first:ncTF, noigre}
+% \Test_if_resolve:nnnn { X.1=100 } { X.first } { 100 } { A }
+% \end{BNVS/test}
 %    \begin{macrocode}
-  \__bnvs_if_append_A:ncTF { #1 } { #2 }
-    { \prg_return_true: } { \prg_return_false: }
+  \__bnvs_if_append_A:ncTF { #1 } { #2 } { \prg_return_true: } {
+    \exp_args:Nx \__bnvs_if_append_v:ncTF {
+      \BNVS_tl_use:c { QF_name }.1
+    } { #2 } { \prg_return_true: } { \prg_return_false: }
+  }
 }
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -10848,7 +10751,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 %    \begin{macrocode}
       \prg_return_true:
   } {
-    \__bnvs_if_resolve_A:ncTF { #1 } { #3 } {
+    \__bnvs_if_resolve_first:ncTF { #1 } { #3 } {
       \__bnvs_tl_put_right:cn { #3 } { + #2 - 1 }
       \__bnvs_round:c { #3 }
 %    \end{macrocode}
@@ -10900,6 +10803,11 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % \BNVS_Test:n { Z1 }
 % \BNVS_Test:n { Z2 }
 % \cs_undefine:N \BNVS_Test:n
+% \end{BNVS/test}
+% \begin{BNVS/test}{bnvs:cn={if_resolve_index:nncTF}{A.0}, noigre}
+% \Test_if_resolve:nnnn { } { A.0 } { -1000 } { A-1 }
+% \Test_if_resolve:nnnn { A.1 = 100 } { A.0 } { 99 } { A-2 }
+% \Test_if_resolve:nnnn { A.first = 1000 } { A.0 } { 999 } { A-3 }
 % \end{BNVS/test}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
@@ -10984,7 +10892,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-
 \BNVS_new_conditional:cpnn { if_append_index:nnc } #1 #2 #3 { T, F, TF } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
@@ -12766,11 +12673,23 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { split_end_return_or_pop_complete:T } #1 {
-  \cs_set:Npn \BNVS:n { \__bnvs_end_unreachable_return_false:n }
-  \__bnvs_split_if_pop_left:cTn { n_incr } {
-    \__bnvs_split_if_pop_left:cTn { plus } {
-      \__bnvs_split_if_pop_left:cTn { rhs } {
-        \__bnvs_split_if_pop_left:cTn { post } {
+%    \end{macrocode}
+% \begin{BNVS/gobble}
+%<*!final>
+\BNVS_DEBUG_log_if_resolve_ncTF:nn { } { / split_end_return_or_pop_complete:T }
+\BNVS_DEBUG_log_seq:c { split }
+%</!final>
+% \end{BNVS/gobble}
+%    \begin{macrocode}
+  \cs_set:Npn \BNVS:n ##1 {
+    \__bnvs_end_unreachable_return_false:n {
+      split_end_return_or_pop_complete: ##1
+    }
+  }
+  \__bnvs_split_if_pop_left_or:cT { n_incr } {
+    \__bnvs_split_if_pop_left_or:cT { plus } {
+      \__bnvs_split_if_pop_left_or:cT { rhs } {
+        \__bnvs_split_if_pop_left_or:cT { post } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
@@ -12778,19 +12697,23 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 \BNVS_DEBUG_log_seq:c { split }
 %</!final>
 % \end{BNVS/gobble}
+%    \begin{macrocode}
+          #1
+        }
+      }
+    }
+  }
+}
+%    \end{macrocode}
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-          #1
-        } { split_end_return_or_pop_complete:T/4 }
-      } { split_end_return_or_pop_complete:T/3 }
-    } { split_end_return_or_pop_complete:T/2 }
-  } { split_end_return_or_pop_complete:T/1 }
-}
-%    \end{macrocode}
-%    \begin{macrocode}
 \BNVS_new:cpn { split_end_return_or_pop_void:T } #1 {
-  \cs_set:Npn \BNVS:n { \__bnvs_end_unreachable_return_false:n }
+  \cs_set:Npn \BNVS:n ##1 {
+    \__bnvs_end_unreachable_return_false:n {
+      split_end_return_or_pop_void: ##1
+    }
+  }
   \__bnvs_split_if_pop_left:cTn { a } {
     \__bnvs_split_if_pop_left:cTn { a } {
       \__bnvs_split_if_pop_left:cTn { a } {
@@ -12807,13 +12730,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % \end{BNVS/gobble}
 %    \begin{macrocode}
                 #1
-              } { split_end_return_or_pop_void:T/7 }
-            } { split_end_return_or_pop_void:T/6 }
-          } { split_end_return_or_pop_void:T/5 }
-        } { split_end_return_or_pop_void:T/4 }
-      } { split_end_return_or_pop_void:T/3 }
-    } { split_end_return_or_pop_void:T/2 }
-  } { split_end_return_or_pop_void:T/1 }
+              } { T/7 }
+            } { T/6 }
+          } { T/5 }
+        } { T/4 }
+      } { T/3 }
+    } { T/2 }
+  } { T/1 }
 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
@@ -13071,20 +12994,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % \end{BNVS/macrocode}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { set_true:c } #1 {
-  \exp_args:Nc \bool_set_true:N { l__bnvs_#1_bool }
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\BNVS_new:cpn { set_false:c } #1 {
-  \exp_args:Nc \bool_set_false:N { l__bnvs_#1_bool }
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
 \BNVS_new_conditional:cpnn { if:c } #1 { p, T, F, TF } {
   \bool_if:cTF { l__bnvs_#1_bool } {
     \prg_return_true:
@@ -13233,7 +13142,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
       } {
 \__bnvs_end_unreachable_return_false:n { split_loop_or_end_return:/3 }
       } {
-% split sequence empty
 \__bnvs_end_unreachable_return_false:n { split_loop_or_end_return:/2 }
       }
     } {
@@ -13462,7 +13370,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % \end{BNVS/macrocode}
 % 
 % \begin{myList}
-% \item Case \texttt{...\meta{integer}}.
+% \item Case \texttt{....\meta{index}}.
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { split_loop_or_end_return_index: } {
@@ -13632,7 +13540,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 %    \end{macrocode}
 % \begin{BNVS/gobble}
 %<*!final>
-\BNVS_DEBUG_log:x { ▃▃▃▃▃~CASE~....<suffix>~(\__bnvs_tl_use:c { suffix }) }
+\BNVS_DEBUG_log:x { ▃▃▃▃▃~CASE~....\__bnvs_tl_use:c { suffix } }
 %</!final>
 % \end{BNVS/gobble}
 % \begin{BNVS/test}{bnvs:cn={if_resolve:ncTF}{...n}, noigre}
@@ -14807,7 +14715,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 %</!final>
 % \end{BNVS/gobble}
 %    \begin{macrocode}
-  \__bnvs_call_greset:
+  \__bnvs_greset:
   \__bnvs_match_if_once:NnTF \c__bnvs_A_cln_Z_regex { #1 } {
 %    \end{macrocode}
 % \begin{BNVS/gobble}
@@ -15013,20 +14921,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
 % } { \assert_fail:n {Missed} }
 % \end{BNVS/test}
 %
-% \begin{function}{\BeanovesResolve}
-%   \begin{syntax}
-%     \cs{BeanovesResolve} \oarg{setup} \marg{overlay queries}
-%   \end{syntax}
-% \meta{overlay queries} is the argument of |?(...)| instructions.
-% This is a comma separated list of single \meta{overlay query}'s.
-%
-% This function evaluates the \meta{overlay queries} and store the result in the \meta{tl variable} when provided
-% or leave the result in the input stream. Forwards to \cs{__bnvs_resolve:nc}
-% within a group. \cs{...ans_tl} is used locally to store the result.
-%
-% The optional \meta{setup} is a key--value list. The value for \texttt{in:N} key is the |tl| variable where the evaluation is stored.
-% If the |show| key is provided, the result is typeset.
-% \end{function}
 % \begin{BNVS/macrocode}
 %    \begin{macrocode}
 \NewDocumentCommand \BeanovesResolve { O{} m } {
@@ -15125,55 +15019,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
   \ignorespaces
 }
 %    \end{macrocode}
-% \end{BNVS/macrocode}
-%
-% \subsection{Saving the \pkg{beamer} \texttt{pauses} counter}
-% \begin{function}{\BeanovesSavePauses}
-%   \begin{syntax}
-%     \cs{BeanovesSavePauses} \marg{ref}
-%   \end{syntax}
-% Forwards to \cs{__bnvs_save:n} .
-% \end{function}
-% \begin{BNVS/test}{:N=\BeanovesSavePauses, noigre}
-% \end{BNVS/test}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\NewDocumentCommand \BeanovesSavePauses { m } {
-  \__bnvs_save:n { #1 }
-}
-\makeatletter
-\BNVS_new:cpn { save:n } #1 {
-  \cs_if_exist:NT \c@beamerpauses {
-    \exp_args:Nnx \__bnvs_parse:nn { #1 } { \the\c@beamerpauses }
-  }
-}
-\makeatother
-%    \end{macrocode}
-% \makeatletter
-% \begin{BNVS/test}{bnvs:N=\BeanovesSavePauses, noigre}
-% \cs_if_exist:NF \c@beamerpauses {
-%   \newcounter{beamerpauses}
-%   \cs_if_exist:NF \c@beamerpauses {
-%     \test_fail:n { A }
-%   }
-% }
-% \setcounter{beamerpauses}{421}
-% \BeanovesSavePauses{PAUSES}
-% \Test_if_resolve:nnnn {} { PAUSES } { 421 } { A }
-% \setcounter{beamerpauses}{666}
-% \__bnvs_if_resolve:ncTF { PAUSES = pauses } { ans } {
-%   \assert_equal_ans:nn { 666 } { B }
-% } {
-%   \test_fail:n { C }
-% }
-% \__bnvs_tl_clear:c { ans }
-% \__bnvs_if_resolve:ncTF { PAUSES } { ans } {
-%   \assert_equal_ans:nn { 666 } { D }
-% } {
-%   \test_fail:n { C }
-% }
-% \end{BNVS/test}
-% \makeatother
 % \end{BNVS/macrocode}
 %
 % \begin{BNVS/gobble}

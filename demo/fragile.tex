@@ -1,0 +1,63 @@
+% !TeX encoding = UTF-8
+% !TeX program = lualatex
+% !TeX proot = ...
+
+\documentclass{beamer}
+
+\RequirePackage{demo}
+
+\begin{document}
+\begin{frame}[fragile]
+    \begin{semiverbatim}
+            while true:
+                task = GetNewTask(tasks)
+                handle(task)
+    \end{semiverbatim} 
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{An Algorithm For Finding Primes Numbers.}
+\begin{semiverbatim}
+\uncover<1->{\alert<0>{int main (void)}}
+\uncover<1->{\alert<0>{\{}}
+\uncover<1->{\alert<1>{  \alert<4>{std::}vector<bool> is_prime (100, true);}}
+\uncover<1->{\alert<1>{  for (int i = 2; i < 100; i++)}}
+\uncover<2->{\alert<2>{    if (is_prime[i])}}
+\uncover<2->{\alert<0>{      \{}}
+\uncover<3->{\alert<3>{        \alert<4>{std::}cout << i << " ";}}
+\uncover<3->{\alert<3>{        for (int j = i; j < 100;}}
+\uncover<3->{\alert<3>{             is_prime [j] = false, j+=i);}}
+\uncover<2->{\alert<0>{      \}}}
+\uncover<1->{\alert<0>{  return 0;}}
+\uncover<1->{\alert<0>{\}}}
+\end{semiverbatim}
+
+  \visible<4->{Note the use of \alert{\texttt{std::}}.}
+
+\end{frame}
+
+\Beanoves{A=[1,2,3,4]}
+\begin{frame}{\insertframenumber/\insertslidenumber}
+\BeanovesResolve[show]{A.0,A.1,A.2,A.3,A.4}\\
+\end{frame}
+%\BeanovesDebugOn
+\begin{frame}[fragile]{\insertframenumber/\insertslidenumber}
+%\BeanovesResolve[show]{A.0,A.1,A.2,A.3,A.4}\\
+\begin{semiverbatim}
+\uncover<?(A.1)->{\alert<?(A.0)>{\{}}
+\uncover<?(A.1)->{\alert<?(A.1)>{  \alert<?(A.4)>{std::}vector<bool> is_prime (100, true);}}
+\uncover<?(A.1)->{\alert<?(A.1)>{  for (int i = 2; i < 100; i++)}}
+\uncover<?(A.2)->{\alert<?(A.2)>{    if (is_prime[i])}}
+\uncover<?(A.2)->{\alert<?(A.0)>{      \{}}
+\uncover<?(A.3)->{\alert<?(A.3)>{        \alert<?(A.4)>{std::}cout << i << " ";}}
+\uncover<?(A.3)->{\alert<?(A.3)>{        for (int j = i; j < 100;}}
+\uncover<?(A.3)->{\alert<?(A.3)>{             is_prime [j] = false, j+=i);}}
+\uncover<?(A.2)->{\alert<?(A.0)>{      \}}}
+\uncover<?(A.1)->{\alert<?(A.0)>{  return 0;}}
+\uncover<?(A.1)->{\alert<?(A.0)>{\}}}
+\end{semiverbatim}
+
+  \visible<?(A.4)->{Note the use of \alert{\texttt{std::}}.}
+
+\end{frame}
+\end{document}

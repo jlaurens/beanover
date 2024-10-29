@@ -5,44 +5,37 @@
 \documentclass{beamer}
 
 \RequirePackage{demo}
-\BeanovesDebugOn
-\Beanoves {
-  BBB = [ 421, 666, CCC=[111, foo=777, 222], 246 ],
-}
-\typein{Press <ENTER> to continue}
-
-\Beanoves {
-  AAA = {{ 111, xxx=XXX, 222, yyy=YYY, 333, zzz=ZZZ }},
-}
-\typein{Press <ENTER> to continue}
-\BeanovesEval[in:N=\FOO]{AAA.1}
-\show\FOO
-\Beanoves {
-  A = {{ 421, 666 }},
-}
-\BeanovesEval[in:N=\FOO]{A.2}
-\Beanoves {
-  B = [ 421, 666, C=[111, foo=777, 222], 246 ],
-}
-\typein{Press <ENTER> to continue}
-
-\BeanovesEval[in:N=\FOO]{B.3}
-\show\FOO
-\BeanovesEval[in:N=\FOO]{B.C}
-\show\FOO
-\BeanovesEval[in:N=\FOO]{B.C.foo}
-\show\FOO
-\BeanovesEval[in:N=\FOO]{B.C.1}
-\show\FOO
 
 \ExplSyntaxOn
 \def\BeanovesEvaluated{}
 \def\myTEST#1#2{
-  \BeanovesEval[in:N=\BeanovesEvaluated]{#1}
-  \texttt{?(#1)$\to$\BeanovesEvaluated\exp_args:NV\tl_if_eq:nnF\BeanovesEvaluated{#2}{\color{red}≠#2}}
+  \BeanovesResolve[in:N=\BeanovesEvaluated]{#1}
+  \texttt{?(#1)$\to$\BeanovesEvaluated\exp_args:NV\tl_if_eq:nnF\BeanovesEvaluated{#2}{\color{red}≠#2}}\\
 }
 \ExplSyntaxOff
 \begin{document}
+\begin{frame}
+\BeanovesDebugOn
+\Beanoves {
+  BBB = [ 421, 666, CCC=[111, foo=777, 222], 246 ],
+}
+\Beanoves {
+  AAA = {{ 111, xxx=XXX, 222, yyy=YYY, 333, zzz=ZZZ }},
+}
+AAA.1=\BeanovesResolve[show]{AAA.1}\\
+\Beanoves {
+  A = {{ 421, 666 }},
+}
+A.2=\BeanovesResolve[show]{A.2}\\
+\Beanoves {
+  B = [ 421, 666, C=[111, Foo=777, 222], 246 ],
+}
+
+B.3=\BeanovesResolve[show]{B.3}\\
+B.C=\BeanovesResolve[show]{B.C}\\
+B.C.Foo=\BeanovesResolve[show]{B.C.Foo}\\
+B.C.1\BeanovesResolve[show]{B.C.1}\\
+\end{frame}
 \begin{frame}
 {\insertframenumber/\insertslidenumber/Named overlay sets}
 {\large Open}
@@ -63,11 +56,11 @@
 \}
 \end{myCodeBox}
 \ExplSyntaxOn
-\texttt{?(A)}=\BeanovesEval[see]{A}=421,\\
-\texttt{?(A.1) }=\BeanovesEval[see]{A.1 }=421,\\
-\texttt{?(AL.1)}=\BeanovesEval[see]{AL.1}=421,\\
-\texttt{?(AZ.1)}=\BeanovesEval[see]{AZ.1}=421,\\
-\texttt{?(ZL.1)}=\BeanovesEval[see]{ZL.1}=421,\\
+\texttt{?(A)}=\BeanovesResolve[show]{A}=421,\\
+\texttt{?(A.1) }=\BeanovesResolve[show]{A.1 }=421,\\
+\texttt{?(AL.1)}=\BeanovesResolve[show]{AL.1}=421,\\
+\texttt{?(AZ.1)}=\BeanovesResolve[show]{AZ.1}=421,\\
+\texttt{?(ZL.1)}=\BeanovesResolve[show]{ZL.1}=421,\\
 \end{frame}
 %
 \begin{frame}
@@ -83,13 +76,13 @@
 \}
 \end{myCodeBox}
 \ExplSyntaxOn
-\myTEST{A}{421},\\
-\myTEST{A.1}{421},\\
-\myTEST{A.previous}{420},\\
-\myTEST{A.next}{667},\\
-\myTEST{A.last}{666},\\
-\myTEST{A.length}{246},\\
-\myTEST{A.range}{421-666},\\
+\myTEST{A}{421}
+\myTEST{A.1}{421}
+\myTEST{A.previous}{420}
+\myTEST{A.next}{667}
+\myTEST{A.last}{666}
+\myTEST{A.length}{246}
+\myTEST{A.range}{421-666}
 \end{frame}
 \begin{frame}
 {\insertframenumber/\insertslidenumber/Named overlay sets}
@@ -104,23 +97,22 @@
 ~~A = 33,\\
 \}
 \end{myCodeBox}
-\ExplSyntaxOn
-\myTEST{A}{33},\\
-\myTEST{++A}{34},\\
-\myTEST{A++}{34},\\
-\myTEST{A}{35},\\
-\myTEST{A.1}{33},\\
-\myTEST{A.reset}{33},\\
-\myTEST{A+=66}{99},\\
-\myTEST{++A}{100},\\
-\myTEST{A.reset++}{33},\\
-\myTEST{A}{34},\\
-\myTEST{++A.reset}{35},\\
-\myTEST{A}{33},\\
+\myTEST{A}{33},
+\myTEST{++A}{34},
+\myTEST{A++}{34},
+\myTEST{A}{35},
+\myTEST{A.1}{33},
+\myTEST{A.reset}{33},
+\myTEST{A+=66}{99},
+\myTEST{++A}{100},
+\myTEST{A.reset++}{33},
+\myTEST{A}{34},
+\myTEST{++A.reset}{34},
+\myTEST{A}{34},
 \end{frame}
 %
 \Beanoves {
-  A = { 1=421, chi=421, foo=666, 2=666, 3=246, mi=246 },
+  A = { 1=421, Chi=421, Foo=666, 2=666, 3=246, Mi=246 },
 }
 
 \begin{frame}
@@ -129,20 +121,20 @@
 \ExplSyntaxOff
 \begin{myCodeBox}{l}%
 \string\Beanoves \{\\
-~~A = \{ 1=421, chi=421, foo=666, 2=666, 3=246, mi=246\},\\
+~~A = \{ 1=421, Chi=421, Foo=666, 2=666, 3=246, Mi=246\},\\
 \}
 \end{myCodeBox}
 \ExplSyntaxOn
 \BeanovesDebugOn
 \Beanoves {
-  A = { chi=421 },
+  A = { Chi=421 },
 }
-\myTEST{A.chi}{421},\\
-%\myTEST{A.2}{666},\\
-%\myTEST{A.3}{246},\\
-%\myTEST{A.chi}{421},\\
-%\myTEST{A.foo}{666},\\
-%\myTEST{A.mi}{246},\\
+\myTEST{A.Chi}{421}
+%\myTEST{A.2}{666}
+%\myTEST{A.3}{246}
+%\myTEST{A.chi}{421}
+%\myTEST{A.foo}{666}
+%\myTEST{A.mi}{246}
 \end{frame}
 %
 
