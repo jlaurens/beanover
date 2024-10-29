@@ -8373,10 +8373,12 @@ end
 % \subsection{Evaluation bricks}
 % We start by helpers.
 % \begin{function}{
+%  \__bnvs_round:N,
 %  \__bnvs_round:c,
 %}
 % \begin{syntax}
-% \cs{__bnvs_round:c} \meta{tl core name}
+% \cs{__bnvs_round:N} \meta{tl variable}
+% \cs{__bnvs_round:c} \marg{tl core name}
 % \end{syntax}
 % Replaces the variable content with its rounded floating point evaluation.
 % \end{function}
@@ -8429,33 +8431,6 @@ end
 %    \begin{macrocode}
 \BNVS_new:cpn { round:c } {
   \BNVS_tl_use:Nc \__bnvs_round:N
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% \begin{function}{
-%   \BNVS_end_return_false:
-%   \BNVS_end_return_false:x
-% }
-% \begin{syntax}
-% \cs{__bnvs_end_return_false:}
-% \cs{__bnvs_end_return_false:x} \marg{message}
-% \end{syntax}
-% End a group and calls \cs{prg_return_false:}.
-% The message is for debugging only.
-% \end{function}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\cs_new:Npn \BNVS_end_return_false: {
-  \BNVS_end:
-  \prg_return_false:
-}
-%    \end{macrocode}
-% \end{BNVS/macrocode}
-% \begin{BNVS/macrocode}
-%    \begin{macrocode}
-\cs_new:Npn \BNVS_end_return_false:x #1 {
-  \BNVS_error:x { #1 }
-  \BNVS_end_return_false:
 }
 %    \end{macrocode}
 % \end{BNVS/macrocode}
