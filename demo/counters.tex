@@ -15,26 +15,28 @@
 \ExplSyntaxOff
 \begin{document}
 \begin{frame}
-\BeanovesDebugOn
+{\insertframenumber/\insertslidenumber/Named overlay sets}
+{\large Lists}
+\begin{myCodeBox}{l}%
+\string\Beanoves \{\\
+~~ BBB = [ 421, 666, CCC=[111, foo=777, 222], 246 ],\\
+~~ AAA = \{\{ 111, xxx=XXX, 222, yyy=YYY, 333, zzz=ZZZ \}\},\\
+~~ A = \{\{ 421, 666 \}\},\\
+~~ B = [ 421, 666, C=[111, Foo=777, 222], 246 ],\\
+\}\\
+\end{myCodeBox}
 \Beanoves {
   BBB = [ 421, 666, CCC=[111, foo=777, 222], 246 ],
-}
-\Beanoves {
   AAA = {{ 111, xxx=XXX, 222, yyy=YYY, 333, zzz=ZZZ }},
-}
-AAA.1=\BeanovesResolve[show]{AAA.1}\\
-\Beanoves {
   A = {{ 421, 666 }},
-}
-A.2=\BeanovesResolve[show]{A.2}\\
-\Beanoves {
   B = [ 421, 666, C=[111, Foo=777, 222], 246 ],
 }
-
+AAA.1=\BeanovesResolve[show]{AAA.1}\\
+A.2=\BeanovesResolve[show]{A.2}\\
 B.3=\BeanovesResolve[show]{B.3}\\
 B.C=\BeanovesResolve[show]{B.C}\\
 B.C.Foo=\BeanovesResolve[show]{B.C.Foo}\\
-B.C.1\BeanovesResolve[show]{B.C.1}\\
+B.C.1=\BeanovesResolve[show]{B.C.1}\\
 \end{frame}
 \begin{frame}
 {\insertframenumber/\insertslidenumber/Named overlay sets}
@@ -79,6 +81,7 @@ B.C.1\BeanovesResolve[show]{B.C.1}\\
 \myTEST{A}{421}
 \myTEST{A.1}{421}
 \myTEST{A.previous}{420}
+\myTEST{A.first}{421}
 \myTEST{A.next}{667}
 \myTEST{A.last}{666}
 \myTEST{A.length}{246}
@@ -97,18 +100,17 @@ B.C.1\BeanovesResolve[show]{B.C.1}\\
 ~~A = 33,\\
 \}
 \end{myCodeBox}
-\myTEST{A}{33},
-\myTEST{++A}{34},
-\myTEST{A++}{34},
-\myTEST{A}{35},
-\myTEST{A.1}{33},
-\myTEST{A.reset}{33},
-\myTEST{A+=66}{99},
-\myTEST{++A}{100},
-\myTEST{A.reset++}{33},
-\myTEST{A}{34},
-\myTEST{++A.reset}{34},
-\myTEST{A}{34},
+\myTEST{A}{33}
+\myTEST{++A}{34}
+\myTEST{A++}{34}
+\myTEST{A}{35}
+\myTEST{A.reset}{33}
+\myTEST{A+=66}{99}
+\myTEST{++A}{100}
+\myTEST{A.reset++}{33}
+\myTEST{A}{34}
+\myTEST{++A.reset}{34}
+\myTEST{A}{34}
 \end{frame}
 %
 \Beanoves {
@@ -121,20 +123,20 @@ B.C.1\BeanovesResolve[show]{B.C.1}\\
 \ExplSyntaxOff
 \begin{myCodeBox}{l}%
 \string\Beanoves \{\\
-~~A = \{ 1=421, Chi=421, Foo=666, 2=666, 3=246, Mi=246\},\\
+~~A = [ 1=421, Chi=421, Foo=666, 666, 246, Mi=246\},\\
 \}
 \end{myCodeBox}
 \ExplSyntaxOn
 \BeanovesDebugOn
 \Beanoves {
-  A = { Chi=421 },
+  A = [ 421, Chi=421, Foo=666, 666, 246, Mi=246 ],
 }
+\myTEST{A.1}{421}
+\myTEST{A.2}{666}
+\myTEST{A.3}{246}
 \myTEST{A.Chi}{421}
-%\myTEST{A.2}{666}
-%\myTEST{A.3}{246}
-%\myTEST{A.chi}{421}
-%\myTEST{A.foo}{666}
-%\myTEST{A.mi}{246}
+\myTEST{A.Foo}{666}
+\myTEST{A.Mi}{246}
 \end{frame}
 %
 
