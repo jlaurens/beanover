@@ -1,0 +1,15 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+\documentclass{article}
+\ExplSyntaxOn
+\cs_set:Npn \FOO { \tl_map_inline:nn{foo}{####1####1} }
+\cs_set:Npn \BAR { bar }
+\exp_args:Nnx
+\tl_set:Nn \FOO { \exp_not:N \BAR \FOO }
+\tl_show:N \FOO
+\ExplSyntaxOff
+\begin{document}
+ABC
+\end{document}
+
+

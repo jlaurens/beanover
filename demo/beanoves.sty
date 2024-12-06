@@ -64,10 +64,12 @@
 }
 \msg_new:nnn { beanoves } { :n } { #1 }
 \msg_new:nnn { beanoves } { :nn } { #1~(#2) }
-\BNVS_new:cpn { warning:n } {
+\cs_new:Npn \BNVS_warning:n {
   \msg_warning:nnn { beanoves } { :n }
 }
-\BNVS_generate_variant:cn { warning:n } { x }
+\cs_new:Npn \BNVS_warning:x {
+  \msg_warning:nnx { beanoves } { :n }
+}
 \cs_new:Npn \BNVS_error:n {
   \msg_error:nnn { beanoves } { :n }
 }
@@ -462,7 +464,6 @@
 \BNVS_new_tl_c:c { clear }
 \BNVS_new_tl_c:c { use }
 \BNVS_new_tl_c:c { count }
-
 \BNVS_new:cpn { tl_set_eq:cc } #1 #2 {
   \BNVS_use:ncncn { \tl_set_eq:NN } { #1 } { tl } { #2 } { tl }
 }
@@ -541,6 +542,22 @@
   } { #1_#2:NnTF }
 }
 \BNVS_new_conditional_cv:ncn { tl } { if_eq } { T, F, TF }
+\cs_new:Npn \BNVS_new_conditional_vv:cNn #1 #2 #3 {
+  \BNVS_new_conditional:cpnn { #1:vv } ##1 ##2 { #3 } {
+    \BNVS_tl_use:nv {
+      \BNVS_tl_use:Nv #2 { ##1 }
+    } { ##2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vv:cn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vvnc:cNn { #1 }
+  } { #1:nnTF }
+}
 \cs_new:Npn \BNVS_new_conditional_vn:ncNn #1 #2 #3 #4 {
   \BNVS_new_conditional:cpnn { #2:vn } ##1 ##2 { #4 } {
     \BNVS_use:Nvn #3 { ##1 } { #1 } { ##2 } {
@@ -623,7 +640,7 @@
   }
 }
 \cs_new:Npn \BeanovesDebugOn {
-  \__bnvs_warning:x { Debugging~mode~requires~\jobname-debug.sty,~typeset~\jobname.dtx}
+  \BNVS_warning:x { Debugging~mode~requires~\jobname-debug.sty,~typeset~\jobname.dtx}
 }
 \cs_new:Npn \BeanovesDebugOff { \BeanovesDebugOn }
 \cs_set_eq:NN \BNVS_begin: \group_begin:
@@ -638,8 +655,9 @@
 \tl_new:N \l__bnvs_L_tl
 \tl_new:N \l__bnvs_Z_tl
 \tl_new:N \l__bnvs_ans_tl
-\tl_new:N \l__bnvs_FQ_name_tl
-\tl_new:N \l__bnvs_FQ_name_base_tl
+\tl_new:N \l__bnvs_Q_name_tl
+\tl_new:N \l__bnvs_QF_name_tl
+\tl_new:N \l__bnvs_QF_base_tl
 \tl_new:N \l__bnvs_ref_tl
 \tl_new:N \l__bnvs_ref_base_tl
 \tl_new:N \l__bnvs_id_tl
@@ -656,6 +674,7 @@
 \tl_new:N \l__bnvs_rhs_tl
 \tl_new:N \l__bnvs_post_tl
 \tl_new:N \l__bnvs_suffix_tl
+\tl_new:N \l__bnvs_index_tl
 \int_new:N \g__bnvs_call_int
 \int_new:N \l__bnvs_int
 \int_new:N \l__bnvs_i_int
@@ -664,7 +683,6 @@
 \seq_new:N \l__bnvs_match_seq
 \seq_new:N \l__bnvs_split_seq
 \seq_new:N \l__bnvs_path_seq
-\seq_new:N \l__bnvs_path_base_seq
 \seq_new:N \l__bnvs_path_head_seq
 \seq_new:N \l__bnvs_path_tail_seq
 \seq_new:N \l__bnvs_query_seq
@@ -672,23 +690,26 @@
 \bool_new:N \l__bnvs_in_frame_bool
 \bool_set_false:N \l__bnvs_in_frame_bool
 \bool_new:N \l__bnvs_parse_bool
+\cs_new:Npn \BNVS_error_ans:x {
+  \__bnvs_tl_put_right:cn { ans } { 0 }
+  \BNVS_error:x
+}
 \bool_new:N \l__bnvs_provide_bool
+\BNVS_new:cpn { set_true:c } #1 {
+  \exp_args:Nc \bool_set_true:N { l__bnvs_#1_bool }
+}
+\BNVS_new:cpn { set_false:c } #1 {
+  \exp_args:Nc \bool_set_false:N { l__bnvs_#1_bool }
+}
 \BNVS_new:cpn { provide_on: } {
-  \bool_set_true:N \l__bnvs_provide_bool
+  \__bnvs_set_true:c { provide }
 }
 \BNVS_new:cpn { provide_off: } {
-  \bool_set_false:N \l__bnvs_provide_bool
+  \__bnvs_set_false:c { provide }
 }
 \__bnvs_provide_off:
-\BNVS_new_conditional:cpnn { if_provide: } { p, T, F, TF } {
-  \bool_if:NTF \l__bnvs_provide_bool {
-    \prg_return_true:
-  } {
-    \prg_return_false:
-  }
-}
 \int_const:Nn \c__bnvs_max_call_int { 8192 }
-\BNVS_new:cpn  { call_greset: } {
+\BNVS_new:cpn  { greset: } {
   \int_gset:Nn \g__bnvs_call_int { \c__bnvs_max_call_int }
 }
 \BNVS_new_conditional:cpnn { if_call: } { T, F, TF } {
@@ -713,6 +734,11 @@
     \__bnvs_gput:nnn { #1 } { #2 }
   }
 }
+\BNVS_new:cpn { gput:nvv } #1 #2 {
+  \BNVS_tl_use:nv {
+    \__bnvs_gput:nvn { #1 } { #2 }
+  }
+}
 \BNVS_new:cpn { item:nn } #1 #2 {
   \prop_item:Nn \g__bnvs_prop { #2 / #1 }
 }
@@ -723,7 +749,7 @@
   \clist_map_inline:nn { V, A, Z, L } {
     \__bnvs_gremove:nn { ##1 } { #1 }
   }
-  \__bnvs_cache_gclear:n { #1 }
+  \__bnvs_c_gclear:n { #1 }
 }
 \BNVS_new:cpn { gclear: } {
   \prop_gclear:N \g__bnvs_prop
@@ -779,49 +805,49 @@
     \prg_return_false:
   }
 }
-\prop_new:N \g__bnvs_cache_prop
-\BNVS_new:cpn { cache_gput:nnn } #1 #2 {
-  \prop_gput:Nnn \g__bnvs_cache_prop { #2 / #1 }
+\prop_new:N \g__bnvs_c_prop
+\BNVS_new:cpn { c_gput:nnn } #1 #2 {
+  \prop_gput:Nnn \g__bnvs_c_prop { #2 / #1 }
 }
-\BNVS_new:cpn { cache_gput:nvn } #1 {
+\BNVS_new:cpn { c_gput:nvn } #1 {
   \BNVS_tl_use:nv {
-    \__bnvs_cache_gput:nnn { #1 }
+    \__bnvs_c_gput:nnn { #1 }
   }
 }
-\BNVS_new:cpn { cache_gput:nnv } #1 #2 {
+\BNVS_new:cpn { c_gput:nnv } #1 #2 {
   \BNVS_tl_use:nv {
-    \__bnvs_cache_gput:nnn { #1 } { #2 }
+    \__bnvs_c_gput:nnn { #1 } { #2 }
   }
 }
-\BNVS_new:cpn { cache_gput:nvv } #1 #2 {
+\BNVS_new:cpn { c_gput:nvv } #1 #2 {
   \BNVS_tl_use:nv {
-    \__bnvs_cache_gput:nvn { #1 } { #2 }
+    \__bnvs_c_gput:nvn { #1 } { #2 }
   }
 }
-\BNVS_new:cpn { cache_item:nn } #1 #2 {
-  \prop_item:Nn \g__bnvs_cache_prop { #2 / #1 }
+\BNVS_new:cpn { c_item:nn } #1 #2 {
+  \prop_item:Nn \g__bnvs_c_prop { #2 / #1 }
 }
-\BNVS_new:cpn { cache_gremove:nn } #1 #2 {
-  \prop_gremove:Nn \g__bnvs_cache_prop { #2 / #1 }
+\BNVS_new:cpn { c_gremove:nn } #1 #2 {
+  \prop_gremove:Nn \g__bnvs_c_prop { #2 / #1 }
 }
-\BNVS_new:cpn { cache_gclear:n } #1 {
+\BNVS_new:cpn { c_gclear:n } #1 {
   \clist_map_inline:nn { V, A, Z, L, P, N } {
-    \prop_gremove:Nn \g__bnvs_cache_prop { #1 / ##1 }
+    \prop_gremove:Nn \g__bnvs_c_prop { #1 / ##1 }
   }
 }
-\BNVS_new:cpn { cache_gclear: } {
-  \prop_gclear:N \g__bnvs_cache_prop
+\BNVS_new:cpn { c_gclear: } {
+  \prop_gclear:N \g__bnvs_c_prop
 }
-\prg_new_conditional:Npnn \__bnvs_cache_if_in:nn #1 #2 { p, T, F, TF } {
-  \prop_if_in:NnTF \g__bnvs_cache_prop { #2 / #1 } {
+\prg_new_conditional:Npnn \__bnvs_c_if_in:nn #1 #2 { p, T, F, TF } {
+  \prop_if_in:NnTF \g__bnvs_c_prop { #2 / #1 } {
     \prg_return_true:
   } {
     \prg_return_false:
   }
 }
-\BNVS_new_conditional:cpnn { cache_if_get:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { c_if_get:nnc } #1 #2 #3 { T, F, TF } {
   \BNVS_tl_use:nc {
-    \prop_get:NnNTF \g__bnvs_cache_prop { #2 / #1 }
+    \prop_get:NnNTF \g__bnvs_c_prop { #2 / #1 }
   } { #3 } {
     \prg_return_true:
   } {
@@ -837,8 +863,8 @@
     \__bnvs_v_gput:nn { #1 }
   }
 }
-\BNVS_new:cpn { v_item:n } #1 {
-  \prop_item:Nn \g__bnvs_v_prop { #1 }
+\BNVS_new:cpn { v_gput:vv } {
+  \BNVS_tl_use:Nv \__bnvs_v_gput:nv
 }
 \BNVS_new:cpn { v_gremove:n } {
   \prop_gremove:Nn \g__bnvs_v_prop
@@ -881,13 +907,40 @@
   \BNVS_tl_use:Nv \__bnvs_v_if_greset:nnTF { #1 } { #2 }
     { \prg_return_true: } { \prg_return_false: }
 }
+\BNVS_new_conditional:cpnn { v_if_greset:vv } #1 #2 { T, F, TF } {
+  \BNVS_tl_use:Nv \__bnvs_v_if_greset:nvTF { #1 } { #2 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional:cpnn { n_if_greset:nn } #1 #2 { T, F, TF } {
+  \__bnvs_n_if_in:nTF { #1 } {
+    \__bnvs_n_gremove:n { #1 }
+    \tl_if_empty:nF { #2 } {
+      \__bnvs_n_gput:nn { #1 } { #2 }
+    }
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { n_if_greset:nv } #1 #2 { T, F, TF } {
+  \BNVS_tl_use:nv { \__bnvs_n_if_greset:nnTF { #1 } } { #2 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional:cpnn { n_if_greset:vn } #1 #2 { T, F, TF } {
+  \BNVS_tl_use:Nv \__bnvs_n_if_greset:nnTF { #1 } { #2 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional:cpnn { n_if_greset:vv } #1 #2 { T, F, TF } {
+  \BNVS_tl_use:Nv \__bnvs_n_if_greset:nvTF { #1 } { #2 }
+    { \prg_return_true: } { \prg_return_false: }
+}
 \BNVS_new_conditional:cpnn { if_greset_all:nn } #1 #2 { T, F, TF } {
   \__bnvs_if_in:nTF { #1 } {
     \BNVS_begin:
     \clist_map_inline:nn { V, A, Z, L } {
       \__bnvs_if_get:nncT { ##1 } { #1 } { a } {
         \__bnvs_quark_if_nil:cT { a } {
-          \__bnvs_cache_if_get:nncTF { ##1 } { #1 } { a } {
+          \__bnvs_c_if_get:nncTF { ##1 } { #1 } { a } {
             \__bnvs_gput:nnv { ##1 } { #1 } { a }
           } {
             \__bnvs_gput:nnn { ##1 } { #1 } { 1 }
@@ -896,7 +949,8 @@
       }
     }
     \BNVS_end:
-    \__bnvs_cache_gclear:n { #1 }
+    \__bnvs_c_gclear:n { #1 }
+    \__bnvs_n_gremove:n { #1 }
     \__bnvs_v_if_greset:nnT { #1 } { #2 } {}
     \prg_return_true:
   } {
@@ -909,13 +963,13 @@
 }
 \BNVS_new:cpn { gclear_all: } {
   \__bnvs_gclear:
-  \__bnvs_cache_gclear:
+  \__bnvs_c_gclear:
   \__bnvs_n_gclear:
   \__bnvs_v_gclear:
 }
 \BNVS_new:cpn { gclear_all:n } #1 {
   \__bnvs_gclear:n { #1 }
-  \__bnvs_cache_gclear:n { #1 }
+  \__bnvs_c_gclear:n { #1 }
   \__bnvs_n_gremove:n { #1 }
   \__bnvs_v_gremove:n { #1 }
 }
@@ -923,11 +977,13 @@
 \BNVS_new:cpn { n_gput:nn } {
   \prop_gput:Nnn \g__bnvs_n_prop
 }
-\cs_generate_variant:Nn \__bnvs_n_gput:nn { nV }
 \BNVS_new:cpn { n_gput:nv } #1 {
-  \BNVS_tl_use:nc {
-    \__bnvs_n_gput:nV { #1 }
+  \BNVS_tl_use:nv {
+    \__bnvs_n_gput:nn { #1 }
   }
+}
+\BNVS_new:cpn { n_gput:vv } {
+  \BNVS_tl_use:Nv \__bnvs_n_gput:nv
 }
 \BNVS_new:cpn { n_gprovide:nn } #1 #2 {
   \prop_if_in:NnF \g__bnvs_n_prop { #1 } {
@@ -973,11 +1029,15 @@
 \regex_const:Nn \c__bnvs_path_regex {
   (?: \. \ur{c__bnvs_short_regex} | \. [-+]? \d+ )*
 }
-\regex_const:Nn \c__bnvs_A_FQ_name_Z_regex {
+\regex_const:Nn \c__bnvs_A_index_Z_regex { \A[-+]?\d+\Z }
+\regex_const:Nn \c__bnvs_A_reserved_Z_regex {
+  \A_*[a-z][_a-z0-9]*\Z
+}
+\regex_const:Nn \c__bnvs_A_QF_name_Z_regex {
   \A ( ( \ur{c__bnvs_id_regex} ? ) \ur{c__bnvs_short_regex} )
   ( \ur{c__bnvs_path_regex} ) \Z
 }
-\regex_const:Nn \c__bnvs_A_FQ_name_n_Z_regex {
+\regex_const:Nn \c__bnvs_A_QF_name_n_Z_regex {
   \A ( ( \ur{c__bnvs_id_regex} ? )
   \ur{c__bnvs_short_regex}
   (?: \. \ur{c__bnvs_short_regex} | \. [-+]? \d+ )*? )
@@ -1002,7 +1062,7 @@
   \tl_set:Nx \l__bnvs_id_last_tl { #1 ! }
 }
 \AddToHook{env/beamer@frameslide/before}{
-  \__bnvs_call_greset:
+  \__bnvs_greset:
   \__bnvs_n_gclear:
   \__bnvs_v_gclear:
   \bool_set_true:N \l__bnvs_in_frame_bool
@@ -1016,6 +1076,12 @@
   } {
     \prg_return_false:
   }
+}
+\BNVS_new:cpn { split_if_pop_left:cTn } #1 #2 #3 {
+  \__bnvs_split_if_pop_left:cTF { #1 } { #2 } { \BNVS:n { #3 } }
+}
+\BNVS_new:cpn { split_if_pop_left_or:cT } #1 #2 {
+  \__bnvs_split_if_pop_left:cTF { #1 } { #2 } { \BNVS:n { #1 } }
 }
 \exp_args_generate:n { VVV }
 \BNVS_new_conditional:cpnn { range_if_set:cccn } #1 #2 #3 #4 { T, F, TF } {
@@ -1092,7 +1158,7 @@
   }
 }
 \BNVS_new:cpn { range:nnnn } #1 {
-  \__bnvs_if_provide:TF {
+  \__bnvs_if:cTF { provide } {
     \__bnvs_if_in:nnTF A { #1 } {
       \use_none:nnn
     } {
@@ -1120,13 +1186,27 @@
   } { #4 }
 }
 \BNVS_new:cpn { parse_record:n } #1 {
-  \__bnvs_if_provide:TF {
+  \__bnvs_if:cTF { provide } {
     \__bnvs_gprovide:nnnT V { #1 } { 1 } {
       \__bnvs_gclear:n { #1 }
     }
   } {
-    \__bnvs_gclear:n { #1 }
-    \__bnvs_gput:nnn V { #1 } { 1 }
+    \__bnvs_if:cTF { reset } {
+      \__bnvs_if:cT { reset_all } {
+        \__bnvs_if_greset_all:nnT { #1 } { } { }
+      }
+      \__bnvs_if:cF { only } {
+        \prop_map_inline:Nn \g__bnvs_c_prop {
+          \str_if_in:nnT { . ##1 } { .#1. } {
+            \prop_gremove:Nn \g__bnvs_c_prop { ##1 }
+          }
+        }
+      }
+      \__bnvs_v_if_greset:nnT { #1 } { } { }
+    } {
+      \__bnvs_gclear:n { #1 }
+      \__bnvs_gput:nnn V { #1 } { 1 }
+    }
   }
 }
 \BNVS_new:cpn { parse_record:v } {
@@ -1138,29 +1218,41 @@
   \__bnvs_range_if_set:cccnTF { a } { b } { c } { #2 } {
     \__bnvs_range:nvvv { #1 } { a } { b } { c }
   } {
-    \__bnvs_if_provide:TF {
+    \__bnvs_if:cTF { provide } {
       \__bnvs_gprovide:nnnT V { #1 } { #2 } {
         \__bnvs_gclear_all:n { #1 }
       }
     } {
-      \__bnvs_gclear_all:n { #1 }
-      \__bnvs_gput:nnn V { #1 } { #2 }
+      \__bnvs_if:cTF { reset } {
+        \__bnvs_if:cT { reset_all } {
+          \__bnvs_if_greset_all:nnT { #1 } { #2 } { }
+        }
+        \__bnvs_v_if_greset:nnT { #1 } { #2 } { }
+      } {
+        \__bnvs_gclear_all:n { #1 }
+        \__bnvs_gput:nnn V { #1 } { #2 }
+      }
     }
   }
 }
-\cs_generate_variant:Nn \__bnvs_parse_record:nn { x }
 \BNVS_new:cpn { parse_record:vn } {
   \BNVS_tl_use:nv {
     \__bnvs_parse_record:nn
   }
 }
 \BNVS_new:cpn { n_parse_record:n } #1 {
-  \bool_if:NTF \l__bnvs_n_provide_bool {
-    \__bnvs_n_gprovide:nn
+  \__bnvs_if:cTF { provide } {
+    \__bnvs_n_gprovide:nn { #1 } { 1 }
   } {
-    \__bnvs_n_gput:nn
+    \__bnvs_if:cTF { reset } {
+      \__bnvs_if:cTF { reset_all } {
+        \__bnvs_if_greset_all:nnT { #1 } { } { }
+      }
+      \__bnvs_n_if_greset:nnT { #1 } { } { }
+    } {
+      \__bnvs_n_gput:nn { #1 } { 1 }
+    }
   }
-  { #1 } { 1 }
 }
 \BNVS_new:cpn { n_parse_record:v } {
   \BNVS_tl_use:cv { n_parse_record:n }
@@ -1169,57 +1261,57 @@
   \__bnvs_range_if_set:cccnTF { a } { b } { c } { #2 } {
     \BNVS_error:n { Unexpected~range:~#2 }
   } {
-    \__bnvs_if_provide:TF {
-      \__bnvs_n_gprovide:nn { #1 } { #2 }
+    \__bnvs_if:cTF { provide } {
+      \__bnvs_n_gprovide:nn
     } {
-      \__bnvs_n_gput:nn { #1 } { #2 }
-    }
+      \__bnvs_n_gput:nn
+    } { #1 } { #2 }
   }
 }
 \BNVS_new:cpn { n_parse_record:vn } {
   \BNVS_tl_use:cv { n_parse_record:nn }
 }
-\BNVS_new_conditional:cpnn { if_id_FQ_name_n_get:n } #1 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_id_QF_name_n:n } #1 { T, F, TF } {
   \BNVS_begin:
-  \__bnvs_match_if_once:NnTF \c__bnvs_A_FQ_name_n_Z_regex { #1 } {
+  \__bnvs_match_if_once:NnTF \c__bnvs_A_QF_name_n_Z_regex { #1 } {
     \__bnvs_if_match_pop_left:cTF { n } {
-      \__bnvs_if_match_pop_left:cTF { FQ_name } {
+      \__bnvs_if_match_pop_left:cTF { QF_name } {
         \__bnvs_if_match_pop_left:cTF { id } {
           \__bnvs_if_match_pop_left:cTF { n } {
             \cs_set:Npn \BNVS:nnn ##1 ##2 ##3 {
               \BNVS_end:
               \__bnvs_tl_set:cn { id } { ##1 }
-              \__bnvs_tl_set:cn { FQ_name } { ##2 }
+              \__bnvs_tl_set:cn { QF_name } { ##2 }
               \__bnvs_tl_set:cn { n } { ##3 }
             }
             \__bnvs_tl_if_empty:cTF { id } {
               \BNVS_exp_args:Nvvv
-              \BNVS:nnn { id_last } { FQ_name } { n }
-              \__bnvs_tl_put_left:cv { FQ_name } { id_last }
+              \BNVS:nnn { id_last } { QF_name } { n }
+              \__bnvs_tl_put_left:cv { QF_name } { id_last }
             } {
               \BNVS_exp_args:Nvvv
-              \BNVS:nnn { id } { FQ_name } { n }
+              \BNVS:nnn { id } { QF_name } { n }
               \__bnvs_tl_set:cv { id_last } { id }
             }
             \prg_return_true:
           } {
             \BNVS_end:
-            \BNVS_error:n { LOGICALLY_UNREACHABLE_A_FQ_name_n_Z/n }
+            \BNVS_error:n { LOGICALLY_UNREACHABLE_A_QF_name_n_Z/n }
             \prg_return_false:
           }
         } {
           \BNVS_end:
-          \BNVS_error:n { LOGICALLY_UNREACHABLE_A_FQ_name_n_Z/id }
+          \BNVS_error:n { LOGICALLY_UNREACHABLE_A_QF_name_n_Z/id }
           \prg_return_false:
         }
       } {
         \BNVS_end:
-        \BNVS_error:n { LOGICALLY_UNREACHABLE_A_FQ_name_n_Z/FQ_name }
+        \BNVS_error:n { LOGICALLY_UNREACHABLE_A_QF_name_n_Z/QF_name }
         \prg_return_false:
       }
     } {
       \BNVS_end:
-      \BNVS_error:n { LOGICALLY_UNREACHABLE_A_FQ_name_n_Z/n }
+      \BNVS_error:n { LOGICALLY_UNREACHABLE_A_QF_name_n_Z/n }
       \prg_return_false:
     }
   } {
@@ -1227,8 +1319,8 @@
     \prg_return_false:
   }
 }
-\BNVS_new_conditional:cpnn { if_id_FQ_name_n_get:v } #1 { T, F, TF } {
-  \BNVS_tl_use:nv { \BNVS_use:c { if_id_FQ_name_n_get:nTF } } { #1 } {
+\BNVS_new_conditional:cpnn { if_id_QF_name_n:v } #1 { T, F, TF } {
+  \BNVS_tl_use:nv { \__bnvs_if_id_QF_name_n:nTF } { #1 } {
     \prg_return_true:
   } {
     \prg_return_false:
@@ -1243,7 +1335,7 @@
         \BNVS_begin:
         \__bnvs_int_incr:c { i }
         \__bnvs_tl_put_right:cx { root } { \__bnvs_int_use:c { i } . }
-        \cs_set:Npn \bnvs:w ####1 ####2 \s_stop {
+        \cs_set:Npn \BNVS:w ####1 ####2 \s_stop {
           \regex_match:nnT { \S* } { ####2 } {
             \BNVS_error:n { Unexpected~####2 }
           }
@@ -1254,26 +1346,36 @@
           } { ####1 }
           \BNVS_end:
         }
-        \bnvs:w #1 \s_stop
+        \BNVS:w #1 \s_stop
       }
     } {
       \__bnvs_tl_if_empty:cTF { root } {
-        \__bnvs_if_id_FQ_name_n_get:nTF { #1 } {
+        \__bnvs_if_id_QF_name_n:nTF { #1 } {
           \__bnvs_tl_if_empty:cTF { n } {
             \__bnvs_parse_record:v
           } {
             \__bnvs_n_parse_record:v
           }
-          { FQ_name }
+          { QF_name }
         } {
           \BNVS_error:n { Unexpected~name:~#1 }
         }
       } {
-        \__bnvs_int_incr:c { i }
-        \__bnvs_tl_if_empty:cTF { n } {
-          \__bnvs_parse_record:xn
-        } {
-          \__bnvs_n_parse_record:xn
+        \cs_set:Npn \BNVS: {
+          \__bnvs_int_incr:c { i }
+           \exp_args:NNx \prop_if_in:NnT \g__bnvs_prop {
+            \__bnvs_tl_use:c { root } \__bnvs_int_use:c { i } / V
+          } { \BNVS: }
+        }
+        \BNVS:
+        \exp_args:Nnx \use:n {
+          \__bnvs_tl_if_empty:cTF { n } {
+            \int_compare:nNnT { \__bnvs_int_use:c { i } } = 1 {
+            }
+            \__bnvs_parse_record:nn
+          } {
+            \__bnvs_n_parse_record:nn
+          }
         } {
           \__bnvs_tl_use:c { root } \__bnvs_int_use:c { i }
         } { #1 }
@@ -1282,7 +1384,7 @@
   }
 }
 \BNVS_new:cpn { do_range:nnnn } #1 #2 #3 #4 {
-    \__bnvs_gclear_all:n { #1 }
+  \__bnvs_gclear_all:n { #1 }
   \tl_if_empty:nTF { #4 } {
     \tl_if_empty:nTF { #2 } {
       \tl_if_empty:nTF { #3 } {
@@ -1319,30 +1421,27 @@
   \BNVS_tl_use:nc { \exp_args:NNnV #1 #2 { #3 } }
     { #4 }
 }
-\cs_new:Npn \BNVS_tl_set_after:ncv #1 #2 {
-  \BNVS_tl_use:nv {
-    #1 \__bnvs_tl_set:cn { #2 }
-  }
-}
 \cs_new:Npn \BNVS_end_tl_set:cv #1 {
   \BNVS_tl_use:nv {
     \BNVS_end: \__bnvs_tl_set:cn { #1 }
   }
 }
+\regex_const:Nn \c__bnvs_one_suffix_regex { \A(.*)\.(?:1|first)\Z }
 \BNVS_new:cpn { parse:nn } #1 #2 {
   \BNVS_begin:
   \__bnvs_tl_set:cn { a } { #1 }
   \__bnvs_tl_put_left:cv { a } { root }
-  \__bnvs_if_id_FQ_name_n_get:vTF { a } {
+  \__bnvs_if_id_QF_name_n:vTF { a } {
     \regex_match:nnTF { \S } { #2 } {
       \peek_remove_spaces:n {
         \peek_catcode:NTF \c_group_begin_token {
           \__bnvs_tl_if_empty:cF { n } {
-\__bnvs_warning:n { Ignoring~unexpected~suffix~.n:~#1 }
+\BNVS_warning:n { Ignoring~unexpected~suffix~.n:~#1 }
           }
           \BNVS_begin:
-          \__bnvs_gput:nvn V { FQ_name } { \q_nil }
-          \__bnvs_tl_set:cv { root } { FQ_name }
+          \__bnvs_reset:v { QF_name }
+          \__bnvs_gput:nvn V { QF_name } { \q_nil }
+          \__bnvs_tl_set:cv { root } { QF_name }
           \__bnvs_tl_put_right:cn { root } { . }
           \__bnvs_int_set:cn { i } { 0 }
           \cs_set:Npn \BNVS:w ##1 ##2 \s_stop {
@@ -1355,6 +1454,27 @@
               \__bnvs_parse:nn
             } { ##1 }
             \BNVS_end:
+            \cs_set:Npn \BNVS: {
+              \cs_set:Npn \BNVS: {
+                \__bnvs_gput:nvv V { QF_name } {a }
+              }
+              \exp_args:Nnx \__bnvs_if_get:nncF V {
+                \__bnvs_tl_use:c { QF_name } .1
+              } {a } {
+                \exp_args:Nnx \__bnvs_if_get:nncF V {
+                  \__bnvs_tl_use:c { QF_name } .first
+                } {a } {
+                  \cs_set:Npn \BNVS: { }
+                }
+              }
+              \BNVS:
+            }
+            \__bnvs_if_get:nncT V { #1 } {a } {
+              \__bnvs_quark_if_nil:cF {a } {
+                \cs_set:Npn \BNVS: { }
+              }
+            }
+            \BNVS:
           }
           \BNVS:w
         } {
@@ -1363,7 +1483,7 @@
           } {
             \__bnvs_n_parse_record:vn
           }
-          { FQ_name } { #2 }
+          { QF_name } { #2 }
           \use_none_delimit_by_s_stop:w
         }
       }
@@ -1374,10 +1494,29 @@
       } {
         \__bnvs_n_gremove:v
       }
-      { FQ_name }
+      { QF_name }
     }
   } {
     \BNVS_error:n { Invalid~name:~#2 }
+  }
+  \__bnvs_match_if_once:NvT \c__bnvs_one_suffix_regex { QF_name } {
+    \__bnvs_if_match_pop_left:cTF { a } {
+      \__bnvs_if_match_pop_left:cTF { a } {
+        \cs_set:Npn \BNVS: {
+          \__bnvs_gput:nvn V { a } { #2 }
+        }
+        \__bnvs_if_get:nvcT V { a } { b } {
+          \__bnvs_quark_if_nil:cF { b } {
+            \cs_set:Npn \BNVS: { }
+          }
+        }
+        \BNVS:
+      } {
+        \BNVS_error:n { Ubnreachable~2 }
+      }
+    } {
+      \BNVS_error:n { Ubnreachable~1 }
+    }
   }
   \BNVS_end_tl_set:cv { id_last } { id_last }
 }
@@ -1421,6 +1560,9 @@
   }
 }
 \NewDocumentCommand \Beanoves { sm } {
+  \__bnvs_set_false:c { reset }
+  \__bnvs_set_false:c { reset_all }
+  \__bnvs_set_false:c { only }
   \tl_if_empty:NTF \@currenvir {
     \seq_gput_right:Nn \g__bnvs_def_seq { #2 }
   } {
@@ -1495,7 +1637,7 @@
 \BNVS_new:cpn { scan_for_query_then_end_return: } {
   \__bnvs_seq_pop_left:ccTF { token } { token } {
     \__bnvs_tl_if_eq:cnTF { token } { ? } {
-      \__bnvs_scan_require_open_then_end_return:
+      \__bnvs_scan_require_open_end_return:
     } {
       \__bnvs_tl_put_right:cv { ans } { token }
       \__bnvs_scan_for_query_then_end_return:
@@ -1505,7 +1647,7 @@
   }
 }
 
-\BNVS_new:cpn { scan_require_open_then_end_return: } {
+\BNVS_new:cpn { scan_require_open_end_return: } {
   \__bnvs_seq_pop_left:ccTF { token } { token } {
     \str_if_eq:VnTF \l__bnvs_token_tl { ( %)
     } {
@@ -1513,7 +1655,7 @@
       \__bnvs_tl_clear:c { query }
       \__bnvs_scan_require_close_and_return:
     } {
-      \__bnvs_scan_require_open_then_end_return:
+      \__bnvs_scan_require_open_end_return:
     }
   } {
     \BNVS_error:x {Missing~'('%---)
@@ -1586,11 +1728,11 @@
 \BNVS_new:cpn { scan:nNc } #1 #2 #3 {
   \BNVS_use:c { scan:nNcTF } { #1 } #2 { #3 } {} {}
 }
-\BNVS_new_conditional:cpnn { if_Fip:ccc } #1 #2 #3 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_Qip:ccc } #1 #2 #3 { T, F, TF } {
   \BNVS_begin:
-  \__bnvs_match_if_once:NvTF \c__bnvs_A_FQ_name_Z_regex { #1 }  {
-    \__bnvs_if_match_pop_Fip:cccTF { #1 } { #2 } { #3 } {
-      \__bnvs_end_Fip_export:ccc { #1 } { #2 } { #3 }
+  \__bnvs_match_if_once:NvTF \c__bnvs_A_QF_name_Z_regex { #1 }  {
+    \__bnvs_if_match_pop_Qip:cccTF { #1 } { #2 } { #3 } {
+      \__bnvs_end_Qip_export:ccc { #1 } { #2 } { #3 }
       \prg_return_true:
     } {
       \BNVS_end:
@@ -1602,15 +1744,15 @@
   }
 }
 \quark_new:N \q__bnvs
-\BNVS_new:cpn { end_Fip_export:ccc } #1 #2 #3 {
+\BNVS_new:cpn { end_Qip_export:ccc } #1 #2 #3 {
   \exp_args:Nnx
   \use:n {
     \BNVS_tl_use:nv {
-      \BNVS_tl_use:cv { end_Fip_export:nnnccc } { #1 }
+      \BNVS_tl_use:cv { end_Qip_export:nnnccc } { #1 }
     } { #2 }
   } { \__bnvs_seq_use:cn { #3 } { \q__bnvs } } { #1 } { #2 } { #3 }
 }
-\BNVS_new:cpn { end_Fip_export:nnnccc } #1 #2 #3 #4 #5 #6 {
+\BNVS_new:cpn { end_Qip_export:nnnccc } #1 #2 #3 #4 #5 #6 {
   \BNVS_end:
   \tl_if_empty:nTF { #2 } {
     \__bnvs_tl_set:cn { #4 } { #1 }
@@ -1622,7 +1764,7 @@
   \__bnvs_seq_set_split:cnn { #6 } { \q__bnvs } { #3 }
   \__bnvs_seq_remove_all:cn { #6 } { }
 }
-\BNVS_new_conditional:cpnn { if_match_pop_Fip:ccc } #1 #2 #3 { TF } {
+\BNVS_new_conditional:cpnn { if_match_pop_Qip:ccc } #1 #2 #3 { TF } {
   \__bnvs_if_match_pop_left:cTF { #1 } {
     \__bnvs_if_match_pop_left:cTF { #1 } {
       \__bnvs_if_match_pop_left:cTF { #2 } {
@@ -1643,14 +1785,6 @@
     \prg_return_false:
   }
 }
-\BNVS_new:cpn { if_resolve_Fip_x_path:TFF } #1 #2 {
-  \__bnvs_if_resolve_Fip_x_path:TF {
-    \__bnvs_seq_if_empty:cTF { path } { #1 } { #2 }
-  }
-}
-\BNVS_new:cpn { end_Fip_export: } {
-  \__bnvs_end_Fip_export:ccc { FQ_name } { id } { path }
-}
 \BNVS_new:cpn { seq_merge:cc } #1 #2 {
   \__bnvs_seq_if_empty:cF { #2 } {
     \__bnvs_seq_set_split:cnx { #1 } { \q__bnvs } {
@@ -1659,160 +1793,6 @@
       \__bnvs_seq_use:cn { #2 } { \q__bnvs }
     }
     \__bnvs_seq_remove_all:cn { #1 } { }
-  }
-}
-\BNVS_new:cpn { if_resolve_Fip_x_path:nFF } #1 #2 #3 {
-  \__bnvs_if_get:nvcTF #1 { a } { b } {
-    \__bnvs_if_Fip:cccTF { b } { id } { path } {
-      \__bnvs_tl_set_eq:cc { FQ_name } { b }
-      \__bnvs_seq_merge:cc { path } { path_tail }
-      \__bnvs_seq_clear:c { path_tail }
-      \__bnvs_seq_set_eq:cc { path_head } { path }
-      \__bnvs_if_resolve_Fip_x_path_loop_or_end_return:
-    } {
-      \__bnvs_seq_if_empty:cTF { path_tail } {
-        \__bnvs_tl_set_eq:cc { FQ_name } { b }
-        \__bnvs_seq_clear:c { path }
-        \__bnvs_seq_clear:c { path_head }
-        \__bnvs_if_resolve_Fip_x_path_loop_or_end_return:
-      } {
-        #2
-      }
-    }
-  } {
-    #3
-  }
-}
-\BNVS_new:cpn { if_resolve_Fip_x_path_VAL_loop_or_end_return:F } #1 {
-  \__bnvs_if_resolve_Fip_x_path:nFF V { #1 } {
-    \__bnvs_if_resolve_Fip_x_path:nFF A { #1 } {
-      \__bnvs_if_resolve_Fip_x_path:nFF L { #1 } { #1 }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_Fip_x_path_end_return_true: } {
-  \__bnvs_seq_pop_left:ccTF { path } { a } {
-    \__bnvs_seq_if_empty:cTF { path } {
-      \__bnvs_tl_clear:c { b }
-      \__bnvs_index_can:vTF { FQ_name } {
-        \__bnvs_if_append_index:vvcTF { FQ_name } { a } { b } {
-          \__bnvs_tl_set:cv { FQ_name } { b }
-        } {
-          \__bnvs_tl_set:cv { FQ_name } { a }
-        }
-      } {
-        \__bnvs_tl_set:cv { FQ_name } { a }
-      }
-    } {
-      \BNVS_error:x { Path~too~long~.\BNVS_tl_use:c { a }
-        .\__bnvs_seq_use:cn { path } . }
-    }
-  } {
-    \__bnvs_if_resolve_V:vcT { FQ_name } { FQ_name } {}
-  }
-  \__bnvs_end_Fip_export:ccc { FQ_name } { id } { path }
-  \prg_return_true:
-}
-\BNVS_new_conditional:cpnn { if_resolve_Fip_x_path: } { T, F, TF } {
-  \BNVS_begin:
-  \__bnvs_seq_set_eq:cc { path_head } { path }
-  \__bnvs_seq_clear:c { path_tail }
-  \__bnvs_if_resolve_Fip_x_path_loop_or_end_return:
-}
-\BNVS_new:cpn { if_resolve_Fip_x_path_loop_or_end_return: } {
-  \__bnvs_if_call:TF {
-    \__bnvs_tl_set_eq:cc { a } { FQ_name }
-    \__bnvs_seq_if_empty:cTF { path_head } {
-      \__bnvs_if_resolve_Fip_x_path_VAL_loop_or_end_return:F {
-        \__bnvs_if_resolve_Fip_x_path_end_return_true:
-      }
-    } {
-      \__bnvs_tl_put_right:cx { a } { . \__bnvs_seq_use:cn { path_head } . }
-      \__bnvs_if_resolve_Fip_x_path_VAL_loop_or_end_return:F {
-        \__bnvs_seq_pop_right:ccT { path_head } { c } {
-          \__bnvs_seq_put_left:cv { path_tail } { c }
-        }
-        \__bnvs_if_resolve_Fip_x_path_loop_or_end_return:
-      }
-    }
-  } {
-    \BNVS_end:
-    \prg_return_false:
-  }
-}
-\BNVS_new:cpn { if_resolve_Fip_n_path_or_end_return:nF } #1 #2 {
-  \__bnvs_if_get:nvcTF { #1 } { a } { b } {
-    \__bnvs_if_Fip:cccTF { b } { id } { path } {
-      \__bnvs_tl_set_eq:cc { FQ_name } { b }
-      \__bnvs_seq_merge:cc { path } { path_tail }
-      \__bnvs_seq_set_eq:cc { path_head } { path }
-      \__bnvs_seq_clear:c { path_tail }
-      \__bnvs_if_resolve_Fip_n_path_loop_or_end_return:
-    } {
-      \__bnvs_seq_pop_right:ccTF { path_head } { c } {
-        \__bnvs_seq_put_left:cv { path_tail } { c }
-        \__bnvs_if_resolve_Fip_n_path_loop_or_end_return:
-      } {
-        \__bnvs_if_resolve_Fip_n_path_end_return_true:
-      }
-    }
-  } {
-    #2
-  }
-}
-\BNVS_new:cpn { if_resolve_Fip_n_path_VAL_loop_or_end_return: } {
-  \__bnvs_if_resolve_Fip_n_path_or_end_return:nF V {
-    \__bnvs_if_resolve_Fip_n_path_or_end_return:nF A {
-      \__bnvs_if_resolve_Fip_n_path_or_end_return:nF L {
-        \__bnvs_seq_pop_right:ccTF { path_head } { c } {
-          \__bnvs_seq_put_left:cv { path_tail } { c }
-          \__bnvs_if_resolve_Fip_n_path_loop_or_end_return:
-        } {
-          \__bnvs_if_resolve_Fip_n_path_end_return_true:
-        }
-      }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_Fip_n_path_end_return_false: } {
-  \BNVS_end:
-  \prg_return_false:
-}
-\BNVS_new:cpn { if_resolve_Fip_n_path_end_return_true: } {
-  \__bnvs_end_Fip_export:ccc { FQ_name } { id } { path }
-  \prg_return_true:
-}
-
-\BNVS_new:cpn { if_resolve_Fip_n_path_loop_or_end_return: } {
-  \__bnvs_if_call:TF {
-    \__bnvs_tl_set_eq:cc { a } { FQ_name }
-    \__bnvs_seq_if_empty:cTF { path_head } {
-      \__bnvs_seq_if_empty:cTF { path_tail } {
-        \__bnvs_if_resolve_Fip_n_path_end_return_true:
-      } {
-        \__bnvs_if_resolve_Fip_n_path_VAL_loop_or_end_return:
-      }
-    } {
-      \__bnvs_tl_put_right:cx { a } { . \__bnvs_seq_use:cn { path_head } . }
-      \__bnvs_if_resolve_Fip_n_path_VAL_loop_or_end_return:
-    }
-  } {
-    \BNVS_end:
-    \prg_return_false:
-  }
-}
-\BNVS_new_conditional:cpnn { if_resolve_Fip_n_path: } { TF } {
-  \BNVS_begin:
-  \__bnvs_seq_set_eq:cc { path_head } { path }
-  \__bnvs_seq_clear:c { path_tail }
-  \__bnvs_tl_clear:c { a }
-  \__bnvs_if_resolve_Fip_n_path_loop_or_end_return:
-}
-\BNVS_new:cpn { round_ans:n } #1 {
-  \tl_if_empty:nTF { #1 } {
-    \__bnvs_tl_put_right:cn { ans } { 0 }
-  } {
-    \__bnvs_tl_put_right:cx { ans } { \fp_eval:n { round(#1) } }
   }
 }
 \BNVS_new:cpn { round:N } #1 {
@@ -1825,19 +1805,13 @@
 \BNVS_new:cpn { round:c } {
   \BNVS_tl_use:Nc \__bnvs_round:N
 }
-\cs_new:Npn \BNVS_end_return_false: {
-  \BNVS_end:
-  \prg_return_false:
-}
-\cs_new:Npn \BNVS_end_return_false:x #1 {
-  \BNVS_error:x { #1 }
-  \BNVS_end_return_false:
-}
 \BNVS_new_conditional:cpnn { if_assign_value:nn } #1 #2 { T, F, TF } {
   \BNVS_begin:
   \__bnvs_if_resolve:ncTF { #2 } { a } {
     \__bnvs_gclear_all:n { #1 }
     \__bnvs_gput:nnv V { #1 } { a }
+    \__bnvs_c_gput:nnv V { #1 } { a }
+    \__bnvs_v_gput:nv { #1 } { a }
     \BNVS_end:
     \prg_return_true:
   } {
@@ -1846,28 +1820,28 @@
   }
 }
 \BNVS_new_conditional:cpnn { if_assign_value:nv } #1 #2 { T, F, TF } {
-\BNVS_tl_use:nv {
-  \BNVS_use:c { if_assign_value:nnTF } { #1 }
-} { #2 } {
-  \prg_return_true:
-} {
-  \prg_return_false:
-}
+  \BNVS_tl_use:nv {
+    \BNVS_use:c { if_assign_value:nnTF } { #1 }
+  } { #2 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
 }
 \BNVS_new_conditional:cpnn { if_assign_value:vv } #1 #2 { T, F, TF } {
-\BNVS_tl_use:nv {
-  \BNVS_tl_use:cv { if_assign_value:nnTF } { #1 }
-} { #2 } {
-  \prg_return_true:
-} {
-  \prg_return_false:
+  \BNVS_tl_use:nv {
+    \BNVS_tl_use:cv { if_assign_value:nnTF } { #1 }
+  } { #2 } {
+     \prg_return_true:
+  } {
+    \prg_return_false:
+  }
 }
-}
-\BNVS_new:cpn { if_resolve_V_return:nnnT } #1 #2 #3 #4 {
+\BNVS_new:cpn { if_resolve_V_return:nncT } #1 #2 #3 #4 {
   \__bnvs_tl_if_empty:cTF { #3 } {
     \prg_return_false:
   } {
-    \__bnvs_cache_gput:nnv V { #2 } { #3 }
+    \__bnvs_c_gput:nnv V { #2 } { #3 }
     #4
     \prg_return_true:
   }
@@ -1888,19 +1862,19 @@
 }
 \makeatletter
 \BNVS_new_conditional:cpnn { if_resolve_V:nc } #1 #2 { T, F, TF } {
-  \__bnvs_cache_if_get:nncTF V { #1 } { #2 } {
+  \__bnvs_c_if_get:nncTF V { #1 } { #2 } {
     \prg_return_true:
   } {
     \__bnvs_if_get:nncTF V { #1 } { #2 } {
       \__bnvs_quark_if_nil:cTF { #2 } {
         \__bnvs_gput:nnn V { #1 } { \q_no_value }
-        \__bnvs_if_resolve_first:ncTF { #1 } { #2 } {
-          \__bnvs_if_resolve_V_return:nnnT A { #1 } { #2 } {
+        \__bnvs_if_resolve_A:ncTF { #1 } { #2 } {
+          \__bnvs_if_resolve_V_return:nncT A { #1 } { #2 } {
             \__bnvs_gput:nnn V { #1 } { \q_nil }
           }
         } {
-          \__bnvs_if_resolve_last:ncTF { #1 } { #2 } {
-            \__bnvs_if_resolve_V_return:nnnT Z { #1 } { #2 } {
+          \__bnvs_if_resolve_Z:ncTF { #1 } { #2 } {
+            \__bnvs_if_resolve_V_return:nncT Z { #1 } { #2 } {
               \__bnvs_gput:nnn V { #1 } { \q_nil }
             }
           } {
@@ -1913,7 +1887,7 @@
           \BNVS_fatal:n {Circular~definition:~#1}
         } {
           \__bnvs_if_resolve:vcTF { #2 } { #2 } {
-            \__bnvs_if_resolve_V_return:nnnT V { #1 } { #2 } {
+            \__bnvs_if_resolve_V_return:nncT V { #1 } { #2 } {
               \__bnvs_gput:nnn V { #1 } { \q_nil }
             }
           } {
@@ -1931,7 +1905,17 @@
           \prg_return_false:
         }
       } {
-        \prg_return_false:
+        \str_if_eq:nnTF { #1 } { ?!slideinframe } {
+          \cs_if_exist:NTF \beamer@slideinframe {
+            \exp_args:Nnx \__bnvs_tl_set:cn { #2 } { \beamer@slideinframe }
+            \prg_return_true:
+          } {
+
+            \prg_return_false:
+          }
+        } {
+          \prg_return_false:
+        }
       }
     }
   }
@@ -1951,20 +1935,20 @@
     \prg_return_true:
   } {
     \BNVS_end:
-    \prg_return_true:
+    \prg_return_false:
   }
 }
 \BNVS_new_conditional_vc:cn { if_append_V } { T, F, TF }
-\BNVS_new_conditional:cpnn { if_resolve_first:nc } #1 #2 { T, F, TF } {
-  \__bnvs_cache_if_get:nncTF A { #1 } { #2 } {
+\BNVS_new_conditional:cpnn { if_resolve_A:nc } #1 #2 { T, F, TF } {
+  \__bnvs_c_if_get:nncTF A { #1 } { #2 } {
     \prg_return_true:
   } {
     \__bnvs_if_get:nncTF A { #1 } { #2 } {
       \__bnvs_quark_if_nil:cTF { #2 } {
         \__bnvs_gput:nnn A { #1 } { \q_no_value }
-        \__bnvs_if_resolve_last:ncTF { #1 } { #2 } {
+        \__bnvs_if_resolve_Z:ncTF { #1 } { #2 } {
           \__bnvs_tl_put_right:cn { #2 } { - }
-          \__bnvs_if_append_length:ncTF { #1 } { #2 } {
+          \__bnvs_if_append_L:ncTF { #1 } { #2 } {
             \__bnvs_tl_put_right:cn { #2 } { + 1 }
             \__bnvs_round:c { #2 }
             \__bnvs_tl_if_empty:cTF { #2 } {
@@ -1972,18 +1956,18 @@
               \prg_return_false:
             } {
               \__bnvs_gput:nnn A { #1 } { \q_nil }
-              \__bnvs_cache_gput:nnv A { #1 } { #2 }
+              \__bnvs_c_gput:nnv A { #1 } { #2 }
               \prg_return_true:
             }
           } {
             \BNVS_error:n {
-Unavailable~length~for~#1~(\token_to_str:N\__bnvs_if_resolve_first:ncTF/2) }
+Unavailable~length~for~#1~(\token_to_str:N\__bnvs_if_resolve_A:ncTF/2) }
             \__bnvs_gput:nnn A { #1 } { \q_nil }
             \prg_return_false:
           }
         } {
           \BNVS_error:n {
-Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_first:ncTF/1) }
+Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_A:ncTF/1) }
           \__bnvs_gput:nnn A { #1 } { \q_nil }
           \prg_return_false:
         }
@@ -1992,7 +1976,7 @@ Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_first:ncTF/1) }
           \BNVS_fatal:n {Circular~definition:~#1}
         } {
           \__bnvs_if_resolve:vcTF { #2 } { #2 } {
-            \__bnvs_cache_gput:nnv A { #1 } { #2 }
+            \__bnvs_c_gput:nnv A { #1 } { #2 }
             \prg_return_true:
           } {
             \prg_return_false:
@@ -2004,64 +1988,9 @@ Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_first:ncTF/1) }
     }
   }
 }
-\BNVS_new_conditional_vc:cn { if_resolve_first } { T, F, TF }
-\BNVS_new_conditional:cpnn { if_append_first:nc } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_append_A:nc } #1 #2 { T, F, TF } {
   \BNVS_begin:
-  \__bnvs_if_resolve_first:ncTF { #1 } { #2 } {
-    \BNVS_end_tl_put_right:cv { #2 } { #2 }
-    \prg_return_true:
-  } {
-    \prg_return_false:
-  }
-}
-\BNVS_new_conditional:cpnn { if_resolve_last:nc } #1 #2 { T, F, TF } {
-  \__bnvs_cache_if_get:nncTF Z { #1 } { #2 } {
-    \prg_return_true:
-  }  {
-    \__bnvs_if_get:nncTF Z { #1 } { #2 } {
-      \__bnvs_quark_if_nil:cTF { #2 } {
-        \__bnvs_gput:nnn Z { #1 } { \q_no_value }
-        \__bnvs_if_resolve_first:ncTF { #1 } { #2 } {
-          \__bnvs_tl_put_right:cn { #2 } { + }
-          \__bnvs_if_append_length:ncTF { #1 } { #2 } {
-            \__bnvs_tl_put_right:cn { #2 } { - 1 }
-            \__bnvs_round:c { #2 }
-            \__bnvs_cache_gput:nnv Z { #1 } { #2 }
-            \__bnvs_gput:nnn Z { #1 } { \q_nil }
-            \prg_return_true:
-          } {
-            \BNVS_error:x {
- Unavailable~length~for~#1~(\token_to_str:N \__bnvs_if_resolve_last:ncTF/1) }
-            \__bnvs_gput:nnn Z { #1 } { \q_nil }
-            \prg_return_false:
-          }
-        } {
-          \BNVS_error:x {
-Unavailable~first~for~#1~(\token_to_str:N \__bnvs_if_resolve_last:ncTF/1) }
-          \__bnvs_gput:nnn Z { #1 } { \q_nil }
-          \prg_return_false:
-        }
-      } {
-        \__bnvs_quark_if_no_value:cTF { #2 } {
-          \BNVS_fatal:n {Circular~definition:~#1}
-        } {
-          \__bnvs_if_resolve:vcTF { #2 } { #2 } {
-            \__bnvs_cache_gput:nnv Z { #1 } { #2 }
-            \prg_return_true:
-          } {
-            \prg_return_false:
-          }
-        }
-      }
-    } {
-      \prg_return_false:
-    }
-  }
-}
-\BNVS_new_conditional_vc:cn { if_resolve_last } { T, F, TF }
-\BNVS_new_conditional:cpnn { if_append_last:nc } #1 #2 { T, F, TF } {
-  \BNVS_begin:
-  \__bnvs_if_resolve_last:ncTF { #1 } { #2 } {
+  \__bnvs_if_resolve_A:ncTF { #1 } { #2 } {
     \BNVS_end_tl_put_right:cv { #2 } { #2 }
     \prg_return_true:
   } {
@@ -2069,38 +1998,40 @@ Unavailable~first~for~#1~(\token_to_str:N \__bnvs_if_resolve_last:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new_conditional_vc:cn { if_append_last } { T, F, TF }
-\BNVS_new_conditional:cpnn { if_resolve_length:nc } #1 #2 { T, F, TF } {
-  \__bnvs_cache_if_get:nncTF L { #1 } { #2 } {
+\BNVS_new_conditional:cpnn { if_resolve_Z:nc } #1 #2 { T, F, TF } {
+  \__bnvs_c_if_get:nncTF Z { #1 } { #2 } {
     \prg_return_true:
-  } {
-    \__bnvs_if_get:nncTF L { #1 } { #2 } {
+  }  {
+    \__bnvs_if_get:nncTF Z { #1 } { #2 } {
       \__bnvs_quark_if_nil:cTF { #2 } {
-        \__bnvs_gput:nnn L { #1 } { \q_no_value }
-        \__bnvs_if_resolve_last:ncTF { #1 } { #2 } {
-          \__bnvs_tl_put_right:cn { #2 } { - }
-          \__bnvs_if_append_first:ncTF { #1 } { #2 } {
-            \__bnvs_tl_put_right:cn { #2 } { + 1 }
+        \__bnvs_gput:nnn Z { #1 } { \q_no_value }
+        \__bnvs_if_resolve_A:ncTF { #1 } { #2 } {
+          \__bnvs_tl_put_right:cn { #2 } { + }
+          \__bnvs_if_append_L:ncTF { #1 } { #2 } {
+            \__bnvs_tl_put_right:cn { #2 } { - 1 }
             \__bnvs_round:c { #2 }
-            \__bnvs_gput:nnn L { #1 } { \q_nil }
-            \__bnvs_cache_gput:nnv L { #1 } { #2 }
+            \__bnvs_c_gput:nnv Z { #1 } { #2 }
+            \__bnvs_gput:nnn Z { #1 } { \q_nil }
             \prg_return_true:
           } {
-            \BNVS_error:n {
-Unavailable~first~for~#1~(\__bnvs_if_resolve_length:ncTF/2) }
-            \return_false:
+            \BNVS_error:x {
+ Unavailable~last~for~#1~(\token_to_str:N \__bnvs_if_resolve_Z:ncTF/1) }
+            \__bnvs_gput:nnn Z { #1 } { \q_nil }
+            \prg_return_false:
           }
         } {
-          \BNVS_error:n {
-Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
-          \return_false:
+          \BNVS_error:x {
+Unavailable~first~for~#1~(\token_to_str:N \__bnvs_if_resolve_Z:ncTF/1) }
+          \__bnvs_gput:nnn Z { #1 } { \q_nil }
+          \prg_return_false:
         }
       } {
         \__bnvs_quark_if_no_value:cTF { #2 } {
           \BNVS_fatal:n {Circular~definition:~#1}
+          \prg_return_false:
         } {
           \__bnvs_if_resolve:vcTF { #2 } { #2 } {
-            \__bnvs_cache_gput:nnv L { #1 } { #2 }
+            \__bnvs_c_gput:nnv Z { #1 } { #2 }
             \prg_return_true:
           } {
             \prg_return_false:
@@ -2112,24 +2043,119 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
     }
   }
 }
-\BNVS_new_conditional_vc:cn { if_resolve_length } { T, F, TF }
-\BNVS_new_conditional:cpnn { if_append_length:nc } #1 #2 { T, F, TF } {
+\BNVS_new_conditional_vc:cn { if_resolve_Z } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_Z:nc } #1 #2 { T, F, TF } {
   \BNVS_begin:
-  \__bnvs_if_resolve_length:ncTF { #1 } { #2 } {
+  \__bnvs_if_resolve_Z:ncTF { #1 } { #2 } {
+    \BNVS_end_tl_put_right:cv { #2 } { #2 }
+    \prg_return_true:
+  } {
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vc:cn { if_append_Z } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_L:nc } #1 #2 { T, F, TF } {
+  \__bnvs_c_if_get:nncTF L { #1 } { #2 } {
+    \prg_return_true:
+  } {
+    \__bnvs_if_get:nncTF L { #1 } { #2 } {
+      \__bnvs_quark_if_nil:cTF { #2 } {
+        \__bnvs_gput:nnn L { #1 } { \q_no_value }
+        \__bnvs_if_resolve_Z:ncTF { #1 } { #2 } {
+          \__bnvs_tl_put_right:cn { #2 } { - }
+          \__bnvs_if_append_A:ncTF { #1 } { #2 } {
+            \__bnvs_tl_put_right:cn { #2 } { + 1 }
+            \__bnvs_round:c { #2 }
+            \__bnvs_gput:nnn L { #1 } { \q_nil }
+            \__bnvs_c_gput:nnv L { #1 } { #2 }
+            \prg_return_true:
+          } {
+            \BNVS_error:n {
+Unavailable~first~for~#1~(\__bnvs_if_resolve_L:ncTF/2) }
+            \prg_return_false:
+          }
+        } {
+          \BNVS_error:n {
+Unavailable~last~for~#1~(\__bnvs_if_resolve_L:ncTF/1) }
+          \prg_return_false:
+        }
+      } {
+        \__bnvs_quark_if_no_value:cTF { #2 } {
+          \BNVS_fatal:n {Circular~definition:~#1}
+        } {
+          \__bnvs_if_resolve:vcTF { #2 } { #2 } {
+            \__bnvs_c_gput:nnv L { #1 } { #2 }
+            \prg_return_true:
+          } {
+            \prg_return_false:
+          }
+        }
+      }
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_vc:cn { if_resolve_L } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_L:nc } #1 #2 { T, F, TF } {
+  \BNVS_begin:
+  \__bnvs_if_resolve_L:ncTF { #1 } { #2 } {
     \BNVS_end_tl_put_right:cv { #2 } { #2 }
     \prg_return_true:
   } {
     \prg_return_false:
   }
 }
+\BNVS_new_conditional_vc:cn { if_append_L } { T, F, TF }
+
+\BNVS_new_conditional:cpnn { if_resolve_first:nc } #1 #2 { T, F, TF } {
+  \exp_args:Nx \__bnvs_if_resolve_V:ncTF {
+      \__bnvs_tl_use:c { QF_name }.first
+  } { #2 } { \prg_return_true: } {
+    \__bnvs_if_resolve_A:ncTF { #1 } { #2 } { \prg_return_true: } {
+      \exp_args:Nx \__bnvs_if_resolve_v:ncTF {
+        \__bnvs_tl_use:c { QF_name }.1
+      } { #2 } { \prg_return_true: } { \prg_return_false: }
+  }
+  }
+}
+\BNVS_new_conditional_vc:cn { if_resolve_first } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_first:nc } #1 #2 { T, F, TF } {
+  \__bnvs_if_append_A:ncTF { #1 } { #2 } { \prg_return_true: } {
+    \exp_args:Nx \__bnvs_if_append_v:ncTF {
+      \BNVS_tl_use:c { QF_name }.1
+    } { #2 } { \prg_return_true: } { \prg_return_false: }
+  }
+}
+\BNVS_new_conditional_vc:cn { if_append_first } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_last:nc } #1 #2 { T, F, TF } {
+  \__bnvs_if_resolve_Z:ncTF { #1 } { #2 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional_vc:cn { if_resolve_last } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_last:nc } #1 #2 { T, F, TF } {
+  \__bnvs_if_append_Z:ncTF { #1 } { #2 }
+    { \prg_return_true: } {\prg_return_false: }
+}
+\BNVS_new_conditional_vc:cn { if_append_last } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_length:nc } #1 #2 { T, F, TF } {
+  \__bnvs_if_resolve_L:ncTF { #1 } { #2 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional_vc:cn { if_resolve_length } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_length:nc } #1 #2 { T, F, TF } {
+  \__bnvs_if_append_L:ncTF { #1 } { #2 }
+    { \prg_return_true: } {\prg_return_false: }
+}
 \BNVS_new_conditional_vc:cn { if_append_length } { T, F, TF }
 \BNVS_new_conditional:cpnn { if_append_range:nc } #1 #2 { T, F, TF } {
   \BNVS_begin:
-  \__bnvs_if_resolve_first:ncTF { #1 } { a } {
+  \__bnvs_if_resolve_A:ncTF { #1 } { a } {
     \BNVS_tl_use:Nv \int_compare:nNnT { a } < 0 {
       \__bnvs_tl_set:cn { a } { 0 }
     }
-    \__bnvs_if_resolve_last:ncTF { #1 } { b } {
+    \__bnvs_if_resolve_Z:ncTF { #1 } { b } {
       \BNVS_tl_use:Nv \int_compare:nNnT { b } < 0 {
         \__bnvs_tl_set:cn { b } { 0 }
       }
@@ -2143,7 +2169,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
       \prg_return_true:
     }
   } {
-    \__bnvs_if_resolve_last:ncTF { #1 } { b } {
+    \__bnvs_if_resolve_Z:ncTF { #1 } { b } {
       \BNVS_tl_use:Nv \int_compare:nNnT { b } < 0 {
         \__bnvs_tl_set:cn { b } { 0 }
       }
@@ -2176,13 +2202,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 \BNVS_new_conditional_vc:cn { if_resolve_range } { T, F, TF }
 \BNVS_new_conditional:cpnn { if_resolve_previous:nc } #1 #2 { T, F, TF } {
-  \__bnvs_cache_if_get:nncTF P { #1 } { #2 } {
+  \__bnvs_c_if_get:nncTF P { #1 } { #2 } {
     \prg_return_true:
   } {
-    \__bnvs_if_resolve_first:ncTF { #1 } { #2 } {
+    \__bnvs_if_resolve_A:ncTF { #1 } { #2 } {
       \__bnvs_tl_put_right:cn { #2 } { -1 }
       \__bnvs_round:c { #2 }
-      \__bnvs_cache_gput:nnv P { #1 } { #2 }
+      \__bnvs_c_gput:nnv P { #1 } { #2 }
       \prg_return_true:
     } {
       \prg_return_false:
@@ -2202,13 +2228,13 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 \BNVS_new_conditional_vc:cn { if_append_previous } { T, F, TF }
 \BNVS_new_conditional:cpnn { if_resolve_next:nc } #1 #2 { T, F, TF } {
-  \__bnvs_cache_if_get:nncTF N { #1 } { #2 } {
+  \__bnvs_c_if_get:nncTF N { #1 } { #2 } {
     \prg_return_true:
   } {
-    \__bnvs_if_resolve_last:ncTF { #1 } { #2 } {
+    \__bnvs_if_resolve_Z:ncTF { #1 } { #2 } {
       \__bnvs_tl_put_right:cn { #2 } { +1 }
       \__bnvs_round:c { #2 }
-      \__bnvs_cache_gput:nnv N { #1 } { #2 }
+      \__bnvs_c_gput:nnv N { #1 } { #2 }
       \prg_return_true:
     } {
       \prg_return_false:
@@ -2241,11 +2267,11 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
       \__bnvs_v_gput:nv { #1 } { #2 }
       \prg_return_true:
     } {
-      \__bnvs_if_resolve_first:ncTF { #1 } { #2 } {
+      \__bnvs_if_resolve_A:ncTF { #1 } { #2 } {
         \__bnvs_v_gput:nv { #1 } { #2 }
         \prg_return_true:
       } {
-        \__bnvs_if_resolve_last:ncTF { #1 } { #2 } {
+        \__bnvs_if_resolve_Z:ncTF { #1 } { #2 } {
         \__bnvs_v_gput:nv { #1 } { #2 }
           \prg_return_true:
         } {
@@ -2295,7 +2321,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
       \__bnvs_round:c { #3 }
       \prg_return_true:
     } {
-      \__bnvs_if_resolve_last:ncTF { #1 } { #3 } {
+      \__bnvs_if_resolve_Z:ncTF { #1 } { #3 } {
         \__bnvs_tl_put_right:cn { #3 } { + #2 - 1 }
         \__bnvs_round:c { #3 }
         \prg_return_true:
@@ -2305,10 +2331,16 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
           \__bnvs_round:c { #3 }
           \prg_return_true:
         } {
-        \prg_return_false:
+          \__bnvs_if_resolve_v:ncTF { #1 } { #3 } {
+            \__bnvs_tl_put_right:cn { #3 } { + #2 - 1 }
+            \__bnvs_round:c { #3 }
+            \prg_return_true:
+          } {
+            \prg_return_false:
+          }
         }
       }
-  }
+    }
   }
 }
 \BNVS_new_conditional:cpnn { if_resolve_index:nvc } #1 #2 #3 { T, F, TF } {
@@ -2348,12 +2380,35 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
+\BNVS_new:cpn { n_assign:nn } #1 #2 {
+  \__bnvs_if_get:nncF V { #1 } { a } {
+    \BNVS_warning:n { Unknwown~ #1,~defaults~to~0 }
+    \__bnvs_gput:nnn V { #1 } {0 }
+  }
+  \__bnvs_if_resolve:ncTF { #2 } { a } {
+    \__bnvs_n_gput:nv { #1 } { a }
+  } {
+    \__bnvs_error:n { NO~resolution~of~#2,~defaults~to~0 }
+    \__bnvs_n_gput:nn { #1 } { 0 }
+  }
+}
+\BNVS_new:cpn { n_assign:vv } #1 {
+  \BNVS_tl_use:nv {
+    \BNVS_tl_use:cv { n_assign:nn } { #1 }
+  }
+}
 \BNVS_new_conditional:cpnn { if_resolve_n:nc } #1 #2 { T, F, TF } {
-  \__bnvs_n_if_get:ncF { #1 } { #2 } {
+  \__bnvs_n_if_get:ncTF { #1 } { #2 } {
+    \__bnvs_if_resolve:vcTF { #2 } { #2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  } {
     \__bnvs_tl_set:cn { #2 } { 1 }
     \__bnvs_n_gput:nn { #1 } { 1 }
+    \prg_return_true:
   }
-  \prg_return_true:
 }
 \BNVS_new_conditional:cpnn { if_append_n:nc } #1 #2 { T, F, TF } {
   \BNVS_begin:
@@ -2366,37 +2421,15 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
   }
 }
 \BNVS_new_conditional_vc:cn { if_append_n } { T, F, TF }
-
-\BNVS_new_conditional:cpnn { if_resolve_n_index:nc } #1 #2 { T, F, TF } {
-  \__bnvs_if_resolve_n:ncTF { #1 } { #2 } {
-    \__bnvs_if_resolve_index:nvcTF { #1 } { #2 } { #2 } {
-      \prg_return_true:
-    } {
-      \prg_return_false:
-    }
-  } {
-    \prg_return_false:
-  }
-}
 \BNVS_new_conditional:cpnn { if_resolve_n_index:nnc } #1 #2 #3 { T, F, TF } {
   \__bnvs_if_resolve_n:ncTF { #1 } { #3 } {
-    \__bnvs_tl_put_left:cn { #3 } { #2. }
+    \__bnvs_tl_put_left:cn { #3 } { #1. }
     \__bnvs_if_resolve:vcTF { #3 } { #3 } {
       \prg_return_true:
     } {
       \prg_return_false:
     }
   } {
-    \prg_return_false:
-  }
-}
-\BNVS_new_conditional:cpnn { if_append_n_index:nc } #1 #2 { T, F, TF } {
-  \BNVS_begin:
-  \__bnvs_if_resolve_n_index:ncTF { #1 } { #2 } {
-    \BNVS_end_tl_put_right:cv { #2 } { #2 }
-    \prg_return_true:
-  } {
-    \BNVS_end:
     \prg_return_false:
   }
 }
@@ -2410,7 +2443,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new_conditional_vc:cn { if_append_n_index } { T, F, TF }
 \BNVS_new_conditional_vvc:cn { if_append_n_index } { T, F, TF }
 \BNVS_new_conditional:cpnn { if_resolve_v_incr:nnc } #1 #2 #3 { T, F, TF } {
   \__bnvs_if_resolve:ncTF { #2 } { #3 } {
@@ -2475,12 +2507,12 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
     \BNVS_end_tl_put_right:cv { #3 } { #3 }
     \prg_return_true:
   } {
-    \prg_return_true:
+    \prg_return_false:
   }
 }
 \BNVS_new_conditional_vnc:cn { if_append_v_post } { T, F, TF }
 \BNVS_new_conditional_vvc:cn { if_append_v_post } { T, F, TF }
-\BNVS_new_conditional:cpnn { if_resolve_n_incr:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_resolve_n_incr:nnnc } #1 #2 #3 #4 { T, TF } {
   \__bnvs_if_resolve:ncTF { #3 } { #4 } {
     \BNVS_tl_use:Nv \int_compare:nNnTF { #4 } = 0 {
       \__bnvs_if_resolve_n:ncTF { #1 } { #4 } {
@@ -2512,7 +2544,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 \BNVS_new_conditional:cpnn { if_resolve_n_incr:nnc } #1 #2 #3 { T, F, TF } {
   \__bnvs_if_resolve:ncTF { #2 } { #3 } {
-      \BNVS_tl_use:Nv \int_compare:nNnTF { #3 } = 0 {
+    \BNVS_tl_use:Nv \int_compare:nNnTF { #3 } = 0 {
       \__bnvs_if_resolve_n:ncTF { #1 } { #3 } {
         \__bnvs_if_resolve_index:nvcTF { #1 } { #3 } { #3 } {
           \prg_return_true:
@@ -2543,7 +2575,8 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 \BNVS_new_conditional_vnc:cn { if_resolve_n_incr } { T, F, TF }
 \BNVS_new_conditional_vvc:cn { if_resolve_n_incr } { T, F, TF }
 \BNVS_new_conditional_vvnc:cn { if_resolve_n_incr } { T, F, TF }
-\BNVS_new_conditional:cpnn { if_append_n_incr:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_new_conditional:cpnn
+  { if_append_n_incr:nnnc } #1 #2 #3 #4 { T, F, TF } {
   \BNVS_begin:
   \__bnvs_if_resolve_n_incr:nnncTF { #1 } { #2 } { #3 } { #4 } {
     \BNVS_end_tl_put_right:cv { #4 } { #4 }
@@ -2614,146 +2647,81 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
 }
 \BNVS_new_conditional_vnc:cn { if_append_n_post } { T, F, TF }
 \BNVS_new_conditional_vvc:cn { if_append_n_post } { T, F, TF }
-\BNVS_set:cpn { round_ans: } {
-  \__bnvs_round:c { ans }
-}
-\BNVS_new:cpn { if_resolve_path_n:TFF } #1 #2 {
-  \__bnvs_if_resolve_Fip_n_path:TF {
-    \__bnvs_seq_if_empty:cTF { path } { #1 } { #2 }
-  }
-}
-\BNVS_new:cpn { if_resolve_path:TFF } #1 #2 {
-  \__bnvs_if_resolve_Fip_path:TF {
-    \__bnvs_seq_if_empty:cTF { path } { #1 } { #2 }
-  }
-}
-\BNVS_new:cpn { if_resolve_end_return_false:n } #1 {
-  \BNVS_end:
-  \prg_return_false:
-}
-\BNVS_new:cpn { if_resolve_path_n_end_return_false_or:T } #1 {
-  \__bnvs_if_resolve_path_n:TFF {
-    #1
-  } {
-    \__bnvs_if_resolve_end_return_false:n {
-      Too~many~dotted~components
-    }
-  } {
-    \__bnvs_if_resolve_end_return_false:n {
-      Unknown~dotted~path
-    }
-  }
-}
-\BNVS_set:cpn { resolve_x:T } #1 {
-  \__bnvs_if_resolve_Fip_x_path:TFF {
-    #1
-  } {
-    \__bnvs_if_resolve_end_return_false:n {
-      Too~many~dotted~components
-    }
-  } {
-    \__bnvs_if_resolve_end_return_false:n {
-      Unknown~dotted~path
-    }
-  }
-}
-\BNVS_new_conditional:cpnn { if_path_pop_right_n:c } #1 { T, F, TF } {
-  \__bnvs_seq_pop_right:ccTF { path } { #1 }
-    { \prg_return_true: } { \prg_return_false: }
-}
-\BNVS_new:cpn { if_resolve_pop_Fip:TTF } #1 #2 #3 {
-  \__bnvs_split_if_pop_left:cTF { FQ_name } {
+\BNVS_new:cpn { split_pop_Qip:TFF } #1 #2 #3 {
+  \__bnvs_split_if_pop_left:cTF { Q_name } {
     \__bnvs_split_if_pop_left:cTF { id } {
       \__bnvs_split_if_pop_left:cTF { path } {
-        \__bnvs_tl_if_blank:vTF { FQ_name } {
-          #1
+        \__bnvs_tl_if_blank:vTF { Q_name } {
+          #2
         } {
+          \BNVS_tl_use:nv {
+            \regex_match:NnT \c__bnvs_A_reserved_Z_regex
+          } { Q_name } {
+            \__bnvs_tl_if_eq:cnF { Q_name } { pauses } {
+              \__bnvs_tl_if_eq:cnF { Q_name } { slideinframe } {
+\BNVS_error:x { Use~of~reserved~``\BNVS_tl_use:c { Q_name }'' }
+              }
+            }
+          }
           \__bnvs_tl_if_blank:vTF { id } {
-            \__bnvs_tl_put_left:cv { FQ_name } { id_last }
+            \__bnvs_tl_put_left:cv { Q_name } { id_last }
             \__bnvs_tl_set:cv { id } { id_last }
           } {
             \__bnvs_tl_set:cv { id_last } { id }
           }
-          \__bnvs_tl_if_blank:vTF { path } {
-            \__bnvs_seq_clear:c { path }
-          } {
-            \__bnvs_seq_set_split:cnv { path } { . } { path }
-            \__bnvs_seq_remove_all:cn { path } { }
-          }
-          \__bnvs_tl_set_eq:cc { FQ_name_base } { FQ_name }
-          \__bnvs_seq_set_eq:cc { path_base } { path }
-          #2
+          \__bnvs_seq_set_split:cnv { path } { . } { path }
+          #1
         }
       } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_Fip:TTF/2 }
+\__bnvs_end_unreachable_return_false:n { split_pop_Qip:TFF/2 }
       }
     } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_Fip:TTF/1 }
+\__bnvs_end_unreachable_return_false:n { split_pop_Qip:TFF/1 }
     }
   } { #3 }
 }
-\BNVS_new:cpn { if_resolve_return_or_pop_complete_white:T } #1 {
-  \__bnvs_split_if_pop_left:cTF { n_incr } {
-    \__bnvs_split_if_pop_left:cTF { plus } {
-      \__bnvs_split_if_pop_left:cTF { rhs } {
-        \__bnvs_split_if_pop_left:cTF { post } {
-          #1
-        } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_return_or_pop_complete_white:T/4 }
-        }
-      } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_return_or_pop_complete_white:T/3 }
-      }
-    } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_return_or_pop_complete_white:T/2 }
+\BNVS_new:cpn { split_end_return_or_pop_complete:T } #1 {
+  \cs_set:Npn \BNVS:n ##1 {
+    \__bnvs_end_unreachable_return_false:n {
+      split_end_return_or_pop_complete: ##1
     }
-  } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_return_or_pop_complete_white:T/1 }
+  }
+  \__bnvs_split_if_pop_left_or:cT { n_incr } {
+    \__bnvs_split_if_pop_left_or:cT { plus } {
+      \__bnvs_split_if_pop_left_or:cT { rhs } {
+        \__bnvs_split_if_pop_left_or:cT { post } {
+          #1
+        }
+      }
+    }
   }
 }
-\BNVS_new:cpn { if_resolve_pop_complete_black:T } #1 {
-  \__bnvs_split_if_pop_left:cTF { a } {
-    \__bnvs_split_if_pop_left:cTF { a } {
-      \__bnvs_split_if_pop_left:cTF { a } {
-        \__bnvs_split_if_pop_left:cTF { a } {
-          \__bnvs_split_if_pop_left:cTF { a } {
-            \__bnvs_split_if_pop_left:cTF { a } {
-              \__bnvs_split_if_pop_left:cTF { a } {
-                #1
-              } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/7 }
-              }
-            } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/6 }
-            }
-          } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/5 }
-          }
-        } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/4 }
-        }
-      } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/3 }
-      }
-    } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/2 }
+\BNVS_new:cpn { split_end_return_or_pop_void:T } #1 {
+  \cs_set:Npn \BNVS:n ##1 {
+    \__bnvs_end_unreachable_return_false:n {
+      split_end_return_or_pop_void: ##1
     }
-  } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_pop_complete_black:T/1 }
   }
+  \__bnvs_split_if_pop_left:cTn { a } {
+    \__bnvs_split_if_pop_left:cTn { a } {
+      \__bnvs_split_if_pop_left:cTn { a } {
+        \__bnvs_split_if_pop_left:cTn { a } {
+          \__bnvs_split_if_pop_left:cTn { a } {
+            \__bnvs_split_if_pop_left:cTn { a } {
+              \__bnvs_split_if_pop_left:cTn { a } {
+                #1
+              } { T/7 }
+            } { T/6 }
+          } { T/5 }
+        } { T/4 }
+      } { T/3 }
+    } { T/2 }
+  } { T/1 }
 }
 \BNVS_int_new:c { split }
-\BNVS_new:cpn { if_resolve_Fip_x_path_or_end_return_false:nT } #1 #2 {
-  \__bnvs_if_resolve_Fip_x_path:TFF {
-    #2
-  } {
-    \BNVS_end_return_false:x { Too~many~dotted~components:~#1 }
-  } {
-    \BNVS_end_return_false:x { Unknown~dotted~path:~#1 }
-  }
-}
-\BNVS_new_conditional:cpnn { if_append:nc } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_append:nc } #1 #2 { TF } {
   \BNVS_begin:
+
   \__bnvs_if_resolve:ncTF { #1 } { #2 } {
     \BNVS_end_tl_put_right:cv { #2 } { #2 }
     \prg_return_true:
@@ -2762,32 +2730,27 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
+\BNVS_new_conditional_vc:cn { if_append } { T, F, TF }
 \BNVS_new:cpn { end_unreachable_return_false:n } #1 {
   \BNVS_error:x { UNREACHABLE/#1 }
   \BNVS_end:
   \prg_return_false:
 }
-\BNVS_new_conditional:cpnn { if_resolve:nc } #1 #2 { T, F, TF } {
+\BNVS_new_conditional:cpnn { if_resolve:nc } #1 #2 { TF } {
   \__bnvs_if_call:TF {
     \BNVS_begin:
-    \BNVS_set:cpn { if_resolve_warning:n } ##1 {
-      \__bnvs_warning:n { #1:~##1 }
-      \BNVS_set:cpn { if_resolve_warning:n } {
-        \use_none:n
-      }
-    }
   \__bnvs_if_regex_split:cnTF { split } { #1 } {
       \BNVS_set:cpn { if_resolve_end_return_true: } {
         \__bnvs_if_resolve_round_ans:
         \BNVS_end_tl_set:cv { #2 } { ans }
         \prg_return_true:
       }
-      \BNVS_set:cpn { if_resolve_round_ans: } { \__bnvs_round_ans: }
+      \BNVS_set:cpn { if_resolve_round_ans: } { \__bnvs_round:c { ans } }
       \__bnvs_tl_clear:c { ans }
-      \__bnvs_if_resolve_loop_or_end_return:
+      \__bnvs_split_loop_or_end_return:
     } {
-      \__bnvs_tl_clear:c { ans }
-      \__bnvs_round_ans:n { #1 }
+      \__bnvs_tl_set:cn { ans } { #1 }
+      \__bnvs_round:c { ans }
       \BNVS_end_tl_set:cv { #2 } { ans }
       \prg_return_true:
     }
@@ -2796,102 +2759,186 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
     \prg_return_false:
   }
 }
-\BNVS_new_conditional:cpnn { if_append:vc } #1 #2 { T, F, TF } {
-  \BNVS_tl_use:Nv \__bnvs_if_append:ncTF { #1 } { #2 } {
+\BNVS_new_conditional_vc:cn { if_resolve } { T, F, TF }
+\BNVS_new:cpn { build_QF_name: } {
+  \__bnvs_tl_set_eq:cc { QF_name } { Q_name }
+  \__bnvs_seq_map_inline:cn { path } {
+    \__bnvs_tl_put_right:cn { QF_name } { . ##1 }
+  }
+}
+\BNVS_new:cpn { build_QF_name_head: } {
+  \__bnvs_tl_set_eq:cc { QF_name } { Q_name }
+  \__bnvs_seq_map_inline:cn { path_head } {
+    \__bnvs_tl_put_right:cn { QF_name } { . ##1 }
+  }
+}
+\clist_map_inline:nn {
+  n, reset, reset_all, v, first, last, length,
+  previous, next, range, assign, only
+} {
+  \bool_new:c { l__bnvs_#1_bool }
+}
+\BNVS_new_conditional:cpnn { if:c } #1 { p, T, F, TF } {
+  \bool_if:cTF { l__bnvs_#1_bool } {
     \prg_return_true:
   } {
     \prg_return_false:
   }
 }
-\BNVS_new_conditional:cpnn { if_resolve:vc } #1 #2 { T, F, TF } {
-  \BNVS_tl_use:Nv \__bnvs_if_resolve:ncTF { #1 } { #2 } {
+\BNVS_new_conditional:cpnn { bool_if_exist:c } #1 { p, T, F, TF } {
+  \bool_if_exist:cTF { l__bnvs_#1_bool } {
     \prg_return_true:
   } {
     \prg_return_false:
   }
 }
-\BNVS_new:cpn { if_resolve_loop_or_end_return: } {
+\BNVS_new:cpn { prepare_context:N } #1 {
+  \clist_map_inline:nn {
+    n, v, reset, reset_all, first, last, length,
+    previous, next, range, assign, only
+  } {
+    \__bnvs_set_false:c { ##1 }
+  }
+  \__bnvs_seq_clear:c { path_head }
+  \__bnvs_seq_clear:c { path_tail }
+  \__bnvs_tl_clear:c { index }
+  \__bnvs_tl_clear:c { suffix }
+  \BNVS_set:cpn { :n } ##1 {
+    \tl_if_blank:nF { ##1 } {
+      \__bnvs_tl_if_empty:cF { index } {
+         \__bnvs_seq_put_right:cv { path_head } { index }
+        \__bnvs_tl_clear:c { index }
+      }
+      \__bnvs_seq_put_right:cn { path_head } { ##1 }
+    }
+  }
+  \__bnvs_seq_map_inline:cn { path } {
+    \__bnvs_bool_if_exist:cTF { ##1 } {
+      \__bnvs_set_true:c { ##1 }
+      \clist_if_in:nnF { n, v, reset, reset_all } { ##1 } {
+        \bool_if:NT #1 {
+          \BNVS_error:n {Unexpected~##1~in~assignment }
+        }
+        \__bnvs_tl_set:cn { suffix } { ##1 }
+      }
+      \BNVS_set:cpn { :n } ####1 {
+        \tl_if_blank:nF { ####1 } {
+          \BNVS_error:n {Unexpected~####1 }
+        }
+      }
+    } {
+      \regex_match:NnTF \c__bnvs_A_index_Z_regex { ##1 } {
+        \__bnvs_tl_if_empty:cF { index } {
+         \__bnvs_seq_put_right:cv { path_head } { index }
+        }
+        \__bnvs_tl_set:cn { index } { ##1 }
+      } {
+        \regex_match:NnTF \c__bnvs_A_reserved_Z_regex { ##1 } {
+          \BNVS_error:n { Unsupported~##1 }
+        } {
+          \__bnvs_:n { ##1 }
+        }
+      }
+    }
+  }
+  \__bnvs_seq_set_eq:cc { path } { path_head }
+}
+\BNVS_new:cpn { split_loop_or_end_return: } {
   \__bnvs_split_if_pop_left:cTF { a } {
     \__bnvs_tl_put_right:cv { ans } { a }
-    \__bnvs_if_resolve_pop_Fip:TTF {
-      \__bnvs_if_resolve_pop_Fip:TTF {
-\__bnvs_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/3 }
-      } {
-        \__bnvs_if_resolve_return_or_pop_complete_white:T {
+    \__bnvs_split_pop_Qip:TFF {
+      \__bnvs_split_end_return_or_pop_void:T {
+        \__bnvs_prepare_context:N \c_true_bool
+        \__bnvs_build_QF_name:
+        \__bnvs_split_loop_or_end_return_iadd:n { 1 }
+      }
+    } {
+      \__bnvs_split_pop_Qip:TFF {
+        \__bnvs_split_end_return_or_pop_complete:T {
           \__bnvs_tl_if_blank:vTF { n_incr } {
             \__bnvs_tl_if_blank:vTF { plus } {
               \__bnvs_tl_if_blank:vTF { rhs } {
                 \__bnvs_tl_if_blank:vTF { post } {
-                  \__bnvs_if_resolve_V_loop_or_end_return_true:F {
-                    \__bnvs_seq_pop_right:ccTF { path } { a } {
-                      \BNVS_tl_use:Nv \str_case:nnF { a } {
-{ n         } { \BNVS_use:c { if_resolve_loop_or_end_return[...n]: } }
-{ length    } { \BNVS_use:c { if_resolve_loop_or_end_return[.length]: } }
-{ last      } { \BNVS_use:c { if_resolve_loop_or_end_return[.last]:  } }
-{ range     } { \BNVS_use:c { if_resolve_loop_or_end_return[.range]: } }
-{ previous  } { \BNVS_use:c { if_resolve_loop_or_end_return[.previous]: } }
-{ next      } { \BNVS_use:c { if_resolve_loop_or_end_return[.next]:  } }
-{ reset     } { \BNVS_use:c { if_resolve_loop_or_end_return[.reset]: } }
-{ reset_all } { \BNVS_use:c { if_resolve_loop_or_end_return[.reset_all]: } }
-                      } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...<integer>]: }
-                      }
+                  \__bnvs_prepare_context:N \c_false_bool
+                  \__bnvs_build_QF_name:
+                  \__bnvs_tl_if_empty:cTF { index } {
+                    \__bnvs_tl_if_empty:cTF { suffix } {
+                      \__bnvs_split_loop_or_end_return_v:
                     } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...]: }
+                      \__bnvs_split_loop_or_end_return_suffix:
                     }
+                  } {
+                    \__bnvs_split_loop_or_end_return_index:
                   }
                 } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...++]: }
+                  \__bnvs_prepare_context:N \c_true_bool
+                  \__bnvs_build_QF_name:
+                  \BNVS_use:c { split_loop_or_end_return[...++]: }
                 }
               } {
-                \__bnvs_if_path_suffix:nTF { n } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...n=...]: }
-                } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...=...]: }
-                }
+                \__bnvs_prepare_context:N \c_true_bool
+                \__bnvs_build_QF_name:
+                \__bnvs_split_loop_or_end_return_assign:
               }
             } {
-              \__bnvs_if_path_suffix:nTF { n } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...n+=...]: }
+              \__bnvs_if_resolve:vcTF { rhs } { rhs } {
+                \__bnvs_prepare_context:N \c_true_bool
+                \__bnvs_build_QF_name:
+                \BNVS_tl_use:Nv
+                  \__bnvs_split_loop_or_end_return_iadd:n { rhs }
               } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...+=...]: }
+                \BNVS_error_ans:x { Error~in~\BNVS_tl_use:c { rhs }}
+                \__bnvs_split_loop_or_end_return:
               }
             }
           } {
-\BNVS_use:c { if_resolve_loop_or_end_return[...++n]: }
+            \__bnvs_prepare_context:N \c_true_bool
+            \__bnvs_build_QF_name:
+            \__bnvs_set_true:c { n }
+            \__bnvs_split_loop_or_end_return_iadd:n { 1 }
           }
         }
       } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/2 }
-      }
-    } {
-      \__bnvs_if_resolve_pop_complete_black:T {
-        \__bnvs_if_path_suffix:nTF { n } {
-\BNVS_use:c { if_resolve_loop_or_end_return[++...n]: }
-        } {
-\BNVS_use:c { if_resolve_loop_or_end_return[++...]: }
-        }
+\__bnvs_end_unreachable_return_false:n { split_loop_or_end_return:/3 }
+      } {
+\__bnvs_end_unreachable_return_false:n { split_loop_or_end_return:/2 }
       }
     } {
       \__bnvs_if_resolve_end_return_true:
     }
   } {
-\__bnvs_end_unreachable_return_false:n { if_resolve_loop_or_end_return:/1 }
+\__bnvs_end_unreachable_return_false:n { split_loop_or_end_return:/1 }
+  }
+}
+\BNVS_new_conditional:cpnn { if_suffix: } { T, F, TF } {
+  \__bnvs_tl_if_empty:cTF { suffix } {
+    \__bnvs_seq_pop_right:ccTF { path } { suffix } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  } {
+    \prg_return_true:
   }
 }
 \BNVS_set:cpn { if_resolve_V_loop_or_end_return_true:F } #1 {
-  \__bnvs_tl_set:cx { a } {
-    \BNVS_tl_use:c { FQ_name } \BNVS_tl_use:c { path }
-  }
-  \__bnvs_if_resolve_v:vcTF { a } { a } {
-    \__bnvs_tl_put_right:cv { ans } { a }
-    \__bnvs_if_resolve_loop_or_end_return:
+  \__bnvs_if:cTF { n } {
+    #1
   } {
-    \__bnvs_if_resolve_V:vcTF { a } { a } {
+    \__bnvs_build_QF_name:
+    \__bnvs_tl_set:cx { a } {
+      \BNVS_tl_use:c { QF_name } . \BNVS_tl_use:c { suffix }
+    }
+    \__bnvs_if_resolve_v:vcTF { a } { a } {
       \__bnvs_tl_put_right:cv { ans } { a }
-      \__bnvs_if_resolve_loop_or_end_return:
+      \__bnvs_split_loop_or_end_return:
     } {
-      #1
+      \__bnvs_if_resolve_V:vcTF { a } { a } {
+        \__bnvs_tl_put_right:cv { ans } { a }
+        \__bnvs_split_loop_or_end_return:
+      } {
+        #1
+      }
     }
   }
 }
@@ -2900,274 +2947,235 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
       \BNVS_end:
       \prg_return_false:
 }
-\BNVS_new:cpn { if_resolve_loop_or_end_return[...n]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_resolve_base_n:
-    \__bnvs_if_append_n_index:vvcTF { FQ_name } { FQ_name_base } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
+\BNVS_new:cpn { path_branch_loop_or_end_return: } {
+  \__bnvs_if_call:TF {
+    \__bnvs_if_path_branch:TF {
+      \__bnvs_path_branch_end_return:
     } {
-      \__bnvs_end_return_error:n {
-        Undefined~n~index
+      \__bnvs_if_get:nvcTF V { QF_name } { a } {
+        \__bnvs_if_Qip:cccTF { a } { id } { path } {
+          \__bnvs_tl_set_eq:cc { Q_name } { a }
+          \__bnvs_seq_merge:cc { path } { path_tail }
+          \__bnvs_seq_clear:c { path_tail }
+          \__bnvs_seq_set_eq:cc { path_head } { path }
+          \__bnvs_path_branch_QF_loop_or_end_return:
+        } {
+          \__bnvs_path_branch_head_to_tail_end_return:
+        }
+      } {
+        \__bnvs_path_branch_head_to_tail_end_return:
       }
+    }
+  } {
+    \__bnvs_path_branch_end_return_false:n {
+      Too~many~calls.
     }
   }
 }
-\BNVS_new_conditional:cpnn { if_path_suffix:n } #1 { T, F, TF } {
-  \__bnvs_seq_get_right:ccTF { path } { suffix } {
-    \__bnvs_tl_if_eq:cnTF { suffix } { #1 } {
-      \__bnvs_seq_pop_right:ccT { path } { suffix } { }
+\BNVS_new:cpn { path_branch_end_return: } {
+  \__bnvs_split_loop_or_end_return:
+}
+\BNVS_new:cpn { set_if_path_branch:n } {
+  \prg_set_conditional:Npnn \__bnvs_if_path_branch: { TF }
+}
+\BNVS_new:cpn { path_branch_head_to_tail_end_return: } {
+  \__bnvs_seq_pop_right:ccTF { path_head } { a } {
+    \__bnvs_seq_put_left:cv { path_tail } { a }
+    \__bnvs_build_QF_name_head:
+    \__bnvs_path_branch_QF_loop_or_end_return:
+  } {
+    \__bnvs_build_QF_name:
+    \__bnvs_seq_set_eq:cc { path_head } { path_tail }
+    \__bnvs_seq_clear:c { path_tail }
+    \__bnvs_gput:nvn V { QF_name } {0 }
+    \__bnvs_c_gput:nvn V { QF_name } {0 }
+    \BNVS_warning:x {
+      Unknown~\l__bnvs_QF_name_tl,~defaults~to~0
+    }
+    \__bnvs_path_branch_QF_loop_or_end_return:
+  }
+}
+\BNVS_new:cpn { path_branch_QF_loop_or_end_return: } {
+  \__bnvs_build_QF_name_head:
+  \__bnvs_if_resolve_v:vcTF { QF_name } { a } {
+    \__bnvs_tl_put_right:cv { ans } { a }
+    \__bnvs_split_loop_or_end_return:
+  } {
+    \__bnvs_if_resolve_V:vcTF { QF_name } { a } {
+      \__bnvs_tl_put_right:cv { ans } { a }
+      \__bnvs_split_loop_or_end_return:
+    } {
+      \__bnvs_path_branch_loop_or_end_return:
+    }
+  }
+}
+\BNVS_new:cpn { split_loop_or_end_return_index: } {
+  % known, id, QF_name, path, suffix
+  \__bnvs_set_if_path_branch:n {
+    \__bnvs_if_append_index:vvcTF { QF_name } { index } { ans } {
       \prg_return_true:
     } {
       \prg_return_false:
     }
-  } {
-    \__bnvs_tl_clear:c { suffix }
-    \prg_return_false:
+  }
+  \__bnvs_path_branch_loop_or_end_return:
+}
+\BNVS_new:cpn { split_loop_reset: } {
+  \__bnvs_if:cT { reset_all } {
+    \__bnvs_set_false:c { reset }
+    \__bnvs_if_greset_all:vnT { QF_name } { } { }
+  }
+  \__bnvs_if:cT { reset } {
+    \BNVS_use:c {
+      \__bnvs_if:cTF nnv _if_greset:vnT
+    } { QF_name } { } { }
   }
 }
-\BNVS_new:cpn { if_resolve_loop_or_end_return[.length]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_length:vcTF { FQ_name } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~length }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[.last]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_last:vcTF { FQ_name } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \BNVS_end_return_false:x { NO~last }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[.range]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_range:vcTF { FQ_name } { ans } {
-      \BNVS_set:cpn { if_resolve_round_ans: } { \prg_do_nothing: }
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~range }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[.previous]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_previous:vcTF { FQ_name } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~previous }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[.next]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_next:vcTF { FQ_name } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~next }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[.reset]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_v_if_greset:vnT { FQ_name } { } { }
-    \__bnvs_if_append_V:vcTF { FQ_name } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~reset }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[.reset_all]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_greset_all:vnT { FQ_name } { } { }
-    \__bnvs_if_append_V:vcTF { FQ_name } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~reset }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...<integer>]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_index:vvcTF { FQ_name } { a } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~integer }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_V:vcTF { FQ_name } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~value }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...++]: } {
-  \__bnvs_if_path_suffix:nTF { reset } {
-    \__bnvs_if_resolve_path_n_end_return_false_or:T {
-      \__bnvs_v_if_greset:vnT { FQ_name } { } { }
-      \__bnvs_if_append_v_post:vncTF { FQ_name } { 1 }  { ans } {
-        \__bnvs_if_resolve_loop_or_end_return:
+\BNVS_new:cpn { split_loop_or_end_return_v: } {
+  \__bnvs_split_loop_reset:
+  \__bnvs_if:cTF { n } {
+    \__bnvs_tl_set_eq:cc { QF_base } { QF_name }
+    \__bnvs_set_if_path_branch:n {
+      \BNVS_tl_use:Nv \__bnvs_if_resolve_n:ncTF { QF_name } { index } {
+        \__bnvs_if_append_index:vvcTF { QF_base } { index } { ans } {
+          \prg_return_true:
+        } {
+          \prg_return_false:
+        }
       } {
-        \__bnvs_if_resolve_end_return_false:n { NO~post }
+        \prg_return_false:
       }
     }
   } {
-    \__bnvs_if_path_suffix:nTF { reset_all } {
-      \__bnvs_if_resolve_path_n_end_return_false_or:T {
-        \__bnvs_if_greset_all:vnT { FQ_name } { } { }
-        \__bnvs_if_append_v_post:vncTF { FQ_name } { 1 }  { ans } {
-          \__bnvs_if_resolve_loop_or_end_return:
+    \__bnvs_set_if_path_branch:n {
+      \__bnvs_if_append_v:vcTF { QF_name } { ans } {
+        \prg_return_true:
+      } {
+        \__bnvs_if_append_V:vcTF { QF_name } { ans } {
+          \prg_return_true:
         } {
-          \__bnvs_if_resolve_end_return_false:n { NO~post }
+          \prg_return_false:
         }
       }
-    } {
-      \__bnvs_if_resolve_path_n_end_return_false_or:T {
-        \__bnvs_if_append_v_post:vncTF { FQ_name } { 1 }  { ans } {
-          \__bnvs_if_resolve_loop_or_end_return:
+    }
+  }
+  \__bnvs_path_branch_loop_or_end_return:
+}
+\BNVS_new:cpn { split_loop_or_end_return_suffix: } {
+  \__bnvs_if_resolve_V_loop_or_end_return_true:F {
+    \__bnvs_if:cTF { n } {
+      \__bnvs_tl_set_eq:cc { QF_base } { QF_name }
+      \__bnvs_set_if_path_branch:n {
+        \BNVS_tl_use:Nv \__bnvs_if_resolve_n:ncTF { QF_name } { index } {
+          \__bnvs_if_append_index:vvcTF { QF_base } { index } { ans } {
+            \prg_return_true:
+          } {
+            \prg_return_false:
+          }
         } {
-          \__bnvs_if_resolve_end_return_false:n { NO~post }
-        }
-      }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...n=...]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_resolve_base_n:
-    \__bnvs_if_assign_value:vvTF { FQ_name_base }  { rhs } {
-      \__bnvs_if_resolve_n_incr:vvncTF { FQ_name } { FQ_name_base } { 0 } { ans } {
-        \__bnvs_if_resolve_loop_or_end_return:
-      } {
-        \__bnvs_if_resolve_end_return_false:n {
-          NO~n~assignment
+          \prg_return_false:
         }
       }
     } {
-      \__bnvs_if_resolve_end_return_false:n {
-        NO~n~assignment
-      }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...n+=...]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_resolve_base_n:
-    \__bnvs_if_append_n_incr:vvvcTF { FQ_name } { FQ_name_base }  { rhs }  { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n {
-        NO~n~incrementation
-      }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...=...]: } {
-%%
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_assign_value:vvTF { FQ_name } { rhs } {
-      \__bnvs_if_resolve:vcTF { FQ_name } { ans } {
-        \__bnvs_if_resolve_loop_or_end_return:
-      } {
-        \__bnvs_if_resolve_end_return_false:n {
-          NO~assignment
+      \__bnvs_set_if_path_branch:n {
+        \BNVS_use:c {
+          if_append_ \__bnvs_tl_use:c { suffix } :vcTF
+        } { QF_name } { ans } {
+          \__bnvs_if:cT { range } {
+            \BNVS_set:cpn { if_resolve_round_ans: } { }
+          }
+          \prg_return_true:
+        } {
+          \prg_return_false:
         }
       }
-    } {
-      \__bnvs_if_resolve_end_return_false:n {
-        NO~assignment
+    }
+    \__bnvs_path_branch_loop_or_end_return:
+  }
+}
+\BNVS_new:cpn { split_loop_or_end_return[...++]: } {
+  \__bnvs_if:cTF { n } {
+    \__bnvs_if:cTF { reset } {
+      \cs_set:Npn \BNVS: {
+        \BNVS_error_ans:x { NO~....reset.n++~for~\BNVS_tl_use:c { QF_name } }
       }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[...+=...]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_if_append_v_incr:vvcTF { FQ_name } { rhs } { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
     } {
-      \__bnvs_if_resolve_end_return_false:n {
-        NO~incremented~value
-      }
-    }
-  }
-}
-\BNVS_new:cpn { resolve_base: } {
-  \__bnvs_seq_if_empty:cF { path_base } {
-    \__bnvs_tl_put_right:cx { FQ_name_base } {
-      . \__bnvs_seq_use:cn { path_base } { . }
-    }
-  }
-}
-\BNVS_new:cpn { resolve_base_n: } {
-  \__bnvs_seq_if_empty:cF { path_base } {
-    \__bnvs_seq_pop_right:cc { path_base } { a }
-    \__bnvs_seq_if_empty:cF { path_base } {
-      \__bnvs_tl_put_right:cx { FQ_name_base } {
-        . \__bnvs_seq_use:cn { path_base } { . }
-      }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[...++n]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_resolve_base:
-    \__bnvs_if_append_n_incr:vvncTF { FQ_name } { FQ_name_base } { 1 }  { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO/...++n }
-    }
-  }
-}
-\BNVS_set:cpn { if_resolve_loop_or_end_return[++...n]: } {
-  \__bnvs_if_resolve_path_n_end_return_false_or:T {
-    \__bnvs_resolve_base_n:
-    \__bnvs_if_append_n_incr:vvncTF { FQ_name } { FQ_name_base } { 1 }  { ans } {
-      \__bnvs_if_resolve_loop_or_end_return:
-    } {
-      \__bnvs_if_resolve_end_return_false:n { NO~++...n }
-    }
-  }
-}
-\BNVS_new:cpn { if_resolve_loop_or_end_return[++...]: } {
-  \__bnvs_if_path_suffix:nTF { reset } {
-    \__bnvs_if_resolve_path_n_end_return_false_or:T {
-      \__bnvs_if_append_v_incr:vncTF { FQ_name } { 1 } { ans } {
-        \__bnvs_v_if_greset:vnT { FQ_name } { } { }
-        \__bnvs_if_resolve_loop_or_end_return:
+      \__bnvs_if:cTF { reset_all } {
+        \cs_set:Npn \BNVS: {
+          \BNVS_error_ans:x {
+            NO~....reset_all.n++~for~\BNVS_tl_use:c { QF_name }
+          }
+        }
       } {
-        \__bnvs_v_if_greset:vnT { FQ_name } { } { }
-        \__bnvs_if_resolve_end_return_false:n { No~increment }
+        \cs_set:Npn \BNVS: {
+          \BNVS_error_ans:x { NO~....n++~for~\BNVS_tl_use:c { QF_name } }
+        }
       }
     }
   } {
-    \__bnvs_if_path_suffix:nTF { reset_all } {
-      \__bnvs_if_resolve_path_n_end_return_false_or:T {
-        \__bnvs_if_append_v_incr:vncTF { FQ_name } { 1 } { ans } {
-          \__bnvs_if_greset_all:vnT { FQ_name } { } { }
-          \__bnvs_if_resolve_loop_or_end_return:
-        } {
-          \__bnvs_if_greset_all:vnT { FQ_name } { } { }
-          \__bnvs_if_resolve_end_return_false:n { No~increment }
-        }
+    \__bnvs_if:cTF { reset } {
+      \cs_set:Npn \BNVS: {
+        \BNVS_error_ans:x { NO~....reset++~for~\BNVS_tl_use:c { QF_name } }
       }
     } {
-      \__bnvs_if_resolve_path_n_end_return_false_or:T {
-        \__bnvs_if_append_v_incr:vncTF { FQ_name } { 1 } { ans } {
-          \__bnvs_if_resolve_loop_or_end_return:
-        } {
-          \__bnvs_if_resolve_end_return_false:n { No~increment }
+      \__bnvs_if:cTF { n } {
+        \cs_set:Npn \BNVS: {
+          \BNVS_error_ans:x {
+            NO~....n(.reset_all)++~for~\BNVS_tl_use:c { QF_name }
+          }
+        }
+      } {
+        \cs_set:Npn \BNVS: {
+          \BNVS_error_ans:x {
+            NO~...(.reset_all)++~for~\BNVS_tl_use:c { QF_name }
+          }
         }
       }
     }
   }
+  \__bnvs_build_QF_name:
+  \__bnvs_split_loop_reset:
+  \BNVS_use:c {
+    if_append_\__bnvs_if:cTF nnv _post:vncTF
+  } { QF_name } { 1 } { ans } {
+  } {
+    \BNVS_error_ans:x { Problem~with~\BNVS_tl_use:c { QF_name }~use. }
+  }
+  \__bnvs_split_loop_or_end_return:
+}
+\BNVS_new:cpn { split_loop_or_end_return_assign: } {
+  \__bnvs_if_resolve:vcTF { rhs } { rhs } {
+    \__bnvs_if:cTF n {
+      \__bnvs_n_gput:vv { QF_name } { rhs }
+      \__bnvs_if_append_index:vvcTF { QF_name } { rhs } { ans } {
+      } {
+        \BNVS_error_ans:x { No~....n=... }
+      }
+    } {
+      \__bnvs_v_gput:vv { QF_name } { rhs }
+      \__bnvs_if_append_v:vcTF { QF_name } { ans } {
+      } {
+        \BNVS_error_ans:x { No~...=... }
+      }
+    }
+  } {
+    \BNVS_error_ans:x { Error~in~\__bnvs_tl_use:c { rhs }. }
+  }
+  \__bnvs_split_loop_or_end_return:
+}
+\BNVS_new:cpn { split_loop_or_end_return_iadd:n } #1 {
+  \__bnvs_if_resolve:ncTF { #1 } { rhs } {
+    \__bnvs_split_loop_reset:
+    \BNVS_use:c {
+      if_append_ \__bnvs_if:cTF nnv _incr:vncTF
+    } { QF_name } { #1 } { ans } {
+    } {
+      \BNVS_error_ans:x { No~...+=... }
+    }
+  } {
+    \BNVS_error_ans:x { Error~in~\BNVS_tl_use:c { rhs } }
+  }
+  \__bnvs_split_loop_or_end_return:
 }
 \regex_const:Nn \c__bnvs_A_cln_Z_regex {
   \A \s* (?:
@@ -3178,7 +3186,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
   )
   \s* \Z
 }
-\BNVS_set:cpn { resolve_query_end_return_true: } {
+\BNVS_new:cpn { resolve_query_end_return_true: } {
   \BNVS_end:
   \prg_return_true:
 }
@@ -3290,7 +3298,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
       \__bnvs_tl_put_right:cn { ans } { + }
       \__bnvs_tl_put_right:cv { ans } { A }
       \__bnvs_tl_put_right:cn { ans } { -1 }
-      \__bnvs_round_ans:
+      \__bnvs_round:c { ans }
       \__bnvs_tl_put_left:cn { ans } { - }
       \__bnvs_tl_put_left:cv { ans } { A }
       \prg_return_true:
@@ -3315,7 +3323,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
       \__bnvs_tl_put_left:cn  { ans } { 1-}
       \__bnvs_tl_put_right:cn { ans } { + }
       \__bnvs_tl_put_right:cv { ans } { Z }
-      \__bnvs_round_ans:
+      \__bnvs_round:c { ans }
       \__bnvs_tl_put_right:cn { ans } { - }
       \__bnvs_tl_put_right:cv { ans } { Z }
       \prg_return_true:
@@ -3339,16 +3347,14 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
   }
 }
 \BNVS_new_conditional:cpnn { if_resolve_query:nc } #1 #2 { T, F, TF } {
-  \__bnvs_call_greset:
+  \__bnvs_greset:
   \__bnvs_match_if_once:NnTF \c__bnvs_A_cln_Z_regex { #1 } {
     \BNVS_begin:
     \__bnvs_if_resolve_query_branch:TF {
-      \BNVS_tl_set_after:ncv {
-        \BNVS_end:
-      } { #2 } { ans }
+      \BNVS_end_tl_set:cv { #2 } { ans }
       \prg_return_true:
     } {
-    \BNVS_end:
+      \BNVS_end:
       \prg_return_false:
     }
   } {
@@ -3397,26 +3403,6 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
   }
   \__bnvs_end_return:
 }
-\BNVS_new:cpn { resolve_queries:nc } #1 #2 {
-  \BNVS_begin:
-  \__bnvs_seq_clear:c { ans }
-  \regex_split:NnN \c__bnvs_comma_regex { #1 } \l__bnvs_query_seq
-  \__bnvs_seq_map_inline:cn { query } {
-    \__bnvs_tl_clear:c { ans }
-    \__bnvs_if_resolve_query:ncTF { ##1 } { ans } {
-      \__bnvs_seq_put_right:cv { ans } { ans }
-    } {
-      \seq_map_break:n {
-        \BNVS_error:n { Circular/Undefined~dependency~in~#1}
-      }
-    }
-  }
-  \exp_args:Nnx
-  \use:n {
-    \BNVS_end:
-    \__bnvs_tl_put_right:cn { #2 }
-  } { \__bnvs_seq_use:cn { ans } , }
-}
 \NewDocumentCommand \BeanovesResolve { O{} m } {
   \BNVS_begin:
   \keys_define:nn { BeanovesResolve } {
@@ -3457,28 +3443,51 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_length:ncTF/1) }
     }
   } {}
 }
-\NewDocumentCommand \BeanovesReset { s O{} m } {
-  \__bnvs_if_id_FQ_name_n_get:nTF { #3 } {
-    \BNVS_tl_use:nv {
-      \IfBooleanTF { #1 } {
-        \__bnvs_if_greset_all:nnF
-      } {
-        \__bnvs_v_if_greset:nnF
-      }
-    } { FQ_name } { #2 } {
-    }
-  } {
-    \__bnvs_warning:n { Bad~name:~#3 }
-  }
-  \ignorespaces
+\BNVS_new:cpn { reset:n } #1 {
+  \BNVS_begin:
+  \__bnvs_set_true:c { reset }
+  \__bnvs_set_false:c { provide }
+  \__bnvs_tl_clear:c { root }
+  \__bnvs_int_zero:c { i }
+  \__bnvs_tl_set:cn { a } { #1 }
+  \__bnvs_provide_off:
+  \BNVS_tl_use:nv {
+    \keyval_parse:nnn { \__bnvs_parse:n } { \__bnvs_parse:nn }
+  } { a }
+  \BNVS_end_tl_set:cv { id_last } { id_last }
 }
-\NewDocumentCommand \BeanovesSavePauses { m } {
-  \__bnvs_save:n { #1 }
+\BNVS_new:cpn { reset:v } {
+  \BNVS_tl_use:Nv \__bnvs_reset:n
 }
 \makeatletter
-\BNVS_new:cpn { save:n } #1 {
-  \cs_if_exist:NT \c@beamerpauses {
-    \exp_args:Nnx \__bnvs_parse:nn { #1 } { \the\c@beamerpauses }
+\NewDocumentCommand \BeanovesReset { O{} m } {
+  \tl_if_empty:NTF \@currenvir {
+    \BNVS_error:x {No~\token_to_str:N \BeanovesReset{}~in~the~preamble.}
+  } {
+    \tl_if_eq:NnT \@currenvir { document } {
+     \BNVS_error:x {No~\token_to_str:N \BeanovesReset{}~at~the~top~level.}
+    }
+    \BNVS_begin:
+    \__bnvs_set_true:c { reset }
+    \__bnvs_set_false:c { provide }
+    \keys_define:nn { BeanovesReset } {
+      all .bool_set:N = \l__bnvs_reset_all_bool,
+      all .default:n = true,
+      all .initial:n = false,
+      only .bool_set:N = \l__bnvs_only_bool,
+      only .default:n = true,
+      only .initial:n = false,
+    }
+    \keys_set:nn { BeanovesReset } { #1 }
+    \__bnvs_tl_clear:c { root }
+    \__bnvs_int_zero:c { i }
+    \__bnvs_tl_set:cn { a } { #2 }
+    \__bnvs_provide_off:
+    \BNVS_tl_use:nv {
+      \keyval_parse:nnn { \__bnvs_parse:n } { \__bnvs_parse:nn }
+    } { a }
+    \BNVS_end_tl_set:cv { id_last } { id_last }
+    \ignorespaces
   }
 }
 \makeatother

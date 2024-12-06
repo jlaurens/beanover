@@ -9,49 +9,73 @@
 \begin{document}
 
 \Beanoves{A=[1,2,3,4]}
-
-\begin{frame}[fragile]
-  {An Algorithm For Finding Primes Numbers.}{\insertframenumber/\insertslidenumber}
-\makeatletter
-\begin{semiverbatim}
-\only<?(A.3)->{X\Beanoves{PAUSES=pauses}\arabic{beamerpauses}}
-\uncover<?(A.1)->{\alert<0>{int main (void)}}
-\uncover<?(A.1)->{\alert<?(A.0)>{\{}}
-\uncover<?(A.1)->{\alert<?(A.1)>{  \alert<?(A.4)>{std::}vector<bool> is_prime (100, true);}}
-\uncover<?(A.1)->{\alert<?(A.1)>{  for (int i = 2; i < 100; i++)}}
-\uncover<?(A.2)->{\alert<?(A.2)>{    if (is_prime[i])}}
-\uncover<?(A.2)->{\alert<?(A.0)>{      \{}}
-\uncover<?(A.3)->{\alert<?(A.3)>{        \alert<?(A.4)>{std::}cout << i << " ";}}
-\uncover<?(A.3)->{\alert<?(A.3)>{        for (int j = i; j < 100;}}
-\uncover<?(A.3)->{\alert<?(A.3)>{             is_prime [j] = false, j+=i);}}
-\uncover<?(A.2)->{\alert<?(A.0)>{      \}}}
-\uncover<?(A.1)->{\alert<?(A.0)>{  return 0;}}
-\uncover<?(A.1)->{\alert<?(A.0)>{\}}}
-\end{semiverbatim}
-
-  \visible<?(A.4)->{Note the use of \alert{\texttt{std::}}.}
-  \BeanovesResolve[show]{PAUSES}
-\makeatother
-\end{frame}
-
+%
+%\begin{frame}[fragile]
+%  {An Algorithm For Finding Primes Numbers.}{\insertframenumber/\insertslidenumber}
+%\makeatletter
+%\begin{semiverbatim}
+%\only<?(A.3)->{X\Beanoves{PAUSES=pauses}\arabic{beamerpauses}}
+%\uncover<?(A.1)->{\alert<0>{int main (void)}}
+%\uncover<?(A.1)->{\alert<?(A.0)>{\{}}
+%\uncover<?(A.1)->{\alert<?(A.1)>{  \alert<?(A.4)>{std::}vector<bool> is_prime (100, true);}}
+%\uncover<?(A.1)->{\alert<?(A.1)>{  for (int i = 2; i < 100; i++)}}
+%\uncover<?(A.2)->{\alert<?(A.2)>{    if (is_prime[i])}}
+%\uncover<?(A.2)->{\alert<?(A.0)>{      \{}}
+%\uncover<?(A.3)->{\alert<?(A.3)>{        \alert<?(A.4)>{std::}cout << i << " ";}}
+%\uncover<?(A.3)->{\alert<?(A.3)>{        for (int j = i; j < 100;}}
+%\uncover<?(A.3)->{\alert<?(A.3)>{             is_prime [j] = false, j+=i);}}
+%\uncover<?(A.2)->{\alert<?(A.0)>{      \}}}
+%\uncover<?(A.1)->{\alert<?(A.0)>{  return 0;}}
+%\uncover<?(A.1)->{\alert<?(A.0)>{\}}}
+%\end{semiverbatim}
+%
+%  \visible<?(A.4)->{Note the use of \alert{\texttt{std::}}.}
+%  \BeanovesResolve[show]{PAUSES}
+%\makeatother
+%\end{frame}
+%
+%\begin{frame}{An Algorithm For Finding Primes Numbers.}{\insertframenumber/\insertslidenumber}
+%\begin{verse}
+%\ttfamily
+%\visible<?(A.3)->{X\BeanovesResolve{PAUSES=pauses}\arabic{beamerpauses}}
+%\uncover<?(A.1)->{1 \arabic{beamerpauses}}
+%\uncover<?(A.2)->{2 \arabic{beamerpauses}}
+%\uncover<?(A.3)->{3 \arabic{beamerpauses}}
+%\end{verse}
+%
+%  \visible<?(A.4)->{Note the use of \alert{\texttt{std::}}.}
+%  \BeanovesResolve[show]{PAUSES}\makeatother
+%\end{frame}
+%\begin{frame}{\insertframenumber}{\insertslidenumber}
+%\begin{itemize}[<+->]
+%\item 1 \arabic{beamerpauses}
+%\item 2 \arabic{beamerpauses}\BeanovesResolve{PAUSES=pauses}
+%\item 3 \arabic{beamerpauses}
+%\end{itemize}
+%\BeanovesResolve[show]{PAUSES}
+%\end{frame}
+%\begin{frame}{\insertframenumber}{\insertslidenumber}
+%\begin{itemize}[<+->]
+%\item 1 \arabic{beamerpauses}
+%\item 2 \arabic{beamerpauses}\BeanovesResolve{SIF=slideinframe}
+%\item 3 \arabic{beamerpauses}
+%\end{itemize}
+%\BeanovesResolve[show]{SIF}
+%\end{frame}
+%%
 \begin{frame}{An Algorithm For Finding Primes Numbers.}{\insertframenumber/\insertslidenumber}
 \begin{verse}
 \ttfamily
-\visible<?(A.3)->{X\BeanovesResolve{PAUSES=pauses}\arabic{beamerpauses}}
 \uncover<?(A.1)->{1 \arabic{beamerpauses}}
-\uncover<?(A.2)->{2 \arabic{beamerpauses}}
-\uncover<?(A.3)->{3 \arabic{beamerpauses}}
+\uncover<?(A.2)->{2 \arabic{beamerpauses}\Beanoves*{A!SIF=slideinframe}}
+\uncover<?(?!A.3)->{3 \arabic{beamerpauses}}
 \end{verse}
-
+\BeanovesDebugOn
+\BeanovesLogGProp
+\typein{FOOO}
+  SIF=\BeanovesResolve[show]{A!SIF}
+\typein{FOOO}
+  \visible<?(A!SIF)>{SIF=A.2}
   \visible<?(A.4)->{Note the use of \alert{\texttt{std::}}.}
-  \BeanovesResolve[show]{PAUSES}\makeatother
-\end{frame}
-\begin{frame}{\insertframenumber}{\insertslidenumber}
-\begin{itemize}[<+->]
-\item 1 \arabic{beamerpauses}
-\item 2 \arabic{beamerpauses}\BeanovesResolve{PAUSES=pauses}
-\item 3 \arabic{beamerpauses}
-\end{itemize}
-\BeanovesResolve[show]{PAUSES}
 \end{frame}
 \end{document}
