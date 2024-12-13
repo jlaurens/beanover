@@ -141,18 +141,16 @@ and the derived files           beanoves.ins,
   \end{trivlist}
 }
 %\OnlyDescription
-% \begin{BNVS.test}{bnvs:c={if_resolve:ncTF}, noigre}
-% \reset:n { }
-% \__bnvs_tl_clear:c { ans }
-% \BNVS_DEBUG_push:n *
-% \tl_gclear:N \g__bnvs_TEST_tl
-% \cs_set:Npn \BNVS_error:n #1 {
-%   \tl_gset:Nn \g__bnvs_TEST_tl { SUCCESS }
-% }
-% \Test_if_append:nnnn { X=X+Y } { X.1 } { 1 } { A }
-% \exp_args:NnV \__bnvs_tl_set:cn { ans } \g__bnvs_TEST_tl
-% \assert_equal_ans:nn { SUCCESS } { 1 }
-% \end{BNVS.test}
+ \begin{BNVS.test}{:c={keyval_listed:n}, noigre}
+ \BNVS_DEBUG_push:n *
+ \BNVS_DEBUG_push:n { apD }
+ \Beanoves{A={{1,2,3}}}
+ \__bnvs_if_get:nnncTF W {} { A } { ans } {
+   \assert_equal_ans:nn { 2 \q__bnvs 3 } { 1 }
+ } {
+   \assert_fail:n { 2 }
+ }
+ \end{BNVS.test}
 \begin{document}
 \maketitle
 \changes{v1.0}{2025/01/01}{First public release}
@@ -262,18 +260,17 @@ a well defined static integer or range to be used in \pkg{beamer} overlay specif
 They can take one of the next forms.
 \begin{description}
 \item[\texttt{\meta{short name}}]: like |A| and |C|,
-\item[\texttt{\meta{frame id}|!|\meta{short name}}]: denoted by \emph{qualified names}, like |X/A| and |Y/C|.
+\item[\texttt{\meta{frame id}|!|\meta{short name}}]: denoted by \emph{qualified names}, like |X!A| and |Y!C|.
 \item[\texttt{\meta{short name}\meta{dotted path}}]:
   denoted by \emph{dotted names} like |A.1| and |B.C.2|,
 \item[\texttt{\meta{frame id}|!|\meta{short name}\meta{dotted path}}]:
   denoted by \emph{qualified dotted names} like |X!A.1| and |Y!B.C.2|.
-
 \end{description}
 The \emph{short names} and \emph{frame ids} are alphanumerical case sensitive
 identifiers, with possible underscores but with no space nor leading digit.
 Unicode symbols above \texttt{U+00A0} are allowed if the underlying \TeX\ engine
 supports it.
-Only the \emph{frame id} is allowed to be empty, in which case it may apply to any frame.
+Only the \emph{frame id} is allowed to be empty, in which case it may apply to any common frame.
 
 The \emph{dotted path} is a string
 \texttt{.\meta{c_1}.\meta{c_2}....\meta{c_j}}.
@@ -288,7 +285,7 @@ at the global \TeX\ level to allow its use in |\begin{frame}<...>| and to share 
 Hence the \emph{frame id} due to the need to possibly target a particular frame.
 
 \subsection{Defining named overlay sets}
-In order to define \emph{named overlay sets}, we can either execute the next |\Beanoves| command  before a \pkg{beamer} \text{frame} environment, or use the new |beanoves| option of this environment.
+In order to define \emph{named overlay sets}, we can either execute the next |\Beanoves| command  before a \pkg{beamer} \text{frame} environment, or use the custom |beanoves| option of this environment.
 %
 \begin{function}{\Beanoves, \Beanoves*}
   \begin{syntax}
@@ -302,7 +299,7 @@ In order to define \emph{named overlay sets}, we can either execute the next |\B
 \end{function}
 Each \meta{ref_i} key is a \emph{named overlay reference} whereas each \meta{spec} value
 is an \emph{overlay set specifier}.
-When the same \meta{a} key is used multiple times, only the last one is taken into account.
+When the same \meta{ref} key is used multiple times, only the last one is taken into account.
 
 Notice that \texttt{\meta{ref_i}=1} can be shortened to \text{\meta{ref_i}}.
 %
@@ -341,34 +338,28 @@ They come in three different flavours.
 
 The definition
 \\[0.2ex]
-\hphantom{xx}\texttt{\meta{a}=\{\meta{path_1}=\meta{spec_1}, \meta{path_2}=\meta{spec_2},..., \meta{path_j}=\meta{spec_j}\}}
+\hphantom{xx}\texttt{\meta{ref}=\{\{\meta{path_1}=\meta{spec_1},\meta{path_2}=\meta{spec_2},...,\meta{path_j}=\meta{spec_j}\}\}}
 \\[0.2ex]
-removes previous \meta{a} index definitions, and executes
+removes previous \meta{ref} index definitions, and executes
 \\[0.2ex]
-\hphantom{xx}\texttt{\meta{a}.\meta{path_1}=\meta{spec_1},}
-\\\hphantom{xx}\texttt{\meta{a}.\meta{path_2}=\meta{spec_2},}
+\hphantom{xx}\texttt{\meta{ref}.\meta{path_1}=\meta{spec_1},}
+\\\hphantom{xx}\texttt{\meta{ref}.\meta{path_2}=\meta{spec_2},}
 \\\hphantom{xx}\texttt{...,}
-\\\hphantom{xx}\texttt{\meta{a}.\meta{path_j}=\meta{spec_j}.}
+\\\hphantom{xx}\texttt{\meta{ref}.\meta{path_j}=\meta{spec_j}.}
 \\[0.2ex]
 The rules above can apply individually to each line.
-The \meta{a} counter defined below is left unmodified.
+The \meta{ref} counter defined below is left unmodified.
 If \texttt{=\meta{spec_j}} is omitted, it defaults to \texttt{=1}.
-
 
 The definition
 \\[0.2ex]
-\hphantom{xx}\texttt{\meta{a}=[\meta{path_1}=\meta{spec_1}, \meta{path_2}=\meta{spec_2},..., \meta{path_j}=\meta{spec_j}]}
+\hphantom{xx}\texttt{\meta{ref}=[\meta{path_1}=\meta{spec_1},\meta{path_2}=\meta{spec_2},...,\meta{path_j}=\meta{spec_j}]}
 \\[0.2ex]
 is similar to the previous list, except that what can be omitted is
 \texttt{\meta{path_j}=}, which defaults to \texttt{\meta{i}=}
 where \meta{i} is the smallest positive integer such that
-\texttt{\meta{a}.\meta{i}} is not already defined.
-
-Finally, the definition
-\\[0.2ex]
-\hphantom{xx}\texttt{\meta{a}=\{\{\meta{spec_1}, \meta{spec_2},..., \meta{spec_j}\}\}}
-\\[0.2ex]
-corresponds to \pkg{beamer} range specifier.
+\texttt{\meta{ref}.\meta{i}} is not already defined.
+This can be used for standard \pkg{beamer} comma list specifiers.
 
 \section{Resolution of \texttt{?(...)} query expressions}
 This is the key feature of the \pkg{beanoves} package, extending \pkg{beamer} \emph{overlay specifications} normally included between pointed brackets. Before the \emph{overlay specifications} are processed by the \pkg{beamer} class,
@@ -384,7 +375,7 @@ that will be passed to \pkg{beamer}.
 Turning an \emph{overlay query} into the static expression it represents,
 as when above \texttt{?(A.1)} was replaced by \texttt{1}, is denoted by \emph{overlay query resolution} or simply \emph{resolution}.
 The process starts by replacing any \emph{query reference} by its value as explained below until obtaining numerical expressions that are evaluated and finally rounded to the nearest integer to feed \pkg{beamer} with either a range or a number.
-When the \emph{query reference} is a previously declared \texttt{\meta{a}}, like |X| after |X=1|,
+When the \emph{query reference} is a previously declared \texttt{\meta{ref}}, like |X| after |X=1|,
 it is simply replaced by the corresponding declared
 \texttt{\meta{value}}, here |1|.
 Otherwise, we use \emph{implicit overlay queries} and their \emph{resolution rules} depending
@@ -396,51 +387,51 @@ performance reason.
 
 \subsection{Number and range overlay queries}
 \begin{description}
-\item[\texttt{\meta{a} = \meta{value}}]
+\item[\texttt{\meta{ref} = \meta{value}}]
 For an unlimited range
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
 \hline
 \bfseries \textrm{overlay query} & \bfseries \textrm{resolution} 
 \\\hline
-\meta{a}.1 & \(\meta{value}\)\\
-\meta{a}.2 & \(\meta{value}+1\) \\
-\meta{a}.\meta{i} & \(\meta{value} + \meta{i} - 1\) \\
+\meta{ref}.1 & \(\meta{value}\)\\
+\meta{ref}.2 & \(\meta{value}+1\) \\
+\meta{ref}.\meta{i} & \(\meta{value} + \meta{i} - 1\) \\
 \hline
 \end{tabular}
 \end{center}
-\item[\texttt{\meta{a} = \meta{first}:}] as well as \texttt{\meta{first}::}.
+\item[\texttt{\meta{ref} = \meta{first}:}] as well as \texttt{\meta{first}::}.
 For a range limited from below:
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
 \hline
 \bfseries \textrm{overlay query} & \bfseries \textrm{resolution} 
 \\\hline
-\meta{a}.1 & \(\meta{first}\)\\
-\meta{a}.2 & \(\meta{first}+1\) \\
-\meta{a}.\meta{i} & \(\meta{first} + \meta{i} - 1\) \\
-\meta{a}.previous & \(\meta{first}-1\)\\
-\meta{a}.first & \(\meta{first}\)\\
+\meta{ref}.1 & \(\meta{first}\)\\
+\meta{ref}.2 & \(\meta{first}+1\) \\
+\meta{ref}.\meta{i} & \(\meta{first} + \meta{i} - 1\) \\
+\meta{ref}.previous & \(\meta{first}-1\)\\
+\meta{ref}.first & \(\meta{first}\)\\
 \hline
 \end{tabular}
 \end{center}
-Notice that \texttt{\meta{a}.previous} and \texttt{\meta{a}.0} are most of the time synonyms.
-\item[\texttt{\meta{a} = :\meta{last}}]
+Notice that \texttt{\meta{ref}.previous} and \texttt{\meta{ref}.0} are most of the time synonyms.
+\item[\texttt{\meta{ref} = :\meta{last}}]
 For a range limited from above:
 \begin{center}
 \begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
 \hline
 \bfseries \textrm{overlay query} & \bfseries \textrm{resolution} 
 \\\hline
-\meta{a}.1 & \(\meta{last}\)\\
-\meta{a}.0 & \(\meta{last}-1\) \\
-\meta{a}.\meta{i} & \(\meta{last} + \meta{i} - 1\) \\
-\meta{a}.last & \(\meta{last}\)\\
-\meta{a}.next & \(\meta{last}+1\)\\
+\meta{ref}.1 & \(\meta{last}\)\\
+\meta{ref}.0 & \(\meta{last}-1\) \\
+\meta{ref}.\meta{i} & \(\meta{last} + \meta{i} - 1\) \\
+\meta{ref}.last & \(\meta{last}\)\\
+\meta{ref}.next & \(\meta{last}+1\)\\
 \hline
 \end{tabular}
 \end{center}
-\item[\texttt{\meta{a} = \meta{first}:\meta{last}}]
+\item[\texttt{\meta{ref} = \meta{first}:\meta{last}}]
 as well as variants \texttt{\meta{first}::\meta{length}},
 \texttt{::\meta{length}:\meta{last}}
 or \texttt{:\meta{last}::\meta{length}},
@@ -452,19 +443,19 @@ For a range limited from both above and below:
 \hline
 \bfseries \textrm{overlay query} & \bfseries \textrm{resolution} 
 \\\hline
-\meta{a}.1 & \(\meta{first}\)\\
-\meta{a}.2 & \(\meta{first}+1\) \\
-\meta{a}.\meta{i} & \(\meta{first} + \meta{i} - 1\) \\
-\meta{a}.previous & \(\meta{first}-1\)\\
-\meta{a}.first & \(\meta{first}\)\\
-\meta{a}.last & \(\meta{last}\)\\
-\meta{a}.next & \(\meta{last}+1\)\\
-\meta{a}.length & \(\meta{length}\)\\
-\meta{a}.range & \(\max(0,\meta{first})\) ''-'' \(\max(0,\meta{last})\)\\
+\meta{ref}.1 & \(\meta{first}\)\\
+\meta{ref}.2 & \(\meta{first}+1\) \\
+\meta{ref}.\meta{i} & \(\meta{first} + \meta{i} - 1\) \\
+\meta{ref}.previous & \(\meta{first}-1\)\\
+\meta{ref}.first & \(\meta{first}\)\\
+\meta{ref}.last & \(\meta{last}\)\\
+\meta{ref}.next & \(\meta{last}+1\)\\
+\meta{ref}.length & \(\meta{length}\)\\
+\meta{ref}.range & \(\max(0,\meta{first})\) ''-'' \(\max(0,\meta{last})\)\\
 \hline
 \end{tabular}
 \end{center}
-Notice that the resolution of \texttt{\meta{a}.range} is not an algebraic difference,
+Notice that the resolution of \texttt{\meta{ref}.range} is not an algebraic difference,
 and negative integers do not make sense there while in \pkg{beamer} context.
 
 In the frame example below, we use the \cs{BeanovesResolve} command for the demonstration.
@@ -495,7 +486,17 @@ It is mainly used for debugging and testing purposes.
 \BeanovesResolve[show](A.range)    == 3-8,
 \end{frame}
 \end{tcblisting}
-%
+\item[\texttt{\meta{ref} = [\meta{spec}_1,...,\meta{spec}_j]}].
+For a list of ranges.
+\begin{center}
+\begin{tabular}{>{ \ttfamily \bfseries }l|>{ \ttfamily }l}
+\hline
+\bfseries \textrm{overlay query} & \bfseries \textrm{resolution} 
+\\\hline
+\meta{ref}.range & \(\meta{ref}.1.range,...\meta{ref}.j.range\)\\
+\hline
+\end{tabular}
+\end{center}
 \end{description}
 For example both \texttt{?(A.next)}, \texttt{?(A.last+1)}, \texttt{?(A.1+A.length)} give the same result as soon as the slide range named `|A|' has been properly defined with a starting value and a length, and not overriden by some rule below.
 %
@@ -570,9 +571,9 @@ where 0$≤$k$≤$j is first replaced by its definition \texttt{\meta{name'}.\me
 \subsection{The \texttt{beamer} counters}
 While inside a \texttt{frame} environment,
 it is possible to save the current value of the \texttt{beamerpauses} counter that controls whether elements should appear on the current slide.
-For that, we can execute one of \mintinline[escapeinside=||]{latex}{\Beanoves{|\meta{a}|=pauses}} or in a query
-\mintinline[escapeinside=||]{latex}{?(...(|\meta{a}|=pauses)...)}.
-Then later on, we can use |?(...|\meta{a}|...)| to refer to this saved value
+For that, we can execute one of \mintinline[escapeinside=||]{latex}{\Beanoves{|\meta{ref}|=pauses}} or in a query
+\mintinline[escapeinside=||]{latex}{?(...(|\meta{ref}|=pauses)...)}.
+Then later on, we can use |?(...|\meta{ref}|...)| to refer to this saved value
 in the same frame\footnote{See
 \href[pdfnewwindow]{https://tex.stackexchange.com/questions/34458/reference-overlay-numbers-with-names}{stackexchange}
 for an alternative that needs at least two passes.}.
@@ -601,8 +602,8 @@ counter once updated, \emph{id est} 3.
 ``B'' and ``other B'' as well as ``C'' and ``other C'' appear at the same time.
 %
 If the |beamerpauses| counter is not suitable,
-we can execute instead one of \mintinline[escapeinside=||]{latex}{\Beanoves{|\meta{a}|=slideinframe}} or in a query
-\mintinline[escapeinside=||]{latex}{?(...(|\meta{a}|=slideinframe)...)}.
+we can execute instead one of \mintinline[escapeinside=||]{latex}{\Beanoves{|\meta{ref}|=slideinframe}} or in a query
+\mintinline[escapeinside=||]{latex}{?(...(|\meta{ref}|=slideinframe)...)}.
 It uses the numerical value of
 \mintinline{latex}{\insertslideinframe}.
 
@@ -4737,7 +4738,6 @@ end
 \tl_new:N \l__bnvs_L_tl
 \tl_new:N \l__bnvs_Z_tl
 \tl_new:N \l__bnvs_ans_tl
-\tl_new:N \l__bnvs_QD_name_tl
 \tl_new:N \l__bnvs_base_tl
 \tl_new:N \l__bnvs_group_tl
 \tl_new:N \l__bnvs_scan_tl
@@ -4897,7 +4897,7 @@ end
 %
 % \subsection{Overlay specification}
 % \subsubsection{Registration}
-% We keep track of the \meta{id} \meta{a} combinations and provide
+% We keep track of the \meta{id} \meta{tag} combinations and provide
 % looping mechanisms.
 % \begin{function}{
 %   \__bnvs_name:nnn,
@@ -4905,8 +4905,8 @@ end
 %   \__bnvs_id_seq:n
 % }
 % \begin{syntax}
-% \cs{__bnvs_name:nnn} \marg{subkey} \marg{id} \marg{a}
-% \cs{__bnvs_name:nn} \marg{id} \marg{a}
+% \cs{__bnvs_name:nnn} \marg{subkey} \marg{id} \marg{tag}
+% \cs{__bnvs_name:nn} \marg{id} \marg{tag}
 % \cs{__bnvs_id_seq:nn} \marg{id}
 % \end{syntax}
 % Create a unique name from the arguments.
@@ -4941,8 +4941,8 @@ end
 %   \__bnvs_unregister:
 % }
 % \begin{syntax}
-% \cs{__bnvs_register:nn}   \marg{id} \marg{a}
-% \cs{__bnvs_unregister:nn} \marg{id} \marg{a}
+% \cs{__bnvs_register:nn}   \marg{id} \marg{tag}
+% \cs{__bnvs_unregister:nn} \marg{id} \marg{tag}
 % \cs{__bnvs_unregister:n}  \marg{id}
 % \cs{__bnvs_unregister:}
 % \end{syntax}
@@ -5033,11 +5033,11 @@ end
 %   \__bnvs_unregister:NNnn,
 % }
 % \begin{syntax}
-% \cs{__bnvs_unregister:NNnn} \meta{cs} \meta{seq} \marg{id} \marg{a}
+% \cs{__bnvs_unregister:NNnn} \meta{cs} \meta{seq} \marg{id} \marg{tag}
 % \end{syntax}
-% Unregistering a \meta{id} \meta{a} combination
+% Unregistering a \meta{id} \meta{tag} combination
 % is not straightforward.
-% \meta{cs} and \meta{seq} are respectively is the command
+% \meta{cs} and \meta{seq} are respectively the command
 % and the sequence uniquely associated to this combination.
 % \end{function}
 % \begin{BNVS.macrocode}
@@ -5226,7 +5226,7 @@ end
 % \end{syntax}
 % If \meta{id} is a declared identifier, execute \meta{function:nn}
 % or \meta{code} for each combination of \meta{id} and its associate 
-% \meta{a}s.
+% \meta{tag}s.
 % \end{function}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
@@ -5259,7 +5259,7 @@ end
 % \cs{__bnvs_foreach_IT:n} \marg{code}
 % \end{syntax}
 % Execute the \meta{function:nn} or the \meta{code} for each combination
-% of \meta{id} and \meta{a}.
+% of \meta{id} and \meta{tag}.
 % \end{function}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
@@ -5356,14 +5356,14 @@ end
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { foreach_key_cache:N } {
-  \tl_map_function:nN { {V*}{A*}{Z*}{L*}{P*}{N*} }
+  \tl_map_function:nN { {V*}{A*}{Z*}{L*}{P*}{N*}{W*} }
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { foreach_key_cache:n } {
-  \tl_map_inline:nn { {V*}{A*}{Z*}{L*}{P*}{N*} }
+  \tl_map_inline:nn { {V*}{A*}{Z*}{L*}{P*}{N*}{W*} }
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -5404,7 +5404,7 @@ end
 %   \__bnvs_gset:nvvv,
 % }
 % \begin{syntax}
-% \cs{__bnvs_gset:nnnn} \marg{key} \marg{id} \marg{a} \marg{spec}
+% \cs{__bnvs_gset:nnnn} \marg{key} \marg{id} \marg{tag} \marg{spec}
 % \end{syntax}
 % Convenient shortcuts to manage the storage, it makes the code more concise and readable.
 % \end{function}
@@ -5592,12 +5592,12 @@ end
 % \cs{__bnvs_if_spec:nnTF} \marg{id} \marg{tag} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Convenient shortcuts to test for the existence of a \meta{spec}
-% for that \meta{key}\, meta{id}, meta{tag} combination.
+% for that \meta{key}, \meta{id}, \meta{tag} combination.
 % The version with no \meta{key} is the or combination for keys
 % |V|, |A| and |Z|.
 %
 % The |_spec:...| variant is similar except that it uses
-% \meta{key}\, meta{id}, meta{ref} or
+% \meta{key}, \meta{id}, \meta{ref} or
 % \meta{key}\, empty meta{id}, meta{tag} combinations.
 % \end{function}
 % \begin{BNVS.macrocode}
@@ -5776,20 +5776,20 @@ end
 %   \__bnvs_spec:nnnc,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_get:nnncTF} \marg{key} \marg{id} \marg{a} \marg{ans}
+% \cs{__bnvs_if_get:nnncTF} \marg{key} \marg{id} \marg{tag} \marg{ans}
 % \marg{yes code} \marg{no code}
-% \cs{__bnvs_spec:nnncTF} \marg{key} \marg{id} \marg{a} \marg{ans}
+% \cs{__bnvs_spec:nnncTF} \marg{key} \marg{id} \marg{tag} \marg{ans}
 % \marg{yes code} \marg{no code}
 % \end{syntax}
 % The \cs{__bnvs_if_get:nnnc...} variant puts what was stored
-% for \meta{key}, \meta{id} and \meta{a} into
+% for \meta{key}, \meta{id} and \meta{tag} into
 % the \meta{ans} variable, if any, then executes the \meta{yes code}.
 % Otherwise executes the \meta{no code} without changing the contents
 % of the \meta{ans} |tl| variable.
 %
 % The \cs{__bnvs_spec:nnnc...} is similar except that is uses what was
-% stored for \meta{key}, \meta{id} and \meta{a} or \meta{key},
-% an empty \meta{id} and \meta{a}.
+% stored for \meta{key}, \meta{id} and \meta{tag} or \meta{key},
+% an empty \meta{id} and \meta{tag}.
 % \end{function}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
@@ -5990,7 +5990,7 @@ end
 %   \__bnvs_gset_cache:nvvn,
 % }
 % \begin{syntax}
-% \cs{__bnvs_gset_cache:nnnn} \marg{key} \marg{id} \marg{a} \marg{value}
+% \cs{__bnvs_gset_cache:nnnn} \marg{key} \marg{id} \marg{tag} \marg{value}
 % \end{syntax}
 % Wrapper over the functions above for \meta{key}|*| instead of \meta{key}.
 % \end{function}
@@ -6034,7 +6034,7 @@ end
 %   \__bnvs_if_get_cache:nnnc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_get_cache:nnncTF} \marg{key} \marg{id} \marg{a} \marg{ans}
+% \cs{__bnvs_if_get_cache:nnncTF} \marg{key} \marg{id} \marg{tag} \marg{ans}
 %   \marg{yes code} \marg{false code}
 % \end{syntax}
 % Wrapper over the functions above for \meta{key}|*| instead of \meta{key}.
@@ -6058,8 +6058,8 @@ end
 %   \__bnvs_gunset_cache:
 % }
 % \begin{syntax}
-% \cs{__bnvs_gunset_cache:nnn} \marg{key} \marg{id} \marg{a}
-% \cs{__bnvs_gunset_cache:nn} \marg{id} \marg{a}
+% \cs{__bnvs_gunset_cache:nnn} \marg{key} \marg{id} \marg{tag}
+% \cs{__bnvs_gunset_cache:nn} \marg{id} \marg{tag}
 % \cs{__bnvs_gunset_cache:n} \marg{id}
 % \cs{__bnvs_gunset_cache:}
 % \end{syntax}
@@ -6135,7 +6135,7 @@ end
 % \meta{key}--\meta{value} property list to store the contents or the named value counters.
 % The keys are qualified dotted names
 % \meta{frame id}/\meta{name}.\meta{c_1}...\meta{c_j} denoted as
-% \meta{a}.
+% \meta{tag}.
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
 \prop_new:N \g__bnvs_v_prop
@@ -6162,7 +6162,7 @@ end
 %   \__bnvs_v_gunset:
 % }
 % \begin{syntax}
-% \cs{__bnvs_v_gunset:n} \marg{id} \marg{a}
+% \cs{__bnvs_v_gunset:n} \marg{id} \marg{tag}
 % \cs{__bnvs_v_gunset:n} \marg{id}
 % \cs{__bnvs_v_gunset:}
 % \end{syntax}
@@ -7566,65 +7566,6 @@ end
 % \end{BNVS.macrocode}
 %
 % \begin{function}{
-%   \__bnvs_parse_IT:,
-% }
-%   \begin{syntax}
-%     \cs{__bnvs_parse_IT:}
-%   \end{syntax}
-% Auxiliary function for \cs{__bnvs_parse:n} and \cs{__bnvs_parse:nn} below.
-% The |id|, |short| and |path| variables are expected to be set.
-% These are bottlenecks.
-% \end{function}
-% \begin{BNVS.macrocode}
-%    \begin{macrocode}
-\BNVS_new:cpn { parse_IT: } {
-%    \end{macrocode}
-% \begin{BNVS.gobble}
-%<*!final>
-\BNVS_DEBUG_log_set:ncn p { parse_IT } {
-  \BNVS_DEBUG_tl:nc p { id }
-  \BNVS_DEBUG_tl:nc p { tag }
-}
-\BNVS_DEBUG_log_parse_IT:nn { } { ... }
-%</!final>
-% \end{BNVS.gobble}
-%    \begin{macrocode}
-  \__bnvs_gprovide:TnvvnF {
-    \__bnvs_gunset_cache:vv { id } { tag }
-  } V { id } { tag } { 1 } {
-    \__bnvs_if:cTF { reset } {
-      \__bnvs_if:cT { reset_all } {
-        \__bnvs_if_greset_all:vvnT { id } { tag } {} {}
-      }
-      \__bnvs_if:cF { only } {
-        \__bnvs_foreach_IT:n {
-          \__bnvs_tl_if_eq:cnT { id } { ##1 } {
-            \exp_args:Ne \tl_if_in:nnT {
-              .. \__bnvs_tl_use:c { tag } . }  { .. ##2
-            } {
-              \__bnvs_gunset_cache:nn { ##1 } { ##2 }
-            }
-          }
-        }
-      }
-      \__bnvs_gunset:nvv v { id } { tag }
-    } {
-      \__bnvs_gunset:vv { id } { tag }
-      \__bnvs_gset:nvvn V { id } { tag } { 1 }
-    }
-  }
-%    \end{macrocode}
-% \begin{BNVS.gobble}
-%<*!final>
-\BNVS_DEBUG_log_parse_IT:nn { ... } { ...END }
-%</!final>
-% \end{BNVS.gobble}
-%    \begin{macrocode}
-}
-%    \end{macrocode}
-% \end{BNVS.macrocode}
-%
-% \begin{function}{
 %   \__bnvs_parse_IT:n,
 %   \__bnvs_n_parse_IT:n,
 % }
@@ -7643,7 +7584,7 @@ end
 %   \__bnvs_range:nnvvv,
 % }
 %   \begin{syntax}
-%     \cs{__bnvs_range:nnnnn} \marg{id} \marg{a} \marg{start} \marg{end} \marg{length}
+%     \cs{__bnvs_range:nnnnn} \marg{id} \marg{tag} \marg{start} \marg{end} \marg{length}
 %   \end{syntax}
 % Auxiliary function called within a group.
 % Setup the model to define a range.
@@ -7966,7 +7907,7 @@ end
 % the dotted path into |path|, without an eventual trailing |.n|,
 % an eventual trailing |.n| into |n|,
 % then execute \meta{yes code}.
-% The |n| |tl| variable is empty except when \meta{a}
+% The |n| |tl| variable is empty except when \meta{name}
 % ends with \texttt{.n}.
 % Otherwise execute \meta{no code}.
 %
@@ -8261,20 +8202,81 @@ end
 %
 % \begin{function}{
 %   \__bnvs_keyval_parse:Nn,
+%   \__bnvs_keyval_listed:n,
 %   \__bnvs_keyval_named:n,
-%   \__bnvs_keyval_defined:n,
+%   \__bnvs_keyval_brackets:n,
 % }
 %   \begin{syntax}
 %     \cs{__bnvs_keyval_parse:Nn} \meta{function} \marg{definition}
-%     \cs{__bnvs_keyval_defined:n} \marg{definition}
-%     \cs{__bnvs_keyval_named:n} \marg{name}
+%     \cs{__bnvs_keyval_listed:n} \marg{listed}
+%     \cs{__bnvs_keyval_named:n} \marg{named}
+%     \cs{__bnvs_keyval_brackets:n} \marg{defined}
 %   \end{syntax}
 % Wrapper over |\keyval_parse:nnn|.
+% |\__bnvs_keyval_listed:n| is for \texttt{X=\{\meta{ref}=\meta{spec}\}}.
+% |\__bnvs_keyval_named:n| is for \texttt{X=\{\{\meta{ref}=\meta{spec}\}\}}.
+% |\__bnvs_keyval_brackets:n| is for \texttt{X=[\meta{ref}=\meta{spec}]}.
 % \end{function}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { keyval_parse:Nn } #1 {
   \keyval_parse:nnn { #1 } { \__bnvs_parse:nn }
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\seq_new:N \l__bnvs_keyval_listed_n_seq
+\BNVS_new:cpn { keyval_listed:n } #1 {
+%    \end{macrocode}
+% \begin{BNVS.test}{:c={keyval_listed:n}, noigre}
+% 
+% \end{BNVS.test}
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log:nn p { \__bnvs_keyval_listed:n }
+\BNVS_DEBUG_log_tl:nc * { id }
+\BNVS_DEBUG_log_tl:nc * { tag }
+\BNVS_DEBUG_begin:n { keyval_listed:n }
+%</!final>
+%<*!debug>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  \BNVS_begin:
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%</!debug>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  \cs_set:Npn \BNVS_aux_keyval_listed:n ##1 {
+    \BNVS_DEBUG_log:nn * { LISTED~1:~##1 }
+    \BNVS_use:c { X=...:n } { ##1 }
+    \cs_set:Npn \BNVS_aux_keyval_listed:n ####1 {
+      \BNVS_DEBUG_log:nn * { LISTED~MORE:~####1 }
+      \__bnvs_seq_put_right:cn { keyval_listed_n } { ####1 }
+    }
+  }
+  \cs_set:Npn \BNVS_aux_keyval_listed:nn ##1 ##2 {
+    \BNVS_warning:n { Ignored:~##1=##2 }
+  }
+  \keyval_parse:nnn
+    { \BNVS_aux_keyval_listed:n }
+    { \BNVS_aux_keyval_listed:nn }
+    { #1 }
+  %
+  \__bnvs_gunset_cache:nvv W { id } { tag }
+  \BNVS_DEBUG_log:nn * { AFTER~LISTED }
+  \BNVS_log:x {\__bnvs_seq_use:cn { keyval_listed_n } ,
+ }
+ \BNVS_log:x {\__bnvs_seq_use:cn { keyval_listed_n } ,}
+ \BNVS_log:x {\__bnvs_seq_use:cn { keyval_listed_n } { \q__bnvs }}
+ \__bnvs_tl_set:cx { a } {\__bnvs_seq_use:cn { keyval_listed_n } { \q__bnvs }
+ }
+ \BNVS_tl_use:Nv \BNVS_log:n { a }
+  \BNVS_DEBUG_log:nn * { AFTER~LISTED~2 }
+  \BNVS_tl_use:nv { \__bnvs_gset:nvvn W { id } { tag } } { a }
+  \BNVS_DEBUG_log:nn * { AFTER~LISTED~3 }
+  \BNVS_end:
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -8294,15 +8296,15 @@ end
 % \end{BNVS.macrocode}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { keyval_defined:n } {
+\BNVS_new:cpn { keyval_brackets:n } {
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 %<*!final>
-  \BNVS_DEBUG_log:nn p {__bnvs_keyval_defined:n }
+  \BNVS_DEBUG_log:nn p {__bnvs_keyval_brackets:n }
 %</!final>
 % \end{BNVS.gobble}
 %    \begin{macrocode}
-  \keyval_parse:nnn { \__bnvs_parse_defined:n } { \__bnvs_parse:nn }
+  \keyval_parse:nnn { \__bnvs_parse_brackets:n } { \__bnvs_parse:nn }
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -8310,12 +8312,12 @@ end
 % \begin{function}{
 %   \__bnvs_parse:nn
 %   \__bnvs_parse_named:n,
-%   \__bnvs_parse_defined:n,
+%   \__bnvs_parse_brackets:n,
 % }
 %   \begin{syntax}
 %     \cs{__bnvs_parse:nn} \marg{name} \marg{definition}
 %     \cs{__bnvs_parse_named:n} \marg{name}
-%     \cs{__bnvs_parse_defined:n} \marg{definition}
+%     \cs{__bnvs_parse_brackets:n} \marg{definition}
 %   \end{syntax}
 % Auxiliary functions called within a group by |\keyval:nnn|.
 % \meta{name} is the overlay set name, 
@@ -8323,9 +8325,9 @@ end
 % \meta{definition} is the corresponding definition.
 % \cs{__bnvs_parse_named:n} is \cs{__bnvs_parse:nn} with the definition |1|.
 % It is used when parsing a |{{}}|
-% \cs{__bnvs_parse_defined:n} is \cs{__bnvs_parse:nn} with the first available
+% \cs{__bnvs_parse_brackets:n} is \cs{__bnvs_parse:nn} with the first available
 % index as n.
-% \cs{__bnvs_parse:n} is just \cs{__bnvs_parse_defined:n} when in list mode
+% \cs{__bnvs_parse:n} is just \cs{__bnvs_parse_brackets:n} when in list mode
 % and \cs{__bnvs_parse_named:n} otherwise.
 %
 % \begin{variable}{\l__bnvs_match_seq}
@@ -8364,16 +8366,16 @@ end
 % \end{BNVS.macrocode}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { parse_defined:n } #1 {
+\BNVS_new:cpn { parse_brackets:n } #1 {
   \__bnvs_tl_if_empty:cTF { root } {
     \BNVS_error:n { Unexpected~list~at~top~level. }
   } {
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 %<*!final>
-\BNVS_DEBUG_log_set:ncnn p { parse_defined:n } { :n } { #1 }
-\BNVS_DEBUG_log_parse_defined_n:nn { } { ... }
-    \BNVS_DEBUG_begin:n { parse_defined:n }
+\BNVS_DEBUG_log_set:ncnn p { parse_brackets:n } { :n } { #1 }
+\BNVS_DEBUG_log_parse_brackets_n:nn { } { ... }
+    \BNVS_DEBUG_begin:n { parse_brackets:n }
 %</!final>
 %<*!debug>
 % \end{BNVS.gobble}
@@ -8384,7 +8386,7 @@ end
 %</!debug>
 % \end{BNVS.gobble}
 %    \begin{macrocode}
-    \cs_set:Npn \BNVS_aux_parse_defined_n: {
+    \cs_set:Npn \BNVS_aux_parse_brackets_n: {
       \__bnvs_int_incr:c { i }
       \__bnvs_tl_set_eq:cc { a } { root }
       \__bnvs_tl_put_right:cn { a } { . }
@@ -8394,12 +8396,12 @@ end
 %<*!debug>
 % \end{BNVS.gobble}
 %    \begin{macrocode}
-      \__bnvs_is_gset:nvvT V { id } { a } { \BNVS_aux_parse_defined_n: }
+      \__bnvs_is_gset:nvvT V { id } { a } { \BNVS_aux_parse_brackets_n: }
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 %</!debug>
 %<*debug>
-      \__bnvs_is_gset:nvvTF V { id } { a } { \BNVS_aux_parse_defined_n: }
+      \__bnvs_is_gset:nvvTF V { id } { a } { \BNVS_aux_parse_brackets_n: }
         {
 \BNVS_DEBUG_log_int:nnc p { Available~index: } { i }
         }
@@ -8407,11 +8409,11 @@ end
 % \end{BNVS.gobble}
 %    \begin{macrocode}
     }
-    \BNVS_aux_parse_defined_n:
+    \BNVS_aux_parse_brackets_n:
     \BNVS_int_use:nv { \__bnvs_parse:nn } { i } { #1 }
     \BNVS_end:
 %    \end{macrocode}
-% \begin{BNVS.test}{bnvs:cn={parse_defined:n}{/...=[...]}, noigre}
+% \begin{BNVS.test}{bnvs:cn={parse_brackets:n}{/...=[...]}, noigre}
 % \Beanoves{X=[ 11, 6=66, 4=44, 2=22, 33, 55 ]}
 %  \def\Test:n #1 {
 %   \Test_if_resolve:nnnn { } { X.#1 } { #1#1 } { #1 }
@@ -8426,7 +8428,7 @@ end
 % \end{BNVS.test}
 % \begin{BNVS.gobble}
 %<*!final>
-\BNVS_DEBUG_log_parse_defined_n:nn { ... } { ...DONE }
+\BNVS_DEBUG_log_parse_brackets_n:nn { ... } { ...DONE }
 %</!final>
 % \end{BNVS.gobble}
 %    \begin{macrocode}
@@ -8434,34 +8436,6 @@ end
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
-% \begin{BNVS.test}{bnvs:c={ parse_IT: }, noigre}
-% \__bnvs_provide_off:
-% \cs_set:Npn \BNVS_Test:nn #1 #2 {
-%   \__bnvs_if_get:nnncTF V {} { #1 } { ans } {
-%     \assert_equal_ans:nn  { #2 } { #1/V }
-%   } {
-%     \tl_if_empty:nF { #2 } { \test_fail:n { #1/¬V } }
-%   }
-% }
-% \__bnvs_tl_set:cn { id  } {   }
-% \__bnvs_tl_set:cn { tag } { X }
-% \__bnvs_parse_IT:
-% \BNVS_Test:nn { X } { 1 }
-% \__bnvs_gunset:nn {} { X }
-% \__bnvs_parse_IT:
-% \BNVS_Test:nn { X } { 1 }
-% \__bnvs_gset:nnnn V {} { Y } { 2 }
-% \BNVS_Test:nn { Y } { 2 }
-% \__bnvs_tl_set:cn { tag } { Y }
-% \__bnvs_parse_IT:
-% \BNVS_Test:nn { Y } { 1 }
-% \__bnvs_gset:nnnn V {} { Z } { 2 }
-% \BNVS_Test:nn { Z } { 2 }
-% \__bnvs_provide_on:
-% \__bnvs_tl_set:cn { tag } { Z }
-% \__bnvs_parse_IT:
-% \BNVS_Test:nn { Z } { 2 }
-% \end{BNVS.test}
 %
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
@@ -8491,9 +8465,9 @@ end
 % Helper for |\keyval_parse:nnn| used in \cs{Beanoves} command.
 % We have three requirements:
 % \begin{itemize}
-% \item raw \pkg{beamer} lists \texttt{X=A} or \texttt{X=\{A\}},
-% \item key--value lists \texttt{X=\{\{A,B\}\}},
+% \item raw \pkg{beamer} lists \texttt{X=A} or \texttt{X=\{A,...\}},
 % \item integer--value lists \texttt{X=[A,B]}.
+% \item key--value lists \texttt{X=\{\{A,B\}\}},
 % \end{itemize}
 %
 % \begin{BNVS.macrocode}
@@ -8504,6 +8478,238 @@ end
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { parse:nn } #1 #2 {
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+% DEBUG type: p => parse
+%<*!final>
+\BNVS_DEBUG_log_set:ncnnnn p { parse:nn } { NAME } { #1 } { DEF } { #2 }
+\BNVS_DEBUG_log_parse_nn:nn { } { ... }
+\BNVS_DEBUG_log_tl:nc p { root }
+  \BNVS_DEBUG_begin:n { parse:nn }
+%</!final>
+%<*!debug>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  \BNVS_begin:
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%</!debug>
+% \end{BNVS.gobble}
+% \end{BNVS.macrocode}
+% We prepend the argument with |root|, in case we are recursive.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+  \__bnvs_if_ref:vnTF { root } { #1 } {
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log_parse_nn:nn { ... } { ...START... }
+%</!final>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+    \peek_meaning:cTF { BNVS[...]:w {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is not a \texttt{X=}.
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log:nn p { parse:nn(X=[...]) }
+%</!final>
+% \end{BNVS.gobble}
+% This is a \texttt{X=[...]} list, for an indexed list of range specification.
+% \begin{BNVS.gobble}
+%<*!final>
+      \BNVS_DEBUG_begin:n { X=[...] }
+%</!final>
+%<*!debug>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+      \BNVS_begin:
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%</!debug>
+% \end{BNVS.gobble}
+% \end{BNVS.macrocode}
+% We prepend the argument with |root|, in case we are recursive.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+      \cs_set:cpn { BNVS[...]:w } ##1 ##2 \s_stop {
+        \regex_match:nnT { \S } { ##2 } {
+          \BNVS_warning:n { Ignoring~##2 }
+        }
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%<*!final>
+        \BNVS_DEBUG_log:nn p { BNVS[...]:w }
+%</!final>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+        \__bnvs_tl_put_right:cn { root } { #1 }
+        \__bnvs_keyval_brackets:n { ##1 }
+        \BNVS_end:
+      }
+    } {
+      \peek_catcode:NTF \c_group_begin_token {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is a \texttt{X=\{\{...\}\}} list, for an indexed list of range specification.
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log:nn p { parse:nn(X={{...}}) }
+%</!final>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+        \__bnvs_if:cT n {
+\BNVS_warning:n { Ignoring~unexpected~suffix~.n:~#1 }
+        }
+        \BNVS_use:c { X={{...}}:w }
+      } {
+        \peek_meaning:NTF \s_stop: {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% Empty value given: completely remove the reference.
+% \begin{BNVS.test}{bnvs:cn={parse:nn}{/NAME=}, noigre, debug}
+% \__bnvs_parse:nn { X } { 123 }
+% \BNVS_DEBUG_log_g:nn D {}
+% \__bnvs_if_get:nnncTF V {} { X } { TEST_A } {
+%   \assert_equal_tl:vnn { TEST_A } { 123 } {1}
+% } {
+%   \test_fail:n { MISSING~KEY~!X/V }
+% }
+% \__bnvs_parse:nn { X } { }
+% \__bnvs_if_get:nnncT V {} { X } { TEST_A } {
+%   \test_fail:n { UNEXPECTED~KEY~!X/V }
+% }
+% \end{BNVS.test}
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log_parse_nn:nn { ... } { ...REMOVE/1... }
+\BNVS_DEBUG_log_tl:nc p { tag }
+%</!final>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+          \__bnvs_if:cTF n {
+            \__bnvs_gunset:nvv       n { id } { tag }
+            \__bnvs_gunset_cache:nvv n
+          } {
+            \__bnvs_if:cT { deep } {
+              \__bnvs_gunset_deep:vv { id } { tag }
+            }
+            \__bnvs_gunset:vv
+          } { id } { tag }
+        } {
+          \__bnvs_if:cTF n {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is a \texttt{X.n=...}.
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log:nn p { parse:nn(X.n=...) }
+%</!final>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+            \cs_set:Npn \BNVS_aux_parse_nn:n ##1 {
+              \__bnvs_n_parse_IT:n { ##1 }
+              \cs_set:Npn \BNVS_aux_parse_nn:n ####1 {
+                \BNVS_warning:n { Ignored:~##1 }
+              }
+            }
+            \cs_set:Npn \BNVS_aux_parse_nn:nn ##1 ##2 {
+              \BNVS_warning:n { Ignored:~##1=##2 }
+            }
+            \keyval_parse:nnn
+              { \BNVS_aux_parse_nn:n } { \BNVS_aux_parse_nn:nn } { #2 }
+          } {
+            \BNVS_use:c { X=...:n } { #2 }
+          }
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is a not a compound definition.
+% Next character is not a group begin token.
+% \begin{BNVS.test}{bnvs:cn={parse:nn}{/X=...:n}, noigre}
+% \__bnvs_parse:nn { X } { FIRST: }
+% \__bnvs_if_get:nnncTF A {} { X } { TEST_A } {
+%   \assert_equal:xxn { \l__bnvs_TEST_A_tl } { FIRST } {1}
+% } {
+%   \test_fail:n { MISSING~KEY~!X/A }
+% }
+% \__bnvs_parse:nn { X } { FIRST::LENGTH }
+% \__bnvs_if_get:nnncTF A { } { X } { TEST_A } {
+%   \assert_equal:xxn { \l__bnvs_TEST_A_tl } { FIRST } {1}
+% } {
+%   \test_fail:n { MISSING~KEY~!X/A }
+% }
+% \BNVS_DEBUG_log_g:nn D { 100 }
+% \__bnvs_if_get:nnncTF L { } { X } { TEST_A } {
+%   \assert_equal:xxn { \l__bnvs_TEST_A_tl } { LENGTH } {1}
+% } {
+%   \test_fail:n { MISSING~KEY~!X/L }
+% }
+% \__bnvs_parse:nn { X } { FIRST:LAST }
+% \__bnvs_if_get:nnncTF A { } { X } { TEST_A } {
+%   \assert_equal:xxn { \l__bnvs_TEST_A_tl } { FIRST } {1}
+% } {
+%   \test_fail:n { MISSING~KEY~!X/A }
+% }
+% \__bnvs_if_get:nnncTF Z { } { X } { TEST_A } {
+%   \assert_equal:xxn { \l__bnvs_TEST_A_tl } { LAST } {1}
+% } {
+%   \test_fail:n { MISSING~KEY~!X/Z }
+% }
+% \end{BNVS.test}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+          \use_none_delimit_by_s_stop:w
+        }
+      }
+    }
+    #2 \s_stop
+  } {
+    \BNVS_error:n { Invalid~name:~#2 }
+  }
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% We export \cs{l__bnvs_id_last_tl}:
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+  \__bnvs_match_if_once:NvT \c__bnvs_one_suffix_regex { tag } {
+    \__bnvs_if_match_pop_left:cTF { a } {
+      \__bnvs_if_match_pop_left:cTF { a } {
+        \cs_set:Npn \BNVS_aux_parse_nn: {
+          \__bnvs_gset:nvvn V { id } { a } { #2 }
+        }
+        \__bnvs_if_get:nvvcT V { id } { a } { b } {
+          \__bnvs_quark_if_nil:cF { b } {
+            \cs_set:Npn \BNVS_aux_parse_nn: { }
+          }
+        }
+        \BNVS_aux_parse_nn:
+      } {
+        \BNVS_error:n { Unreachable~2 }
+      }
+    } {
+      \BNVS_error:n { Unreachable~1 }
+    }
+  }
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% We export \cs{l__bnvs_id_last_tl}:
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log_parse_nn:nn { ... } { ...END }
+\BNVS_DEBUG_log_tl:nc p { id }
+\BNVS_DEBUG_log_tl:nc p { tag }
+%</!final>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+  \BNVS_end_tl_set:cv { id_last } { id_last }
+}
+\BNVS_new:cpn { SAVED_parse:nn } #1 #2 {
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 % DEBUG type: p => parse
@@ -8544,9 +8750,15 @@ end
 % \end{BNVS.gobble}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-      \peek_meaning:NTF \BNVS_square_brackets:w {
+      \peek_meaning:cTF { BNVS[...]:w } {
 %    \end{macrocode}
 % \end{BNVS.macrocode}
+% This is not a \texttt{X=}.
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log:nn p { parse:nn(X=[...]) }
+%</!final>
+% \end{BNVS.gobble}
 % This is a \texttt{X=[...]} list, for an indexed list of range specification.
 % \begin{BNVS.gobble}
 %<*!final>
@@ -8565,16 +8777,16 @@ end
 % We prepend the argument with |root|, in case we are recursive.
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-        \cs_set:Npn \BNVS_square_brackets:w ##1 \s_stop {
+        \cs_set:cpn { BNVS[...]:w } ##1 \s_stop {
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 %<*!final>
-          \BNVS_DEBUG_log:nn p { BNVS_square_brackets:w }
+          \BNVS_DEBUG_log:nn p { BNVS[...]:w }
 %</!final>
 % \end{BNVS.gobble}
 %    \begin{macrocode}
           \__bnvs_tl_put_right:cn { root } { #1 }
-          \__bnvs_keyval_defined:n { ##1 }
+          \__bnvs_keyval_brackets:n { ##1 }
           \BNVS_end:
         }
       } {
@@ -8589,6 +8801,16 @@ end
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
         \peek_catcode:NTF \c_group_begin_token {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is a \texttt{X=\{\{...\}\}} list, for an indexed list of range specification.
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log:nn p { parse:nn(X={{...}}) }
+%</!final>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
           \__bnvs_if:cT n {
 \BNVS_warning:n { Ignoring~unexpected~suffix~.n:~#1 }
           }
@@ -8748,7 +8970,10 @@ end
 % \end{BNVS.macrocode}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { X={{...}}:n } #1 {
+\BNVS_new:cpn { X={{...}}:w } #1 #2 \s_stop {
+  \regex_match:nnT { \S } { #2 } {
+    \BNVS_warning:n { Ignoring~#2 }
+  }
   \__bnvs_gunset_deep:vv { id } { tag }
 %    \end{macrocode}s
 % \end{BNVS.macrocode}
@@ -8773,7 +8998,7 @@ end
 %    \begin{macrocode}
   \__bnvs_tl_put_right:cv { root } { tag }
   \__bnvs_tl_put_right:cn { root } { . }
-  \__bnvs_keyval_named:n { #1 }
+  \__bnvs_keyval_listed:n { #1 }
   \BNVS_end:
 %    \end{macrocode}
 % \begin{BNVS.test}{bnvs:cn={parse:nn}{/A={{}}}, noigre}
@@ -8834,12 +9059,16 @@ end
 %    \begin{macrocode}
 \BNVS_new:cpn { X=...:n } #1 {
 %    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is a \texttt{X=...}.
 % \begin{BNVS.gobble}
 %<*!final>
+\BNVS_DEBUG_log:nn p { X=...:n }
   \BNVS_DEBUG_begin:n { X=...:n }
 %</!final>
 %<*!debug>
 % \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
 %    \begin{macrocode}
   \BNVS_begin:
 %    \end{macrocode}
@@ -8886,9 +9115,9 @@ end
       \__bnvs_gunset:nvv       W { id } { tag }
       \__bnvs_gunset_cache:nvv W { id } { tag }      
     } {
-      \exp_args:Nnx \use:n {
-        \__bnvs_gset:nvvn W { id } { tag }
-      } { \seq_use:Nn \l__bnvs_a_seq { \q__bnvs } }
+      \exp_args:Nnx \__bnvs_gset:nvvn { W { id } { tag } } {
+        \seq_use:Nn \l__bnvs_a_seq { \q__bnvs }
+      }
     }
   }
   \BNVS_end:
@@ -8910,8 +9139,6 @@ end
 % either for ranges or values.
 % The first \meta{definition} is for the |VWAZL| keys, the other ones
 % are for the |W| key.
-%
-% 
 % \end{function}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
@@ -8954,21 +9181,29 @@ end
 % \end{BNVS.test}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-   \__bnvs_gunset:vv { id } { tag }
+    \__bnvs_gunset:vv { id } { tag }
   } {
 %    \end{macrocode}
 % \end{BNVS.macrocode}
 % The first definition.
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-    \BNVS_tl_use:Nv \__bnvs_parse_IT:n { a }
     \__bnvs_seq_if_empty:cTF { a } {
       \__bnvs_gunset:nvv       W { id } { tag }
       \__bnvs_gunset_cache:nvv W { id } { tag }      
+      \BNVS_tl_use:Nv \__bnvs_parse_IT:n { a }
     } {
-      \__bnvs_seq_use:cn {
-        \__bnvs_set:nvvn W { id } { tag }
-      } { a } { \q__bnvs }
+      \__bnvs_int_zero:c { i }
+      \__bnvs_seq_map_inline:cn { a } {
+        \__bnvs_int_incr:c { i }
+        {
+          \__bnvs_tl_put_right:cn { tag } { . }
+          \exp_args:Nnx \__bnvs_tl_put_right:cn { tag } {
+            \__bnvs_int_use:c { i }
+          }
+          \__bnvs_parse_IT:n { i }
+        }
+      }
     }
   }
   \BNVS_end:
@@ -9035,7 +9270,7 @@ end
 % \begin{BNVS.test}{:N=\__bnvs_parse_prepare:N, noigre}
 % \__bnvs_tl_set:cn { TEST_A } {A[B]C}
 % \__bnvs_parse_prepare:N \l__bnvs_TEST_A_tl
-% \assert_equal:xxn { \tl_to_str:V \l__bnvs_TEST_A_tl } { \tl_to_str:n { A \BNVS_square_brackets:w{B} C } } {1}
+% \assert_equal:xxn { \tl_to_str:V \l__bnvs_TEST_A_tl } { \tl_to_str:n { A \use:c { BNVS[...]:w } {B} C } } {1}
 % \end{BNVS.test}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
@@ -9047,7 +9282,7 @@ end
     ]} {
       \regex_replace_all:nnNF { \[ ([^\]%---)
       ]*%---[(
-      ) \] } { \c{BNVS_square_brackets:w} { \1 } } #1 {
+      ) \] } { \c{BNVS[...]:w} { \1 } } #1 {
         \__bnvs_set_true:c { parse }
       }
     } {
@@ -9765,7 +10000,7 @@ end
 % the \meta{name} tl variable contains a set name whereas
 % the \meta{id} tl variable contains a frame id.
 % If \meta{name} tl variable contents is a recorded set, on return,
-% \meta{a} tl variable contains the resolved name,
+% \meta{tag} tl variable contains the resolved name,
 % \meta{id} tl variable contains the used frame id,
 % \meta{path} seq variable is prepended with new dotted path components,
 % \meta{n} tl variable is empty on return iff there is a trailing |.n|,
@@ -9798,7 +10033,7 @@ end
   \__bnvs_match_if_once:NvTF \c__bnvs_A_ref_Z_regex { #1 }  {
 %    \end{macrocode}
 % \end{BNVS.macrocode}
-% This is a correct \meta{a}, update the path sequence accordingly.
+% This is a correct \meta{tag}, update the path sequence accordingly.
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
     \__bnvs_if_match_pop_TIP:cccTF { #1 } { #2 } { #3 } {
@@ -10017,7 +10252,7 @@ end
 %   \__bnvs_if_assign_value:vvv,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_assign_value:nnnTF} \marg{id} \marg{a} \meta{value} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_assign_value:nnnTF} \marg{id} \marg{tag} \meta{value} \marg{yes code} \marg{no code}
 % \end{syntax}
 % \end{function}
 % \begin{BNVS.macrocode}
@@ -10041,7 +10276,7 @@ end
 %    \begin{macrocode}
   \__bnvs_if_resolve:ncTF { #3 } { a } {
     \__bnvs_gunset:nn { #1 } { #2 }
-    \tl_map_inline:nn { V { V * } v } {
+    \tl_map_inline:nn { V { V * } v W { W * }} {
       \__bnvs_gset:nnnv { ##1 } { #1 } { #2 } { a }
     }
     \BNVS_end:
@@ -10103,10 +10338,10 @@ end
 %   \__bnvs_if_append_V:nvc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_V:nncTF} \marg{id} \marg{a} \meta{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_V:nncTF} \marg{id} \marg{a} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_V:nncTF} \marg{id} \marg{tag} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_V:nncTF} \marg{id} \marg{tag} \meta{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the content of the \meta{id}, \meta{a} value counter
+% Resolve the content of the \meta{id}, \meta{tag} value counter
 % into the \meta{ans} |tl| variable or
 % append this value to the right of this variable.
 % Execute \meta{yes code} when there is a \meta{value}, \meta{no code} otherwise.
@@ -10438,12 +10673,12 @@ end
 %   \__bnvs_if_append_A:nnc,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_A:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_A:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_A:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_A:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the first index of the \meta{a} slide range
+% Resolve the first index of the \meta{tag} slide range
 % into the \meta{ans} |tl| variable or
-% append the first index of the \meta{a} slide range
+% append the first index of the \meta{tag} slide range
 % to the \meta{ans} |tl| variable.
 % If no resolution occurs the content of the
 % \meta{ans} |tl| variable is undefined in the first case
@@ -10650,10 +10885,10 @@ Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_A:nncTF/1) }
 %   \__bnvs_if_append_Z:nnc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_Z:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_Z:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_Z:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_Z:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the last index of the \meta{id}!\meta{a} range
+% Resolve the last index of the \meta{id}!\meta{tag} range
 % into or to the right of the \meta{ans} |tl| variable, when possible.
 % Execute \meta{yes code} when a last index was given,
 % \meta{no code} otherwise.
@@ -10833,10 +11068,10 @@ Unavailable~first~for~#1~(\token_to_str:N \__bnvs_if_resolve_Z:ncTF/1) }
 %   \__bnvs_if_append_L:nnc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_L:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_L:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_L:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_L:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the length of the \meta{id}!\meta{a} slide range into \meta{ans} |tl| variable,
+% Resolve the length of the \meta{id}!\meta{tag} slide range into \meta{ans} |tl| variable,
 % or append the length of the \meta{key} slide range to this variable.
 % Execute \meta{yes code} when there is a \meta{length}, \meta{no code} otherwise.
 % \end{function}
@@ -11031,7 +11266,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_previous:nnc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_append_previous:ncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_previous:ncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Resolve the index after the \meta{id}!\meta{key} slide range into the \meta{ans} |tl| variable,
 % or append this index to that variable.
@@ -11134,10 +11369,10 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_last:vvc,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_last:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_last:nncTF}  \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_last:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_last:nncTF}  \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the last index of the \meta{id}!\meta{a} slide range into the \meta{ans} |tl| variable,
+% Resolve the last index of the \meta{id}!\meta{tag} slide range into the \meta{ans} |tl| variable,
 % or append this index to that variable.
 % Execute \meta{yes code} when there is a \meta{last} index, \meta{no code} otherwise.
 % In the latter case, the content of the \meta{ans} |tl| variable
@@ -11204,10 +11439,10 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_length:vvc,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_length:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_length:nncTF}  \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_length:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_length:nncTF}  \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the length of the \meta{id}!\meta{a} slide range into the \meta{ans} |tl| variable,
+% Resolve the length of the \meta{id}!\meta{tag} slide range into the \meta{ans} |tl| variable,
 % or append this number to that variable.
 % Execute \meta{yes code} when there is a \meta{last} index, \meta{no code} otherwise.
 % In the latter case, the content of the \meta{ans} |tl| variable
@@ -11270,8 +11505,8 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_range:nnc,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_range:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_range:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_range:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_range:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Resolve the range of the \meta{id}!\meta{key} slide range into the \meta{ans} |tl| variable
 % or append this range to that variable.
@@ -11732,10 +11967,10 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_v:vvc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_v:nncTF} \marg{id} \marg{a} \meta{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_v:nncTF} \marg{id} \marg{a} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_v:nncTF} \marg{id} \marg{tag} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_v:nncTF} \marg{id} \marg{tag} \meta{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the value of the \meta{id}!\meta{a} overlay set
+% Resolve the value of the \meta{id}!\meta{tag} overlay set
 % into the \meta{ans} |tl| variable or
 % append this value to the right of this variable.
 % Execute \meta{yes code} when there is a \meta{value}, \meta{no code} otherwise.
@@ -11957,11 +12192,11 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_index:vvvc
 % }
 % \begin{syntax}
-% \cs{__bnvs_index_can:nnTF} \marg{id} \marg{a} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_resolve_index:nnncTF} \marg{id} \marg{a} \marg{integer} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_index:nnncTF} \marg{id} \marg{a} \marg{integer} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_index_can:nnTF} \marg{id} \marg{tag} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_index:nnncTF} \marg{id} \marg{tag} \marg{integer} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_index:nnncTF} \marg{id} \marg{tag} \marg{integer} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Resolve the index associated to the \meta{id}!\meta{a} set and \meta{integer} slide range
+% Resolve the index associated to the \meta{id}!\meta{tag} set and \meta{integer} slide range
 % into the \meta{ans} |tl| variable or
 % append this index to the right of that variable.
 % When \meta{integer} is 1, this is the first index,
@@ -12302,9 +12537,9 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_n_assign:vvv
 % }
 % \begin{syntax}
-% \cs{__bnvs_n_assign:nnn} \marg{id} \marg{a} \marg{value}
+% \cs{__bnvs_n_assign:nnn} \marg{id} \marg{tag} \marg{value}
 % \end{syntax}
-% Assigns the resolved \meta{value} to |n| counter \meta{id}!\meta{a}.
+% Assigns the resolved \meta{value} to |n| counter \meta{id}!\meta{tag}.
 % Execute \meta{yes code} when resolution succeeds, \meta{no code} otherwise.
 % \end{function}
 % \begin{BNVS.macrocode}
@@ -12346,9 +12581,9 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_n:vc,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_n:nncTF} \marg{id} \marg{a} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_n:nncTF} \marg{id} \marg{tag} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
-% Evaluate the n counter associated to the \marg{id}!\marg{a} overlay set
+% Evaluate the n counter associated to the \marg{id}!\marg{tag} overlay set
 % into \meta{ans} |tl| variable.
 % Initialize this counter to 1 on the first use.
 % \meta{no code} is never executed.
@@ -12489,7 +12724,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 % \cs{__bnvs_if_append_n_index:nncTF} \marg{id} \marg{tag} \meta{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Resolve the index for the value of the n counter associated to the
-% \marg{a} overlay set into the \meta{ans} |tl| variable or
+% \marg{tag} overlay set into the \meta{ans} |tl| variable or
 % append this value the right of that variable.
 % Initialize this counter to 1 on the first use.
 % If the computation is possible, \meta{yes code} is executed, otherwise
@@ -12646,8 +12881,8 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_v_incr:vvnc,
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_v_incr:nnnTF} \marg{id} \marg{a} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_v_incr:nnncTF} \marg{id}  \marg{a} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_v_incr:nnnTF} \marg{id} \marg{tag} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_v_incr:nnncTF} \marg{id}  \marg{tag} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
 % \end{function}
 % Increment the value counter position accordingly.
@@ -13081,10 +13316,10 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_n_post:vvnc
 %   }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_n_incr:nnnncTF} \marg{id} \marg{a} \marg{base} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_resolve_n_incr:nnncTF} \marg{id} \marg{a} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_n_incr:nnnncTF} \marg{id} \marg{a} \marg{base} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_n_incr:nnncTF} \marg{id} \marg{a} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_n_incr:nnnncTF} \marg{id} \marg{tag} \marg{base} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_n_incr:nnncTF} \marg{id} \marg{tag} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_n_incr:nnnncTF} \marg{id} \marg{tag} \marg{base} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_n_incr:nnncTF} \marg{id} \marg{tag} \marg{offset} \marg{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
 % Increment the implicit |n| counter accordingly.
 % When requested, put the resulting index in the \meta{ans} tl variable or append to its right.
@@ -13331,11 +13566,11 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 %   \__bnvs_if_append_v_post:vvnc
 % }
 % \begin{syntax}
-% \cs{__bnvs_if_resolve_v_post:nnncTF} \marg{id} \marg{a} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
-% \cs{__bnvs_if_append_v_post:nnncTF} \marg{id} \marg{a} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_resolve_v_post:nnncTF} \marg{id} \marg{tag} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
+% \cs{__bnvs_if_append_v_post:nnncTF} \marg{id} \marg{tag} \marg{offset} \meta{ans} \marg{yes code} \marg{no code}
 % \end{syntax}
 % \end{function}
-% Resolve the value of the free counter for the given \meta{a} into
+% Resolve the value of the free counter for the given \meta{tag} into
 % the \meta{ans} |tl| variable then increment this free counter position
 % accordingly.
 % The append version, appends the value to the right of the \meta{ans} |tl| variable.
@@ -13992,7 +14227,7 @@ Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
 % Implementation:
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-  \__bnvs_if_regex_split:cnTF { split } { #1 } {
+    \__bnvs_if_regex_split:cnTF { split } { #1 } {
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 %<*!final>
