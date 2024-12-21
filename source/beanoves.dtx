@@ -3682,6 +3682,9 @@ end
     \cs_set_eq:NN \assert_equal:nnn \BNVS_ASSERT_equal:nnn
     \cs_set_eq:NN \assert_equal:xnn \BNVS_ASSERT_equal:xnn
     \cs_set_eq:NN \assert_equal:xxn \BNVS_ASSERT_equal:xxn
+    \cs_set_eq:NN \assert_in:nnn \BNVS_ASSERT_in:nnn
+    \cs_set_eq:NN \assert_in:xnn \BNVS_ASSERT_in:xnn
+    \cs_set_eq:NN \assert_in:xxn \BNVS_ASSERT_in:xxn
     \cs_set_eq:NN \assert_size_equal:nnn \BNVS_ASSERT_size_equal:nnn
     \cs_set_eq:NN \assert_size_not_equal:nnn \BNVS_ASSERT_size_not_equal:nnn
     \cs_set_eq:NN \assert_equal_tl:vnn \BNVS_ASSERT_equal_tl:vnn
@@ -3690,6 +3693,7 @@ end
     \cs_set_eq:NN \assert_equal_int:vxn \BNVS_ASSERT_equal_int:vxn
     \cs_set_eq:NN \test_fail:n \BNVS_TEST_fail:n
     \cs_set_eq:NN \test_fail:x \BNVS_TEST_fail:x
+    \cs_set_eq:NN \test_catch_error:n \BNVS_TEST_catch_error:n
     \cs_set:Npn \assert_equal_ans:nn {
       \assert_equal_tl:vnn { ans }
     }
@@ -4453,6 +4457,17 @@ end
     \end{BNVS.failure}
   }
 }
+\cs_generate_variant:Nn \BNVS_ASSERT_equal:nnn { x, xx }
+\cs_set:Npn \BNVS_ASSERT_in:nnn #1 #2 #3 {
+  \tl_if_in:nnF { #1 } { #2 } {
+    \msg_error:nnnx { beanoves } { :nn } { FAILED~`#2'~not~in~`#1' } { \BeanovesCurrentTestFile :\the\inputlineno :#3}
+    \begin{BNVS.failure}
+    \item FAILURE~`#2'~not~in~`#1'~(\BeanovesCurrentTestFile :\the\inputlineno)
+    \item #3
+    \end{BNVS.failure}
+  }
+}
+\cs_generate_variant:Nn \BNVS_ASSERT_in:nnn { x, xx }
 \box_new:N \l__bnvs_TEST_A_box
 \box_new:N \l__bnvs_TEST_B_box
 \cs_set:Npn \BNVS_ASSERT_size_equal:nnn #1 #2 #3 {
@@ -4514,7 +4529,16 @@ end
   \item #1
   \end{BNVS.failure}
 }
-\cs_generate_variant:Nn \BNVS_ASSERT_equal:nnn { x, xx }
+\tl_new:N \g__BNVS_TEST_error_tl
+\cs_set:Npn \BNVS_TEST_catch_error:n #1 {
+  \tl_gclear:N \g__BNVS_TEST_error_tl
+  \cs_set:Npn \BNVS_error:n ##1 {
+    \tl_gset:Nn \g__BNVS_TEST_error_tl { #1/##1 }
+  }
+  \cs_set:Npn \assert_in_error:nn {
+    \BNVS_ASSERT_in:xnn { \tl_use:N \g__BNVS_TEST_error_tl }
+  }
+}
 \cs_set:Npn \BNVS_ASSERT_equal_tl:vnn {
   \BNVS_tl_use:Nv \BNVS_ASSERT_equal:nnn
 }
@@ -5996,7 +6020,7 @@ end
 % \begin{syntax}
 % \cs{__bnvs_is_provide_gset:nnnTF} \KWNmarg{key} \KWNmarg{id} \KWNmarg{tag} \KWNmarg{yes code} \KWNmarg{no code}
 % \end{syntax}
-% Execute \KWNmeta{yes code} when in provide mode and gset, 
+% Execute \KWNmeta{yes code} when in provide mode and \texttt{\KWNmeta{id} !\KWNmeta{tag}/\KWNmeta{key}} is known, 
 % \KWNmeta{no code} otherwise.
 % \end{function}
 % \begin{BNVS.macrocode}
@@ -6844,7 +6868,6 @@ end
 % \BNVS_Test:nnn {X!_A1.1.2.n} {X, {!}, _A1, .1.2.n} {5'-X!}
 % \BNVS_Test:nnn {X!_A1.1.n.2} {X, {!}, _A1, .1.n.2} {5''-X!}
 % \end{BNVS.test}
-%
 % \begin{variable}{\c__bnvs_A_SP_Z_regex}
 % Matches the whole string.
 % \end{variable}
@@ -6894,7 +6917,55 @@ end
 % \BNVS_Test:nnn {1.2.3.n} {1,.2.3.n} {9'}
 % \BNVS_Test:nnn {1.B.C.n} {1,.B.C.n} {10'}
 % \end{BNVS.test}
-%
+% \begin{variable}{\c__bnvs_A_Pd_Z_regex}
+% Matches the whole string.
+% \end{variable}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\regex_const:Nn \c__bnvs_A_Pd_Z_regex {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{itemize}
+% \item[1:] The full match,
+% \item[2:] the path
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+  \A ( \ur{c__bnvs_short_regex} (?: \. \ur{c__bnvs_short_regex} )* )
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \item[3:] The trailing digits.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+  (?: \. ( [1-9]\d* ) ) \Z
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \end{itemize}
+% \begin{BNVS.test}{banner=A_Pd_Z_regex, noigre}
+% \cs_set:Npn \BNVS_Test:nnn #1 #2 {
+%   \BNVS_TEST_extract:Nnnn \c__bnvs_A_Pd_Z_regex { #1 } { #1, #2 }
+% }
+% \BNVS_Test:nnn {A.421} {A,421} {1}
+% \BNVS_Test:nnn {A.B.421} {A.B,421} {2}
+% \end{BNVS.test}
+% \begin{variable}{\c__bnvs_A_P_Z_regex}
+% Matches the whole string.
+% \end{variable}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\regex_const:Nn \c__bnvs_A_P_Z_regex {
+  \A \ur{c__bnvs_short_regex} (?: \. \ur{c__bnvs_short_regex} )* \Z
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{BNVS.test}{banner=A_P_Z_regex, noigre}
+% \cs_set:Npn \BNVS_Test:nn #1 {
+%   \BNVS_TEST_extract:Nnnn \c__bnvs_A_P_Z_regex { #1 } { #1 }
+% }
+% \BNVS_Test:nn {A} {1}
+% \BNVS_Test:nn {A.B} {2}
+% \BNVS_Test:nn {A.B.C} {3}
+% \end{BNVS.test}
 % \begin{variable}{\c__bnvs_colons_regex}
 % For ranges defined by a colon syntax.
 % One catching group for more than one colon.
@@ -7555,6 +7626,7 @@ end
 % \begin{function}{
 %   \__bnvs_range:nnnnn,
 %   \__bnvs_range:nnvvv,
+%   \__bnvs_range:vvvvv,
 % }
 %   \begin{syntax}
 %     \cs{__bnvs_range:nnnnn} \KWNmarg{id} \KWNmarg{tag} \KWNmarg{first} \KWNmarg{last} \KWNmarg{length}
@@ -7621,6 +7693,13 @@ end
   \BNVS_tl_use:nvvv {
      \__bnvs_range:nnnnn { #1 } { #2 }
   }
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { range:vvvvv } #1 #2 {
+  \BNVS_tl_use:Nvv \__bnvs_range:nnvvv { #1 } { #2 }
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -7774,7 +7853,7 @@ end
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
 \BNVS_new:cpn { range_IT:vvv } {
-  \__bnvs_range:nnvvv { id } { tag }
+  \__bnvs_range:vvvvv { id } { tag }
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -7812,7 +7891,7 @@ end
 % \end{BNVS.gobble}
 %    \begin{macrocode}
   } {
-    \__bnvs_is_provide_gset:nvvF V { #1 } { #2 } {
+    \__bnvs_is_provide_gset:nnnF V { #1 } { #2 } {
       \__bnvs_gunset_deep:nn { #1 } { #2 }
       \__bnvs_gunset:nn { #1 } { #2 }
       \tl_if_empty:nF { #3 } {
@@ -7832,8 +7911,8 @@ end
 % \end{BNVS.macrocode}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { parse_I:nv } #1 {
-  \BNVS_tl_use:nv { \__bnvs_parse_I:nn { #1 } }
+\BNVS_new:cpn { parsed_IT:n } {
+  \BNVS_tl_use:Nvv \__bnvs_parsed:nnn { id } { tag }
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -8736,7 +8815,7 @@ end
               \__bnvs_gunset_deep:vv { id } { tag }
               \__bnvs_gunset:vv { id } { tag }
               \__bnvs_parsed_IT:n { #2 }
-            } 
+            }
           } {
             \BNVS_error:n { Unreachable~3 }
           }
@@ -8756,7 +8835,7 @@ end
 % \begin{BNVS.gobble}
 %<*!final>
 } {
-  \BNVS_error:n { Not~at~root}
+  \BNVS_error:n { Not~at~the~top}
 }
 %</!final>
 % \end{BNVS.gobble}
@@ -8771,7 +8850,7 @@ end
 %   \__bnvs_tl_set:cn { ans }
 % }
 % \__bnvs_root_parse:nn {} {}
-% \BNVS_tl_use:Nv \tl_if_in:nnF { ans } { root } {
+% \BNVS_tl_use:Nv \tl_if_in:nnF { ans } { top } {
 %   \test_fail:n { A }
 % }
 % \end{BNVS.test}
@@ -8885,27 +8964,27 @@ end
 %</!debug>
 % \end{BNVS.gobble}
 %    \begin{macrocode}
-  \__bnvs_tl_clear:c { V }
-  \__bnvs_tl_clear:c { a }
+  \__bnvs_tl_clear:c V
+  \__bnvs_tl_clear:c a
   \cs_set:Npn \BNVS: {
     \cs_set:Npn \BNVS:n ####1 {
-      \__bnvs_tl_put_right:cn { a } { \BNVS:n { ####1 } }
+      \__bnvs_tl_put_right:cn a { \BNVS:n { ####1 } }
     }
     \cs_set:Npn \BNVS:nn ####1 ####2 {
-      \__bnvs_tl_put_right:cn { a } { \BNVS:nn { ####1 } { ####2 } }
+      \__bnvs_tl_put_right:cn a { \BNVS:nn { ####1 } { ####2 } }
     }
   }
   \cs_set:Npn \BNVS:n {
     \BNVS:
-    \__bnvs_tl_set:cn { V }
+    \__bnvs_tl_set:cn V
   }
   \cs_set:Npn \BNVS:nn {
     \BNVS:
     \BNVS:nn
   }
   \keyval_parse:nnn \BNVS:n \BNVS:nn { #1 }
-  \__bnvs_tl_if_empty:cTF { a } {
-    \__bnvs_tl_if_empty:cTF { V } {
+  \__bnvs_tl_if_empty:cTF a {
+    \__bnvs_tl_if_empty:cTF V {
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 %<*!final>
@@ -8936,6 +9015,13 @@ end
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
   } {
+    \cs_set:Npn \BNVS:n ##1 {
+      \tl_if_empty:nF {
+        \__bnvs_parse_IT:n { ##1 }
+      }
+    }
+    \BNVS_tl_use:Nv \BNVS:n V
+    \BNVS_tl_use:c a
 %    \end{macrocode}
 % \begin{BNVS.gobble}
 %<*!final>
@@ -8982,7 +9068,7 @@ end
 %    \begin{macrocode}
   \__bnvs_range_if_set:cccnTF A Z L { #1 } {
     \__bnvs_int_zero:c { next_IT }
-    \__bnvs_next_IT:n {s
+    \__bnvs_next_IT:n {
       \__bnvs_set_true:c { deep }
       \BNVS_log_tl:c A
       \BNVS_log_tl:c Z
@@ -9003,6 +9089,336 @@ end
 %</!final>
 % \end{BNVS.gobble}
 %    \begin{macrocode}
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { peek:nnnnw } {
+  \exp_args:Nc \peek_meaning:NTF { BNVS[]:w } {
+    #1
+  } {
+    \peek_meaning:NTF \c_group_begin_token {
+      #2
+    } {
+      \peek_meaning:NTF \q_stop {
+        #3
+      } {
+        #4
+      }
+    }
+  }
+}
+\BNVS_new:cpn { warn_until_q_stop:w } #1 \q_stop {
+  \tl_if_empty:nF { #1 } {
+    \BNVS_warning:n { Ignored:~#1 }
+  }
+}
+\BNVS_new:cpn { scan_until_q_stop:w } {
+  \peek_meaning:NTF \q_stop {
+    \use_none:n
+  } {
+    \__bnvs_warn_until_q_stop:w
+  }
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% Key only item.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { parse_P_IT:n } #1 {
+  \__bnvs_match_if_once:NnTF \c__bnvs_A_P_Z_regex { #1 } {
+    \exp_args:Nnnx \BNVS_tl_use:nv { \__bnvs_gset:nnnn V } { id } {
+      \BNVS_tl_use:c { root } #1
+    } 1
+  } {
+    \BNVS_error:n { Unsupported~#1 }
+  }
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { parse_Pd_until_q_stop_IT:nw } #1 {
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%<*!final>
+  \cs_set:Npn \BNVS:w ##1 \q_stop {
+    \BNVS_error:n { Unreachable(parse_Pd_until_q_stop_IT:nw): #1/##1 }
+  }
+%</!final>
+%<*!debug>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  \__bnvs_match_if_once:NnTF \c__bnvs_A_Pd_Z_regex { #1 } {
+    \__bnvs_match_pop_left:cTF a {
+      \__bnvs_tl_put_left:cv { a } { root }
+      \__bnvs_match_pop_left:cTF b {
+        \__bnvs_tl_if_empty:cTF { b } {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is not a \texttt{A...\KWNmeta{number}} refererence.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}        
+          \__bnvs_peek:nnnnw {
+            \cs_set:Npn \BNVS:w { }
+            \cs_set:cpn { \BNVS[]:w } ##1 {
+              \__bnvs_bracket_parse_I:vn a { ##1 }
+              \__bnvs_warn_until_q_stop:w
+            }
+          } {
+            \cs_set:Npn \BNVS:w ##1 {
+              \__bnvs_brace_parse_I:vn a { ##1 }
+              \__bnvs_warn_until_q_stop:w
+            }
+          } {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% No specification: \texttt{A=} nothing, unset everything.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}        
+            \cs_set:Npn \BNVS:w { \use_none:n }
+            \__bnvs_gunset_deep:vv { id } a
+            \__bnvs_gunset:vv { id } a
+          } {
+            \cs_set:Npn \BNVS:w ##1 \q_stop {
+              \__bnvs_range_if_set:cccnTF A Z L { ##1 } {
+                \__bnvs_range:vvvvv { id } a A Z L
+              } {
+                \__bnvs_is_gset:nvvTF V { id } a {
+                  \__bnvs_tl_put_right:cn a .
+                  \__bnvs_tl_put_right:cv a b
+                  \cs_set:Npn \BNVS:w ##1 \q_stop {
+                    \__bnvs_is_provide_gset:nvvF V { id } a {
+                      \__bnvs_gunset_deep:vv { id } a
+                      \__bnvs_gunset:vv { id } a
+                      \__bnvs_gset:nvvn V { id } a { ##1 }
+                    }
+                  }
+                } {
+                  \cs_set:Npn \BNVS:w ##1 \q_stop {
+                    \__bnvs_gunset_deep:vv { id } a
+                    \__bnvs_gunset:vv { id } a
+                    \__bnvs_gset:nvvn V { id } a { ##1 }
+                  }
+                }
+              }
+            }
+          }
+        } {
+          \__bnvs_peek:nnnnw {
+            \cs_set:Npn \BNVS:w ##1 \q_stop {
+              \BNVS_error:n { Unexpected~[]:~##1 }
+            }
+          } {
+            \cs_set:Npn \BNVS:w ##1 \q_stop {
+              \BNVS_error:n { Unexpected~{}:~##1 }
+            }
+          } {
+            \cs_set:Npn \BNVS:w { \use_none:n }
+            \__bnvs_gunset_deep:vv { id } a
+            \__bnvs_gunset:vv { id } a
+          } {
+            \cs_set:Npn \BNVS:w ##1 \q_stop {
+              \__bnvs_range_if_set:cccnTF A Z L { ##1 } {
+                \BNVS_error:n { Unexpected~colon:~##1 }
+              } {
+                \__bnvs_is_gset:nvvTF V { id } a {
+                  \__bnvs_tl_put_right:cn a .
+                  \__bnvs_tl_put_right:cv a b
+                  \__bnvs_is_provide_gset:nvvF V { id } a {
+                    \__bnvs_gunset_deep:vv { id } a
+                    \__bnvs_gunset:vv { id } a
+                    \__bnvs_gset:nvvn V { id } a { ##1 }
+                  }
+                } {
+                  \__bnvs_gunset_deep:vv { id } a
+                  \__bnvs_gunset:vv { id } a
+                  \__bnvs_tl_if_eq:cnTF b 1 {
+                    \__bnvs_gset:nvvn V { id } a { ##1 }
+                  } {
+                    \__bnvs_gset:nvvn V { id } a 1
+                  }
+                  \__bnvs_tl_put_right:cn a .
+                  \__bnvs_tl_put_right:cv a b
+                  \__bnvs_gset:nvvn V { id } a { ##1 }
+                }
+              }
+            }
+          }
+        }
+      } {
+        \BNVS_error:n { Unreachable~2 (parse_Pd_IT:nn) }
+      }
+    } {
+      \BNVS_error:n { Unreachable~1 (parse_Pd_IT:nn) }
+    }
+%</!debug>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  } {
+%    \end{macrocode}
+% \begin{BNVS.test}{bnvs:c={ parse_Pd_until_q_stop_IT:nw }, noigre}
+% \cs_set:Npn \BNVS_error:n #1 {
+% \end{BNVS.test}
+%    \begin{macrocode}
+    \BNVS_error:n { Unsupported~#1 }
+  }
+  \BNVS:w
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { brace_parse_IT:nw } #1 {
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+% DEBUG type: p => parse
+%<*!final>
+\BNVS_DEBUG_log_set:ncnn p { brace_parse_IT:nw } { SPEC } { #1 }
+\BNVS_DEBUG_log_brace_parse_IT_nw:nn { } { ... }
+\BNVS_DEBUG_log_tl:nc p { root }
+  \BNVS_DEBUG_begin:n { brace_parse_IT:nw }
+%</!final>
+%<*!debug>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  \BNVS_begin:
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%</!debug>
+% \end{BNVS.gobble}
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log_brace_parse_IT_nw:nn { ... } { ...START... }
+%</!final>
+% \end{BNVS.macrocode}
+% We prepend the argument with |root|, in case we are recursive.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+  \__bnvs_tl_put_right:cv { root } { tag }
+  \__bnvs_tl_put_right:cn { root } { . }
+
+  \keyval_parse:nnn \BNVS_parse_P_IT:n \BNVS:nn { #1 }
+
+
+
+
+
+  \BNVS_end:
+  \__bnvs_scan_until_q_stop:w
+}
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+\BNVS_new:cpn { brace_parse_IT:n } #1 {
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+% DEBUG type: p => parse
+%<*!final>
+\BNVS_DEBUG_log_set:ncnn p { brace_parse_IT:n } { SPEC } { #1 }
+\BNVS_DEBUG_log_brace_parse_IT_n:nn { } { ... }
+\BNVS_DEBUG_log_tl:nc p { root }
+  \BNVS_DEBUG_begin:n { brace_parse_IT:n }
+%</!final>
+%<*!debug>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  \BNVS_begin:
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%</!debug>
+% \end{BNVS.gobble}
+% \end{BNVS.macrocode}
+% We prepend the argument with |root|, in case we are recursive.
+% \begin{BNVS.macrocode}
+% \begin{BNVS.gobble}
+%<*!final>
+%\cs_set:Npn \BNVS[]:w { \BNVS[]:w }
+\BNVS_DEBUG_log_brace_parse_IT_n:nn { ... } { ...START... }
+%</!final>
+% \end{BNVS.gobble}
+%    \begin{macrocode}
+  \exp_args:Nc
+  \peek_meaning:NTF { BNVS[]:w } {
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% This is a \texttt{X=[...]} list, for an indexed list of range specification.
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log:nn p    { brace_parse_IT:n(X=[...]) }
+    \BNVS_DEBUG_begin:n { brace_parse_IT:n(X=[...]) }
+%</!final>
+%<*!debug>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+    \BNVS_begin:
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%</!debug>
+% \end{BNVS.gobble}
+% \end{BNVS.macrocode}
+% We will prepend the argument with |root|, in case we are recursive.
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+    \cs_set:cpn { BNVS[]:w } ##1 ##2 \q_stop {
+      \regex_match:nnT { \S } { ##2 } {
+        \BNVS_warning:n { Ignoring~##2 }
+      }
+%    \end{macrocode}
+% \begin{BNVS.gobble}
+%<*!final>
+      \BNVS_DEBUG_log:nn p { BNVS[]:w }
+%</!final>
+% \end{BNVS.gobble}
+% \begin{BNVS.test}{bnvs:cn={brace_parse_IT:n}{/[]}, ignore}
+% \BNVS_DEBUG_push:n { pD }
+% \__bnvs_brace_parse_IT:n { X } { 123 }
+% \BNVS_DEBUG_log_g:nn D {}
+% \typein { F00000 }
+% \__bnvs_if_get:nnncTF V { } { X } { TEST_A } {
+%   \assert_equal_tl:vnn { TEST_A } { 123 } { 1 }
+% } {
+%   \test_fail:n { MISSING~KEY~!X/V }
+% }
+% \__bnvs_parsed:nn { X } { }
+% \BNVS_DEBUG_log_g:nn D {}
+% \typein { F00000 }
+% \__bnvs_if_get:nnncT V { } { X } { TEST_A } {
+%   \test_fail:n { UNEXPECTED~KEY~!X/V }
+% }
+% \end{BNVS.test}
+%    \begin{macrocode}
+      \__bnvs_bracket_keyval_IT:n { ##1 }
+      \BNVS_end:
+    }
+  } {
+    \peek_meaning:NTF \c_group_begin_token {
+      \BNVS_use:c { {{...}}:w }
+    } {
+      \peek_meaning:NTF \q_stop: {
+        \use_none:n
+      } {
+        \BNVS_use:c { {...}:w }
+      }
+    }
+  }
+  #1 \q_stop
+%    \end{macrocode}
+% \end{BNVS.macrocode}
+% We export \cs{l__bnvs_id_last_tl}:
+% \begin{BNVS.gobble}
+%<*!final>
+\BNVS_DEBUG_log_brace_parse_IT_n:nn { ... } { ...END }
+\BNVS_DEBUG_log_tl:nc p { id }
+\BNVS_DEBUG_log_tl:nc p { tag }
+%</!final>
+% \end{BNVS.gobble}
+% \begin{BNVS.macrocode}
+%    \begin{macrocode}
+  \BNVS_end_tl_set:cv { id_last } { id_last }
 }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -9062,7 +9478,7 @@ end
 % We will prepend the argument with |root|, in case we are recursive.
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-      \cs_set:cpn { BNVS[]:w } ##1 ##2 \s_stop {
+      \cs_set:cpn { BNVS[]:w } ##1 ##2 \q_stop {
         \regex_match:nnT { \S } { ##2 } {
           \BNVS_warning:n { Ignoring~##2 }
         }
@@ -9094,39 +9510,15 @@ end
         \BNVS_end:
       }
     } {
-      \peek_meaning:NTF \s_stop: {
+      \peek_meaning:NTF \q_stop: {
         \use_none:n
       } {
         \BNVS_use:c { X={...}:w }
       }
     }
-    #2 \s_stop
+    #2 \q_stop
   } {
     \BNVS_error:n { Invalid~name:~#2 }
-  }
-%    \end{macrocode}
-% \end{BNVS.macrocode}
-% We export \cs{l__bnvs_id_last_tl}:
-% \begin{BNVS.macrocode}
-%    \begin{macrocode}
-  \__bnvs_match_if_once:NvT \c__bnvs_one_suffix_regex { tag } {
-    \__bnvs_if_match_pop_left:cTF { a } {
-      \__bnvs_if_match_pop_left:cTF { a } {
-        \cs_set:Npn \BNVS_aux_parsed_nn: {
-          \__bnvs_gset:nvvn V { id } { a } { #2 }
-        }
-        \__bnvs_if_get:nvvcT V { id } { a } { b } {
-          \__bnvs_quark_if_nil:cF { b } {
-            \cs_set:Npn \BNVS_aux_parsed_nn: { }
-          }
-        }
-        \BNVS_aux_parsed_nn:
-      } {
-        \BNVS_error:n { Unreachable~2 }
-      }
-    } {
-      \BNVS_error:n { Unreachable~1 }
-    }
   }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
@@ -9250,7 +9642,7 @@ end
 % We will prepend the argument with |root|, in case we are recursive.
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-      \cs_set:cpn { BNVS[]:w } ##1 ##2 \s_stop {
+      \cs_set:cpn { BNVS[]:w } ##1 ##2 \q_stop {
         \regex_match:nnT { \S } { ##2 } {
           \BNVS_warning:n { Ignoring~##2 }
         }
@@ -9265,13 +9657,13 @@ end
         \BNVS_end:
       }
     } {
-      \peek_meaning:NTF \s_stop: {
+      \peek_meaning:NTF \q_stop: {
         \use_none:n
       } {
         \BNVS_use:c { X={...}:w }      
       }
     }
-    #2 \s_stop
+    #2 \q_stop
   } {
     \BNVS_error:n { Invalid~name:~#2 }
   }
@@ -9317,7 +9709,7 @@ end
 % \end{BNVS.macrocode}
 % \begin{BNVS.macrocode}
 %    \begin{macrocode}
-\BNVS_new:cpn { X={...}:w } #1 \s_stop {
+\BNVS_new:cpn { X={...}:w } #1 \q_stop {
   \__bnvs_gunset_deep:vv { id } { tag }
 %    \end{macrocode}
 % \end{BNVS.macrocode}
