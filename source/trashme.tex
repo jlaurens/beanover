@@ -1,15 +1,151 @@
 % !TEX TS-program = pdflatex
 % !TEX encoding = UTF-8 Unicode
-\documentclass{article}
+\documentclass{minimal}
+\RequirePackage{minted}
+\RequirePackage{luacode}
+%function BNVS.install_process_input_buffer() {
+%  luatexbase.add_to_callback(
+%    "process_input_buffer",
+%    BNVS.process_input_buffer,
+%    "bnvs"
+%  )
+%}
+%function BNVS.uninstall_process_input_buffer() {
+%  luatexbase.remove_from_callback(
+%    "process_input_buffer",
+%    "bnvs"
+%  )
+%}
+%function BNVS.process_input_buffer(buffer) {
+%  return nil
+%end
+%}
+% LINE:BEFORE \PYG{k}{\PYGZbs{}\PYGZus{}}\PYG{n+nb}{\PYGZus{}}Bean AFTER
+% PYG_k * bgroup * PYG_bs * PYG_us * egroup * PYG_n_us * azAZ_colon^0
+% LINE:BEFORE \PYG{k}{\PYGZbs{}Beanoves} AFTER
+% BEFORE PYG_k * bgroup * PYG_bs * azAZ_colon^0 * egroup * PYG_n_us * azAZ_colon^0
+% LINE:BEFORE \PYG{k}{\PYGZbs{}\PYGZus{}}\PYG{n+nb}{\PYGZus{}}Bean\PYG{n+nb}{\PYGZus{}}oves:nn AFTER
+% PYG_k * bgroup * PYG_bs * PYG_us * egroup * PYG_n_us
+\begin{luacode*}
+BNVS = {
+  x = {},
+}
+local lpeg = require("lpeg")
+local P = lpeg.P
+local C = lpeg.C
+
+local G = {
+  PYG_k      = P("\\PYG{k}"),
+  bgroup     = P("{"),
+  egroup     = P("}"),
+  PYG_bs     = P("\\PYGZbs{}"),
+  PYG_us     = P("\\PYGZus{}"),
+  PYG_n_us   = P("\\PYG{n+nb}{\\PYGZus{}}"),
+  azAZ_colon = lpeg.R("az", "AZ") + P(":"),
+}
+
+function G:new ()
+  local o = setmetatable({
+    x = {},
+  }, self)
+  self.__index = self
+  return o
+end
+
+function G:match (buffer)
+  local x = {}
+  local insert = function (m)
+    table.insert(x, (m or 'nil'))
+  end
+  local insert_us = function (m)
+    table.insert(x, '\\_')
+  end
+  local wrap = function(p)
+    return C(p) / insert
+  end
+  p = C((1-G.PYG_k)^0) / insert
+    * ( ( C(G.PYG_k) / insert
+      * ( C(G.bgroup * G.PYG_bs ) / insert
+        * ( C(G.PYG_us)   / insert_us + C(G.azAZ_colon) / insert )^1
+        * G.egroup
+        * ( C(G.PYG_n_us) / insert_us + C(G.azAZ_colon) / insert )^0
+        * P(true) / function (m) table.insert(x, --{
+                      '}') end
+        + C(1) / insert
+        )
+      ) * C((1-G.PYG_k)^0) / insert )^0
+
+  local no_PYG_k = self:wrap( ( 1 - G.PYG_k )^0 )
+  local command  = self:wrap( G.PYG_k )
+    * (
+          self:wrap( G.bgroup
+                   * G.PYG_bs
+                   * ( G.PYG_us   + G.azAZ_colon )^-1
+                   )
+        * G.egroup
+        * self:wrap( ( G.PYG_n_us + G.azAZ_colon )^0 )
+        * P(true) / function()
+                      table.insert(o.x,--{
+                      '}')
+                     end
+        + self:wrap( G.PYG_k )
+      )
+  --local p = no_PYG_k * ( command * no_PYG_k )^0
+  if p:match(buffer) then
+    return table.concat(x, "")
+  end
+end
+
+function G:wrap(p)
+  assert(p,'Bad argument')
+  return assert(lpeg.Cmt(lpeg.C(p), function (y)
+    table.insert(self.x,y)
+  end), 'No result')
+end
+
+BNVS.G = G
+
+function BNVS.process_input_buffer(buffer)
+  print("\nbuffer:"..buffer)
+  local g = BNVS.G:new()
+  buffer = g:match(buffer)
+  if buffer then
+    print("output:"..buffer)
+    return buffer
+  end
+end
+
+function BNVS.install_process_input_buffer()
+  luatexbase.add_to_callback(
+    "process_input_buffer",
+    BNVS.process_input_buffer,
+    "bnvs"
+  )
+end
+
+function BNVS.uninstall_process_input_buffer()
+  luatexbase.remove_from_callback(
+    "process_input_buffer",
+    "bnvs"
+  )
+end
+\end{luacode*}
 \ExplSyntaxOn
-\cs_set:Npn \FOO { \tl_map_inline:nn{foo}{####1####1} }
-\cs_set:Npn \BAR { bar }
-\exp_args:Nnx
-\tl_set:Nn \FOO { \exp_not:N \BAR \FOO }
-\tl_show:N \FOO
+\hook_gput_code:nnn{file/before}{bnvs}{
+  \exp_args:Nnx \regex_match:nnT { \.pygtex \Z } { \CurrentFileUsed } {
+    \directlua{BNVS.install_process_input_buffer()}
+  }
+}
+\hook_gput_code:nnn{file/after}{bnvs}{
+  \exp_args:Nnx \regex_match:nnT { \.pygtex \Z } { \CurrentFileUsed } {
+    \directlua{BNVS.uninstall_process_input_buffer()}
+  }
+}
 \ExplSyntaxOff
+\setminted{style=autumn}
 \begin{document}
-ABC
+\mintinline{latex}{  BEFORE \__Bean AFTER}
+\mintinline{latex}{BEFORE \Beanoves AFTER}
+\mintinline{latex}{BEFORE \__Bean_oves:nn AFTER}
+\mintinline{latex}{ X \f X \fg X}
 \end{document}
-
-

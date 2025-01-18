@@ -1,0 +1,20 @@
+\begin{tcblisting} {
+  listing only,
+  minted options={
+    fontsize=\small,
+    breaklines,
+    linenos,
+    numbersep=0.5\baselineskip,
+    escapeinside=||,
+  },
+  minted language=latex,
+}
+\__bnvs_gset_unresolvable:nnn |\KWNmarg{id}| |\KWNmarg{tag}| |\KWNmarg{key}|
+|...|
+\__bnvs_if_get:nnncT |\KWNmarg{id}| |\KWNmarg{tag}| |\KWNmarg{key}| |\KWNmarg{in}| {
+| | ...
+| | \__bnvs_if_unresolvable:cTF |\KWNmarg{in}| {
+| |   |\KWNmarg{yes code}| } { |\KWNmarg{no code}| }
+| | ...
+}
+\end{tcblisting}

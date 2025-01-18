@@ -1,0 +1,5700 @@
+%%
+%% This is file `beanoves-debug.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% beanoves.dtx  (with options: `package,debug')
+%% 
+\NeedsTeXFormat{LaTeX2e}[2020/01/01]
+\ProvidesExplPackage
+  {beanoves-debug}
+  {2024/01/11}
+  {1.0}
+  {Named overlay specifications for beamer}
+\cs_new:Npn \BNVS:c    #1    { __bnvs_#1     }
+\cs_new:Npn \BNVS_l:cn #1 #2 { l__bnvs_#1_#2 }
+\cs_new:Npn \BNVS_g:cn #1 #2 { g__bnvs_#1_#2 }
+\cs_new:Npn \BNVS_use_raw:N #1 { #1 }
+\cs_new:Npn \BNVS_use_raw:c #1 {
+  \exp_last_unbraced:No
+  \BNVS_use_raw:N { \cs:w #1 \cs_end: }
+}
+\cs_new:Npn \BNVS_use:c #1 {
+  \BNVS_use_raw:c { \BNVS:c { #1 } }
+}
+\cs_new:Npn \BNVS_use_raw:NN #1 #2 {
+  #1 #2
+}
+\cs_new:Npn \BNVS_use_raw:nN #1 #2 {
+  #1 #2
+}
+\cs_new:Npn \BNVS_use_raw:Nc #1 #2 {
+  \exp_last_unbraced:NNo
+  \BNVS_use_raw:NN #1 { \cs:w #2 \cs_end: }
+}
+\cs_new:Npn \BNVS_use_raw:nc #1 #2 {
+  \exp_last_unbraced:Nno
+  \BNVS_use_raw:nN { #1 } { \cs:w #2 \cs_end: }
+}
+\cs_new:Npn \BNVS_use:Nc #1 #2 {
+  \BNVS_use_raw:Nc #1 { \BNVS:c { #2 } }
+}
+\cs_new:Npn \BNVS_use:nc #1 #2 {
+  \BNVS_use_raw:nc { #1 } { \BNVS:c { #2 } }
+}
+\cs_set_eq:NN \BNVS_use_raw_saved:N \BNVS_use_raw:N
+\cs_set:Npn \BNVS_use_raw:N #1 {
+  \cs_if_exist:NF #1 {
+    \BNVS_fatal:x { Unknown~command~\token_to_str:N #1~(c) }
+  }
+  #1
+}
+\cs_set_eq:NN \BNVS_use_raw_saved:NN \BNVS_use_raw:NN
+\cs_set:Npn \BNVS_use_raw:NN #1 #2 {
+  \cs_if_exist:NF #2 {
+    \BNVS_fatal:x { Unknown~command~\token_to_str:N #2~(N) }
+  }
+  \BNVS_use_raw_saved:NN #1 #2
+}
+\cs_set_eq:NN \BNVS_use_raw_saved:nN \BNVS_use_raw:nN
+\cs_set:Npn \BNVS_use_raw:nN #1 #2 {
+  \cs_if_exist:NF #2 {
+    \BNVS_fatal:x { Unknown~command~\token_to_str:N #2~(use_raw:nN) }
+  }
+  \BNVS_use_raw_saved:nN { #1 } #2
+}
+\tl_new:N \l__BNVS_last_unbraced_tl
+\cs_new:Npn \BNVS_tl_last_unbraced:nv #1 {
+  \tl_set:Nn \l__BNVS_last_unbraced_tl { #1 }
+  \BNVS_tl_use:nc { \exp_last_unbraced:NV \l__BNVS_last_unbraced_tl }
+}
+\cs_new:Npn \BNVS_tl_use:nvv #1 #2 {
+  \BNVS_tl_use:nv { \BNVS_tl_use:nv { #1 } { #2 } }
+}
+\cs_new:Npn \BNVS_tl_use:nvvv #1 #2 {
+  \BNVS_tl_use:nvv { \BNVS_tl_use:nv { #1 } { #2 } }
+}
+\cs_new:Npn \BNVS_log:n #1 { }
+\cs_generate_variant:Nn \BNVS_log:n { x }
+\cs_new:Npn \BNVS_DEBUG:c #1 {
+  BNVS_DEBUG~#1~
+}
+\cs_new:Npn \BNVS_DEBUG_on:n #1 {
+  \tl_if_empty:nT { #1 } {
+    \typein { Empty~argument~not~allowed }
+  }
+  \cs_set:cpn { \BNVS_DEBUG:c { #1 } log:n } { \BNVS_log:n }
+  \cs_generate_variant:cn { \BNVS_DEBUG:c { #1 } log:n } { x }
+}
+\cs_new:Npn \BNVS_DEBUG_off:n #1 {
+  \tl_if_empty:nT { #1 } {
+    \typein { Empty~argument~not~allowed }
+  }
+  \cs_set:cpn { \BNVS_DEBUG:c { #1 } log:n } { \use_none:n }
+}
+\seq_new:N \l__BNVS_DEBUG_push_n_seq
+\cs_new:Npn \BNVS_DEBUG_push:n #1 {
+  \tl_if_empty:nT { #1 } {
+    \typein { Empty~argument~not~allowed }
+  }
+  \tl_map_inline:nn { #1 } {
+    \BNVS_DEBUG_on:n { ##1 }
+  }
+  \seq_put_left:Nn \l__BNVS_DEBUG_push_n_seq {
+    \tl_map_inline:nn { #1 } {
+      \BNVS_DEBUG_off:n { ##1 }
+    }
+  }
+}
+\tl_new:N \l__BNVS_DEBUG_push_n_tl
+\cs_new:Npn \BNVS_DEBUG_pop: {
+  \seq_pop_left:NNTF \l__BNVS_DEBUG_push_n_seq \l__BNVS_DEBUG_push_n_tl {
+    \l__BNVS_DEBUG_push_n_tl
+  } {
+    \BNVS_warning:n { Unbalanced~\BNVS_DEBUG_pop: }
+  }
+}
+\AddToHookNext { env/BNVS.test/begin } {
+  \BNVS_DEBUG_push:n { CDBGpfarsRomqibST }
+  \BNVS_DEBUG_pop:
+}
+\cs_new:Npn \BNVS_DEBUG_log:nn #1 {
+  \cs_if_exist_use:cF { \BNVS_DEBUG:c { #1 } log:n } {
+    \BNVS_warning:n { Undeclared~DEBUG~type:~#1}
+    \cs_new:cpn { \BNVS_DEBUG:c { #1 } log:n } { \use_none:n }
+    \use_none:n
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_on: {
+  \BNVS_DEBUG_on:n { pDC }
+  \BNVS_DEBUG_push:n { CDBGpfarsRomqibST }
+}
+\BNVS_DEBUG_on:
+\cs_new:Npn \BNVS_DEBUG_off: {
+  \BNVS_DEBUG_pop:
+  \BNVS_DEBUG_off:n {C}
+}
+\cs_new:Npn \BNVS_new:cpn #1 {
+\BNVS_DEBUG_log:nn C { New=>#1 }
+  \cs_new:cpn { \BNVS:c { #1 } }
+}
+\cs_new:Npn \BNVS_undefine:c #1 {
+  \cs_undefine:c { \BNVS:c { #1 } }
+}
+\cs_new:Npn \BNVS_set:cpn #1 {
+\BNVS_DEBUG_log:nn C { BNVS_set:cpn=>#1 }
+  \cs_set:cpn { \BNVS:c { #1 } }
+}
+\cs_generate_variant:Nn \cs_generate_variant:Nn { c }
+\cs_new:Npn \BNVS_generate_variant:cn #1 {
+  \cs_generate_variant:cn { \BNVS:c { #1 } }
+}
+\msg_new:nnn { beanoves } { :n } { #1 }
+\msg_new:nnn { beanoves } { :nn } { #1~(#2) }
+\cs_new:Npn \BNVS_warning:n {
+  \msg_warning:nnn { beanoves } { :n }
+}
+\cs_new:Npn \BNVS_warning:x {
+  \msg_warning:nnx { beanoves } { :n }
+}
+\cs_new:Npn \BNVS_error:n {
+  \msg_error:nnn { beanoves } { :n }
+}
+\cs_new:Npn \BNVS_error:x {
+  \msg_error:nnx { beanoves } { :n }
+}
+\cs_new:Npn \BNVS_fatal:n {
+  \msg_fatal:nnn { beanoves } { :n }
+}
+\cs_new:Npn \BNVS_fatal:x {
+  \msg_fatal:nnx { beanoves } { :n }
+}
+\cs_new:Npn \BNVS_log_a:nn #1 #2 {
+  \msg_term:nnn { beanoves } { :n } { #1~#2 }
+}
+\cs_generate_variant:Nn \BNVS_log_a:nn { xn, nx }
+\int_zero_new:N \l__BNVS_DEBUG_group_int
+\cs_set:Npn \BNVS_log:n {
+  \BNVS_log_a:xn
+  { ▃▃ \prg_replicate:nn { \l__BNVS_DEBUG_group_int } { ▁▃ } \space }
+}
+\cs_new:Npn \BNVS_N_new:c #1 {
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1:c } }
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1_new:c } }
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1_use:c } }
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1_use:Nc } }
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1_use:nc } }
+  \cs_new:cpn { BNVS_#1:c } ##1 {
+    l \BNVS:c{ ##1 } \tl_if_empty:nF { ##1 } { _ } #1
+  }
+  \cs_new:cpn { BNVS_#1_new:c } ##1 {
+\BNVS_log:x { New => \token_to_str:c { \cs:w BNVS_#1:c \cs_end: { ##1 } } }
+    \use:c { #1_new:c } { \use:c { BNVS_#1:c } { ##1 } }
+  }
+  \cs_new:cpn { BNVS_#1_undefine:c } ##1 {
+    \cs_undefine:c { \cs:w BNVS_#1:c \cs_end: { ##1 } }
+  }
+  \cs_new:cpn { BNVS_#1_use:c } ##1 {
+    \use:c { \cs:w BNVS_#1:c \cs_end: { ##1 } }
+  }
+  \cs_new:cpn { BNVS_#1_use:Nc } ##1 ##2 {
+    \BNVS_use_raw:Nc
+      ##1 { \cs:w BNVS_#1:c \cs_end: { ##2 } }
+  }
+  \cs_new:cpn { BNVS_#1_use:nc } ##1 ##2 {
+    \BNVS_use_raw:nc
+      { ##1 } { \cs:w BNVS_#1:c \cs_end: { ##2 } }
+  }
+}
+\cs_new:Npn \BNVS_v_new:c #1 {
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1_use:Nv } }
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1_use:cv } }
+\BNVS_log:x { New => \token_to_str:c { BNVS_#1_use:nv } }
+  \cs_new:cpn { BNVS_#1_use:Nv } ##1 ##2 {
+    \BNVS_use_raw:nc
+      { \exp_args:NV ##1 }
+      { \BNVS_use_raw:c { BNVS_#1:c } { ##2 } }
+  }
+  \cs_new:cpn { BNVS_#1_use:cv } ##1 ##2 {
+    \BNVS_use_raw:nc
+      { \exp_args:NnV \BNVS_use:c { ##1 } }
+      { \BNVS_use_raw:c { BNVS_#1:c } { ##2 } }
+  }
+  \cs_new:cpn { BNVS_#1_use:nv } ##1 ##2 {
+    \BNVS_use_raw:nc
+      { \exp_args:NnV \use:n { ##1 } }
+      { \BNVS_use_raw:c { BNVS_#1:c } { ##2 } }
+  }
+}
+\cs_new:Npn \BNVS_undefine_all:c #1 {
+  \cs_undefine:c { BNVS_#1:c }
+  \cs_undefine:c { BNVS_#1_new:c }
+  \cs_undefine:c { BNVS_#1_use:c }
+  \cs_undefine:c { BNVS_#1_use:nc }
+  \cs_undefine:c { BNVS_#1_use:Nc }
+  \cs_undefine:c { BNVS_#1_use:nv }
+  \cs_undefine:c { BNVS_#1_use:Nv }
+  \cs_undefine:c { BNVS_#1_use:cv }
+}
+\BNVS_N_new:c { bool }
+\BNVS_N_new:c { int }
+\BNVS_v_new:c { int }
+\BNVS_N_new:c { tl }
+\BNVS_v_new:c { tl }
+\cs_new:Npn \BNVS_tl_use:Nvv #1 {
+  \BNVS_exp_args:Nvv #1
+}
+\BNVS_N_new:c { str }
+\BNVS_v_new:c { str }
+\BNVS_N_new:c { seq }
+\BNVS_v_new:c { seq }
+\cs_new:Npn \BNVS_use:Ncn #1 #2 #3 {
+  \BNVS_use_raw:c { BNVS_#3_use:Nc }   #1   { #2 }
+}
+\cs_new:Npn \BNVS_use:ncn #1 #2 #3 {
+  \BNVS_use_raw:c { BNVS_#3_use:nc } { #1 } { #2 }
+}
+\cs_new:Npn \BNVS_use:Nvn #1 #2 #3 {
+  \BNVS_use_raw:c { BNVS_#3_use:Nv }   #1   { #2 }
+}
+\cs_new:Npn \BNVS_use:nvn #1 #2 #3 {
+  \BNVS_use_raw:c { BNVS_#3_use:nv } { #1 } { #2 }
+}
+\cs_new:Npn \BNVS_use:Ncncn #1 #2 #3 {
+  \BNVS_use:ncn {
+    \BNVS_use:Ncn   #1   { #2 } { #3 }
+  }
+}
+\cs_new:Npn \BNVS_use:ncncn #1 #2 #3 {
+  \BNVS_use:ncn {
+    \BNVS_use:ncn { #1 } { #2 } { #3 }
+  }
+}
+\cs_new:Npn \BNVS_use:Nvncn #1 #2 #3 {
+  \BNVS_use:ncn {
+    \BNVS_use:Nvn   #1   { #2 } { #3 }
+  }
+}
+\cs_new:Npn \BNVS_use:nvncn #1 #2 #3 {
+  \BNVS_use:ncn {
+    \BNVS_use:nvn { #1 } { #2 } { #3 }
+  }
+}
+\cs_new:Npn \BNVS_use:Ncncncn #1 #2 #3 #4 #5 {
+  \BNVS_use:ncn {
+    \BNVS_use:Ncncn   #1   { #2 } { #3 } { #4 } { #5 }
+  }
+}
+\cs_new:Npn \BNVS_use:ncncncn #1 #2 #3 #4 #5 {
+  \BNVS_use:ncn {
+    \BNVS_use:ncncn { #1 } { #2 } { #3 } { #4 } { #5 }
+  }
+}
+\cs_new:Npn \BNVS_new_c:nc #1 #2 {
+  \BNVS_new:cpn { #1_#2:c } {
+    \BNVS_use_raw:c { BNVS_#1_use:nc } { \BNVS_use_raw:c { #1_#2:N } }
+  }
+}
+\cs_new:Npn \BNVS_new_cn:nc #1 #2 {
+  \BNVS_new:cpn { #1_#2:cn } ##1 {
+    \BNVS_use:ncn { \BNVS_use_raw:c { #1_#2:Nn } } { ##1 } { #1 }
+  }
+}
+\cs_new:Npn \BNVS_new_cnn:ncN #1 #2 #3 {
+  \BNVS_new:cpn { #2:cnn } ##1 {
+    \BNVS_use:Ncn { #3 } { ##1 } { #1 }
+  }
+}
+\cs_new:Npn \BNVS_new_cnn:nc #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_cnn:ncN { #1 } { #1_#2 }
+  } { #1_#2:Nnn }
+}
+\cs_new:Npn \BNVS_new_cnv:ncN #1 #2 #3 {
+  \BNVS_new:cpn { #2:cnv } ##1 ##2 {
+    \BNVS_tl_use:nv {
+      \BNVS_use:Ncn #3 { ##1 } { #1 } {  ##2 }
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_cnv:nc #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_cnv:ncN { #1 } { #1_#2 }
+  } { #1_#2:Nnn }
+}
+\cs_new:Npn \BNVS_new_cnx:ncN #1 #2 #3 {
+  \BNVS_new:cpn { #2:cnx } ##1 ##2 {
+    \exp_args:Nnx \use:n {
+      \BNVS_use:Ncn #3 { ##1 } { #1 } {  ##2 }
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_cnx:nc #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_cnx:ncN { #1 } { #1_#2 }
+  } { #1_#2:Nnn }
+}
+\cs_new:Npn \BNVS_new_cc:ncNn #1 #2 #3 #4 {
+  \BNVS_new:cpn { #2:cc } ##1 ##2 {
+    \BNVS_use:Ncncn #3 { ##1 } { #1 } { ##2 } { #4 }
+  }
+}
+\cs_new:Npn \BNVS_new_cc:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_cc:ncNn { #1 } { #1_#2 }
+  } { #1_#2:NN }
+}
+\cs_new:Npn \BNVS_undefine_cc:nc #1 #2 {
+  \BNVS_undefine:c { #1_#2:cc }
+}
+\cs_new:Npn \BNVS_new_cc:nc #1 #2 {
+  \BNVS_new_cc:ncn { #1 } { #2 } { #1 }
+}
+\cs_new:Npn \BNVS_new_cn:ncNn #1 #2 #3 #4 {
+  \BNVS_new:cpn { #2:cn } ##1 {
+    \BNVS_use:Ncn #3 { ##1 } { #1 }
+  }
+}
+\cs_new:Npn \BNVS_new_cn:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_cn:ncNn { #1 } { #1_#2 }
+  } { #1_#2:Nn }
+}
+\cs_new:Npn \BNVS_new_cv:ncNn #1 #2 #3 #4 {
+  \BNVS_new:cpn { #2:cv } ##1 ##2 {
+    \BNVS_use:nvn {
+      \BNVS_use:Ncn #3 { ##1 } { #1 }
+    } { ##2 } { #4 }
+  }
+}
+\cs_new:Npn \BNVS_new_cv:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_cv:ncNn { #1 } { #1_#2 }
+  } { #1_#2:Nn }
+}
+\cs_new:Npn \BNVS_new_cv:nc #1 #2 {
+  \BNVS_new_cv:ncn { #1 } { #2 } { #1 }
+}
+\cs_new:Npn \BNVS_undefine_cv:nc #1 #2 {
+  \BNVS_undefine:c { #1_#2:cv }
+}
+\cs_new:Npn \BNVS_l_use:Ncn #1 #2 #3 {
+  \BNVS_use_raw:Nc   #1   { \BNVS_l:cn { #2 } { #3 } }
+}
+\cs_new:Npn \BNVS_l_use:ncn #1 #2 #3 {
+  \BNVS_use_raw:nc { #1 } { \BNVS_l:cn { #2 } { #3 } }
+}
+\cs_new:Npn \BNVS_g_use:Ncn #1 #2 #3 {
+  \BNVS_use_raw:Nc   #1   { \BNVS_g:cn { #2 } { #3 } }
+}
+\cs_new:Npn \BNVS_g_use:ncn #1 #2 #3 {
+  \BNVS_use_raw:nc { #1 } { \BNVS_g:cn { #2 } { #3 } }
+}
+\cs_new:Npn \BNVS_exp_args:Nvv #1 #2 #3 {
+  \BNVS_use:ncncn { \exp_args:NVV #1 }
+    { #2 } { tl } { #3 } { tl }
+}
+\cs_new:Npn \BNVS_exp_args:Nvvv #1 #2 #3 #4 {
+  \BNVS_use:ncncncn { \exp_args:NVVV #1 }
+    { #2 } { tl } { #3 } { tl } { #4 } { tl }
+}
+\cs_new:Npn \BNVS_exp_args:Nvvvv #1 #2 #3 #4 #5 {
+  \BNVS_tl_use:nc {
+ \exp_args:NnV \use:n {
+   \BNVS_exp_args:Nvvv #1 { #2 } { #3 } { #4 }
+ }
+  } { #5 }
+}
+\cs_generate_variant:Nn \prg_new_conditional:Npnn { c }
+\cs_new:Npn \BNVS_new_conditional:cpnn #1 {
+\BNVS_log:x {New => \token_to_str:c { \BNVS:c { #1 } } [TF?] }
+  \prg_new_conditional:cpnn { \BNVS:c { #1 } }
+}
+\cs_generate_variant:Nn \cs_split_function:N { c }
+\cs_new:Npn \BNVS_undefine_conditional:c #1 {
+  \BNVS_undefine:c {
+    \exp_last_unbraced:Nf \use_i:nnn { \cs_split_function:c { #1 } }
+    _p:
+    \exp_last_unbraced:Nf \use_ii:nnn { \cs_split_function:c { #1 } }
+  }
+  \clist_map_inline:nn { T, F, TF } {
+    \BNVS_undefine:c { #1##1 }
+  }
+}
+\cs_new:Npn \BNVS_prg_undefine_conditional:c #1 {
+  \cs_undefine:c {
+    \exp_last_unbraced:Nf \use_i:nnn { \cs_split_function:c { #1 } }
+    _p:
+    \exp_last_unbraced:Nf \use_ii:nnn { \cs_split_function:c { #1 } }
+  }
+  \clist_map_inline:nn { T, F, TF } {
+    \cs_undefine:c { #1##1 }
+  }
+}
+\cs_generate_variant:Nn \prg_generate_conditional_variant:Nnn { c }
+\cs_new:Npn \BNVS_generate_conditional_variant:cnn #1 {
+\BNVS_DEBUG_log:nn C { Variant => #1[TF] }
+  \prg_generate_conditional_variant:cnn { \BNVS:c { #1 } }
+}
+\cs_new:Npn \BNVS_new_conditional_vn:cNnn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #1:vn } ##1 ##2 { #4 } {
+    \BNVS_use:Nvn #2 { ##1 } { #3 } { ##2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vn:cnn #1 #2 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vn:cNnn { #1 }
+  } { #1:nn TF } { #2 }
+}
+\cs_new:Npn \BNVS_new_conditional_vc:cNnn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #1:vc } ##1 ##2 { #4 } {
+    \BNVS_use:Nvn #2 { ##1 } { #3 } { ##2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vc:cnn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vc:cNnn { #1 }
+  } { #1:ncTF }
+}
+\cs_new:Npn \BNVS_new_conditional_vvc:cNnnn #1 #2 #3 #4 #5 {
+  \BNVS_new_conditional:cpnn { #1:vvc } ##1 ##2 ##3 { #5 } {
+    \BNVS_use:nvn {
+      \BNVS_use:Nvn #2 { ##1 } { #3 }
+    } { ##2 } { #4 } { ##3 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vvc:cnnn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vvc:cNnnn { #1 }
+  } { #1:nncTF }
+}
+\cs_new:Npn \BNVS_new_conditional_vc:cNn #1 #2 #3 {
+  \BNVS_new_conditional:cpnn { #1:vc } ##1 ##2 { #3 } {
+    \BNVS_tl_use:Nv #2 { ##1 } { ##2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vc:cn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vc:cNn { #1 }
+  } { #1:ncTF }
+}
+\cs_new:Npn \BNVS_new_conditional_vvc:cNn #1 #2 #3 {
+  \BNVS_new_conditional:cpnn { #1:vvc } ##1 ##2 ##3 { #3 } {
+    \BNVS_tl_use:nv {
+      \BNVS_tl_use:Nv #2 { ##1 }
+    } { ##2 } { ##3 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vvc:cn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vvc:cNn { #1 }
+  } { #1:nncTF }
+}
+\cs_new:Npn \BNVS_regex_use:Nc #1 #2 {
+  \BNVS_use_raw:Nc #1 { c \BNVS:c { #2 } _regex }
+}
+\BNVS_new_conditional:cpnn { if_extract_once:Ncn } #1 #2 #3 { T, F, TF } {
+  \BNVS_use:ncn {
+    \regex_extract_once:NnNTF #1 { #3 }
+  } { #2 } { seq } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { match_if_once:Nn } #1 #2 { T, F, TF } {
+  \BNVS_use:ncn {
+    \regex_extract_once:NnNTF #1 { #2 }
+  } { match } { seq } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_extract_once:Ncv } #1 #2 #3 { T, F, TF } {
+  \BNVS_seq_use:nc {
+    \BNVS_tl_use:nv {
+      \regex_extract_once:NnNTF #1
+    } { #3 }
+  } { #2 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { match_if_once:Nv } #1 #2 { T, F, TF } {
+  \BNVS_seq_use:nc {
+    \BNVS_tl_use:nv {
+      \regex_extract_once:NnNTF #1
+    } { #2 }
+  } { match } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { match_if_once:nn } #1 #2 { T, F, TF } {
+  \BNVS_seq_use:nc {
+    \regex_extract_once:nnNTF { #1 } { #2 }
+  } { match } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_regex_split:cnc } #1 #2 #3 { T, F, TF } {
+  \BNVS_seq_use:nc {
+    \BNVS_regex_use:Nc \regex_split:NnNTF { #1 } { #2 }
+  } { #3 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_regex_split:cn } #1 #2 { T, F, TF } {
+  \BNVS_seq_use:nc {
+    \BNVS_regex_use:Nc \regex_split:NnNTF { #1 } { #2 }
+  } { split } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vnc:cNn #1 #2 #3 {
+  \BNVS_new_conditional:cpnn { #1:vnc } ##1 ##2 ##3 { #3 } {
+    \BNVS_tl_use:Nv #2 { ##1 } { ##2 } { ##3 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vnc:cn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vnc:cNn { #1 }
+  } { #1:nncTF }
+}
+\cs_new:Npn \BNVS_new_conditional_vvnc:cNn #1 #2 #3 {
+  \BNVS_new_conditional:cpnn { #1:vvnc } ##1 ##2 ##3 ##4 { #3 } {
+    \BNVS_tl_use:nv {
+      \BNVS_tl_use:Nv #2 { ##1 }
+    } { ##2 } { ##3 } { ##4 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vvnc:cn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vvnc:cNn { #1 }
+  } { #1:nnncTF }
+}
+\cs_new:Npn \BNVS_new_conditional_vvvc:cNn #1 #2 #3 {
+  \BNVS_new_conditional:cpnn { #1:vvvc } ##1 ##2 ##3 ##4 { #3 } {
+    \BNVS_tl_use:nvv {
+      \BNVS_tl_use:Nv #2 { ##1 }
+    } { ##2 } { ##3 } { ##4 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vvvc:cn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vvvc:cNn { #1 }
+  } { #1:nnncTF }
+}
+\cs_new:Npn \BNVS_new_tl_c:c {
+  \BNVS_new_c:nc { tl }
+}
+\BNVS_new_tl_c:c { clear }
+\BNVS_new_tl_c:c { use }
+\BNVS_new_tl_c:c { count }
+\BNVS_new:cpn { tl_set_eq:cc } #1 #2 {
+  \BNVS_use:ncncn { \tl_set_eq:NN } { #1 } { tl } { #2 } { tl }
+}
+\cs_new:Npn \BNVS_new_tl_cn:c {
+  \BNVS_new_cn:nc { tl }
+}
+\cs_new:Npn \BNVS_new_tl_cv:c #1 {
+  \BNVS_new_cv:ncn { tl } { #1 } { tl }
+}
+\BNVS_new_tl_cn:c { set }
+\BNVS_new_tl_cv:c { set }
+\BNVS_new:cpn { tl_set:cx } {
+  \exp_args:Nnx \__bnvs_tl_set:cn
+}
+\BNVS_new_tl_cn:c { put_right }
+\BNVS_new_tl_cv:c { put_right }
+\BNVS_new:cpn { tl_put_right:cx } {
+  \exp_args:Nnnx \BNVS_use:c { tl_put_right:cn }
+}
+\BNVS_new_tl_cn:c { put_left }
+\BNVS_new_tl_cv:c { put_left }
+\BNVS_new:cpn { tl_put_left:cx } {
+  \exp_args:Nnnx \BNVS_use:c { tl_put_left:cn }
+}
+\cs_new:Npn \BNVS_new_conditional_c:ncNn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #2 } ##1 { #4 } {
+    \BNVS_use:Ncn #3 { ##1 } { #1 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_c:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_conditional_c:ncNn { #1 } { #1_#2:c }
+  } { #1_#2:NTF }
+}
+\BNVS_new_conditional_c:ncn { tl } { if_empty } { p, T, F, TF }
+\BNVS_new_conditional:cpnn { tl_if_blank:v } #1 { T, F, TF } {
+  \BNVS_tl_use:Nv \tl_if_blank:nTF { #1 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_cn:ncNn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #2:cn } ##1 ##2 { #4 } {
+    \BNVS_use:Ncn #3 { ##1 } { #1 } { ##2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_cn:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_conditional_cn:ncNn { #1 } { #1_#2 }
+  } { #1_#2:NnTF }
+}
+\BNVS_new_conditional_cn:ncn { tl } { if_eq } { T, F, TF }
+\cs_new:Npn \BNVS_new_conditional_cv:ncNn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #2:cv } ##1 ##2 { #4 } {
+    \BNVS_use:nvn {
+      \BNVS_use:Ncn #3 { ##1 } { #1 }
+    } { ##2 } { #1 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_cv:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_conditional_cv:ncNn { #1 } { #1_#2 }
+  } { #1_#2:NnTF }
+}
+\BNVS_new_conditional_cv:ncn { tl } { if_eq } { T, F, TF }
+\cs_new:Npn \BNVS_new_conditional_vv:cNn #1 #2 #3 {
+  \BNVS_new_conditional:cpnn { #1:vv } ##1 ##2 { #3 } {
+    \BNVS_tl_use:nv {
+      \BNVS_tl_use:Nv #2 { ##1 }
+    } { ##2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vv:cn #1 {
+  \BNVS_use:nc {
+    \BNVS_new_conditional_vvnc:cNn { #1 }
+  } { #1:nnTF }
+}
+\cs_new:Npn \BNVS_new_conditional_vn:ncNn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #2:vn } ##1 ##2 { #4 } {
+    \BNVS_use:Nvn #3 { ##1 } { #1 } { ##2 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vn:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_conditional_vn:ncNn { #1 } { #1_#2 }
+  } { #1_#2:nnTF }
+}
+\BNVS_new_conditional_vn:ncn { str } { if_eq } { T, F, TF }
+\cs_new:Npn \BNVS_new_conditional_vv:ncNn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #2:vv } ##1 ##2 { #4 } {
+    \BNVS_use:nvn {
+      \BNVS_use:Nvn #3 { ##1 } { #1 }
+    }  { ##2 } { #1 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\cs_new:Npn \BNVS_new_conditional_vv:ncn #1 #2 {
+  \BNVS_use_raw:nc {
+    \BNVS_new_conditional_vv:ncNn { #1 } { #1_#2 }
+  } { #1_#2:nnTF }
+}
+\BNVS_new_conditional_vv:ncn { str } { if_eq } { T, F, TF }
+\BNVS_new_c:nc   { seq } { count }
+\BNVS_new_c:nc   { seq } { clear }
+\BNVS_new_cn:nc  { seq } { use }
+\BNVS_new_cn:nc  { seq } { item }
+\BNVS_new_cn:nc  { seq } { remove_all }
+\BNVS_new_cn:nc  { seq } { map_inline }
+\BNVS_new_cc:nc  { seq } { set_eq }
+\BNVS_new_cc:nc  { seq } { gset_eq }
+\BNVS_new_cv:ncn { seq } { put_left  } { tl }
+\BNVS_new_cn:ncn { seq } { put_right } { tl }
+\BNVS_new_cv:ncn { seq } { put_right } { tl }
+\BNVS_new_cnn:nc { seq } { set_split }
+\BNVS_new_cnv:nc { seq } { set_split }
+\BNVS_new_cnx:nc { seq } { set_split }
+\BNVS_new_cc:ncn { seq } { pop_left  } { tl }
+\BNVS_new_cc:ncn { seq } { pop_right } { tl }
+\cs_new:Npn \BNVS_new_conditional_cc:ncnn #1 #2 #3 #4 {
+  \BNVS_new_conditional:cpnn { #1_#2:cc } ##1 ##2 { #4 } {
+    \BNVS_use:ncncn {
+      \BNVS_use_raw:c { #1_#2:NNTF }
+    } { ##1 } { #1 } { ##2 } { #3 } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_c:ncn { seq } { if_empty } { T, F, TF }
+\BNVS_new_conditional_cc:ncnn
+  { seq } { get_right } { tl } { T, F, TF }
+\BNVS_new_conditional_cc:ncnn
+  { seq } { pop_left  } { tl } { T, F, TF }
+\BNVS_new_conditional_cc:ncnn
+  { seq } { pop_right } { tl } { T, F, TF }
+\BNVS_new_c:nc   { int } { new  }
+\BNVS_new_c:nc   { int } { use  }
+\BNVS_new_c:nc   { int } { zero }
+\BNVS_new_c:nc   { int } { incr }
+\BNVS_new_c:nc   { int } { decr }
+\BNVS_new_cn:nc  { int } { set  }
+\BNVS_new_cv:ncn { int } { set  } { int }
+\cs_set_eq:NN \BeanovesDebugOn \BNVS_DEBUG_on:
+\cs_set_eq:NN \BeanovesDebugOff \BNVS_DEBUG_off:
+\cs_generate_variant:Nn \BNVS_DEBUG_log:nn { nx, nV }
+\str_new:N \l__BNVS_DEBUG_group_str
+\cs_new:Npn \BNVS_DEBUG_end_set:n #1 {
+  \cs_set:Npn \BNVS_end: {
+    \int_compare:nNnTF { #1 } > { \int_use:N \l__BNVS_DEBUG_group_int } {
+      \BNVS_error:x {Internal~error:~too~many~group~end.}
+    } {
+      \int_compare:nNnT { #1 } < { \int_use:N \l__BNVS_DEBUG_group_int } {
+        \BNVS_error:x {Internal~error:~missing~group~end.}
+      }
+    }
+    \group_end:
+    \str_if_empty:NTF \l__BNVS_DEBUG_group_str {
+      \BNVS_DEBUG_log:nx G { Almost~top~level }
+    } {
+      \BNVS_DEBUG_log:nx G
+        { Back~to~\l__BNVS_DEBUG_group_str / \int_use:N \l__BNVS_DEBUG_group_int }
+    }
+  }
+}
+\cs_new:Npn \BNVS_begin: {
+  \group_begin:
+  \str_clear:N \l__BNVS_DEBUG_group_str
+  \int_incr:N \l__BNVS_DEBUG_group_int
+  \exp_args:Nx \BNVS_DEBUG_end_set:n
+    { \int_use:N \l__BNVS_DEBUG_group_int }
+}
+\cs_new:Npn \BNVS_DEBUG_end_set:nn #1 #2 {
+  \str_set:Nn \l__BNVS_DEBUG_group_str { #2 }
+  \cs_set:Npn \BNVS_end: {
+    \str_if_eq:VnF \l__BNVS_DEBUG_group_str { #2 } {
+      \BNVS_error:x
+        { Wrong~grouping~\l__BNVS_DEBUG_group_str!=#2 }
+    }
+    \int_compare:nNnTF { #1 } > { \int_use:N \l__BNVS_DEBUG_group_int } {
+      \BNVS_error:n {Internal~error:~too~many~group~end.}
+    } {
+      \int_compare:nNnT { #1 } < { \int_use:N \l__BNVS_DEBUG_group_int } {
+        \BNVS_error:n {Internal~error:~missing~group~end.}
+      }
+    }
+    \BNVS_DEBUG_log:nx G {END~#2/\int_use:N \l__BNVS_DEBUG_group_int}
+    \group_end:
+    \str_if_empty:NTF \l__BNVS_DEBUG_group_str {
+      \BNVS_DEBUG_log:nx G { Almost~top~level }
+    } {
+      \BNVS_DEBUG_log:nx G {
+        Back~to~\l__BNVS_DEBUG_group_str / \int_use:N \l__BNVS_DEBUG_group_int
+      }
+    }
+  }
+}
+\hook_new_with_args:nn { BNVS_DEBUG_begin:nn } 2
+\hook_new_with_args:nn { BNVS_DEBUG_end:n } 1
+\cs_set:Npn \BNVS_DEBUG_begin:n #1 {
+  \BNVS_begin:
+  \exp_args:Nnnx
+  \hook_use:nnw { BNVS_DEBUG_begin:nn } 2
+    { \int_use:N \l__BNVS_DEBUG_group_int } { #1 }
+  \BNVS_DEBUG_log:nx G { BEGIN~#1/\int_use:N \l__BNVS_DEBUG_group_int }
+  \str_set:Nx \l__BNVS_DEBUG_group_str { #1 }
+  \exp_args:Nxx
+  \BNVS_DEBUG_end_set:nn { \int_use:N \l__BNVS_DEBUG_group_int } { #1 }
+}
+\cs_set:Npn \BNVS_end: {
+  \group_end:
+  \exp_args:Nnnx
+  \hook_use:nnw { BNVS_DEBUG_end:n } 1
+    { \int_use:N \l__BNVS_DEBUG_group_int }
+}
+\bool_new:N \l__bnvs_TEST_ignore_bool
+\bool_set_false:N \l__bnvs_TEST_ignore_bool
+\cs_new:Npn \BNVS_DEBUG_log_nnn:nnn #1 #2 #3 {
+  \BNVS_DEBUG_log:nn { #1 } { #2~#3 }
+}
+\cs_new:Npn \BNVS_DEBUG_log:nnn #1 #2 {
+  \exp_args:Nnx
+  \BNVS_DEBUG_log_nnn:nnn { #1 }
+  { ▄▄ \prg_replicate:nn {\l__BNVS_DEBUG_group_int + 1} { #2 } }
+}
+\ProvideDocumentEnvironment {BNVS.failure} {} {} {}
+\bool_new:N \l__bnvs_TEST_bool
+\bool_new:N \l__bnvs_TEST_append_bool
+\bool_set_false:N \l__bnvs_TEST_append_bool
+\tl_new:N \g__bnvs_TEST_tl
+\tl_new:N \l__bnvs_TEST_banner_tl
+\tl_new:N \l__bnvs_TEST_done_tl
+\tl_clear:N \l__bnvs_TEST_done_tl
+\tl_new:N \l__bnvs_TEST_tl
+\tl_new:N \l__bnvs_TEST_A_tl
+\tl_new:N \l__bnvs_TEST_B_tl
+\tl_new:N \l__bnvs_TEST_C_tl
+\str_new:N \l__bnvs_TEST_str
+\str_new:N \l__bnvs_TEST_A_str
+\str_new:N \l__bnvs_TEST_B_str
+\str_new:N \l__bnvs_TEST_C_str
+\seq_new:N \l__bnvs_TEST_seq
+\seq_new:N \l__bnvs_TEST_A_seq
+\seq_new:N \l__bnvs_TEST_B_seq
+\seq_new:N \l__bnvs_TEST_C_seq
+\int_new:N \l__bnvs_TEST_int
+\int_new:N \l__bnvs_TEST_group_int
+\prop_new:N \l__bnvs_TEST_prop
+\prop_new:N \g__bnvs_TEST_prop
+\regex_const:Nn \c__bnvs_TEST_comma_regex { , }
+\int_new:N \l__bnvs_TEST_timer_int
+
+\int_new:N \g__bnvs_TIMER_int
+\cs_new:Npn \BNVS_timer_now: {
+  \int_gset:Nn \g__bnvs_TIMER_int { \sys_timer: }
+}
+\cs_new:Npn \BNVS_DEBUG_log_timer:n #1 {
+  \exp_args:Nnx
+  \BNVS_DEBUG_log:nn { #1 }
+    {⏲:~\fp_eval:n {round(( \sys_timer:-\g__bnvs_TIMER_int ) / 65536, 4) }~s }
+}
+
+\NewDocumentEnvironment{BNVS.test} {} {
+  \color{red}\bfseries\ExplSyntaxOn
+  \debug_on:n { check-declarations }
+  \__bnvs_gunset:
+  \int_gset:Nn \g__bnvs_call_int { 128 }
+  \int_set_eq:NN \l__bnvs_TEST_group_int \l__BNVS_DEBUG_group_int
+  \__bnvs_provide_off:
+  \BNVS_DEBUG_log_set:ncnnc a { if_resolve_query:ncTF } { QUERY } { ? } { ans }
+  \makeatletter
+  \BNVS_TEST_BEGIN:n
+} {
+  \assert_equal:xxn {
+    \int_use:N \l__BNVS_DEBUG_group_int
+  } {
+    \int_use:N \l__bnvs_TEST_group_int
+  } { Bad~group~nesting }
+  \tl_use:N \l__bnvs_TEST_done_tl
+  \__bnvs_gunset:
+  \ExplSyntaxOff\ignorespacesafterend
+}
+\keys_define:nn { BNVS.test } {
+  banner  .code:n = \tl_set:Nn \l__bnvs_TEST_banner_tl { #1 },
+  :N      .code:n = \tl_set:No \l__bnvs_TEST_banner_tl {
+    \token_to_str:N #1
+  }
+  \if_cs_exist:N #1 \else:
+    \BNVS_error:x { Not~implemented:~\token_to_str:c #1}
+  \fi,
+  :Nn     .code:n = \exp_args:NNo \tl_set:No \l__bnvs_TEST_banner_tl {
+    \exp_last_unbraced:No \token_to_str:N { \use_i:nn #1 }
+    \use_ii:nn #1
+  }
+  \exp_last_unbraced:No \cs_if_exist:NF { \use_i:nn #1 } {
+    \BNVS_error:x {
+      Not~implemented:~\exp_last_unbraced:No
+        \token_to_str:N { \use_i:nn #1 }
+    }
+  },
+  :c      .code:n = \tl_set:No \l__bnvs_TEST_banner_tl {
+    \token_to_str:c { #1 }
+  }
+  \if_cs_exist:w #1 \cs_end: \else:
+    \BNVS_error:x { Not~implemented:~\token_to_str:c #1}
+  \fi,
+  :cn     .code:n = \tl_set:No \l__bnvs_TEST_banner_tl {
+    \token_to_str:c { \use_i:nn #1 } \use_ii:nn #1
+  }
+  \if_cs_exist:w \use_i:nn #1 \cs_end: \else:
+    \BNVS_error:x { Not~implemented:~\token_to_str:c #1}
+  \fi,
+  bnvs:c  .code:n = \tl_set:No \l__bnvs_TEST_banner_tl {
+    \token_to_str:c { \BNVS:c { #1 } }
+  }
+  \exp_args:Nx \tl_if_in:nnF { #1 / } { ... / } {
+    \if_cs_exist:w \BNVS:c { #1 } \cs_end: \else:
+      \BNVS_error:x { Not~implemented:~
+        \token_to_str:c { \BNVS:c { #1 } } }
+    \fi
+  },
+  bnvs:cn .code:n = \tl_set:No \l__bnvs_TEST_banner_tl {
+    \token_to_str:c { \BNVS:c { \use_i:nn #1 } }
+  }
+  \exp_args:Nx \tl_if_in:nnF { \use_i:nn #1 /// } { ... /// } {
+    \if_cs_exist:w \BNVS:c { \use_i:nn #1 } \cs_end: \else:
+      \BNVS_error:x { Not~implemented:~
+        \token_to_str:c { \BNVS:c { \use_i:nn #1 } } }
+    \fi
+  },
+  debug   .code:n = \BNVS_DEBUG_on:,
+  debug:n .code:n = \BNVS_DEBUG_push:n { #1 },
+  reset   .code:n = \reset:n { #1 },
+  ignore  .code:n = \bool_set:Nn \l__bnvs_TEST_ignore_bool { \BNVS_use_raw:c { c_#1_bool } },
+  ignore  .default:n = true,
+  % ignore .code:n = {}, % uncomment this line to ignore no tests
+  noigre .code:n = \bool_set:Nn \l__bnvs_TEST_ignore_bool { !(\BNVS_use_raw:c { c_#1_bool }) },
+  noigre .default:n = false,
+  noigre .code:n = {}, % comment this line to ignore tests
+}
+\regex_const:Nn \c_BNVS_DEBUG_equal_regex { ^(?:X|[^,\s]+\s*=) }
+\int_new:N \l__bnvs_TEST_A_int
+\int_new:N \l__bnvs_TEST_B_int
+\bool_new:N \l__bnvs_TEST_in_document_bool
+\bool_set_false:N \l__bnvs_TEST_in_document_bool
+\AddToHookNext { env/document/begin } {
+  \bool_set_true:N \l__bnvs_TEST_in_document_bool
+}
+\cs_new:Npn \BNVS_TEST_BEGIN:n #1 {
+  \cs_set:Npn \reset:n ##1 {
+    \BNVS_begin:
+    \tl_if_empty:nF { ##1 } {
+      \__bnvs_gunset:
+      \__bnvs_v_gunset:
+      \__bnvs_gunset_resolved:
+    }
+    \BNVS_end:
+    \__bnvs_tl_clear:c { I_last }
+    \Beanoves { FIRST = 220+2, LENGTH = 440+5, LAST = 660+6 }
+    \__bnvs_provide_off:
+  }
+  \cs_set:Npn \reset_X: {
+    \reset:n { YES }
+    \BNVS_begin:
+    \Beanoves {
+      X1  = FIRST,
+      X2  = LAST-LENGTH+1,
+      A1  = FIRST:,
+      A2  = LAST-LENGTH+1:,
+      AA1 = FIRST::,
+      AA2 = LAST-LENGTH+1::,
+      Z1  = :LAST,
+      Z2  = :FIRST+LENGTH-1,
+      AL11 = FIRST::LENGTH,
+      AL12 = FIRST::LAST-FIRST+1,
+      AL21 = LAST-LENGTH+1::LENGTH,
+      AL22 = LAST-LENGTH+1::LAST-FIRST+1,
+      AZ11 = FIRST:LAST,
+      AZ12 = FIRST:FIRST+LENGTH-1,
+      AZ21 = LAST-LENGTH+1:LAST,
+      AZ22 = LAST-LENGTH+1:FIRST+LENGTH-1,
+      LZ11 = ::LENGTH:LAST,
+      LZ12 = ::LENGTH:FIRST+LENGTH-1,
+      LZ21 = ::LAST-FIRST+1:LAST,
+      LZ22 = ::LAST-FIRST+1:FIRST+LENGTH-1,
+      ZL11 = :LAST::LENGTH,
+      ZL12 = :LAST::LAST-FIRST+1,
+      ZL21 = :FIRST+LENGTH-1::LENGTH,
+      ZL22 = :FIRST+LENGTH-1::LAST-FIRST+1,
+    }
+    \BNVS_end:
+  }
+  \tl_if_empty:nF { #1 } { \keys_set_known:nn { BNVS.test } {#1} }
+  \bool_if:NTF \l__bnvs_TEST_ignore_bool {
+    \tl_clear:N \l__bnvs_TEST_done_tl
+    \RenewDocumentEnvironment{BNVS.test}{+b}{
+      \cs_set:Npn \BNVS_TEST_END: {
+        \cs_set:Npn \BNVS_TEST_END: { }
+        \end{BNVS.test}\ignorespaces
+      }
+    } {
+      \BNVS_TEST_END:
+    }
+    \begin{BNVS.test}
+  } {
+    \cs_set:Npn \banner:n ##1 {
+      \__bnvs_greset_call:
+      \BNVS_log_a:xn { ▶︎▶︎▶︎~TEST~##1~/~line:~\the\inputlineno} {}
+    }
+    \RenewDocumentEnvironment{BNVS.failure}{+b}
+      {\AddToHook{begindocument}{
+        \begin{list}{\llap{\emoji{no-entry}\hspace{1em}}}{%
+          \setlength{\itemindent}{0pt}%
+          \setlength{\leftmargin}{0pt}%
+          \setlength{\labelwidth}{0pt}%
+          \addtolength{\topsep}{-0.5\parskip}%
+          \listparindent \parindent
+          \setlength{\parsep}{\parskip}}
+          ##1
+        \end{list}
+      }}
+      {}
+    \cs_set_eq:NN \test_extract:nnnn \BNVS_TEST_extract:nnnn
+    \cs_set_eq:NN \test_extract:Nnnn \BNVS_TEST_extract:Nnnn
+    \cs_set_eq:NN \test_split:Nnnn \BNVS_TEST_split:Nnnn
+    \cs_set_eq:NN \assert_equal:nnn \BNVS_ASSERT_equal:nnn
+    \cs_set_eq:NN \assert_equal:xnn \BNVS_ASSERT_equal:xnn
+    \cs_set_eq:NN \assert_equal:xxn \BNVS_ASSERT_equal:xxn
+    \cs_set_eq:NN \assert_in:nnn \BNVS_ASSERT_in:nnn
+    \cs_set_eq:NN \assert_in:xnn \BNVS_ASSERT_in:xnn
+    \cs_set_eq:NN \assert_in:xxn \BNVS_ASSERT_in:xxn
+    \cs_set_eq:NN \assert_size_equal:nnn \BNVS_ASSERT_size_equal:nnn
+    \cs_set_eq:NN \assert_size_not_equal:nnn \BNVS_ASSERT_size_not_equal:nnn
+    \cs_set_eq:NN \assert_equal_tl:vnn \BNVS_ASSERT_equal_tl:vnn
+    \cs_set_eq:NN \assert_equal_tl:vxn \BNVS_ASSERT_equal_tl:vxn
+    \cs_set_eq:NN \assert_equal_int:vnn \BNVS_ASSERT_equal_int:vnn
+    \cs_set_eq:NN \assert_equal_int:vxn \BNVS_ASSERT_equal_int:vxn
+    \cs_set_eq:NN \test_fail:n \BNVS_TEST_fail:n
+    \cs_set_eq:NN \test_fail:x \BNVS_TEST_fail:x
+    \cs_set_eq:NN \test_catch_error:n \BNVS_TEST_catch_error:n
+    \cs_set_eq:NN \assert_coverage:nn \BNVS_ASSERT_coverage:nn
+    \cs_set_eq:NN \assert_coverage:nnn \BNVS_ASSERT_coverage:nnn
+    \cs_set_eq:NN \reset_coverage: \BNVS_reset_coverage:
+    \cs_set:Npn \assert_equal_ans:nn {
+      \assert_equal_tl:vnn { ans }
+    }
+    \cs_set:Npn \preflight:n ##1 {
+      \banner:n { ##1 }
+      \BNVS_DEBUG_begin:n { preflight:n }
+      \int_set_eq:NN \l__bnvs_TEST_group_int \l__BNVS_DEBUG_group_int
+      \bool_if:NTF \l__bnvs_TEST_append_bool {
+        \BNVS_DEBUG_log_tl:nc * { ans }
+      } {
+        \__bnvs_tl_clear_ans:
+      }
+    }
+    \cs_set:Npn \preflight:nn ##1 ##2 {
+      \tl_if_empty:nTF { ##1 } {
+        \banner:n { ##2 }
+      } {
+        \regex_match:NnTF \c_BNVS_DEBUG_equal_regex { ##1 } {
+          \banner:n { ##2~/~##1 }
+          \group_begin:
+          \Beanoves { ##1 }
+        } {
+          \banner:n { ##2~/~X=##1 }
+          \group_begin:
+          \Beanoves { X = ##1 }
+        }
+        \group_end:
+        \BNVS_DEBUG_log_g:nn D {}
+      }
+      \BNVS_DEBUG_begin:n { preflight:nn }
+      \int_set_eq:NN \l__bnvs_TEST_group_int \l__BNVS_DEBUG_group_int
+      \bool_if:NTF \l__bnvs_TEST_append_bool {
+        \BNVS_DEBUG_log_tl:nc * { ans }
+      } {
+        \__bnvs_tl_clear_ans:
+      }
+    }
+    \cs_set:Npn \preflight:nnn ##1 ##2 ##3 {
+      \tl_if_empty:nTF { ##1 } {
+        \banner:n { ##2~/~##3~/ }
+      } {
+        \regex_match:NnTF \c_BNVS_DEBUG_equal_regex { ##1 } {
+          \banner:n { ##2~/~##1->##2~/ }
+          \group_begin:
+          \BNVS_DEBUG_off:
+          \Beanoves { ##1 }
+        } {
+          \banner:n { ##2~/~X=##1->##2~/ }
+          \group_begin:
+          \BNVS_DEBUG_off:
+          \Beanoves { X = ##1 }
+        }
+        \group_end:
+        \BNVS_DEBUG_log_g:nn D {}
+      }
+      \BNVS_DEBUG_begin:n { preflight:nnn }
+      \int_set_eq:NN \l__bnvs_TEST_group_int \l__BNVS_DEBUG_group_int
+      \bool_if:NTF \l__bnvs_TEST_append_bool {
+        \BNVS_DEBUG_log_tl:nc * { ans }
+      } {
+        \__bnvs_tl_clear_ans:
+      }
+    }
+    \cs_set:Npn \postflight: {
+      \assert_equal:xxn {
+        \int_use:N \l__BNVS_DEBUG_group_int
+      } {
+        \int_use:N \l__bnvs_TEST_group_int
+      } { Bad~group~nesting }
+      \BNVS_end:
+    }
+    \cs_set:Npn \flight:nT ##1 ##2 {
+      \bool_if:NF \l__bnvs_TEST_ignore_bool {
+        \preflight:n { ##1 }
+        ##2
+        \postflight:
+      }
+    }
+    \cs_set:Npn \flight:nnT ##1 ##2 ##3 {
+      \bool_if:NF \l__bnvs_TEST_ignore_bool {
+        \preflight:nn { ##1 } { ##2 }
+        ##3
+        \postflight:
+      }
+    }
+    \cs_set:Npn \flight:nnnT ##1 ##2 ##3 ##4 {
+      \bool_if:NF \l__bnvs_TEST_ignore_bool {
+        \preflight:nnn { ##1 } { ##2 } { ##3 }
+        ##4
+        \postflight:
+      }
+    }
+    \cs_set:Npn \Test_generic_ncTF:Nnnnn ##1 ##2 ##3 ##4 ##5 {
+      \flight:nnT { ##2 } { ##5 } {
+        \__bnvs_int_set:cn { TEST_A } { \int_use:N \l__BNVS_DEBUG_group_int }
+        \exp_args:Nx
+        ##1 { \tl_if_empty:nTF { ##3 } { !X } { ##3 } } { ans } {
+          \assert_equal_ans:nn { ##4 } { ##5-TRUE }
+        } {
+          \test_fail:x { ##5-FALSE(cs:~\token_to_str:N ##1) }
+        }
+        \int_compare:nNnF { \l__bnvs_TEST_A_int } = { \l__BNVS_DEBUG_group_int } {
+          \BNVS_DEBUG_log:nx T { \token_to_str:N\l__bnvs_TEST_A_int = \int_use:N \l__bnvs_TEST_A_int }
+          \BNVS_DEBUG_log:nx T { \token_to_str:N\l__BNVS_DEBUG_group_int = \int_use:N \l__BNVS_DEBUG_group_int }
+          \test_fail:n { ##5~group:~\token_to_str:N~##1 }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_ncTF:Nnnnn { c }
+    \cs_set:Npn \Test_generic_nncTF:Nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+      \flight:nnT { ##2 } { ##6 } {
+        \__bnvs_int_set:cn { TEST_A } { \int_use:N \l__BNVS_DEBUG_group_int }
+        \exp_args:Nne
+        ##1 { ##3 } { \tl_if_empty:nTF { ##4 } { X } { ##4 } } { ans } {
+          \assert_equal_ans:nn { ##5 } { ##6-TRUE }
+        } {
+          \test_fail:x { ##6-FALSE(cs:~\token_to_str:N ##1) }
+        }
+        \int_compare:nNnF { \l__bnvs_TEST_A_int } = { \l__BNVS_DEBUG_group_int } {
+          \BNVS_DEBUG_log:nx T { \token_to_str:N\l__bnvs_TEST_A_int = \int_use:N \l__bnvs_TEST_A_int }
+          \BNVS_DEBUG_log:nx T { \token_to_str:N\l__BNVS_DEBUG_group_int = \int_use:N \l__BNVS_DEBUG_group_int }
+          \test_fail:n { ##6~group:~\token_to_str:N~##1 }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_nncTF:Nnnnnn { c }
+    \cs_set:Npn \Test_generic_nnncTF:Nnnnnnn ##1 ##2 ##3 ##4 ##5 ##6 ##7 {
+      \flight:nnT { ##2 } { ##7 } {
+        \__bnvs_int_set:cn { TEST_A } { \int_use:N \l__BNVS_DEBUG_group_int }
+        \exp_args:Nnne
+        ##1 { ##3 } { ##4 } { \tl_if_empty:nTF { ##5 } { X } { ##5 } } { ans } {
+          \assert_equal_ans:nn { ##6 } { ##7-TRUE }
+        } {
+          \test_fail:x { ##7-FALSE(cs:~\token_to_str:N ##1) }
+        }
+        \int_compare:nNnF { \l__bnvs_TEST_A_int } = { \l__BNVS_DEBUG_group_int } {
+          \BNVS_DEBUG_log:nx T { \token_to_str:N\l__bnvs_TEST_A_int = \int_use:N \l__bnvs_TEST_A_int }
+          \BNVS_DEBUG_log:nx T { \token_to_str:N\l__BNVS_DEBUG_group_int = \int_use:N \l__BNVS_DEBUG_group_int }
+          \test_fail:n { ##7~group:~\token_to_str:N~##1 }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_nnncTF:Nnnnnnn { c }
+    \cs_set:Npn \Test_what_action_ncTF:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:ncTF } {
+        \Test_generic_ncTF:cnnnn { __bnvs_##1_##2:ncTF } { ##3 } { ##4 } { ##5 } { ##6 }
+      } {
+        \test_fail:x { ##6-NO~\token_to_str:c { __bnvs_##1_##2:ncTF } }
+      }
+    }
+    \cs_set:Npn \Test_what_action_nncTF:nnnnnnn ##1 ##2 ##3 ##4 ##5 ##6 ##7 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:nncTF } {
+        \Test_generic_nncTF:cnnnnn { __bnvs_##1_##2:nncTF } { ##3 } { ##4 } { ##5 } { ##6 } { ##7 }
+      } {
+        \test_fail:x { ##7-NO~\token_to_str:c{__bnvs_##1_##2:nncTF } }
+      }
+    }
+    \cs_set:Npn \Test_what_action_nnncTF:nnnnnnnn ##1 ##2 ##3 ##4 ##5 ##6 ##7 ##8 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:nnncTF } {
+        \Test_generic_nnncTF:cnnnnnn { __bnvs_##1_##2:nnncTF } { ##3 } { ##4 } { ##5 } { ##6 } { ##7 } { ##8 }
+      } {
+        \test_fail:x { ##8-NO~\token_to_str:c{__bnvs_##1_##2:nnncTF } }
+      }
+    }
+    \cs_set:Npn \Test_generic_X_ncTF:Nnnn ##1 ##2 {
+      \Test_generic_ncTF:Nnnnn ##1 { ##2 } {}
+    }
+    \cs_generate_variant:Nn \Test_generic_X_ncTF:Nnnn { c }
+    \cs_set:Npn \Test_what_action_X_ncTF:nnnnn ##1 ##2 ##3 ##4 ##5 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:ncTF } {
+        \BNVS_use:Nc
+        \Test_generic_X_ncTF:Nnnn { ##1_##2:ncTF } { ##3 } { ##4 } { ##5 }
+      } {
+        \test_fail:x { ##5-NO~\token_to_str:N\__bnvs_##1_##2:ncTF }
+      }
+    }
+    \cs_set:Npn \Test_what_action_nncTF:nnnnnnn ##1 ##2 ##3 ##4 ##5 ##6 ##7 {
+      \cs_if_exist:cTF {__bnvs_##1_##2:nncTF} {
+        \tl_if_eq:nnT { ##1 } { if_append } {
+          \bool_set_true:N \l__bnvs_TEST_append_bool
+        }
+        \Test_generic_nncTF:cnnnnn { __bnvs_##1_##2:nncTF } { ##3 } { ##4 } { ##5 } { ##6 } { ##7 }
+      } {
+        \test_fail:x { ##7-NO~\token_to_str:N\__bnvs_##1_##2:nncTF }
+      }
+    }
+    \cs_set:Npn \Test_generic_X_nncTF:Nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnT { ##2 } { X } {
+        ##1 {  } { X } { ans } {
+          \assert_equal_ans:nn { ##3 } { ##4-X-TRUE }
+        } {
+          \test_fail:x { ##4-X-FALSE(\token_to_str:N ##1) }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_X_nncTF:Nnnn { c }
+    \cs_set:Npn \Test_generic_X_nnncTF:Nnnnn ##1 ##2 ##3 ##4 ##5 {
+      \flight:nnT { ##2 } { X } {
+        ##1 {  } { X } { ##3 } { ans } {
+          \assert_equal_ans:nn { ##4 } { ##5-X-TRUE }
+        } {
+          \test_fail:x { ##5-X-FALSE(\token_to_str:N ##1) }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_X_nnncTF:Nnnnn { c }
+    \cs_set:Npn \Test_what_action_X_nncTF:nnnnn ##1 ##2 ##3 ##4 ##5 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:nncTF } {
+        \Test_generic_X_nncTF:cnnn { __bnvs_##1_##2:nncTF } { ##3 } { ##4 } { ##5 }
+      } {
+        \test_fail:x { ##5-NO~\token_to_str:c { __bnvs_##1_##2:nncTF } }
+      }
+    }
+    \cs_set:Npn \Test_what_action_X_nnncTF:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:nnncTF } {
+        \tl_if_eq:nnT { ##1 } { if_append } {
+          \bool_set_true:N \l__bnvs_TEST_append_bool
+        }
+        \Test_generic_X_nnncTF:cnnnn { __bnvs_##1_##2:nnncTF } { ##3 } { ##4 } { ##5 } { ##6 }
+      } {
+        \test_fail:x { ##6-NO~\token_to_str:c { __bnvs_##1_##2:nnncTF } }
+      }
+    }
+    \cs_set:Npn \Test_generic_check_value_X:Nnnnn ##1 ##2 ##3 ##4 ##5 {
+      \flight:nnnT { ##2 } { ##5 } { ##2~/~##3 } {
+        \group_begin:
+        \__bnvs_if_resolve_V:nncTF {} { X } { TEST_A } {
+          \group_end:
+          ##1 { !X } { ##3 } { ans } {
+            \assert_equal_ans:nn { ##4 } { ##5-b }
+          } {
+            \test_fail:x { ##5-c^^JUnexpected~F~in~\token_to_str:N ##1 }
+          }
+        } {
+          \group_end:
+          \test_fail:n { ##5-d(if_resolve_V:nncTF) }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_check_value_X:Nnnnn { c }
+    \cs_set:Npn \Test_what_action_check_value_X_ncTF:nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+      \cs_if_exist:cTF {__bnvs_##1_##2:ncTF} {
+        \Test_generic_check_value_X:cnnnn { __bnvs_##1_##2:ncTF } { ##3 } { ##4 } { ##5 } { ##6 }
+      } {
+        \test_fail:x { ##6-NO~\token_to_str:N\__bnvs_##1_##2:ncTF }
+      }
+    }
+    \cs_set:Npn \Test_generic_check_value_nnncTF:Nnnnnnn ##1 ##2 ##3 ##4 ##5 ##6 ##7 {
+      \flight:nnnT { ##2 } { ##7 } { ##2~/~##3!##4 } {
+        \group_begin:
+        \exp_args:Nne
+        \__bnvs_if_resolve_V:nncTF
+          { ##3 }
+          { \tl_if_empty:nTF { ##4 } { X } { ##4 } }
+          { TEST_A } {
+          \group_end:
+          \exp_args:Nne
+          ##1 { ##3 } { \tl_if_empty:nTF { ##4 } { X } { ##4 } } { ##5 } { ans } {
+            \assert_equal_ans:nn { ##6 } { ##7-b }
+          } {
+            \test_fail:n { ##7-c^^JUnexpected~F~in~\token_to_str:N ##1 }
+          }
+        } {
+          \group_end:
+          \test_fail:n { ##7-d(if_resolve_V:nncTF-2) }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_check_value_nnncTF:Nnnnnnn { c }
+    \cs_set:Npn \Test_generic_check_value_nncTF:Nnnnnn ##1 ##2 ##3 ##4 ##5 ##6 {
+      \flight:nnnT { ##2 } { ##6 } { ##2~/~##4 } {
+        \group_begin:
+        \exp_args:Ne
+        \__bnvs_if_resolve_V:nncTF
+          { \tl_if_empty:nTF { ##3 } { !X } { ##3 } } { TEST_A } {
+          \group_end:
+          \exp_args:Nx
+          ##1 { \tl_if_empty:nTF { ##3 } { !X } { ##3 } } { ##4 } { ans } {
+            \assert_equal_ans:nn { ##5 } { ##6-b }
+          } {
+            \test_fail:n { ##6-c^^JUnexpected~F~in~\token_to_str:N ##1 }
+          }
+        } {
+          \group_end:
+          \test_fail:n { ##6-d(if_resolve_V:nncTF-2) }
+        }
+      }
+    }
+    \cs_generate_variant:Nn \Test_generic_check_value_nncTF:Nnnnnn { c }
+    \cs_set:Npn \Test_what_action_check_value_nnncTF:nnnnnnnn ##1 ##2 ##3 ##4 ##5 ##6 ##7 ##8 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:nnncTF } {
+        \tl_if_eq:nnT { ##1 } { if_append } {
+          \bool_set_true:N \l__bnvs_TEST_append_bool
+        }
+        \Test_generic_check_value_nnncTF:cnnnnnn { __bnvs_##1_##2:nnncTF } { ##3 } { ##4 } { ##5 } { ##6 } { ##7 } { ##8 }
+      } {
+        \test_fail:x { ##8-NO~\token_to_str:N\__bnvs_##1_##2:nncTF }
+      }
+    }
+    \cs_set:Npn \Test_what_action_check_value_nncTF:nnnnnnn ##1 ##2 ##3 ##4 ##5 ##6 ##7 {
+      \cs_if_exist:cTF { __bnvs_##1_##2:nncTF } {
+        \Test_generic_check_value_nncTF:cnnnnn { __bnvs_##1_##2:nncTF } { ##3 } { ##4 } { ##5 } { ##6 } { ##7 }
+      } {
+        \test_fail:x { ##7-NO~\token_to_str:N\__bnvs_##1_##2:nncTF }
+      }
+    }
+    \cs_set:Npn \Test_what_if_resolve_X_nncTF:nnnn {
+      \Test_what_action_X_nncTF:nnnnn { if_resolve }
+    }
+    \cs_set:Npn \Test_what_if_append_X_nncTF:nnnn {
+      \Test_what_action_X_nncTF:nnnnn { if_append }
+    }
+    \cs_set:Npn \Test_what_if_assign_X_nncTF:nnnn {
+      \Test_what_action_X_nncTF:nnnnn { if_assign }
+    }
+    \cs_set:Npn \Test_what_resolution:nnnnn {
+      \Test_what_action_ncTF:nnnnnn { if_resolve }
+    }
+    \cs_set:Npn \Test_what_if_append_ncTF:nnnnn {
+      \Test_what_action_ncTF:nnnnnn { if_append }
+    }
+    \cs_set:Npn \Test_what_if_resolve_nncTF:nnnnnn {
+      \Test_what_action_nncTF:nnnnnnn { if_resolve }
+    }
+    \cs_set:Npn \Test_what_if_append_nncTF:nnnnnn {
+      \Test_what_action_nncTF:nnnnnnn { if_append }
+    }
+    \tl_map_inline:nn { VAZL } {
+      \cs_set:cpn { Test_if_resolve_##1:nnnnn } {
+        \Test_what_action_nncTF:nnnnnnn { if_resolve } { ##1 }
+      }
+      \cs_set:cpn { Test_if_append_##1:nnnnn } {
+        \Test_what_action_nncTF:nnnnnnn { if_append } { ##1 }
+      }
+      \cs_set:cpn { Test_if_resolve_##1:nnnn } {
+        \Test_what_action_X_nncTF:nnnnnn { if_resolve } { ##1 }
+      }
+      \cs_set:cpn { Test_if_append_##1:nnnn } {
+        \Test_what_action_X_nncTF:nnnnnn { if_append } { ##1 }
+      }
+    }
+  % General
+    \cs_set:Npn \Test_if_resolve_N_X:nnnn {
+      \Test_what_action_X_nnncTF:nnnnnn { if_resolve } N
+    }
+    \cs_set:Npn \Test_if_append_N_X:nnnn {
+      \Test_what_action_X_nnncTF:nnnnnn { if_append } N
+    }
+    \cs_set:Npn \Test_if_resolve_N:nnnnnn {
+      \Test_what_action_nnncTF:nnnnnnnn { if_resolve } N
+    }
+    \cs_set:Npn \Test_if_append_N:nnnnnn {
+      \Test_what_action_nnncTF:nnnnnnnn { if_append } N
+    }
+    \cs_set:Npn \Test_if_resolve_range:nnn {
+      \Test_what_action_X_nncTF:nnnnn { if_resolve } { range }
+    }
+    \cs_set:Npn \Test_if_append_range:nnn {
+      \Test_what_action_X_nncTF:nnnnn { if_append } { range }
+    }
+    \cs_set:Npn \Test_if_get:nnnnnn {
+      \Test_generic_nnncTF:Nnnnnnn \__bnvs_if_get:nnncTF
+    }
+    \cs_set:Npn \Test_if_get_X:nnnn {
+      \Test_generic_X_nnncTF:Nnnnn \__bnvs_if_get:nnncTF
+    }
+    \cs_set:Npn \Test_if_resolve_n:nnnnn {
+      \Test_what_action_nncTF:nnnnnnn { if_resolve } { n }
+    }
+    \cs_set:Npn \Test_if_append_n:nnnnn {
+      \Test_what_action_nncTF:nnnnnnn { if_append } { n }
+    }
+    \cs_set:Npn \Test_resolve_n_X:nnn {
+      \Test_what_action_X_nncTF:nnnnn { if_resolve } { n }
+    }
+    \cs_set:Npn \Test_if_append_n_X:nnn {
+      \Test_what_action_X_nncTF:nnnnn { if_append } { n }
+    }
+    \cs_set:Npn \Test_if_resolve_v:nnnnn {
+      \Test_what_action_nncTF:nnnnnnn { if_resolve } { v }
+    }
+    \cs_set:Npn \Test_if_append_v:nnnnn {
+      \Test_what_action_nncTF:nnnnnnn { if_append } { v }
+    }
+    \cs_set:Npn \Test_if_append_v_incr:nnnnnn {
+      \Test_what_action_check_value_nnncTF:nnnnnnnn { if_append } { v }
+    }
+    \cs_set:Npn \Test_if_resolve_v_incr:nnnnnn {
+      \Test_what_action_check_value_nnncTF:nnnnnnnn { if_resolve } { v_incr }
+    }
+    \cs_set:Npn \Test_if_append_v_incr:nnnnnn {
+      \Test_what_action_check_value_nnncTF:nnnnnnnn { if_append } { v_incr }
+    }
+    \cs_set:Npn \Test_if_resolve_v_post:nnnnnn {
+      \Test_what_action_check_value_nnncTF:nnnnnnnn { if_resolve } { v_post }
+    }
+    \cs_set:Npn \Test_if_append_v_post:nnnnnn {
+      \Test_what_action_check_value_nnncTF:nnnnnnnn { if_append } { v_post }
+    }
+    \cs_set:Npn \Test_if_append:nnnn {
+      \Test_what_action_ncTF:nnnnnn { if } { append }
+    }
+    \cs_set:Npn \Test_if_resolve:nnnn {
+      \Test_what_action_ncTF:nnnnnn { if } { resolve }
+    }
+    \cs_set:Npn \Test_if_resolve_query:nnnn {
+      \Test_what_action_ncTF:nnnnnn { if } { resolve_query }
+    }
+    \cs_set:Npn \Test_if_resolve_queries:nnnn {
+      \Test_what_action_ncTF:nnnnnn { if } { resolve_queries }
+    }
+    \cs_set:Npn \Test_regex:nnnn ##1 {
+      \bool_if:NTF \l__bnvs_TEST_ignore_bool {
+        \use_none:nnn
+      } {
+        \tl_if_exist:cTF { c__bnvs_##1_regex } {
+          \BNVS_TEST_extract:cnnn { c__bnvs_##1_regex }
+        } {
+          \test_fail:n { Bad~name:~##1}
+          \use_none:nnn
+        }
+      }
+    }
+    \cs_set:Npn \Test_query:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnnT { ##1 } { ##4 } { ##2==##3 } {
+        \__bnvs_tl_clear:c { TEST_A }
+        \__bnvs_if_resolve_query:ncTF { ##2 } { TEST_A } {
+          \assert_equal_tl:vnn { TEST_A } { ##3 } {
+            Test~"\__bnvs_if_resolve_query:nc}:~##4-a
+          }
+        " {
+          \test_fail:n { ##4-CALL }
+        }
+      }
+    }
+    \cs_set:Npn \Test_resolve:nnnn ##1 ##2 ##3 ##4 {
+      \flight:nnT { ##1 } { ##4 } {
+        \BeanovesResolve[in=\l__bnvs_ans_tl]{ ##2 }
+        \assert_equal_ans:nn { ##3 } { ##4 }
+      }
+    }
+    \BNVS_log_a:nn {▶︎▶︎▶︎▶︎▶︎▶︎} {}
+    \BNVS_log_a:xn {TEST~\l__bnvs_TEST_banner_tl\space file:~\BeanovesCurrentTestFile,~line:~\the\inputlineno} {}
+    \tl_set:Nn \l__bnvs_TEST_done_tl {
+      \BNVS_log_a:xn { TEST~\l__bnvs_TEST_banner_tl...~DONE} {}
+      \int_add:Nn \l__bnvs_TEST_timer_int { \sys_timer: }
+      \BNVS_log_a:nx {◀︎◀︎◀︎◀︎◀︎◀}
+        { ⏲: \fp_eval:n { round(\l__bnvs_TEST_timer_int/ 65536, 4) }~s }
+      \BNVS_timer_now:
+    }
+  }
+  \int_set:Nn \l__bnvs_TEST_timer_int { -\sys_timer: }
+  \BNVS_timer_now:
+  \ignorespaces
+}
+\cs_new:Npn \BeanovesCurrentTestFile {
+  \tl_if_empty:VF \CurrentFilePath { \CurrentFilePath / }
+  \CurrentFile
+}
+\cs_set:Npn \BNVS_TEST_extract:nnnn #1 #2 #3 #4 {
+  \BNVS_begin:
+  \tl_if_empty:nT { #3 } {
+    \__bnvs_match_if_once:nnT { #1 } { #2 } {
+      \test_fail:n { #4-a }
+    }
+  } {
+    \__bnvs_match_if_once:nnTF { #1 } { #2 } {
+      \tl_set:Nx \l__bnvs_TEST_A_tl { \__bnvs_seq_use:cn { match } , }
+      \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
+      \seq_pop_left:NNT \l__bnvs_match_seq \l__bnvs_TEST_B_tl {
+        \__bnvs_tl_if_empty:cTF { TEST_B } {
+          \seq_put_left:Nn \l__bnvs_match_seq { #2 }
+        } {
+          \seq_put_left:NV \l__bnvs_match_seq \l__bnvs_TEST_B_tl
+        }
+      }
+      \tl_set:Nx \l__bnvs_TEST_B_tl { \__bnvs_seq_use:cn { split } , }
+      \assert_equal:xxn { \l__bnvs_TEST_A_tl } { \l__bnvs_TEST_B_tl } { #4-seq }
+    } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \BNVS_end:
+}
+\cs_set:Npn \BNVS_TEST_extract:Nnnn #1 #2 #3 #4 {
+  \BNVS_begin:
+  \regex_extract_once:NnNTF #1 { #2 } \l__bnvs_match_seq {
+    \tl_set:Nx \l__bnvs_TEST_A_tl { \__bnvs_seq_use:cn { match } , }
+    \seq_set_from_clist:Nn \l__bnvs_match_seq { #3 }
+    \seq_pop_left:NNT \l__bnvs_match_seq \l__bnvs_TEST_B_tl {
+      \__bnvs_tl_if_empty:cTF { TEST_B } {
+        \seq_put_left:Nn \l__bnvs_match_seq { #2 }
+      } {
+        \seq_put_left:NV \l__bnvs_match_seq \l__bnvs_TEST_B_tl
+      }
+    }
+    \tl_set:Nx \l__bnvs_TEST_B_tl { \__bnvs_seq_use:cn { match } , }
+    \assert_equal:xxn { \l__bnvs_TEST_A_tl } { \l__bnvs_TEST_B_tl } { #4-seq }
+  } {
+    \tl_if_empty:nF { #3 } {
+      \test_fail:n { #4-Does~not~match }
+    }
+  }
+  \BNVS_end:
+}
+\cs_generate_variant:Nn \BNVS_TEST_extract:Nnnn { cnnn }
+\cs_set:Npn \BNVS_TEST_split:Nnnn #1 #2 #3 #4 {
+  \BNVS_begin:
+  \regex_split:NnNTF #1 { #2 } \l__bnvs_split_seq {
+    \tl_set:Nx \l__bnvs_TEST_A_tl { \__bnvs_seq_use:cn { split } , }
+    \seq_set_from_clist:Nn \l__bnvs_split_seq { #3 }
+    \tl_set:Nx \l__bnvs_TEST_B_tl { \__bnvs_seq_use:cn { split } , }
+    \assert_equal:xxn { \l__bnvs_TEST_A_tl } { \l__bnvs_TEST_B_tl } { #4-seq }
+  } {
+    \tl_if_empty:nF { #3 } {
+      \test_fail:n { #4-a }
+    }
+  }
+  \BNVS_end:
+}
+\cs_generate_variant:Nn \msg_error:nnnn { nnnx }
+\cs_set:Npn \BNVS_ASSERT_equal:nnn #1 #2 #3 {
+  \tl_if_eq:nnF { #1 } { #2 } {
+    \msg_error:nnnx { beanoves } { :nn } { FAILED~`#1'!=`#2' } { \BeanovesCurrentTestFile :\the\inputlineno :#3}
+    \begin{BNVS.failure}
+    \item FAILURE~`#1'!=`#2'~(\BeanovesCurrentTestFile :\the\inputlineno)
+    \item #3
+    \end{BNVS.failure}
+  }
+}
+\cs_generate_variant:Nn \BNVS_ASSERT_equal:nnn { x, xx }
+\cs_set:Npn \BNVS_ASSERT_in:nnn #1 #2 #3 {
+  \tl_if_in:nnF { #1 } { #2 } {
+    \msg_error:nnnx { beanoves } { :nn } { FAILED~`#2'~not~in~`#1' } { \BeanovesCurrentTestFile :\the\inputlineno :#3}
+    \begin{BNVS.failure}
+    \item FAILURE~`#2'~not~in~`#1'~(\BeanovesCurrentTestFile :\the\inputlineno)
+    \item #3
+    \end{BNVS.failure}
+  }
+}
+\cs_generate_variant:Nn \BNVS_ASSERT_in:nnn { x, xx }
+\box_new:N \l__bnvs_TEST_A_box
+\box_new:N \l__bnvs_TEST_B_box
+\cs_set:Npn \BNVS_ASSERT_size_equal:nnn #1 #2 #3 {
+  \hbox_set:Nn \l__bnvs_TEST_A_box { #1 }
+  \hbox_set:Nn \l__bnvs_TEST_B_box { #2 }
+  \bool_if:nTF {
+         \dim_compare_p:nNn {
+\box_wd:N \l__bnvs_TEST_A_box } = { \box_wd:N \l__bnvs_TEST_B_box
+    } && \dim_compare_p:nNn {
+\box_ht:N \l__bnvs_TEST_A_box } = { \box_ht:N \l__bnvs_TEST_B_box
+    } && \dim_compare_p:nNn {
+\box_dp:N \l__bnvs_TEST_A_box } = { \box_dp:N \l__bnvs_TEST_B_box
+    }
+  } {
+    \cs_set:Nn \BNVS_ASSERT: {}
+  } {
+    \cs_set:Nn \BNVS_ASSERT: {
+      \msg_error:nnxx { beanoves } { :nn } {
+        FAILED~\tl_to_str:n { #1 } != \tl_to_str:n { #2 }
+      } { \BeanovesCurrentTestFile :\the\inputlineno :#3 }
+      \begin{BNVS.failure}
+      \item FAILURE~\tl_to_str:n { #1 } != \tl_to_str:n { #2 }~(\BeanovesCurrentTestFile :\the\inputlineno)
+      \item #3
+      \end{BNVS.failure}
+    }
+  }
+  \BNVS_ASSERT:
+}
+\cs_set:Npn \BNVS_ASSERT_size_not_equal:nnn #1 #2 #3 {
+  \hbox_set:Nn \l__bnvs_TEST_A_box { #1 }
+  \hbox_set:Nn \l__bnvs_TEST_B_box { #2 }
+  \bool_if:nTF {
+         \dim_compare_p:nNn {
+\box_wd:N \l__bnvs_TEST_A_box } = { \box_wd:N \l__bnvs_TEST_B_box
+    } && \dim_compare_p:nNn {
+\box_ht:N \l__bnvs_TEST_A_box } = { \box_ht:N \l__bnvs_TEST_B_box
+    } && \dim_compare_p:nNn {
+\box_dp:N \l__bnvs_TEST_A_box } = { \box_dp:N \l__bnvs_TEST_B_box
+    }
+  } {
+    \cs_set:Nn \BNVS_ASSERT: {
+      \msg_error:nnxx { beanoves } { :nn } {
+        FAILED~\tl_to_str:n { #1 } != \tl_to_str:n { #2 }
+      } { \BeanovesCurrentTestFile :\the\inputlineno :#3 }
+      \begin{BNVS.failure}
+      \item FAILURE~\tl_to_str:n { #1 } != \tl_to_str:n { #2 }~(\BeanovesCurrentTestFile :\the\inputlineno)
+      \item #3
+      \end{BNVS.failure}
+    }
+  } {
+    \cs_set:Nn \BNVS_ASSERT: {}
+  }
+  \BNVS_ASSERT:
+}
+\cs_set:Npn \BNVS_TEST_fail:n #1 {
+  \msg_error:nnnx { beanoves } { :nn } { TEST~FAILED } { \BeanovesCurrentTestFile :\the\inputlineno :#1~(\int_use:N \g__bnvs_call_int)}
+  \begin{BNVS.failure}
+  \item FAILURE~unexpected~branch~(\BeanovesCurrentTestFile :\the\inputlineno)
+  \item #1
+  \end{BNVS.failure}
+}
+\seq_new:N \g__BNVS_coverage_seq
+\cs_set:Npn \BNVS_reset_coverage: {
+  \seq_gclear:N \g__BNVS_coverage_seq
+}
+\cs_set:Npn \BNVS_coverage:n #1 {
+  \clist_map_inline:nn { #1 } {
+    \seq_gput_right:Nn \g__BNVS_coverage_seq { ##1 }
+  }
+}
+\cs_generate_variant:Nn \BNVS_coverage:n { x }
+\hook_gput_code_with_args:nnn { BNVS_DEBUG_begin:nn } { bnvs } {
+  \BNVS_coverage:n { \BNVS_coverage_group:n { #1 } }
+  \BNVS_coverage:n { #2 }
+}
+\hook_gput_code_with_args:nnn { BNVS_DEBUG_end:n } { bnvs } {
+  \BNVS_coverage:n { \BNVS_coverage_group:n { #1 } }
+}
+\hook_gput_code_with_args:nnn { BNVS_DEBUG_log_cs_set_before:n } 1 {
+  \BNVS_coverage:n { #1 }
+}
+\AddToHook{env/BNVS.test/begin}{\BNVS_reset_coverage:}
+\cs_set:Npn \BNVS_ASSERT_coverage:nn #1 #2 {
+  \seq_if_in:NnF \g__BNVS_coverage_seq { #1 } {
+    \BNVS_log:x { \seq_use:Nn \g__BNVS_coverage_seq { ^^J=>~ } }
+    \msg_error:nnnx { beanoves } { :nn } { MISSED~COVERAGE~#1 } { \BeanovesCurrentTestFile :\the\inputlineno :#2}
+    \begin{BNVS.failure}
+    \item MISSED~COVERAGE~#1~(\BeanovesCurrentTestFile :\the\inputlineno)
+    \item #2
+    \end{BNVS.failure}
+  }
+}
+\int_new:N \l__BNVS_coverage_int
+\int_new:N \l__BNVS_coverage_saved_int
+\cs_set:Npn \BNVS_coverage_group:n {
+  \int_set:Nn \l__BNVS_coverage_int
+}
+\cs_set:Npn \BNVS_ASSERT_coverage:nnn #1 #2 #3 {
+  \group_begin:
+  \int_zero:N \l__BNVS_coverage_int
+  \cs_set:Npn \BNVS: {
+    \BNVS_log:x { \seq_use:Nn \g__BNVS_coverage_seq { ^^J=>~ } }
+    \msg_error:nnnx { beanoves } { :nn } { MISSED~COVERAGE~PAIR~#1,#2 } { \BeanovesCurrentTestFile :\the\inputlineno :#3}
+    \begin{BNVS.failure}
+    \item MISSED~COVERAGE~PAIR~(\BeanovesCurrentTestFile :\the\inputlineno)
+    \item 1:~#1
+    \item 2:~#2
+    \item #3
+    \end{BNVS.failure}
+  }
+  \cs_set:Npn \BNVS:n ##1 {
+    \tl_if_head_eq_meaning:nNTF { ##1 } \BNVS_coverage_group:n {
+      ##1
+    } {
+      \tl_if_eq:nnT { ##1 } { #1 } {
+        \int_set:Nn \l__BNVS_coverage_saved_int \l__BNVS_coverage_int
+        \cs_set:Npn \BNVS:n ####1 {
+          \tl_if_head_eq_meaning:nNTF { ####1 } \BNVS_coverage_group:n {
+            ####1
+            \int_if_compare:nNnT \l__BNVS_coverage_int < \l__BNVS_coverage_saved int {
+              \seq_map_break:
+            }
+          } {
+            \tl_if_eq:nnTF { ####1 } { #1 } {
+              \int_set:Nn \l__BNVS_coverage_saved_int { \l__BNVS_coverage_int }
+            } {
+              \tl_if_eq:nnT { ####1 } { #2 } {
+                \seq_map_break:n {
+                  \cs_set_eq:NN \BNVS: \relax
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  \seq_map_inline:Nn \g__BNVS_coverage_seq {
+    \BNVS:n { ##1 }
+  }
+  \BNVS:
+  \group_end:
+}
+\tl_new:N \g__BNVS_TEST_error_tl
+\cs_set:Npn \BNVS_TEST_catch_error:n #1 {
+  \tl_gclear:N \g__BNVS_TEST_error_tl
+  \cs_set:Npn \BNVS_error:n ##1 {
+    \tl_gset:Nn \g__BNVS_TEST_error_tl { #1/##1 }
+  }
+  \cs_set:Npn \assert_in_error:nn ##1 ##2 {
+    \BNVS_ASSERT_in:xnn { \tl_use:N \g__BNVS_TEST_error_tl } { ##1 } { ##2 }
+    \tl_gclear:N \g__BNVS_TEST_error_tl
+  }
+}
+\cs_set:Npn \BNVS_ASSERT_equal_tl:vnn {
+  \BNVS_tl_use:Nv \BNVS_ASSERT_equal:nnn
+}
+\cs_set:Npn \BNVS_ASSERT_equal_tl:vxn {
+  \exp_args:NNnx \BNVS_tl_use:Nv \BNVS_ASSERT_equal:nnn
+}
+\cs_set:Npn \BNVS_ASSERT_equal_int:vnn {
+  \BNVS_int_use:Nv \BNVS_ASSERT_equal:nnn
+}
+\cs_set:Npn \BNVS_ASSERT_equal_int:vxn {
+  \exp_args:NNnx \BNVS_int_use:Nv \BNVS_ASSERT_equal:nnn
+}
+\cs_generate_variant:Nn \BNVS_TEST_fail:n { x }
+\cs_new:Npn \BNVS_DEBUG_log_tl:nc #1 #2 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \BNVS_tl_use:Nc \token_to_str:N { #2 }
+    -> / \BNVS_tl_use:Nv \tl_to_str:n { #2 } /
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_int:nnc #1 #2 #3 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \exp_not:n { #2 }
+    -> / \BNVS_int_use:Nv \tl_to_str:n { #3 } /
+  }
+}
+\cs_generate_variant:Nn \tl_to_str:n { v }
+\cs_new:Npn \BNVS_DEBUG_log_tl:nnc #1 #2 #3 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \tl_if_empty:nF { #2 } { #2 -> }
+    \BNVS_tl_use:Nc \token_to_str:N  { #3 }
+    -> / \BNVS_tl_use:Nv \tl_to_str:n { #3 } /
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_tl:nc #1 #2 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \BNVS_tl_use:Nc \token_to_str:N { #2 }
+    -> / \BNVS_tl_use:Nv \tl_to_str:n { #2 } /
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_bool:nc #1 #2 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \BNVS_bool_use:Nc \token_to_str:N { #2 }
+    -> / \BNVS_bool_use:Nc \bool_to_str:N { #2 } /
+  }
+}
+
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnc #1 #2 #3 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \tl_to_str:n { #2 }
+    -> / \tl_to_str:n { #3 } /
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnn #1 #2 #3 {
+  \BNVS_DEBUG_log:nx { #1 } { \tl_to_str:n { #2 } -> / \tl_to_str:n { #3 } / }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnnnc #1 #2 #3 {
+  \BNVS_DEBUG_log_arg:nnn { #1 } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnc { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnnnn #1 #2 #3 {
+  \BNVS_DEBUG_log_arg:nnn { #1 } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg_IT:nnn #1 #2 #3 {
+  \BNVS_DEBUG_log_arg:nnnnn { #1 } { ID } { #2 } { TAG } { #3 }
+  \BNVS_coverage:n { #2!#3 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnnnnnc #1 #2 #3 {
+  \BNVS_DEBUG_log_arg:nnn { #1 } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnnnc { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg_IT:nnnnn #1 #2 #3 {
+  \BNVS_DEBUG_log_arg_IT:nnn { #1 } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnnnnnn #1 #2 #3 {
+  \BNVS_DEBUG_log_arg:nnn { #1 } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg_ITK:nnnn #1 #2 #3 #4 {
+  \BNVS_DEBUG_log_arg:nnnnnnn { #1 } { ID } { #2 } { TAG } { #3 } { KEY } { #4 }
+  \BNVS_coverage:n { #2!#3/#4 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnnnnnnnn #1 #2 #3 {
+  \BNVS_DEBUG_log_arg:nnn { #1 } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnnnnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg_ITK:nnnnnn #1 #2 #3 #4 {
+  \BNVS_DEBUG_log_arg_ITK:nnnn { #1 } { #2 } { #3 } { #4 }
+  \BNVS_DEBUG_log_arg:nnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_arg:nnnnnnnnc #1 #2 #3 {
+  \BNVS_DEBUG_log_arg:nnn { #1 } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnnnnnc { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:nc #1 #2 {
+  \BNVS_DEBUG_log:nx { #1 } { \token_to_str:c { \BNVS:c { #2 } } }
+  \BNVS_DEBUG_log_timer:n { #1 }
+  \BNVS_coverage:n { #2 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:nncn #1 #2 #3 #4 {
+  \BNVS_DEBUG_log:nx { #1 } { #2
+    \if_cs_exist:w \BNVS:c { #3 } \cs_end:
+      \token_to_str:c { \BNVS:c { #3 } }
+    \else:
+      #3
+    \fi:
+    #4
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:ncnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg:nnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:ncnnnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg:nnnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f_IT:ncnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg_IT:nnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:ncnnnnnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg:nnnnnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f_IT:ncnnnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg_IT:nnnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f_ITK:ncnnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg_ITK:nnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:ncnnnnnnnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg:nnnnnnnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f_ITK:ncnnnnn #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg_ITK:nnnnnn { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:ncnnnc #1 #2 {
+  \BNVS_DEBUG_log_f:nc { #1 } { #2 }
+  \BNVS_DEBUG_log_arg:nnnnc { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:ncnnnnc #1 #2 #3 {
+  \BNVS_DEBUG_log_f:nncn { #1 } { } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnnnc { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_f:ncnnnnnnc #1 #2 #3 {
+  \BNVS_DEBUG_log_f:nncn { #1 } { } { #2 } { #3 }
+  \BNVS_DEBUG_log_arg:nnnnnnc { #1 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_cs:nnN #1 #2 #3 {
+  \BNVS_DEBUG_log:nx { #1 } { \tl_to_str:n { #2 } == \token_to_str:N #3 }
+}
+\cs_new:Npn \BNVS_DEBUG_log_seq:nN #1 #2 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \token_to_str:N #2 => / \seq_count:N 2 / \seq_use:Nn #2 / /
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_seq:nnN #1 #2 #3 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \tl_to_str:n { #2 } => / \seq_count:N #3 / \seq_use:Nn #3 / /
+  }
+}
+\cs_generate_variant:Nn \tl_to_str:n { x }
+\cs_new:Npn \BNVS_DEBUG_log_seq:nxc #1 #2 #3 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    #2
+    => / \seq_count:c { l__bnvs_#3_seq }
+       / \seq_use:cn { l__bnvs_#3_seq } / /
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_seq:nc #1 #2 {
+  \BNVS_DEBUG_log:nx { #1 } {
+    \token_to_str:c { l__bnvs_#2_seq }
+    => / \seq_count:c { l__bnvs_#2_seq }
+       / \seq_use:cn { l__bnvs_#2_seq } / /
+  }
+}
+\tl_new:N \BNVS_DEBUG_tl
+\hook_new_with_args:nn { BNVS_DEBUG_log_cs_set_before:n } 1
+\cs_new:Npn \BNVS_DEBUG_log_cs_set:cpn #1 {
+  \hook_use:nnw { BNVS_DEBUG_log_cs_set_before:n } 1 { #1 }
+  \tl_set:Nn \BNVS_DEBUG_tl { #1 }
+  \tl_replace_once:Nnn \BNVS_DEBUG_tl { : } { _ }
+  \cs_set:cpn { BNVS_DEBUG_log_ \BNVS_DEBUG_tl :nn }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set:ncn #1 #2 #3 {
+  \BNVS_DEBUG_log_cs_set:cpn { #2 } ##1 ##2 {
+    \BNVS_DEBUG_log_f:nncn { #1 } { ##1 } { #2 } { ##2 }
+    #3
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set:ncnn #1 #2 #3 #4 {
+  \BNVS_DEBUG_log_cs_set:cpn { #2 } ##1 ##2 {
+    \BNVS_DEBUG_log_f:nncn { #1 } { ##1 } { #2 } { ##2 }
+    \BNVS_DEBUG_log_arg:nnn { #1 } { #3 } { #4 }
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set:ncnnc #1 #2 #3 #4 #5 {
+  \BNVS_DEBUG_log_cs_set:cpn { #2 } ##1 ##2 {
+    \BNVS_DEBUG_log_f:nncn { #1 } { ##1 } { #2 } { ##2 }
+    \BNVS_DEBUG_log_arg:nnnnc { #1 } { #3 } { #4 } { IN } { #5 }
+    \cs_if_exist:cT { l__bnvs_#5_tl } {
+      \BNVS_DEBUG_log_tl:nc { #1 } { #5 }
+    }
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set:ncnnnn #1 #2 #3 #4 #5 #6 {
+  \BNVS_DEBUG_log_cs_set:cpn { #2 } ##1 ##2 {
+    \BNVS_DEBUG_log_f:nncn { #1 } { ##1 } { #2 } { ##2 }
+    \BNVS_DEBUG_log_arg:nnnnn { #1 } { #3 } { #4 } { #5 } { #6 }
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set_IT:ncnn #1 #2 #3 {
+  \BNVS_DEBUG_log_set:ncnnnn { #1 } { #2 } { ID } { #3 } { TAG }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set:ncnnnnnn #1 #2 #3 #4 #5 #6 #7 #8 {
+  \BNVS_DEBUG_log_cs_set:cpn { #2 } ##1 ##2 {
+    \BNVS_DEBUG_log_f:nncn { #1 } { ##1 } { #2 } { ##2 }
+    \BNVS_DEBUG_log_arg:nnnnnnn { #1 } { #3 } { #4 } { #5 } { #6 } { #7 } { #8 }
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set_IT:ncnnnn #1 #2 #3 {
+  \BNVS_DEBUG_log_set:ncnnnnnn { #1 } { #2 } { ID } { #3 } { TAG }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set:ncnnnnc #1 #2 #3 #4 #5 #6 #7 {
+  \BNVS_DEBUG_log_cs_set:cpn { #2 } ##1 ##2 {
+    \BNVS_DEBUG_log_f:nncn { #1 } { ##1 } { #2 } { ##2 }
+    \BNVS_DEBUG_log_arg:nnnnnnc { #1 } { #3 } { #4 } { #5 } { #6 } { IN } { #7 }
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set_IT:ncnnc #1 #2 #3 {
+  \BNVS_DEBUG_log_set:ncnnnnc { #1 } { #2 } { ID } { #3 } { TAG }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set:ncnnnnnnc #1 #2 #3 #4 #5 #6 #7 #8 #9 {
+  \BNVS_DEBUG_log_cs_set:cpn { #2 } ##1 ##2 {
+    \BNVS_DEBUG_log_f:nncn { #1 } { ##1 } { #2 } { ##2 }
+    \BNVS_DEBUG_log_arg:nnnnnnnnc { #1 } { #3 } { #4 } { #5 } { #6 } { #7 } { #8 } { IN } { #9 }
+  }
+}
+\cs_new:Npn \BNVS_DEBUG_log_set_IT:ncnnnnc #1 #2 #3 {
+  \BNVS_DEBUG_log_set:ncnnnnnnc { #1 } { #2 } { ID } { #3 } { TAG }
+}
+\tl_new:N \l__bnvs_Test_item_nnn_tl
+\cs_set:Npn \BNVS_Test_item:nnn #1 #2 #3 {
+  \__bnvs_if_get:nnncT { #1 } { #2 } { #3 } { Test_item_nnn } {
+    \__bnvs_tl_use:c { Test_item_nnn }
+  }
+}
+\tl_new:N \l__bnvs_I_last_tl
+\tl_new:N \l__bnvs_I_tl
+\tl_new:N \l__bnvs_K_tl
+\tl_new:N \l__bnvs_S_tl
+\tl_new:N \l__bnvs_P_tl
+\tl_new:N \l__bnvs_G_tl
+\tl_new:N \l__bnvs_N_tl
+\tl_new:N \l__bnvs_U_tl
+\tl_new:N \l__bnvs_R_tl
+\tl_new:N \l__bnvs_O_tl
+\tl_new:N \l__bnvs_n_tl
+\tl_new:N \l__bnvs_ref_tl
+\tl_new:N \l__bnvs_T_tl
+\tl_new:N \l__bnvs_V_tl
+\tl_new:N \l__bnvs_A_tl
+\tl_new:N \l__bnvs_L_tl
+\tl_new:N \l__bnvs_Z_tl
+\tl_new:N \l__bnvs_a_tl
+\tl_new:N \l__bnvs_b_tl
+\tl_new:N \l__bnvs_c_tl
+\tl_new:N \l__bnvs_ans_tl
+\tl_new:N \l__bnvs_base_tl
+\tl_new:N \l__bnvs_group_tl
+\tl_new:N \l__bnvs_scan_tl
+\tl_new:N \l__bnvs_query_tl
+\tl_new:N \l__bnvs_token_tl
+\tl_new:N \l__bnvs_root_tl
+\tl_new:N \l__bnvs_n_incr_tl
+\tl_new:N \l__bnvs_incr_tl
+\tl_new:N \l__bnvs_plus_tl
+\tl_new:N \l__bnvs_rhs_tl
+\tl_new:N \l__bnvs_post_tl
+\tl_new:N \l__bnvs_suffix_tl
+\tl_new:N \l__bnvs_index_tl
+\int_new:N \g__bnvs_call_int
+\int_new:N \l__bnvs_int
+\int_new:N \l__bnvs_i_int
+\seq_new:N \g__bnvs_def_seq
+\seq_new:N \l__bnvs_a_seq
+\seq_new:N \l__bnvs_b_seq
+\seq_new:N \l__bnvs_ans_seq
+\seq_new:N \l__bnvs_match_seq
+\seq_new:N \l__bnvs_split_seq
+\seq_new:N \l__bnvs_P_seq
+\seq_new:N \l__bnvs_P_head_seq
+\seq_new:N \l__bnvs_P_tail_seq
+\seq_new:N \l__bnvs_query_seq
+\seq_new:N \l__bnvs_token_seq
+\bool_new:N \l__bnvs_in_frame_bool
+\bool_set_false:N \l__bnvs_in_frame_bool
+\bool_new:N \l__bnvs_parse_bool
+\bool_set_false:N \l__bnvs_parse_bool
+\bool_new:N \l__bnvs_deep_bool
+\bool_set_false:N \l__bnvs_deep_bool
+\BNVS_new:cpn { tl_clear_ans: } {
+  \__bnvs_tl_clear:c { ans }
+}
+\cs_new:Npn \BNVS_error_ans:x {
+  \__bnvs_tl_put_right:cn { ans } { 0 }
+  \BNVS_error:x
+}
+\bool_new:N \l__bnvs_provide_bool
+\BNVS_new:cpn { set_true:c } #1 {
+  \exp_args:Nc \bool_set_true:N { l__bnvs_#1_bool }
+}
+\BNVS_new:cpn { set_false:c } #1 {
+  \exp_args:Nc \bool_set_false:N { l__bnvs_#1_bool }
+}
+\BNVS_new:cpn { provide_on: } {
+  \__bnvs_set_true:c { provide }
+\BNVS_DEBUG_log:nn D { PROVIDE...ON }
+}
+\BNVS_new:cpn { provide_off: } {
+  \__bnvs_set_false:c { provide }
+\BNVS_DEBUG_log:nn D { PROVIDE...OFF }
+}
+\__bnvs_provide_off:
+\int_const:Nn \c__bnvs_max_call_int { 8192 }
+\BNVS_new:cpn  { greset_call: } {
+\BNVS_DEBUG_log_f:nc D { greset_call: }
+\BNVS_DEBUG_log:nx D { \token_to_str:N \g__bnvs_call_int: \int_use:N \g__bnvs_call_int }
+  \int_gset:Nn \g__bnvs_call_int { \c__bnvs_max_call_int }
+}
+\BNVS_new_conditional:cpnn { if_call: } { T, F, TF } {
+  \int_gdecr:N \g__bnvs_call_int
+\BNVS_DEBUG_log_f:nc o { if_call:TF }
+\BNVS_DEBUG_log:nx o { \token_to_str:N \g__bnvs_call_int: \int_use:N \g__bnvs_call_int }
+  \int_compare:nNnTF \g__bnvs_call_int > 0 {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { name:nnn } #1 #2 #3 { __bnvs_#1!#2/#3: }
+\BNVS_new:cpn { name:nn } #1 #2 { __bnvs_#1!#2: }
+\BNVS_new:cpn { id_seq:n } #1 { g__bnvs_#1!_seq }
+\seq_new:N \g__bnvs_I_seq
+\seq_new:N \l__bnvs_register_NNnn_seq
+\BNVS_new:cpn { register:NNnn } #1 #2 #3 #4 {
+  \cs_if_exist:NF #1 {
+\BNVS_DEBUG_log:nn R { register~ID!TAG:#3!#4 }
+    \cs_gset:Npn #1 { }
+    \seq_if_exist:NTF #2 {
+      \__bnvs_seq_clear:c { register_NNnn }
+      \cs_set:Npn \BNVS_register_NNnn: {
+        \__bnvs_seq_put_right:cn { register_NNnn } { #4 }
+        \cs_set:Npn \BNVS_register_NNnn: { }
+      }
+      \cs_set:Npn \BNVS_register_NNnn:w ##1 ##2 {
+        \str_compare:nNnTF { ##2 } < { #4 } {
+          \__bnvs_seq_put_right:cn { register_NNnn } { ##2 }
+        } {
+          \BNVS_register_NNnn:
+          \__bnvs_seq_put_right:cn { register_NNnn } { ##2 }
+          \cs_set:Npn \BNVS_register_NNnn:w ####1 ####2 {
+            \__bnvs_seq_put_right:cn { register_NNnn } { ####2 }
+          }
+        }
+      }
+      \__bnvs_foreach_T:nNTF { #3 } \BNVS_register_NNnn:w {
+        \BNVS_register_NNnn:
+        \seq_gset_eq:NN #2 \l__bnvs_register_NNnn_seq
+      } {
+        \BNVS_error:n { Unreachable/register:NNnn~id~#3 }
+      }
+    } {
+      \seq_new:N #2
+      \seq_gput_right:Nn #2 { #4 }
+      \__bnvs_seq_clear:c { register_NNnn }
+      \cs_set:Npn \BNVS_register_NNnn: {
+        \__bnvs_seq_put_right:cn { register_NNnn } { #3 }
+        \cs_set:Npn \BNVS_register_NNnn: {}
+      }
+      \cs_set:Npn \BNVS_register_NNnn:w ##1 {
+        \str_compare:nNnTF { ##1 } < { #3 } {
+          \__bnvs_seq_put_right:cn { register_NNnn } { ##1 }
+        } {
+          \BNVS_register_NNnn:
+          \__bnvs_seq_put_right:cn { register_NNnn } { ##1 }
+          \cs_set:Npn \BNVS_register_NNnn:w ####1 {
+            \__bnvs_seq_put_right:cn { register_NNnn } { ####1 }
+          }
+        }
+      }
+      \__bnvs_foreach_I:N \BNVS_register_NNnn:w
+      \BNVS_register_NNnn:
+      \seq_gset_eq:NN \g__bnvs_I_seq \l__bnvs_register_NNnn_seq
+    }
+\BNVS_DEBUG_log:nx R { / \seq_use:Nn \g__bnvs_I_seq / / }
+  }
+}
+\BNVS_new:cpn { register:nn } #1 #2 {
+  \exp_args:Ncc \__bnvs_register:NNnn
+    { \__bnvs_name:nn { #1 } { #2 } } { \__bnvs_id_seq:n { #1 } }
+    { #1 } { #2 }
+}
+\seq_new:N \l__bnvs_unregister_NNnn_seq
+\BNVS_new:cpn { unregister:NNnn } #1 #2 #3 #4 {
+  \cs_if_exist:NT #1 {
+\BNVS_DEBUG_log:nn R { unregister~ID!TAG:#3!#4 }
+    \cs_undefine:N #1
+    \__bnvs_seq_clear:c { unregister_NNnn }
+    \cs_set:Npn \BNVS_unregister_NNnn:n ##1 { ##1 }
+    \cs_set:Npn \BNVS_unregister_NNnn:w ##1 ##2 {
+      \str_compare:nNnTF { ##2 } < { #4 } {
+        \__bnvs_seq_put_right:cn { unregister_NNnn } { ##2 }
+        \cs_set:Npn \BNVS_unregister_NNnn:n ####1 { }
+      } {
+        \cs_set:Npn \BNVS_unregister_NNnn:w ####1 ####2 {
+          \__bnvs_seq_put_right:cn { unregister_NNnn } { ####2 }
+          \cs_set:Npn \BNVS_unregister_NNnn:n ########1 { }
+        }
+      }
+    }
+    \__bnvs_foreach_T:nNTF { #3 } \BNVS_unregister_NNnn:w {
+      \seq_gset_eq:NN #2 \l__bnvs_unregister_NNnn_seq
+    } {
+      \BNVS_error:n { Unreachable / unregister:NNnn~#3!#4 }
+    }
+    \BNVS_unregister_NNnn:n {
+      \__bnvs_seq_clear:c { unregister_NNnn }
+      \cs_set:Npn \BNVS_unregister_NNnn:w ##1 {
+        \str_compare:nNnTF { ##1 } < { #3 } {
+          \__bnvs_seq_put_right:cn { unregister_NNnn } { ##1 }
+        } {
+          \cs_set:Npn \BNVS_unregister_NNnn:n ####1 {
+            \__bnvs_seq_put_right:cn { unregister_NNnn } { ####1 }
+          }
+        }
+      }
+      \__bnvs_foreach_I:N \BNVS_unregister_NNnn:w
+      \seq_gset_eq:NN \g__bnvs_I_seq \l__bnvs_unregister_NNnn_seq
+      \cs_undefine:N #2
+    }
+\BNVS_DEBUG_log:nx R { sequence~I:/ \seq_use:Nn \g__bnvs_I_seq / / }
+  }
+}
+\BNVS_new:cpn { unregister:nn } #1 #2 {
+  \exp_args:Ncc \__bnvs_unregister:NNnn
+    { \__bnvs_name:nn { #1 } { #2 } } { \__bnvs_id_seq:n { #1 } }
+    { #1 } { #2 }
+}
+\BNVS_new_conditional:cpnn { if_registered:nn } #1 #2 { T, F, TF } {
+  \cs_if_exist:cTF { \__bnvs_name:nn { #1 } { #2 } } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { foreach_I:N } {
+  \seq_map_function:NN \g__bnvs_I_seq
+}
+\BNVS_new:cpn { foreach_I:n } #1 {
+  \BNVS_DEBUG_log_f:nc H { foreach_I:n }
+  \BNVS_DEBUG_log_arg:nnn H {:n} { #1 }
+  \seq_map_inline:Nn \g__bnvs_I_seq { #1 }
+}
+\cs_set_eq:NN \__bnvs_foreach_break: \seq_map_break:
+\cs_set_eq:NN \__bnvs_foreach_break:n \seq_map_break:n
+\BNVS_new_conditional:cpnn { foreach_T:nN } #1 #2 { T, F, TF } {
+  \if_cs_exist:w \__bnvs_id_seq:n { #1 } \cs_end:
+    \seq_map_inline:cn { \__bnvs_id_seq:n { #1 } } { #2 { #1 } { ##1 } }
+    \prg_return_true:
+  \else:
+    \prg_return_false:
+  \fi
+}
+\BNVS_new_conditional:cpnn { foreach_T:nn } #1 #2 { T, F, TF } {
+  \if_cs_exist:w { \__bnvs_id_seq:n { #1 } } \cs_end:
+    \cs_set:Npn \BNVS_foreach_T_nn:nn ##1 ##2 { #2 }
+    \seq_map_inline:cn { { \__bnvs_id_seq:n { #1 } } }
+      { \BNVS_foreach_T_nn:nn { #1 } { ##1 } }
+    \prg_return_true:
+  \else:
+    \prg_return_false:
+  \fi
+}
+\BNVS_new:cpn { foreach_IT:N } #1 {
+  \__bnvs_foreach_I:n {
+    \__bnvs_foreach_T:nNT { ##1 } #1 { }
+  }
+}
+\BNVS_new:cpn { foreach_IT:NT } #1 #2 {
+  \__bnvs_foreach_I:n {
+    \__bnvs_foreach_T:nNT { ##1 } #1 { #2 }
+  }
+}
+\BNVS_new:cpn { foreach_IT:n } #1 {
+  \cs_set:Npn \BNVS_foreach_IT_n:nn ##1 ##2 { #1 }
+  \__bnvs_foreach_I:n {
+    \__bnvs_foreach_T:nNT { ##1 } \BNVS_foreach_IT_n:nn { }
+  }
+}
+\BNVS_new:cpn { foreach_key_main:N } {
+  \tl_map_function:nN { VAZL }
+}
+\BNVS_new:cpn { foreach_key_main:n } {
+  \tl_map_inline:nn { VAZL }
+}
+\BNVS_new:cpn { foreach_key_sub:N } {
+  \tl_map_function:nN { PNvn }
+}
+\BNVS_new:cpn { foreach_key_sub:n } {
+  \tl_map_inline:nn { PNvn }
+}
+\BNVS_new:cpn { foreach_key:n } #1 {
+  \__bnvs_foreach_key_main:n { #1 }
+  \__bnvs_foreach_key_sub:n  { #1 }
+}
+\BNVS_new:cpn { foreach_key:N } #1 {
+  \__bnvs_foreach_key_main:N #1
+  \__bnvs_foreach_key_sub:N  #1
+}
+\BNVS_new:cpn { foreach_key_resolved:N } {
+  \tl_map_function:nN { {V*}{A*}{Z*}{L*}{P*}{N*} }
+}
+\BNVS_new:cpn { foreach_key_resolved:n } {
+  \tl_map_inline:nn { {V*}{A*}{Z*}{L*}{P*}{N*} }
+}
+\cs_new:Npn \BNVS_DEBUG_log_g:nn #1 #2 {
+  \BNVS_DEBUG_log:nx #1 { ◓◓◓◓◓ ~line:~\the\inputlineno }
+  \__bnvs_int_set:cn { i } { \tl_if_empty:nTF { #2 } { 20 } { #2 } }
+  \cs_set:Npn \BNVS_DEBUG_log_g_nn:nn ##1 ##2 {
+    \int_compare:nNnTF { \__bnvs_int_use:c { i } } > { 0 } {
+      \__bnvs_foreach_key:n {
+        \__bnvs_if_get:nnncT { ##1 } { ##2 } { ####1 } { DEBUG } {
+          \BNVS_DEBUG_log:nx { #1 } { ##1!##2/####1 -> \BNVS_tl_use:Nv \exp_not:n { DEBUG } }
+          \__bnvs_int_decr:c { i }
+        }
+        \__bnvs_if_get_resolved:nnncT { ##1 } { ##2 } { ####1 } { DEBUG } {
+          \BNVS_DEBUG_log:nx { #1 } { ##1!##2/####1* -> \BNVS_tl_use:Nv \exp_not:n { DEBUG } }
+          \__bnvs_int_decr:c { i }
+        }
+      }
+    } {
+      \cs_set:Npn \BNVS_DEBUG_log_g_nn:nn ####1 ####2 {}
+    }
+  }
+  \__bnvs_foreach_IT:N \BNVS_DEBUG_log_g_nn:nn
+  \BNVS_DEBUG_log:nx { #1 } { ◒◒◒◒◒ ~line:~\the\inputlineno }
+}
+\NewDocumentCommand\BeanovesLogG { O{20} } { \BNVS_DEBUG_log_g:nn D {#1} }
+\BNVS_new:cpn { gset:nnnn } #1 #2 #3 {
+  \regex_match:NnTF \c__bnvs_A_reserved_Z_regex { #2 } {
+    \use_none:n
+  } {
+    \__bnvs_register:nn { #1 } { #2 }
+    \cs_gset:cpn { __bnvs_#1!#2/#3: }
+  }
+}
+\BNVS_set:cpn { gset:nnnn } #1 #2 #3 #4 {
+  \BNVS_DEBUG_log_f:nc D { gset:nnnn }
+  \BNVS_DEBUG_log:nn D { #1!#2/#3~<=~#4 }
+  \tl_if_empty:nTF { #2 } {
+    \BNVS_error:n { Unexpected~empty~tag}
+  } {
+    \regex_match:NnTF \c__bnvs_A_reserved_Z_regex { #2 } {
+      \BNVS_error:n { Reserved~tag}
+    } {
+      \__bnvs_register:nn { #1 } { #2 }
+      \cs_gset:cpn { __bnvs_#1!#2/#3: } { #4 }
+      \BNVS_DEBUG_log_g:nn D {}
+    }
+  }
+}
+\BNVS_new:cpn { gset:vnnn } {
+  \BNVS_tl_use:cv { gset:nnnn }
+}
+\BNVS_new:cpn { gset:nvnn } #1 {
+  \BNVS_tl_use:nv { \__bnvs_gset:nnnn { #1 } }
+}
+\BNVS_new:cpn { gset:vvnn } {
+  \BNVS_tl_use:Nvv \__bnvs_gset:nnnn
+}
+\BNVS_new:cpn { gset:nnnv } #1 #2 #3 {
+  \BNVS_tl_use:nv {
+    \__bnvs_gset:nnnn { #1 } { #2 } { #3 }
+  }
+}
+\BNVS_new:cpn { gset:vvnv } #1 #2 #3 {
+  \BNVS_tl_use:nv {
+    \__bnvs_gset:vvnn { #1 } { #2 } { #3 }
+  }
+}
+\BNVS_new:cpn { gunset:nnn } #1 #2 #3 {
+  \BNVS_DEBUG_log_f_ITK:ncnnn D { gunset:nnn } { #1 } { #2 } { #3 }
+  \cs_undefine:c { __bnvs_#1!#2/#3: }
+}
+\BNVS_new:cpn { gunset:vvn } {
+  \BNVS_tl_use:Nvv \__bnvs_gunset:nnn
+}
+\BNVS_new:cpn { gunset:nn } #1 #2 {
+  \BNVS_DEBUG_log_f_IT:ncnn D { gunset:nn } { #1 } { #2 }
+  \__bnvs_if_registered:nnT { #1 } { #2 } {
+    \tl_map_inline:nn {
+      \__bnvs_foreach_key_main:n
+      \__bnvs_foreach_key_sub:n
+      \__bnvs_foreach_key_resolved:n
+    } {
+      ##1 {
+        \__bnvs_gunset:nnn { #1 } { #2 } { ####1 }
+      }
+    }
+    \__bnvs_unregister:nn { #1 } { #2 }
+  }
+}
+\BNVS_new:cpn { gunset:nv } #1 {
+  \BNVS_tl_use:nv { \__bnvs_gunset:nn { #1 } }
+}
+\BNVS_new:cpn { gunset_deep:nn } #1 #2 {
+\BNVS_DEBUG_log_f_IT:ncnn D { gunset_deep:nn } { #1 } { #2 }
+  \__bnvs_foreach_I:n {
+    \tl_if_eq:nnT { #1 } { ##1 } {
+      \__bnvs_foreach_T:nnT { #1 } { ####1 } {
+        \tl_if_in:nnT { .. ########1 } { .. #2 . } {
+          \__bnvs_gunset:nn { #1 } { ########1 }
+        }
+      }
+      \__bnvs_foreach_break:
+    }
+  }
+}
+\BNVS_new:cpn { gunset_deep:nv } #1 {
+  \BNVS_tl_use:nv { \__bnvs_gunset:nn { #1 } }
+}
+\BNVS_new:cpn { gunset:vn } {
+  \BNVS_tl_use:cv { gunset:nn }
+}
+\BNVS_new:cpn { gunset:vv } {
+  \BNVS_tl_use:Nvv \__bnvs_gunset:nn
+}
+\BNVS_new:cpn { gunset_deep:vv } {
+  \BNVS_tl_use:Nvv \__bnvs_gunset_deep:nn
+}
+\seq_new:N \l__bnvs_gunset_n_seq
+\BNVS_new:cpn { gunset:n } #1 {
+\BNVS_DEBUG_log_f:ncnn D { gunset:n } { ID } { #1 }
+  \__bnvs_seq_clear:c { gunset_n }
+  \__bnvs_foreach_I:n {
+    \tl_if_eq:nnTF { ##1 } { #1 } {
+      \__bnvs_foreach_T:nnT { #1 } {
+        \__bnvs_gunset:nn { #1  } { ####1 }
+      } {}
+    } {
+      \__bnvs_seq_put_right:cn { gunset_n } { ##1 }
+    }
+  }
+  \seq_gset_eq:NN \g__bnvs_I_seq \l__bnvs_gunset_n_seq
+}
+\BNVS_new:cpn { gunset: } {
+  \__bnvs_foreach_IT:N \__bnvs_gunset:nn
+}
+\BNVS_new_conditional:cpnn { is_gset:nnn } #1 #2 #3 { T, F, TF } {
+  \BNVS_DEBUG_log_f_ITK:ncnnn D { is_gset:nnnTF } { #1 } { #2 } { #3 }
+  \if_cs_exist:w \__bnvs_name:nnn { #1 } { #2 } { #3 } \cs_end:
+    \prg_return_true:
+  \else:
+    \prg_return_false:
+  \fi:
+}
+\BNVS_new_conditional:cpnn { is_gset:vxn } #1 #2 #3 { T, F, TF } {
+  \exp_args:NNnx \BNVS_tl_use:Nv \__bnvs_is_gset:nnnTF { #1 }
+  { #2 } { #3 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { is_gset:nvn } #1 #2 #3 { T, F, TF } {
+  \BNVS_tl_use:nv { \__bnvs_is_gset:nnnTF { #1 } } { #2 } { #3 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { is_gset:vvn } #1 #2 #3 { T, F, TF } {
+  \BNVS_tl_use:Nvv \__bnvs_is_gset:nnnTF { #1 } { #2 } { #3 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { is_gset:nn } #1 #2 { T, F, TF } {
+  \BNVS_coverage:n { is_gset:nn }
+  \__bnvs_is_gset:nnnTF { #1 } { #2 } V {
+    \prg_return_true:
+  } {
+    \__bnvs_is_gset:nnnTF { #1 } { #2 } A {
+      \prg_return_true:
+    } {
+      \__bnvs_is_gset:nnnTF { #1 } { #2 } Z {
+        \prg_return_true:
+      } {
+        \prg_return_false:
+      }
+    }
+  }
+}
+\BNVS_new_conditional:cpnn { if_spec:nnn } #1 #2 #3 { T, F, TF } {
+  \BNVS_coverage:n { is_spec:nnn }
+  \BNVS_coverage:n { #1!#2/#3 }
+  \__bnvs_is_gset:nnnTF { #1 } { #2 } { #3 } {
+    \prg_return_true:
+  } {
+    \tl_if_empty:nTF { #1 } {
+      \prg_return_false:
+    } {
+      \__bnvs_is_gset:nnnTF { } { #2 } { #3 } {
+        \prg_return_true:
+      } {
+        \prg_return_false:
+      }
+    }
+  }
+}
+\BNVS_new_conditional:cpnn { if_spec:nn } #1 #2 { T, F, TF } {
+  \BNVS_DEBUG_log_f_IT:ncnn D { if_spec:nn } { #1 } { #2 }
+  \__bnvs_is_gset:nnTF { #1 } { #2 } {
+    \prg_return_true:
+  } {
+    \tl_if_empty:nTF { #1 } {
+      \prg_return_false:
+    } {
+      \__bnvs_is_gset:nnTF { } { #2 } {
+        \prg_return_true:
+      } {
+        \prg_return_false:
+      }
+    }
+  }
+}
+\BNVS_new_conditional:cpnn { if_get:nnnc } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_DEBUG_log_f_ITK:ncnnnnn D { if_get:nnncTF } { #1 } { #2 } { #3 } { IN } { #4 }
+  \__bnvs_is_gset:nnnTF { #1 } { #2 } { #3 } {
+    \exp_args:Nnc \use:n { \exp_args:Nno \cs_set:cpn { \BNVS_l:cn { #4 } { tl } } } { \__bnvs_name:nnn { #1 } { #2 } { #3 } }
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_get:vvnc } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_tl_use:Nvv \__bnvs_if_get:nnncTF { #1 } { #2 } { #3 } { #4 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_spec:nnnc } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_coverage:n { if_spec:nnnc }
+  \__bnvs_if_get:nnncTF { #1 } { #2 } { #3 } { #4 } {
+    \prg_return_true:
+  } {
+    \tl_if_empty:nTF { #1 } {
+      \prg_return_false:
+    } {
+      \__bnvs_if_get:nnncTF { } { #2 } { #3 } { #4 } {
+        \prg_return_true:
+      } {
+        \prg_return_false:
+      }
+    }
+  }
+}
+\BNVS_new_conditional:cpnn { is_provide_gset:nnn } #1 #2 #3 { T, F, TF } {
+  \BNVS_coverage:n { is_provide_gset:nnn }
+  \__bnvs_if:cTF { provide } {
+    \cs_if_exist:cTF { \__bnvs_name:nnn { #1 } { #2 } { #3 } } {
+\BNVS_DEBUG_log:nn p { is_provide_gset:nnn...TRUE(#1!#2/#3)}
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log:nn p { is_provide_gset:nnn...FALSE~is_gset(#1!#2/#3)}
+      \prg_return_false:
+    }
+  } {
+\BNVS_DEBUG_log:nn p { is_provide_gset:nnn...FALSE~provide(#1!#2/#3)}
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { is_provide_gset:nvn } #1 #2 #3 { T, F, TF } {
+  \BNVS_tl_use:nv { \__bnvs_is_provide_gset:nnnTF { #1 } } { #2 } { #3 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { is_provide_gset:vvn } #1 #2 #3 { T, F, TF } {
+  \BNVS_tl_use:Nvv \__bnvs_is_provide_gset:nnnTF { #1 } { #2 } { #3 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { gprovide:TnnnnF } #1 #2 #3 #4 #5 {
+  \BNVS_coverage:n { gprovide:TnnnnF }
+  \__bnvs_if:cTF { provide } {
+    \__bnvs_is_gset:nnnF { #2 } { #3 } { #4 } {
+      #1
+      \__bnvs_gset:nnnn { #2 } { #3 } { #4 } { #5 }
+\BNVS_DEBUG_log_f_ITK:ncnnnnn P { gprovide:TnnnnF } { #2 } { #3 } { #4 } { VALUE } { #5 }
+\BNVS_DEBUG_log_g:nn P {}
+    }
+  }
+}
+\BNVS_new:cpn { gprovide:TvnnnF } #1 {
+  \BNVS_tl_use:nv { \__bnvs_gprovide:TnnnnF { #1 } }
+}
+\BNVS_new:cpn { gprovide:TvvnnF } #1 {
+  \BNVS_tl_use:nvv { \__bnvs_gprovide:TnnnnF { #1 } }
+}
+\int_new:N \l__bnvs_DEBUG_int
+\tl_new:N \l__bnvs_DEBUG_tl
+\cs_new:Npn \BNVS_DEBUG_D_log_resolved:n #1 {
+  \BNVS_group_begin:
+  \__bnvs_int_set:cn { DEBUG } { \tl_if_empty:nTF { #1 } { 20 } { #1 } }
+  \cs_set:Npn \BNVS_D_log_resolved_n:nn ##1 ##2 {
+    \int_compare:nNnF { \__bnvs_int_use:c { DEBUG } } > { 0 } {
+      \__bnvs_foreach_key_resolved:n {
+        \__bnvs_if_get_resolved:nnncT { ####1 } { ##1 } { ##2 } { DEBUG } {
+          \BNVS_DEBUG_log:nx D { n: ##1!##2 -> \BNVS_tl_use:Nv
+          \exp_not:n { \__bnvs_int_decr:c { i } } }
+        }
+      }
+    } {
+      \cs_set:Npn \BNVS_D_log_resolved_n:nn ####1 ####2 {}
+    }
+  }
+  \__bnvs_foreach_IT:n { \BNVS_D_log_resolved_n:nn { ##1 } { ##2 } }
+  \BNVS_group_end:
+}
+
+\NewDocumentCommand\BeanovesLogC {O{20}} { \BNVS_DEBUG_D_log_resolved:n {#1} }
+\BNVS_new:cpn { gset_resolved:nnnn } #1 #2 #3 {
+  \__bnvs_gset:nnnn { #1 } { #2 } { #3 * }
+}
+\BNVS_set:cpn { gset_resolved:nnnn } #1 #2 #3 #4 {
+\BNVS_DEBUG_log_f_ITK:ncnnnnn D { gset_resolved:nnnn } { #1 } { #2 } { #3 } { VALUE } { #4 }
+  \__bnvs_gset:nnnn { #1 } { #2 } { #3 * } { #4 }
+}
+\BNVS_new:cpn { gset_resolved:vvnn } {
+  \BNVS_tl_use:Nvv \__bnvs_gset_resolved:nnnn
+}
+\BNVS_new:cpn { gset_resolved:nnnv } #1 #2 #3 {
+  \BNVS_tl_use:nv {
+    \__bnvs_gset_resolved:nnnn { #1 } { #2 } { #3 }
+  }
+}
+\BNVS_new_conditional:cpnn { if_get_resolved:nnnc } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_coverage:n { if_get_resolved:nnnc }
+  \BNVS_coverage:n { #1!#2/#3*=>#4 }
+  \__bnvs_if_get:nnncTF { #1 } { #2 } { #3 * } { #4 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { gunset_resolved:nnn } #1 #2 #3 {
+  \__bnvs_gunset:nnn { #1 } { #2 } { #3 * }
+}
+\BNVS_new:cpn { gunset_resolved:nn } #1 #2 {
+  \BNVS_coverage:n { gunset_resolved:nn }
+  \BNVS_coverage:n { #1!#2 }
+  \__bnvs_foreach_key_resolved:n {
+    \__bnvs_gunset:nnn { #1 } { #2 } { ##1 }
+  }
+}
+\BNVS_new:cpn { gunset_resolved:vv } {
+  \BNVS_tl_use:Nvv \__bnvs_gunset:nn
+}
+\BNVS_new:cpn { gunset_resolved:n } #1 {
+  \BNVS_coverage:n { gunset_resolved:n }
+  \__bnvs_foreach_IT:n {
+    \tl_if_eq:nnT { #1 } { ##1 } {
+      \__bnvs_gunset_resolved:nn { ##1 } { ##2 }
+    }
+  }
+\BNVS_DEBUG_log_f:ncnn D { gunset_resolved:n } { ID } { #1 }
+\BNVS_DEBUG_log_g:nn D { }
+}
+\BNVS_new:cpn { gunset_resolved: } {
+  \BNVS_coverage:n { gunset_resolved: }
+  \__bnvs_foreach_IT:n {
+    \__bnvs_gunset_resolved:nn { ##1 } { ##2 }
+  }
+\BNVS_DEBUG_log_f:nc D { gunset_resolved: }
+\BNVS_DEBUG_log_g:nn D { }
+}
+\BNVS_new:cpn { v_gunset: } {
+  \__bnvs_foreach_IT:n {
+    \__bnvs_gunset:nnn       { ##1 } { ##2 } v
+    \__bnvs_gunset_resolved:nnn { ##1 } { ##2 } v
+  }
+\BNVS_DEBUG_log_f:nc D { v_gunset: }
+\BNVS_DEBUG_log_g:nn D {}
+}
+\BNVS_new_conditional:cpnn { quark_if_nil:v } #1 { T, F, TF } {
+  \BNVS_coverage:n { quark_if_nil:v }
+  \BNVS_tl_use:nc { \exp_args:NV \quark_if_nil:nTF } { #1 } {
+\BNVS_DEBUG_log_f:nncn q { } { quark_if_nil:vTF } { /#1/TRUE }
+\BNVS_tl_use:nc { \BNVS_DEBUG_log:nn q } { #1 }
+\BNVS_tl_use:nv { \BNVS_DEBUG_log:nn q } { #1 }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_f:nncn q { } { quark_if_nil:vTF } { /#1/FALSE }
+\BNVS_tl_use:nc { \BNVS_DEBUG_log:nn q } { #1 }
+\BNVS_tl_use:nv { \BNVS_DEBUG_log:nn q } { #1 }
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { quark_if_no_value:v } #1 { T, F, TF } {
+  \BNVS_coverage:n { quark_if_no_value:v }
+\BNVS_DEBUG_log_f:nncn q { } { quark_if_no_value:vTF } { ... }
+\BNVS_tl_use:nc { \BNVS_DEBUG_log:nn q } { #1 }
+\BNVS_tl_use:nv { \BNVS_DEBUG_log:nn q } { #1 }
+  \BNVS_tl_use:nc { \exp_args:No \quark_if_no_value:nTF } { #1 } {
+\BNVS_DEBUG_log_f:nncn q { } { quark_if_no_value:v } { /#1/TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_f:nncn q { } { quark_if_no_value:v } { /#1/FALSE }
+\BNVS_tl_use:nc { \BNVS_DEBUG_log:nn q } { #1 }
+\BNVS_tl_use:nv { \BNVS_DEBUG_log:nn q } { #1 }
+    \prg_return_false:
+  }
+}
+\regex_const:Nn \c__bnvs_S_regex {
+  [[:alpha:]_][[:alnum:]_]*
+}
+\regex_const:Nn \c__bnvs_P_regex {
+  (?: \. \ur{c__bnvs_S_regex} )*
+}
+\regex_const:Nn \c__bnvs_A_index_Z_regex { \A [-+]? \d +\Z }
+\regex_const:Nn \c__bnvs_A_reserved_Z_regex {
+  \A_*[a-z][_a-z0-9]*\Z
+}
+\regex_const:Nn \c__bnvs_A_XP_Z_regex {
+  \A (?: ( \ur{c__bnvs_S_regex} )? ( ! ) )?
+  ( \ur{c__bnvs_S_regex} )
+  ( \ur{c__bnvs_P_regex} ) \Z
+}
+\regex_const:Nn \c__bnvs_A_XPGN_Z_regex {
+  \A (?: ( \ur{c__bnvs_S_regex} )? ( ! ) )?
+  ( \ur{c__bnvs_S_regex} )
+  ( \ur{c__bnvs_P_regex} )
+  (?: \. (?: [+] | ( [-] ) )? ( [1-9] \d* | 0 ) )? \Z
+}
+%% \end{itemize}
+\regex_const:Nn \c__bnvs_A_IKTGN_Z_regex {
+  \A (?: ( \ur{c__bnvs_S_regex} )? (!) )?
+  ( \ur{c__bnvs_S_regex} \ur{c__bnvs_P_regex} ? )
+  (?: \. (?: [+] | ( [-] ) )? ( [1-9] \d* | 0 ) )? \Z
+}
+\regex_const:Nn \c__bnvs_A_SP_Z_regex {
+  \A ( \ur{c__bnvs_S_regex} | [-+]? \d+ )
+  ( (?: \. \ur{c__bnvs_S_regex} | \. [-+]? \d+ )* ) \Z
+}
+\regex_const:Nn \c__bnvs_A_PGN_Z_regex {
+  \A ( \ur{c__bnvs_S_regex} \ur{c__bnvs_P_regex} )
+  (?: \. (?: [+] | ( [-] ) )? ( [1-9] \d* | 0 ) )? \Z
+}
+\regex_const:Nn \c__bnvs_A_P_Z_regex {
+  \A \ur{c__bnvs_S_regex} \ur{c__bnvs_P_regex} \Z
+}
+\regex_const:Nn \c__bnvs_colons_regex { :(:+)? }
+\regex_const:Nn \c__bnvs_XPXPGNURO_regex {
+  \s* ( ? :
+    \+\+
+    (?: ( \ur{c__bnvs_S_regex} )? (!) )?
+    ( \ur{c__bnvs_S_regex} )
+    ( \ur{c__bnvs_P_regex} )
+    | (?: ( \ur{c__bnvs_S_regex} )? (!) )?
+      ( \ur{c__bnvs_S_regex} )
+    ( \ur{c__bnvs_P_regex} )
+  (?: \. (?: [+] | ( [-] ) )? ( [1-9] \d* | 0 ) )?
+    (?: \s* (\+?)= \s* ( \S+ )
+    | (\+)\+
+    )?
+  ) \s*
+}
+\RequirePackage{keyval}
+\define@key{beamerframe}{beanoves~id}[]{
+  \tl_set:Nx \l__bnvs_I_last_tl { #1 }
+  \BNVS_log_a:nn {THIS_IS_KEY} {}
+}
+\AddToHook{env/beamer@frameslide/before}{
+  \__bnvs_greset_call:
+  \__bnvs_v_gunset:
+  \__bnvs_set_true:c { in_frame }
+}
+\AddToHook{env/beamer@frameslide/after}{
+  \__bnvs_set_false:c { in_frame }
+}
+\BNVS_new_conditional:cpnn { split_if_pop_left:c } #1 { T, F, TF } {
+  \BNVS_coverage:n { split_if_pop_left:cTF / #1 }
+  \__bnvs_seq_pop_left:ccTF { split } { #1 } {
+\BNVS_DEBUG_log_f:nncn s { } { split_if_pop_left:cTF } { ...TRUE }
+\BNVS_DEBUG_log_tl:nc s { #1 }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_f:nncn s { } { split_if_pop_left:cTF } { ...FALSE }
+\BNVS_DEBUG_log_seq:nc s { split }
+    \prg_return_false:
+  }
+}
+\cs_set_eq:NN \BNVS_split_F:n \use_none:n
+\BNVS_new:cpn { split_if_pop_left:cTn } #1 #2 #3 {
+  \__bnvs_split_if_pop_left:cTF { #1 } { #2 } { \BNVS_split_F:n { #3 } }
+}
+\BNVS_set:cpn { split_if_pop_left:cT } #1 #2 {
+  \__bnvs_split_if_pop_left:cTn { #1 } { #2 } { #1 }
+}
+\exp_args_generate:n { VVV }
+\BNVS_new_conditional:cpnn { range_if_set:cccn } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_coverage:n { split_if_pop_left:cTF / #1 }
+\BNVS_DEBUG_log_set:ncn r { range_if_set:cccnTF } {
+  \BNVS_DEBUG_log_tl:nc r { #1 }
+  \BNVS_DEBUG_log_tl:nc r { #2 }
+  \BNVS_DEBUG_log_tl:nc r { #3 }
+  \BNVS_DEBUG_log_arg:nnn r { OF } { #4 }
+  \BNVS_DEBUG_log_g:nn r {}
+}
+\BNVS_DEBUG_log_range_if_set_cccnTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { range_if_set:cccnTF }
+  \__bnvs_tl_clear:c A
+  \__bnvs_tl_clear:c Z
+  \__bnvs_tl_clear:c L
+  \__bnvs_if_regex_split:cnTF { colons } { #4 } {
+    \__bnvs_seq_pop_left:ccTF { split } A {
+      \__bnvs_split_if_pop_left:cTF Z {
+        \__bnvs_tl_if_empty:cTF Z {
+          \__bnvs_split_if_pop_left:cTF Z {
+            \__bnvs_split_if_pop_left:cT L {
+              \__bnvs_tl_if_empty:cTF L {
+                \BNVS_error:n { Invalid~range~expression(1):~#4 }
+              } {
+                \int_compare:nNnT { \__bnvs_tl_count:c L } > { 1 } {
+                  \BNVS_error:n { Invalid~range~expression(2):~#4 }
+                }
+                \__bnvs_split_if_pop_left:cTF L {
+                  \__bnvs_seq_if_empty:cF { split } {
+                    \BNVS_error:n { Invalid~range~expression(3):~#4 }
+                  }
+                } {
+                  \BNVS_error:n { Unreachable~6~(range_if_set_cccnTF:nn) }
+                }
+              }
+            }
+          } {
+            \BNVS_error:n { Unreachable~5~(range_if_set_cccnTF:nn) }
+          }
+        } {
+          \int_compare:nNnT { \__bnvs_tl_count:c Z } > { 1 } {
+            \BNVS_error:n { Too~many~colons(1):~#4 }
+          }
+          \__bnvs_split_if_pop_left:cTF L {
+            \__bnvs_split_if_pop_left:cTF Z {
+              \__bnvs_tl_if_empty:cF Z {
+                \BNVS_error:n { Too~many~colons(2):~#4 }
+              }
+              \__bnvs_split_if_pop_left:cTF Z {
+                \__bnvs_seq_if_empty:cF { split } {
+                  \BNVS_error:n { Invalid~range~expression(5):~#4 }
+                }
+              } {
+                \BNVS_error:n { Invalid~range~expression(6):~#4 }
+              }
+            } {
+              \__bnvs_tl_clear:c Z
+            }
+          } {
+            \BNVS_error:n { Unreachable~3~(range_if_set_cccnTF:nn) }
+          }
+        }
+      } {
+        \BNVS_error:n { Unreachable~2~(range_if_set_cccnTF:nn) }
+      }
+    } {
+      \BNVS_error:n { Unreachable~1~(range_if_set_cccnTF:nn) }
+    }
+    \__bnvs_tl_if_empty:cT A {
+      \__bnvs_tl_if_empty:cTF Z {
+        \__bnvs_tl_if_empty:cTF L {
+          \BNVS_error:n { Invalid~range~expression(7):~#3 }
+        } {
+          \__bnvs_tl_set:cn A 1
+        }
+      } {
+        \__bnvs_tl_if_empty:cT L {
+          \__bnvs_tl_set:cn A 1
+        }
+      }
+    }
+    \cs_set:Npn \BNVS_range_if_set_cccnTF:w ##1 ##2 ##3 {
+      \BNVS_end:
+      \__bnvs_tl_set:cn { #1 } { ##1 }
+      \__bnvs_tl_set:cn { #2 } { ##2 }
+      \__bnvs_tl_set:cn { #3 } { ##3 }
+    }
+    \BNVS_exp_args:Nvvv \BNVS_range_if_set_cccnTF:w A Z L
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_range_if_set_cccnTF:nn { ... } { ...FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { range:nnnnn } #1 #2 {
+\BNVS_DEBUG_log_set_IT:ncnn r { range:nnnnn } { #1 } { #2 }
+\BNVS_DEBUG_log_range_nnnnn:nn { } { ... }
+\BNVS_DEBUG_log_g:nn r {}
+  \__bnvs_if:cTF { provide } {
+\BNVS_DEBUG_log_range_nnnnn:nn { ... } { ...PROVIDE... }
+    \__bnvs_is_gset:nnnTF { #1 } { #2 } A {
+      \use_none:nnn
+    } {
+      \__bnvs_is_gset:nnnTF { #1 } { #2 } Z {
+        \use_none:nnn
+      } {
+        \__bnvs_is_gset:nnnTF { #1 } { #2 } L {
+          \use_none:nnn
+        } {
+\BNVS_DEBUG_log_range_nnnnn:nn { ... } { .../DO~RANGE(1) }
+          \__bnvs_do_range:nnnnn { #1 } { #2 }
+        }
+      }
+    }
+  } {
+\BNVS_DEBUG_log_range_nnnnn:nn { ... } { .../DO~RANGE(2) }
+    \__bnvs_do_range:nnnnn { #1 } { #2 }
+  }
+}
+\BNVS_new:cpn { range:nnvvv } #1 #2 {
+  \BNVS_tl_use:nvvv {
+     \__bnvs_range:nnnnn { #1 } { #2 }
+  }
+}
+\BNVS_new:cpn { range:nvvvv } #1 {
+  \BNVS_tl_use:nv {
+     \__bnvs_range:nnvvv { #1 }
+  }
+}
+\BNVS_new:cpn { range:vvvvv } #1 #2 {
+  \BNVS_tl_use:Nvv \__bnvs_range:nnvvv { #1 } { #2 }
+}
+\BNVS_new:cpn { do_range:nnnnn } #1 #2 #3 #4 #5 {
+  \__bnvs_gunset_deep:nn { #1 } { #2 }
+  \__bnvs_gunset:nn { #1 } { #2 }
+\BNVS_DEBUG_log_set:ncn r { do_range:nnnnn } {
+  \BNVS_DEBUG_log_arg_IT:nnn r { #1 } { #2 }
+  \BNVS_DEBUG_log_arg:nnnnnnn
+    r { FIRST } { #3 } { LAST } { #4 } { LENGTH } { #5 }
+  \BNVS_DEBUG_log_g:nn r {}
+}
+\BNVS_DEBUG_log_do_range_nnnnn:nn {  } { ... }
+  \tl_if_empty:nTF { #5 } {
+    \tl_if_empty:nTF { #3 } {
+      \tl_if_empty:nTF { #4 } {
+        \BNVS_error:n { Not~a~range:~#1!#2 }
+      } {
+        \__bnvs_gset:nnnn { #1 } { #2 } Z { #4 }
+        \__bnvs_gset:nnnn { #1 } { #2 } A {  1 }
+      }
+    } {
+      \__bnvs_gset:nnnn { #1 } { #2 } A { #3 }
+      \tl_if_empty:nF { #4 } {
+        \__bnvs_gset:nnnn { #1 } { #2 } Z { #4 }
+        \__bnvs_gset:nnnn { #1 } { #2 } L { \q_nil }
+      }
+    }
+  } {
+    \tl_if_empty:nTF { #3 } {
+      \__bnvs_gset:nnnn { #1 } { #2 } L { #5 }
+      \tl_if_empty:nF { #4 } {
+        \__bnvs_gset:nnnn { #1 } { #2 } Z { #4 }
+        \__bnvs_gset:nnnn { #1 } { #2 } A { \q_nil }
+      }
+    } {
+      \__bnvs_gset:nnnn { #1 } { #2 } A { #3 }
+      \__bnvs_gset:nnnn { #1 } { #2 } L { #5 }
+      \__bnvs_gset:nnnn { #1 } { #2 } Z { \q_nil }
+    }
+  }
+\BNVS_DEBUG_log_do_range_nnnnn:nn { ... } { ...DONE }
+}
+\BNVS_new:cpn { range_IT:vvv } {
+  \__bnvs_range:vvvvv I T
+}
+\BNVS_new:cpn { parsed:nnn } #1 #2 #3 {
+\BNVS_DEBUG_log_set_IT:ncnnnn p { parsed:nnn } { #1 } { #2 } { SPEC } { #3 }
+\BNVS_DEBUG_log_parsed_nnn:nn { } { ... }
+  \__bnvs_range_if_set:cccnTF AZL { #3 } {
+    \__bnvs_range:nnvvv { #1 } { #2 } AZL
+\BNVS_DEBUG_log_parsed_nnn:nn { ... } { ...RANGE... }
+  } {
+    \__bnvs_is_provide_gset:nnnF { #1 } { #2 } V {
+      \__bnvs_gunset_deep:nn { #1 } { #2 }
+      \__bnvs_gunset:nn { #1 } { #2 }
+      \tl_if_empty:nF { #3 } {
+        \__bnvs_gset:nnnn { #1 } { #2 } V { #3 }
+      }
+    }
+\BNVS_DEBUG_log_parsed_nnn:nn { ... } { ...VALUE }
+  }
+}
+\BNVS_new:cpn { parsed_IT:n } {
+  \BNVS_tl_use:Nvv \__bnvs_parsed:nnn I T
+}
+\BNVS_new_conditional:cpnn { if_ISP:n } #1 { T, F, TF } {
+\BNVS_DEBUG_log_set:ncn f { if_ISP:nTF } {
+  \BNVS_DEBUG_log_arg:nnn f { :n } { #1 }
+  \BNVS_DEBUG_tl:nc f I
+  \BNVS_DEBUG_tl:nc f S
+  \BNVS_DEBUG_tl:nc f P
+  \BNVS_DEBUG_tl:nc f T
+  \BNVS_DEBUG_tl:nc f { I_last }
+}
+  \BNVS_DEBUG_log_if_ISP_nTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_ISP:nTF }
+  \__bnvs_match_if_once:NnTF \c__bnvs_A_XP_Z_regex { #1 } {
+    \cs_set:Npn \BNVS_match_F:n ##1 {
+      \BNVS_end_unreachable_return_false:n { XP / ##1 }
+    }
+    \__bnvs_match_if_pop_left:cTn I {%}
+      \__bnvs_match_if_pop_left:cT I {
+        \__bnvs_match_if_pop_left:cT K {
+          \__bnvs_match_if_pop_left:cT S {
+            \__bnvs_match_if_pop_left:cT P {
+              \cs_set:Npn \BNVS_aux_if_ISP_nTF:nnn ##1 ##2 ##3 {
+                \BNVS_end:
+                \__bnvs_tl_set:cn I { ##1 }
+                \__bnvs_tl_set:cn S { ##2 }
+                \__bnvs_tl_set:cn P { ##3 }
+              }
+              \__bnvs_tl_if_empty:cTF K {
+                \BNVS_exp_args:Nvvv \BNVS_aux_if_ISP_nTF:nnn { I_last }
+              } {
+                \BNVS_exp_args:Nvvv \BNVS_aux_if_ISP_nTF:nnn I
+              } S P
+              \__bnvs_tl_set:cv T P
+              \__bnvs_tl_put_left:cv T S
+              \__bnvs_tl_set:cv { I_last } I
+\BNVS_DEBUG_log_if_ISP_nTF:nn { } { ...TRUE }
+              \prg_return_true:
+            }
+          }
+        }
+      }
+    }
+    { XP / full~match }
+  } {
+    \BNVS_end:
+\BNVS_DEBUG_log_if_ISP_nTF:nn { } { ...FALSE }
+    \prg_return_false:
+  }
+}
+\regex_const:Nn \c__bnvs_A_cln_Z_regex {
+  \A \s* (?:
+    ( [^:]+? )
+    | (?: ( [^:]+? ) \s* : (?: \s* ( [^:]*? ) | : \s* ( [^:]*? ) ) )
+    | (?: :: \s* (?: ( [^:]+? ) \s* : \s* ( [^:]+? ) )? )
+    | (?: : \s* (?: ( [^:]+? ) \s* :: \s* ( [^:]*? ) )? )
+  )
+  \s* \Z
+}
+\BNVS_int_new:c { next_tag }
+\BNVS_tl_new:c { next_tag }
+\BNVS_new:cpn { next_tag:nn } #1 #2 {
+\BNVS_DEBUG_log_int:nnc p { Start~index: } { next_tag }
+  \__bnvs_int_incr:c { next_tag }
+  \__bnvs_tl_set:cn { next_tag } { #2 . }
+  \BNVS_int_use:nv { \__bnvs_tl_put_right:cn { next_tag } } { next_tag }
+  \__bnvs_is_gset:nvnTF { #1 } { next_tag } V { \__bnvs_next_tag:nn { #1 } { #2 } } {
+\BNVS_DEBUG_log_int:nnc p { Available~index: } { next_tag }
+\BNVS_DEBUG_log_tl:nc p { next_tag }
+  }
+}
+\BNVS_new:cpn { bracket_assign:nnn } #1 #2 #3 {
+  \__bnvs_gunset_deep:nn { #1 } { #2 }
+  \__bnvs_gunset:nn { #1 } { #2 }
+  \tl_if_empty:nF { #3 } {
+    \__bnvs_gset:nnnn { #1 } { #2 } V { #3 }
+  }
+}
+\BNVS_new:cpn { next_tag:nnn } #1 #2 #3 {
+  \BNVS_DEBUG_begin:n { next_tag:nnn }
+  \__bnvs_next_tag:nn { #1 } { #2 }
+  \cs_set:Npn \BNVS:n ##1 { #3 }
+  \BNVS_tl_use:Nv \BNVS:n { next_tag }
+  \BNVS_end_int_set:cv { next_tag } { next_tag }
+}
+\BNVS_new:cpn { bracket_parse:nnn } #1 #2 #3 {
+  \__bnvs_match_if_once:NnTF \c__bnvs_colons_regex { #3 } {
+    \BNVS_error:n { No~colon~allowed:~[...#1...] }
+  } {
+\BNVS_DEBUG_log_set_IT:ncnnnn p { bracket_parse:nnn } { #1 } { #2 } { SPEC } { #3 }
+\BNVS_DEBUG_log_bracket_parse_nnn:nn { } { ... }
+    \__bnvs_next_tag:nnn { #1 } { #2 } {
+      \__bnvs_bracket_assign:nnn { #1 } { ##1 } { #3 }
+    }
+\BNVS_DEBUG_log_bracket_parse_nnn:nn { ... } { ...DONE }
+  }
+}
+\BNVS_new:cpn { bracket_parse:nnnn } #1 #2 #3 #4 {
+  \__bnvs_match_if_once:NnTF \c__bnvs_colons_regex { #4 } {
+    \BNVS_error:n { No~colon~allowed:~[...=#4...]}
+  } {
+\BNVS_DEBUG_log_set:ncn p { bracket_parse:nnww } {
+  \BNVS_DEBUG_log_arg_IT:nnnnn p { #1 } { #2 } { KEY } { #3 }
+  \BNVS_DEBUG_log_arg:nnn p { VALUE } { #4 }
+}
+\BNVS_DEBUG_log_bracket_parse_nnww:nn { } { ... }
+%% \end{BNVS.gobble}
+    \__bnvs_match_if_once:NnTF \c__bnvs_A_index_Z_regex { #3 } {
+      \__bnvs_bracket_assign:nnn { #1 } { #2.#3 } { #4 }
+    } {
+      \BNVS_error:n { Not~an~integer:~#3 }
+    }
+\BNVS_DEBUG_log_bracket_parse_nnww:nn { ... } { ...DONE }
+  }
+}
+\BNVS_new:cpn { bracket_assign_I:vn } {
+  \BNVS_tl_use:Nvv \__bnvs_bracket_assign:nnn I
+}
+\BNVS_new:cpn { bracket_assign_IT:n } {
+  \__bnvs_bracket_assign_I:vn T
+}
+\BNVS_tl_new:c { bracket_assign_IT_nn }
+\BNVS_new:cpn { bracket_assign_IT:nn } #1 {
+  \__bnvs_tl_set_eq:cc { bracket_assign_IT_nn } T
+  \__bnvs_tl_put_right:cn { bracket_assign_IT_nn } { .#1 }
+  \__bnvs_bracket_assign_I:vn { bracket_assign_IT_nn }
+}
+\BNVS_new:cpn { bracket_keyval:nnn } #1 #2 #3 {
+\BNVS_DEBUG_log_set_IT:ncnnnn p { bracket_keyval:nnn } { #1 } { #2 } { SPEC } { #3 }
+\BNVS_DEBUG_log_bracket_keyval_nnn:nn { } { ... }
+\BNVS_coverage:n { bracket_keyval:nnn }
+  \tl_if_empty:nTF { #2 } {
+    \BNVS_error:n { Unexpected~list~at~top~level. }
+  } {
+    \tl_if_empty:nTF { #3 } {
+      \BNVS_coverage:n { bracket_keyval:nnn/EMPTY }
+    } {%}
+      \__bnvs_is_provide_gset:nnnF { #1 } { #2 } V {
+        \BNVS_DEBUG_begin:n { bracket_keyval:nnn }
+        \__bnvs_gunset_deep:nn { #1 } { #2 }
+        \__bnvs_gunset:nn { #1 } { #2 }
+        \__bnvs_int_zero:c { next_tag }
+        \keyval_parse:nnn
+          { \__bnvs_bracket_parse:nnn  { #1 } { #2 } }
+          { \__bnvs_bracket_parse:nnnn { #1 } { #2 } }
+          { #3 }
+        \BNVS_end:
+      }
+    }
+  }
+\BNVS_DEBUG_log_bracket_keyval_nnn:nn { } { ...DONE }
+}
+\BNVS_new:cpn { bracket_keyval:nvn } #1 {
+  \BNVS_tl_use:nv { \__bnvs_bracket_keyval:nnn { #1 } }
+}
+\BNVS_new:cpn { bracket_keyval:vvn } {
+  \BNVS_tl_use:Nvv \__bnvs_bracket_keyval:nnn
+}
+\BNVS_new:cpn { bracket_keyval_I:nn } {
+  \BNVS_tl_use:cv { bracket_keyval:nnn } I
+}
+\BNVS_new:cpn { bracket_keyval_I:vn } {
+  \BNVS_tl_use:cv { bracket_keyval_I:nn }
+}
+\BNVS_new:cpn { bracket_keyval_IT:n } {
+  \BNVS_tl_use:Nvv \__bnvs_bracket_keyval:nnn I T
+}
+\BNVS_new:cpn { root_parsed:nn } #1 #2 {
+\BNVS_DEBUG_log_f:nncn p {} { root_parsed:nn }  { ... }
+  \__bnvs_match_if_once:NnTF \c__bnvs_A_IKTGN_Z_regex { #1 } {
+    \__bnvs_match_if_pop_left:cTn a {%}
+      \cs_set:Npn \BNVS_match_F:n ##1 {
+        \BNVS_error:n { Unreachable(root_parsed:nn)~##1 }
+      }
+      \__bnvs_match_if_pop_left:cT I {
+        \__bnvs_match_if_pop_left:cT K {
+          \__bnvs_tl_if_empty:cTF K {
+            \__bnvs_tl_set_eq:cc I { I_last }
+          } {
+            \__bnvs_tl_set_eq:cc { I_last } I
+          }
+          \__bnvs_match_if_pop_left:cT T {
+            \__bnvs_match_if_pop_left:cT G {
+              \__bnvs_match_if_pop_left:cT { N } {
+                \BNVS_coverage:n { root_parsed:nn => list_keyval:nnn }
+                \__bnvs_tl_if_eq:cnTF N 0 {
+                  \__bnvs_tl_put_right:cn T { .0 }
+                } {
+                  \__bnvs_tl_if_empty:cF N {
+                    \__bnvs_tl_put_right:cn T .
+                    \__bnvs_tl_if_empty:cF G {
+                      \__bnvs_tl_put_right:cn T -
+                    }
+                    \__bnvs_tl_put_right:cv T N
+                  }
+                }
+                \BNVS_tl_use:Nvv \__bnvs_list_keyval:nnn IT { #2 }
+              }
+            }
+          }
+        }
+      }
+    }
+    { Full~match }
+  } {
+    \BNVS_error:n { Unexpected~ref:~#1 }
+  }
+\BNVS_DEBUG_log_f:nncn p { ... } { root_parsed:nn }  { ...END }
+}
+\BNVS_new:cpn { root_keyval:nc } #1 #2 {
+\BNVS_DEBUG_log_f:nncn p { } { root_keyval:nc } { ... }
+  \BNVS_tl_use:nc {
+    \regex_replace_all:nnN { \s*=\s* } { =\c{BNVS:} }
+  } { #2 }
+  \cs_set:Npn \BNVS:nn ##1 ##2 {
+    \__bnvs_tl_set:cn { #2 } { ##2 }
+    \BNVS_tl_use:nc {
+      \regex_replace_once:nnN { \c{BNVS:} } { }
+    } { #2 }
+    \BNVS_tl_use:nv { \__bnvs_root_parsed:nn { ##1 } } { #2 }
+  }
+  \cs_set:Npn \BNVS:n ##1 {
+    \__bnvs_root_parsed:nn { ##1 } 1
+  }
+  \__bnvs_tl_set:cn { #2 } { #1 }
+  \BNVS_tl_use:Nc \__bnvs_parse_prepare:N { #2 }
+  \BNVS_tl_use:nv {
+    \keyval_parse:NNn \BNVS:n \BNVS:nn
+  } { #2 }
+\BNVS_DEBUG_log_f:nncn p { ... } { root_keyval:nc } { ...END }
+\BNVS_coverage:n { root_keyval:nc/#2 }
+}
+\BNVS_new:cpn { root_keyval:NNn } #1 #2 #3 {
+\BNVS_DEBUG_log_set:ncn p { root_keyval:NNn } {
+  \exp_args:Nnnx \BNVS_DEBUG_log_arg:nnn p { DOCUMENT } {
+    \bool_if:NTF #1 T F
+  }
+  \exp_args:Nnnx \BNVS_DEBUG_log_arg:nnn p { PROVIDE } {
+    \bool_if:NTF #2 T F
+  }
+  \BNVS_DEBUG_log_arg:nnn p { DEF } { #3 }
+}
+\BNVS_DEBUG_log_root_keyval_NNn:nn {} { ...START... }
+  \bool_if:NT #1 {
+    \__bnvs_gunset:
+  }
+  \BNVS_DEBUG_begin:n { root_keyval:NNn }
+  \bool_if:NTF #2 {
+    \__bnvs_provide_on:
+  } {
+    \__bnvs_provide_off:
+  }
+  \__bnvs_tl_clear:c { root }
+  \__bnvs_int_zero:c { i }
+  \__bnvs_tl_set:cn a { #3 }
+  \bool_if:NT #1 {
+    \seq_if_empty:NF \g__bnvs_def_seq {
+      \__bnvs_tl_put_left:cx a {
+        \seq_use:Nn \g__bnvs_def_seq , ,
+      }
+    }
+  }
+  \BNVS_tl_use:Nv \__bnvs_root_keyval:nc a a
+\BNVS_DEBUG_log:nn p  { ...root_keyval:NNn...END}
+  \BNVS_end_tl_set:cv { I_last } { I_last }
+}
+\regex_const:Nn \c__bnvs_suffix_one_regex { \A(.*)\.(?:1|first)\Z }
+\cs_new:Npn \BNVS_error_until_q_stop:nw #1 #2 \q_stop {
+  \BNVS_error:n { #1 }
+}
+\BNVS_new:cpn { peek_branch_until_q_stop:nnnnw } #1 #2 #3 #4 {
+\BNVS_DEBUG_log:nn b { peek_branch_until_q_stop:nnnnw }
+\BNVS_coverage:n { peek_branch_until_q_stop:nnnnw }
+  \peek_meaning:NTF \BNVS_bracket:n {
+\BNVS_DEBUG_log:nn b { Branch~[] }
+\BNVS_coverage:n { Branch~[] }
+    \cs_set:Npn \BNVS_bracket:n ##1 {
+      #1
+      \__bnvs_warn_until_q_stop:w
+    }
+  } {
+    \peek_meaning:NTF \c_group_begin_token {
+\BNVS_DEBUG_log:nn b { Branch~{} }
+\BNVS_coverage:n { Branch~{} }
+      \cs_set:Npn \BNVS:w ##1 {
+\BNVS_DEBUG_log:nn b { :w <= ##1 }
+        #2
+        \__bnvs_warn_until_q_stop:w
+      }
+      \BNVS:w
+    } {
+      \peek_meaning:NTF \q_stop {
+\BNVS_DEBUG_log:nn b { Branch~empty }
+\BNVS_coverage:n { Branch~empty }
+        #4
+        \use_none:n
+      } {
+\BNVS_DEBUG_log:nn b { Branch~non~empty }
+\BNVS_coverage:n { Branch~non~empty }
+        \cs_set:Npn \BNVS:w ##1 \q_stop {
+          #3
+        }
+        \BNVS:w
+      }
+    }
+  }
+}
+\BNVS_new:cpn { list_keyval:ncc } #1 #2 #3 {
+  \cs_set:Npn \BNVS: {
+    \cs_set:Npn \BNVS:n ####1 {
+      \BNVS:nn { ####1 } 1
+    }
+    \cs_set:Npn \BNVS:nn ####1 ####2 {
+      \__bnvs_tl_put_right:cn { #3 } { \exp_not:N \BNVS:nn { ####1 } { ####2 } }
+    }
+  }
+  \cs_set:Npn \BNVS:n ##1 {
+    \BNVS:
+    \__bnvs_tl_set:cn { #2 } { ##1 }
+  }
+  \cs_set:Npn \BNVS:nn {
+    \BNVS:
+    \BNVS:nn
+  }
+  \__bnvs_tl_set:cn { #2 } { #1 }
+  \BNVS_tl_use:nc {
+    \regex_replace_all:nnN { \s*([=,])\s* } { \c{BNVS:} \1 }
+  } { #2 }
+  \BNVS_tl_use:nc {
+    \regex_replace_all:nnN { \s*\Z } { \c{BNVS:} }
+  } { #2 }
+  \__bnvs_tl_clear:c { #3 }
+  \BNVS_tl_use:nv {
+    \__bnvs_tl_clear:c { #2 }
+    \keyval_parse:NNn \BNVS:n \BNVS:nn
+  } { #2 }
+  \BNVS_tl_use:nc {
+    \regex_replace_all:nnN { \c{BNVS:} } { }
+  } { #2 }
+  \BNVS_tl_use:nc {
+    \regex_replace_all:nnN { \c{BNVS:} } { }
+  } { #3 }
+\BNVS_DEBUG_log_tl:nc b V
+\BNVS_DEBUG_log_tl:nc b a
+\cs_set:Npn \BNVS: { \exp_not:N \BNVS: }
+\BNVS_coverage:x { V => \BNVS_tl_use:c V, a => \BNVS_tl_use:c a }
+}
+\BNVS_new:cpn { list_keyval:nnn } #1 #2 #3 {
+\tl_if_empty:nT { #2 } {
+  \BNVS_error:n { Forbidden~empty~tag }
+}
+\BNVS_DEBUG_log_f:nncn p {} { list_keyval:nnn } { ... }
+\BNVS_DEBUG_log_arg_IT:nnnnn p { #1 } { #2 } { SPEC } { #3 }
+  \tl_if_empty:nTF { #3 } {
+    \BNVS_DEBUG_log:nn p { list_keyval:nnn/EMPTY }
+    \BNVS_coverage:n     { list_keyval:nnn/EMPTY }
+    \__bnvs_gunset_deep:nn { #1 } { #2 }
+    \__bnvs_gunset:nn { #1 } { #2 }
+  } {
+  \BNVS_DEBUG_begin:n { list_keyval:nnn }
+    \__bnvs_list_keyval:ncc { #3 } V a
+    \__bnvs_tl_if_empty:cTF a {
+\BNVS_DEBUG_log_f:nncn p {...} { list_keyval:nnn } { ...STANDALONE... }
+\BNVS_coverage:n { list_keyval:nnn/STANDALONE }
+      \BNVS_tl_last_unbraced:nv {
+        \__bnvs_peek_branch_until_q_stop:nnnnw {
+          \BNVS_error:n { No~`{[...]}`~allowed. }
+        } {
+\BNVS_DEBUG_log_f:nncn p {...} { list_keyval:nnn } { ...{{}}... }
+\BNVS_coverage:n { list_keyval:nnn/{{}} }
+          \__bnvs_bracket_keyval:nnn { #1 } { #2 } { ##1 }
+        } {
+\BNVS_DEBUG_log_f:nncn p {...} { list_keyval:nnn } { ...NON~EMPTY... }
+\BNVS_coverage:n { list_keyval:nnn/NON~EMPTY }
+          \__bnvs_range_if_set:cccnTF A Z L { ##1 } {
+\BNVS_DEBUG_log_f:nncn p {...} { list_keyval:nnn } { ...RANGE }
+\BNVS_coverage:n { list_keyval:nnn/RANGE }
+            \__bnvs_range:nnvvv { #1 } { #2 } A Z L
+          } {
+            \__bnvs_is_provide_gset:nnnF { #1 } { #2 } V {
+              \__bnvs_gunset_deep:nn { #1 } { #2 }
+              \__bnvs_gunset:nn { #1 } { #2 }
+              \__bnvs_gset:nnnv { #1 } { #2 } V V
+            }
+          }
+        } {
+\BNVS_DEBUG_log_f:nncn p {...} { list_keyval:nnn } { /EMPTY~RHS }
+\BNVS_coverage:n { list_keyval:nnn/EMPTY~RHS }
+          \__bnvs_gunset_deep:nn { #1 } { #2 }
+          \__bnvs_gunset:nn { #1 } { #2 }
+        }
+      } V \q_stop
+\BNVS_DEBUG_log_f:nncn p  {} { list_keyval:nnn} { ...END_STANDALONE }
+    } {
+      \cs_set:Npn \BNVS:n ##1 {
+        \tl_if_empty:nF {
+          \__bnvs_parsed:nnn { #1 } { #2 } { ##1 }
+        }
+      }
+      \BNVS_tl_use:Nv \BNVS:n V
+      \__bnvs_tl_use:c a
+\BNVS_DEBUG_log_f:nncn p  {} { list_keyval_IT:n} { ...~END(non~VOID) }
+    }
+    \BNVS_end:
+  }
+}
+\BNVS_new:cpn { list_keyval:vvn } {
+  \BNVS_tl_use:Nvv \__bnvs_list_keyval:nnn
+}
+\BNVS_new:cpn { list_keyval_IT:n } {
+  \__bnvs_list_keyval:vvn I T
+}
+\BNVS_new:cpn { warn_until_q_stop:w } #1 \q_stop {
+  \tl_if_empty:nF { #1 } {
+    \BNVS_warning:n { Ignored:~#1 }
+  }
+}
+\BNVS_new:cpn { scan_until_q_stop:w } {
+  \peek_meaning:NTF \q_stop {
+    \use_none:n
+  } {
+    \__bnvs_warn_until_q_stop:w
+  }
+}
+\cs_new:Npn \BNVS_end_tl_set:cv #1 {
+  \BNVS_tl_use:nv {
+    \BNVS_end: \__bnvs_tl_set:cn { #1 }
+  }
+}
+\cs_new:Npn \BNVS_end_int_set:cv #1 {
+  \BNVS_int_use:nv {
+    \BNVS_end: \__bnvs_int_set:cn { #1 }
+  }
+}
+\BNVS_new:cpn { parse_prepare:N } #1 {
+  \tl_set:Nx #1 #1
+  \__bnvs_set_false:c { parse }
+  \bool_do_until:Nn \l__bnvs_parse_bool {
+    \tl_if_in:NnTF #1 {%---[
+    ]} {
+      \regex_replace_all:nnNF { \[ ([^\]%---)
+      ]*%---[(
+      ) \] } { \c{BNVS_bracket:n} { \1 } } #1 {
+        \__bnvs_set_true:c { parse }
+      }
+    } {
+      \__bnvs_set_true:c { parse }
+    }
+  }
+  \tl_if_in:NnTF #1 {%---[
+  ]} {
+    \BNVS_error:n { Unbalanced~%---[
+    ]}
+  } {
+    \tl_if_in:NnT #1 { [%---]
+    } {
+      \BNVS_error:n { Unbalanced~[ %---]
+      }
+    }
+  }
+}
+\BNVS_new:cpn { brace_parse:nnn } #1 #2 #3 {
+\BNVS_DEBUG_log_set_IT:ncnnnn p { brace_parse:nnn } { #1 } { #2 } { SPEC } { #3 }
+\BNVS_DEBUG_log_brace_parse_nnn:nn { } { ...START... }
+  \__bnvs_brace_parse:nnnn { #1 } { #2 } { #3 } 1
+\BNVS_DEBUG_log_brace_parse_nnn:nn { ... } { ...END }
+}
+\BNVS_new:cpn { brace_parse:nnnn } #1 #2 #3 #4 {
+\tl_if_empty:nT { #2 } {
+  \BNVS_error:n { Forbidden~empty~tag }
+}
+\BNVS_DEBUG_log_set:ncn p { brace_parse:nnnn } {
+  \BNVS_DEBUG_log_arg_IT:nnn p { #1 } { #2 }
+  \BNVS_DEBUG_log_arg:nnnnn p { PATH } { #3 } { SPEC } { #4 }
+}
+\BNVS_DEBUG_log_brace_parse_nnnn:nn { } { ... }
+\tl_if_empty:nT { #3 } {
+  \BNVS_error:n { No~empty~tag~allowed.}
+}
+  \BNVS_DEBUG_begin:n { brace_parse:nnnn }
+  \__bnvs_match_if_once:NnTF \c__bnvs_A_PGN_Z_regex { #3 } {
+    \cs_set:Npn \BNVS_match_F:n ##1 {
+      \BNVS_error:n { Unreachable~##1 (brace_parse:nnnn) }
+    }
+    \__bnvs_match_if_pop_left:cTn P {%}
+      \__bnvs_match_if_pop_left:cT P {
+        \__bnvs_tl_put_left:cn P { #2. }
+        \__bnvs_match_if_pop_left:cT G {
+          \__bnvs_match_if_pop_left:cT N {
+            \__bnvs_tl_if_eq:cnF N 0 {
+              \__bnvs_tl_if_empty:cF G {
+                \__bnvs_tl_put_left:cn N -
+              }
+            }
+      \BNVS_DEBUG_log_tl:nc p P
+      \BNVS_DEBUG_log_tl:nc p G
+      \BNVS_DEBUG_log_tl:nc p N
+            \__bnvs_tl_if_empty:cTF { N } {
+              \BNVS_coverage:n { empty~N }
+              \__bnvs_peek_branch_until_q_stop:nnnnw {
+                \__bnvs_bracket_keyval:nvn { #1 } P { ##1 }
+              } {
+                \__bnvs_brace_keyval:nvn { #1 } P { ##1 }
+              } {
+                \__bnvs_range_if_set:cccnTF A Z L { ##1 } {
+                  \__bnvs_range:nvvvv { #1 } P A Z L
+                } {
+                  \__bnvs_is_gset:nvnTF { #1 } P V {
+                    \__bnvs_is_provide_gset:nvnF { #1 } P V {
+                      \__bnvs_gunset_deep:nv { #1 } P
+                      \__bnvs_gunset:nv { #1 } P
+                      \__bnvs_gset:nvnn { #1 } P V { ##1 }
+                    }
+                  } {
+                    \__bnvs_gunset_deep:nv { #1 } P
+                    \__bnvs_gunset:nv { #1 } P
+                    \__bnvs_gset:nvnn { #1 } P V { ##1 }
+                  }
+                }
+              } {
+                \__bnvs_gunset_deep:nv { #1 } P
+                \__bnvs_gunset:nv { #1 } P
+              }
+            } {
+              \__bnvs_peek_branch_until_q_stop:nnnnw {
+                \BNVS_error:n { Unexpected~[]:~##1 }
+              } {
+                \BNVS_error:n { Unexpected~{}:~##1 }
+              } {
+                \__bnvs_range_if_set:cccnTF A Z L { ##1 } {
+                  \BNVS_error:n { Unexpected~colon:~##1 }
+                } {
+                  \__bnvs_is_gset:nvnTF { #1 } P V {
+                    \__bnvs_tl_put_right:cn P .
+                    \__bnvs_tl_put_right:cv P N
+                    \__bnvs_is_provide_gset:nvnF { #1 } P V {
+                      \__bnvs_gunset_deep:nv { #1 } P
+                      \__bnvs_gunset:nv { #1 } P
+                      \__bnvs_gset:nvnn { #1 } P V { ##1 }
+                    }
+                  } {
+                    \__bnvs_gunset_deep:nv { #1 } P
+                    \__bnvs_gunset:nv { #1 } P
+                    \__bnvs_tl_if_eq:cnTF N 1 {
+                      \__bnvs_gset:nvnn { #1 } P V { ##1 }
+                    } {
+                      \__bnvs_gset:nvnn { #1 } P V 1
+                    }
+                    \__bnvs_tl_put_right:cn P .
+                    \__bnvs_tl_put_right:cv P N
+                    \__bnvs_gset:nvnn { #1 } P V { ##1 }
+                  }
+                }
+              } {
+                \__bnvs_tl_put_right:cn P .
+                \__bnvs_tl_put_right:cv P N
+                \__bnvs_gunset_deep:nv { #1 } P
+                \__bnvs_gunset:nv { #1 } P
+              }
+            }
+            #4 \q_stop
+          }
+        }
+      }
+    }
+    { match~all }
+  } {
+    \BNVS_error:n { Unsupported~#3 }
+  }
+  \BNVS_end:
+}
+\BNVS_new:cpn { brace_keyval:nnn } #1 #2 #3 {
+\BNVS_DEBUG_log:nn p { \__bnvs_brace_keyval:nnn ...}
+\BNVS_DEBUG_log_arg:nnnnnnn p { ID } { #1 } { TAG } { #2 } { SPEC } { #3 }
+\BNVS_coverage:n { brace_keyval:nnn }
+  \tl_if_empty:nTF { #3 } {
+\BNVS_DEBUG_log:nn p { \__bnvs_brace_keyval:nnn ...EMPTY }
+  } {
+    \BNVS_DEBUG_begin:n { brace_keyval:nnn }
+    \keyval_parse:nnn {
+      \__bnvs_brace_parse:nnn  { #1 } { #2 }
+    } {
+      \__bnvs_brace_parse:nnnn { #1 } { #2 }
+    } { #3 }
+    \BNVS_end:
+  }
+\BNVS_DEBUG_log:nn p { \__bnvs_brace_keyval:nnn ...DONE }
+}
+\BNVS_new:cpn { brace_keyval:nvn } #1 {
+  \BNVS_tl_use:nv { \__bnvs_brace_keyval:nnn { #1 } }
+}
+\BNVS_new:cpn { brace_keyval:vvn } {
+  \BNVS_tl_use:Nvv \__bnvs_brace_keyval:nnn
+}
+\cs_new:Npn \BNVS_end_tl_put_right:cv #1 #2 {
+  \BNVS_tl_use:nv {
+    \BNVS_end:
+    \__bnvs_tl_put_right:cn { #1 }
+  } { #2 }
+}
+\cs_new:Npn \BNVS_end_gset:nnnv #1 #2 #3 {
+  \BNVS_tl_use:nv {
+    \BNVS_end:
+    \__bnvs_gset:nnnn { #1 } { #2 } { #3 }
+  }
+}
+\NewDocumentCommand \Beanoves { sm } {
+  \__bnvs_set_false:c { reset }
+  \__bnvs_set_false:c { reset_all }
+  \__bnvs_set_false:c { only }
+\BNVS_DEBUG_log:nx B { \token_to_str:N \Beanoves \IfBooleanT {#1} { * }... }
+\BNVS_DEBUG_log_arg:nnn B { IN } { #2 }
+  \tl_if_empty:NTF \@currenvir {
+    \seq_gput_right:Nn \g__bnvs_def_seq { #2 }
+  } {
+    \tl_if_eq:NnTF \@currenvir { document } {
+      \IfBooleanTF {#1} {
+        \__bnvs_root_keyval:NNn \c_true_bool \c_true_bool
+      } {
+        \__bnvs_root_keyval:NNn \c_true_bool \c_false_bool
+      }
+    } {
+      \IfBooleanTF {#1} {
+        \__bnvs_root_keyval:NNn \c_false_bool \c_true_bool
+      } {
+        \__bnvs_root_keyval:NNn \c_false_bool \c_false_bool
+      }
+    } { #2 }
+    \ignorespaces
+  }
+}
+\define@key{beamerframe}{beanoves}{\Beanoves*{#1}}
+\makeatletter
+\cs_set:Npn \__bnvs@frame < #1 > {
+  \BNVS_DEBUG_begin:n { bnvs@frame }
+  \__bnvs_tl_clear_ans:
+  \__bnvs_scan:nNc { #1 } \__bnvs_if_resolve:ncTF { ans }
+\BNVS_DEBUG_log:nn B { bnvs@frame:~#1 }
+\BNVS_DEBUG_log_tl:nc B { ans }
+  \BNVS_set:cpn { :n } ##1 { \BNVS_end: \BNVS_saved@frame < ##1 > }
+  \BNVS_tl_use:cv { :n } { ans }
+}
+\cs_set:Npn \__bnvs@masterdecode #1 {
+  \BNVS_DEBUG_begin:n { bnvs@masterdecode }
+  \__bnvs_tl_clear_ans:
+  \__bnvs_scan:nNc { #1 } \__bnvs_if_resolve_queries:ncTF { ans }
+\BNVS_DEBUG_log:nn B { bnvs@masterdecode:~<#1> }
+\BNVS_DEBUG_log_tl:nc B { ans }
+  \BNVS_tl_use:nv {
+    \BNVS_end:
+    \BNVS_saved@masterdecode
+  } { ans }
+}
+\cs_new:Npn \BeanovesOff {
+  \cs_set_eq:NN \beamer@frame \BNVS_saved@frame
+  \cs_set_eq:NN \beamer@masterdecode \BNVS_saved@masterdecode
+}
+\cs_new:Npn \BeanovesOn {
+  \cs_set_eq:NN \beamer@frame \__bnvs@frame
+  \cs_set_eq:NN \beamer@masterdecode \__bnvs@masterdecode
+}
+\AddToHook{begindocument/before}{
+  \cs_if_exist:NTF \beamer@frame {
+    \cs_set_eq:NN \BNVS_saved@frame \beamer@frame
+    \cs_set_eq:NN \BNVS_saved@masterdecode \beamer@masterdecode
+  } {
+    \cs_set:Npn \BNVS_saved@frame < #1 > {
+      \BNVS_error:n {Missing~package~beamer}
+    }
+    \cs_set:Npn \BNVS_saved@masterdecode < #1 > {
+      \BNVS_error:n {Missing~package~beamer}
+    }
+  }
+  \BeanovesOn
+}
+\makeatother
+\BNVS_new:cpn { scan_for_query_then_end_return: } {
+\BNVS_DEBUG_log_f:nncn S { } { scan_for_query_then_end_return: } { }
+  \__bnvs_seq_pop_left:ccTF { token } { token } {
+    \__bnvs_tl_if_eq:cnTF { token } { ? } {
+      \__bnvs_scan_require_open_end_return:
+    } {
+      \__bnvs_tl_put_right:cv { ans } { token }
+\BNVS_DEBUG_tl:nc S { ans }
+      \__bnvs_scan_for_query_then_end_return:
+    }
+  } {
+\BNVS_DEBUG_log:nn S { end~of~query }
+    \__bnvs_scan_end_return_true:
+  }
+}
+
+\BNVS_new:cpn { scan_require_open_end_return: } {
+\BNVS_DEBUG_log_f:nncn S { } { scan_require_open_end_return: } { }
+  \__bnvs_seq_pop_left:ccTF { token } { token } {
+    \str_if_eq:VnTF \l__bnvs_token_tl { ( %)
+    } {
+      \__bnvs_int_set:cn { } { 1 }
+      \__bnvs_tl_clear:c { query }
+      \__bnvs_scan_require_close_and_return:
+    } {
+      \__bnvs_scan_require_open_end_return:
+    }
+  } {
+\BNVS_DEBUG_log_f:nncn S { } { scan_require_open_end_return: } { ...? }
+    \BNVS_error:x {Missing~'('%---)
+      ~after~a~? }
+    \__bnvs_scan_end_return_true:
+  }
+}
+\BNVS_new:cpn { scan_require_close_and_return: } {
+\BNVS_DEBUG_log_f:nncn S { } { scan_require_close_and_return: } { }
+  \__bnvs_seq_pop_left:ccTF { token } { token } {
+    \str_case:VnF \l__bnvs_token_tl {
+      { ( %---)
+      } {
+        \__bnvs_int_incr:c { }
+        \__bnvs_tl_put_right:cv { query } { token }
+\BNVS_DEBUG_tl:nc S { query }
+        \__bnvs_scan_require_close_and_return:
+      }
+      { %(---
+        )
+      } {
+        \__bnvs_int_decr:c { }
+        \int_compare:nNnTF { \__bnvs_int_use:c { } } = 0 {
+          \__bnvs_scan_handle_query_then_end_return:
+        } {
+          \__bnvs_tl_put_right:cv { query } { token }
+\BNVS_DEBUG_tl:nc S { query }
+          \__bnvs_scan_require_close_and_return:
+        }
+      }
+    } {
+        \__bnvs_tl_put_right:cv { query } { token }
+\BNVS_DEBUG_tl:nc S { query }
+      \__bnvs_scan_require_close_and_return:
+    }
+  } {
+    \BNVS_error:x { Missing~%(---
+      `)' }
+    \__bnvs_tl_put_right:cx { query } {
+      \prg_replicate:nn { \l__bnvs_int } {%(---
+      )}
+    }
+\BNVS_DEBUG_tl:nc S { query }
+    \__bnvs_scan_end_return_true:
+  }
+}
+\BNVS_new_conditional:cpnn { scan:nNc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set:ncn S { scan:nNcTF } {
+  \BNVS_DEBUG_log_arg:nnn S { WHAT } { #1 }
+  \BNVS_DEBUG_log_cs:nnN S { CMD } #2
+  \BNVS_DEBUG_log_arg:nnc S { IN } { #3 }
+  \BNVS_DEBUG_tl:nc S { #3 }
+}
+\BNVS_DEBUG_log_scan_nNcTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { scan:nNcTF }
+  \BNVS_set:cpn { error:x } ##1 {
+    \msg_error:nnx { beanoves } { :n }
+      { \tl_to_str:n { #1 }:~##1}
+  }
+  \__bnvs_tl_set:cn { scan } { #1 }
+  \__bnvs_tl_clear_ans:
+  \__bnvs_seq_clear:c { token }
+  \regex_split:nnN { } { #1 } \l__bnvs_token_seq
+  \BNVS_set:cpn { scan_handle_query_then_end_return: } {
+\BNVS_DEBUG_log_f:nncn S {} { scan_handle_query_then_end_return: } { }
+\BNVS_DEBUG_tl:nc S { query }
+    \BNVS_tl_use:Nv #2 { query } { ans } {
+\BNVS_DEBUG_tl:nc S { query }
+\BNVS_DEBUG_tl:nc S { ans }
+      \__bnvs_scan_for_query_then_end_return:
+    } {
+\BNVS_DEBUG_tl:nc S { query }
+\BNVS_DEBUG_tl:nc S { ans }
+      \BNVS_end_tl_put_right:cv { #3 } { ans }
+\BNVS_DEBUG_log_scan_nNcTF:nn { ... } { ...DONE/FALSE }
+      \prg_return_false:
+    }
+  }
+  \BNVS_set:cpn { scan_end_return_true: } {
+    \BNVS_end_tl_put_right:cv { #3 } { ans }
+    \prg_return_true:
+  }
+  \BNVS_set:cpn { scan_end_return_false: } {
+\BNVS_DEBUG_log_f:ncn S { scan_end_return_false: }
+\BNVS_DEBUG_tl:nc S { ans }
+    \BNVS_end_tl_put_right:cv { #3 } { ans }
+    \prg_return_false:
+  }
+  \__bnvs_scan_for_query_then_end_return:
+}
+\BNVS_new:cpn { scan:nNc } #1 #2 #3 {
+  \BNVS_use:c { scan:nNcTF } { #1 } #2 { #3 } {} {}
+}
+\BNVS_new_conditional:cpnn { if_ISP:ccc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set:ncn { if_ISP:cccTF } {
+  \BNVS_DEBUG_log_tl:nc T { #1 }
+  \BNVS_DEBUG_log_tl:nc T { #2 }
+  \BNVS_DEBUG_log_seq:nc T { #3 }
+}
+\BNVS_DEBUG_log_if_ISP_cccTF:nn { } { ... }
+  \__bnvs_match_if_once:NvTF \c__bnvs_A_XP_Z_regex { #1 }  {
+  \BNVS_DEBUG_begin:n { if_ISP:cccTF }
+    \__bnvs_match_if_pop_ISP:cccTF { #1 } { #2 } { #3 } {
+\BNVS_DEBUG_log_if_ISP_cccTF:nn { } {...ID...}
+      \__bnvs_export_ISP:cccN { #1 } { #2 } { #3 }
+        \BNVS_end:
+\BNVS_DEBUG_log_if_ISP_cccTF:nn {...} {...TRUE}
+\BNVS_DEBUG_log_seq:nc T P
+      \prg_return_true:
+    } {
+      \BNVS_end:
+\BNVS_DEBUG_log_if_ISP_cccTF:nn {...} {...UNREACHABLE}
+      \prg_return_false:
+    }
+  } {
+\BNVS_DEBUG_log_if_ISP_cccTF:nn {...} {...FALSE/Not~a~ref}
+    \prg_return_false:
+  }
+}
+\quark_new:N \q__bnvs
+\tl_new:N \l__bnvs_export_ISP_cccN_tl
+\BNVS_new:cpn { export_ISP:cccN } #1 #2 #3 #4 {
+  \cs_set:Npn \BNVS_export_ISP_cccN:w ##1 ##2 ##3 {
+    #4
+    \__bnvs_tl_set:cn { #1 } { ##1 }
+    \__bnvs_tl_set:cn { #2 } { ##2 }
+    \__bnvs_tl_set:cn { export_ISP_cccN } { ##3 }
+  }
+  \__bnvs_tl_set:cx { export_ISP_cccN }
+    { \__bnvs_seq_use:cn { #1 } { \q__bnvs } }
+  \BNVS_tl_use:nvv {
+    \BNVS_tl_use:Nv \BNVS_export_ISP_cccN:w { #1 }
+  } { #2 } { export_ISP_cccN }
+  \BNVS_tl_use:nv {
+    \__bnvs_seq_set_split:cnn { #3 } { \q__bnvs }
+  } { export_ISP_cccN }
+  \__bnvs_seq_remove_all:cn { #3 } { }
+}
+\tl_new:N \l__bnvs_match_if_export_XP_cccc_tl
+\BNVS_new:cpn { match_if_export_XP:ccccN } #1 #2 #3 #4 #5 {
+  \cs_set:Npn \BNVS_match_if_export_XP_ccccN:w ##1 ##2 ##3 ##4 {
+    #5
+    \__bnvs_tl_set:cn { #1 } { ##1 }
+    \__bnvs_tl_set:cn { #2 } { ##2 }
+    \__bnvs_tl_set:cn { #3 } { ##3 }
+    \__bnvs_tl_set:cn { #4 } { ##4 }
+  }
+  \__bnvs_tl_set:cx { match_if_export_XP_cccc }
+    { \__bnvs_seq_use:cn { #1 } { \q__bnvs } }
+  \BNVS_tl_use:nvvv {
+    \BNVS_tl_use:Nv \BNVS_match_if_export_XP_ccccN:w { #1 }
+  } { #2 } { match_if_export_XP_cccc } { #4 }
+  \BNVS_tl_use:nv {
+    \__bnvs_seq_set_split:cnn { #3 } { \q__bnvs }
+  } { match_if_export_XP_cccc }
+  \__bnvs_seq_remove_all:cn { #3 } { }
+}
+\BNVS_new_conditional:cpnn { match_if_pop_XP:cccc } #1 #2 #3 #4 { TF } {
+  \BNVS_begin:
+  \__bnvs_match_if_pop_left:cTF { #1 } {
+    \__bnvs_match_if_pop_left:cTF { #1 } {
+      \__bnvs_match_if_pop_left:cTF { #2 } {
+        \__bnvs_match_if_pop_left:cTF { #3 } {
+          \__bnvs_seq_set_split:cnv { #3 } { . } { #3 }
+          \__bnvs_seq_remove_all:cn { #3 } { }
+          \__bnvs_match_if_pop_left:cTF { #4 } {
+            \__bnvs_match_if_export_XP:ccccN { #1 } { #2 } { #3 } { #4 }
+              \BNVS_end:
+            \prg_return_true:
+          } {
+            \BNVS_end_return_false:
+          }
+        } {
+         \BNVS_end_return_false:
+        }
+      } {
+        \BNVS_end_return_false:
+      }
+    } {
+      \BNVS_end_return_false:
+    }
+  } {
+    \BNVS_end_return_false:
+  }
+}
+\BNVS_new:cpn { seq_merge:cc } #1 #2 {
+  \__bnvs_seq_if_empty:cF { #2 } {
+    \__bnvs_seq_set_split:cnx { #1 } { \q__bnvs } {
+      \__bnvs_seq_use:cn { #1 } { \q__bnvs }
+      \exp_not:n { \q__bnvs }
+      \__bnvs_seq_use:cn { #2 } { \q__bnvs }
+    }
+    \__bnvs_seq_remove_all:cn { #1 } { }
+  }
+}
+\BNVS_new:cpn { round:N } #1 {
+\BNVS_DEBUG_log_f:nncn r { } { round:N } { }
+\BNVS_DEBUG_log:nx r { \token_to_str:N #1 -> / \tl_to_str:V #1 / }
+  \tl_if_empty:NTF #1 {
+    \tl_set:Nn #1 { 0 }
+\BNVS_DEBUG_log:nn r { EMPTY(2) }
+  } {
+    \tl_set:Nx #1 { \fp_eval:n { round(#1) } }
+  }
+\BNVS_DEBUG_log:nx r { OUT -> / \tl_to_str:V #1 / }
+}
+\BNVS_new:cpn { round:c } {
+  \BNVS_tl_use:Nc \__bnvs_round:N
+}
+\BNVS_new_conditional:cpnn { if_assign_value:nnn } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnnn a { if_assign_value:nnnTF } { #1 } { #2 } { VALUE } { #3 }
+\BNVS_DEBUG_log_if_assign_value_nnnTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_assign_value:nnnTF }
+  \__bnvs_if_resolve:ncTF { #3 } a {
+\BNVS_coverage:n { if_assign_value:nnnTF/TRUE }
+    \__bnvs_gunset:nn { #1 } { #2 }
+    \tl_map_inline:nn { V { V* } v } {
+      \__bnvs_gset:nnnv { #1 } { #2 } { ##1 } a
+    }
+    \BNVS_end:
+    \prg_return_true:
+  } {
+\BNVS_coverage:n { if_assign_value:nnnTF/FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_assign_value:nnv } #1 #2 #3 { T, F, TF } {
+  \BNVS_tl_use:nv {
+    \__bnvs_if_assign_value:nnnTF { #1 } { #2 }
+  } { #3 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_assign_value:vvv } #1 #2 #3 { T, F, TF } {
+  \BNVS_tl_use:nvv {
+    \BNVS_tl_use:Nv \__bnvs_if_assign_value:nnnTF { #1 }
+  } { #2 } { #3 } { \prg_return_true: } { \prg_return_false: }
+}
+\makeatletter
+\BNVS_new_conditional:cpnn { if_resolve_counter:nc } #1 #2 { T, F, TF } {
+\BNVS_DEBUG_log_set:ncnnc a { if_resolve_counter:ncTF } { TAG } { #1 } { #2 }
+\BNVS_DEBUG_log_if_resolve_counter_ncTF:nn { } { ... }
+\BNVS_coverage:n { if_resolve_counter:ncTF }
+  \tl_if_eq:nnTF { #1 } { pauses } {
+\BNVS_coverage:n { if_resolve_counter:ncTF / pauses }
+    \cs_if_exist:NTF \c@beamerpauses {
+      \exp_args:Nnx \__bnvs_tl_set:cn { #2 } { \the\c@beamerpauses }
+\BNVS_DEBUG_log_if_resolve_counter_ncTF:nn { ... } { ...pauses/TRUE }
+\BNVS_coverage:n { if_resolve_counter:ncTF/pauses/TRUE }
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log_if_resolve_counter_ncTF:nn { ... } { ...pauses/FALSE }
+\BNVS_coverage:n { if_resolve_counter:ncTF/pauses/FALSE }
+      \prg_return_false:
+    }
+  } {
+    \tl_if_eq:nnTF { #1 } { slideinframe } {
+\BNVS_coverage:n { if_resolve_counter:ncTF/slideinframe }
+      \cs_if_exist:NTF \beamer@slideinframe {
+        \exp_args:Nnx \__bnvs_tl_set:cn { #2 } { \beamer@slideinframe }
+\BNVS_DEBUG_log_if_resolve_counter_ncTF:nn { ... } { ...slideinframe/TRUE }
+\BNVS_coverage:n { if_resolve_counter:ncTF/slideinframe/TRUE }
+        \prg_return_true:
+      } {
+\BNVS_DEBUG_log_if_resolve_counter_ncTF:nn { ... } { ...slideinframe/FALSE }
+\BNVS_coverage:n { if_resolve_counter:ncTF/slideinframe/FALSE }
+        \prg_return_false:
+      }
+    } {
+\BeanovesLogG
+\BNVS_DEBUG_log_if_resolve_counter_ncTF:nn { ... } { ...FALSE/RESOLVE }
+      \prg_return_false:
+    }
+  }
+}
+\makeatother
+\BNVS_new:cpn { if_resolve_V_return:nnncT } #1 #2 #3 #4 #5 {
+  \__bnvs_tl_if_empty:cTF { #4 } {
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...FALSE }
+    \prg_return_false:
+  } {
+    \__bnvs_gset_resolved:nnnv { #1 } { #2 } V { #4 }
+    #5
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...TRUE/#1 }
+    \prg_return_true:
+  }
+}
+\BNVS_new_conditional:cpnn { if_resolve_V:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_V:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { } { ... }
+\BNVS_coverage:n { if_resolve_V:nncTF }
+  \__bnvs_if_get_resolved:nnncTF { #1 } { #2 } V { #3 } {
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...TRUE/CACHED }
+\BNVS_coverage:n { ... TRUE/CACHED }
+    \prg_return_true:
+  } {
+    \__bnvs_if_get:nnncTF { #1 } { #2 } V { #3 } {
+      \__bnvs_quark_if_nil:vTF { #3 } {
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...FALSE/#1 }
+\BNVS_coverage:n { ...FALSE }
+        \prg_return_false:
+      } {
+        \__bnvs_quark_if_no_value:vTF { #3 } {
+          \BNVS_error:n {Circular~definition:~#1!#2 (Error~recovery~1)}
+          \__bnvs_gset:nnnn { #1 } { #2 } V { 1 }
+          \__bnvs_tl_set:cn { #3 } { 1 }
+          \prg_return_true:
+        } {
+          \__bnvs_if_resolve:vcTF { #3 } { #3 } {
+            \__bnvs_tl_if_empty:cTF { #3 } {
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...FALSE }
+              \prg_return_false:
+            } {
+              \__bnvs_gset_resolved:nnnv { #1 } { #2 } V { #3 }
+              \__bnvs_gset:nnnn { #1 } { #2 } V { \q_nil }
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...TRUE/#1 }
+              \prg_return_true:
+            }
+          } {
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...FALSE/RESOLVE }
+\BNVS_coverage:n { ...FALSE/RESOLVE }
+            \__bnvs_gset:nnnn { #1 } { #2 } V { \q_nil }
+            \prg_return_false:
+          }
+        }
+      }
+    } {
+\BeanovesLogG
+\BNVS_DEBUG_log_if_resolve_V_nncTF:nn { ... } { ...FALSE/RESOLVE }
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_V } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_V:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_V:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_V_nncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_V:nncTF }
+  \__bnvs_if_resolve_V:nncTF { #1 } { #2 } { #3 } {
+    \BNVS_end_tl_put_right:cv { #3 } { #3 }
+\BNVS_DEBUG_log_if_append_V_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_V_nncTF:nn { ... } { ...FALSE(FAILED) }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_V } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_A:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set:ncnnc a { if_resolve_A:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { } { ... }
+  \__bnvs_if_get_resolved:nnncTF { #1 } { #2 } A { #3 } {
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { ... } { ...TRUE/CACHED }
+\BNVS_coverage:n { ...TRUE/CACHED }
+    \prg_return_true:
+  } {
+    \__bnvs_if_get:nnncTF { #1 } { #2 } A { #3 } {
+      \__bnvs_quark_if_nil:vTF { #3 } {
+        \__bnvs_gset:nnnn { #1 } { #2 } A { \q_no_value }
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { ... } { ...BUILD... }
+        \__bnvs_if_resolve_Z:nncTF { #1 } { #2 } { #3 } {
+          \__bnvs_tl_put_right:cn { #3 } { - ( }
+          \__bnvs_if_append_L:nncTF { #1 } { #2 } { #3 } {
+            \__bnvs_tl_put_right:cn { #3 } { ) + 1 }
+            \__bnvs_round:c { #3 }
+            \__bnvs_tl_if_empty:cTF { #3 } {
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { ... } { ...FALSE/A }
+              \__bnvs_gset:nnnn { #1 } { #2 } A { \q_nil }
+              \prg_return_false:
+            } {
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { ... } { ...TRUE }
+              \__bnvs_gset:nnnn       { #1 } { #2 } A { \q_nil }
+              \__bnvs_gset_resolved:nnnv { #1 } { #2 } A { #3 }
+              \prg_return_true:
+            }
+          } {
+            \BNVS_error:n {
+Unavailable~length~for~#1~(\token_to_str:N\__bnvs_if_resolve_A:nncTF/2) }
+            \__bnvs_gset:nnnn { #1 } { #2 } A { \q_nil }
+            \prg_return_false:
+          }
+        } {
+          \BNVS_error:n {
+Unavailable~last~for~#1~(\token_to_str:N\__bnvs_if_resolve_A:nncTF/1) }
+          \__bnvs_gset:nnnn { #1 } { #2 } A { \q_nil }
+          \prg_return_false:
+        }
+      } {
+        \__bnvs_quark_if_no_value:vTF a {
+          \BNVS_error:n {Circular~definition:~#1!#2 (Error~recovery~1)}
+          \__bnvs_gset:nnnn { #1 } { #2  A} { 1 }
+          \__bnvs_tl_set:cn { #3 } { 1 }
+          \prg_return_true:
+        } {
+          \__bnvs_if_resolve:vcTF { #3 } { #3 } {
+            \__bnvs_gset:nnnv { #1 } { #2 } A { #3 }
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { ... } { ...TRUE }
+            \prg_return_true:
+          } {
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { ... } { ...FALSE/B }
+            \prg_return_false:
+          }
+        }
+      }
+    } {
+\BeanovesLogG
+\BNVS_DEBUG_log_if_resolve_A_nncTF:nn { ... } { ...FALSE/C^^J Unknown~KEY = / #1!#2 / A / }
+\BNVS_coverage:n { ... FALSE }
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional:cpnn { if_append_A:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set:ncnnc a { if_append_A:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_A_nncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_A:nncTF }
+  \__bnvs_if_resolve_A:nncTF { #1 } { #2 } { #3 } {
+    \BNVS_end_tl_put_right:cv { #3 } { #3 }
+\BNVS_DEBUG_log_if_append_A_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_A_nncTF:nn { ... } { ...FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_resolve_Z:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_Z:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_Z_nncTF:nn { } { ... }
+  \__bnvs_if_get_resolved:nnncTF { #1 } { #2 } Z { #3 } {
+\BNVS_DEBUG_log_if_resolve_Z_nncTF:nn { ... } { ... TRUE/CACHED }
+\BNVS_coverage:n { ... TRUE/CACHED }
+    \prg_return_true:
+  }  {
+    \__bnvs_if_get:nnncTF { #1 } { #2 } Z { #3 } {
+      \__bnvs_quark_if_nil:vTF { #3 } {
+        \__bnvs_gset:nnnn { #1 } { #2 } Z { \q_no_value }
+\BNVS_DEBUG_log_if_resolve_Z_nncTF:nn { ... } { ...A+L... }
+        \__bnvs_if_resolve_A:nncTF { #1 } { #2 } { #3 } {
+          \__bnvs_tl_put_right:cn { #3 } { + }
+          \__bnvs_if_append_L:nncTF { #1 } { #2 } { #3 } {
+            \__bnvs_tl_put_right:cn { #3 } { - 1 }
+            \__bnvs_round:c { #3 }
+            \__bnvs_gset_resolved:nnnv { #1 } { #2 } Z { #3 }
+            \__bnvs_gset:nnnn       { #1 } { #2 } Z { \q_nil }
+\BNVS_DEBUG_log_if_resolve_Z_nncTF:nn { ... } { ...TRUE/A }
+            \prg_return_true:
+          } {
+            \BNVS_error:x {
+ Unavailable~last~for~#1~(\token_to_str:N \__bnvs_if_resolve_Z:nncTF/1) }
+            \__bnvs_gset:nnnn { #1 } { #2 } Z { \q_nil }
+            \prg_return_false:
+          }
+        } {
+          \BNVS_error:x {
+Unavailable~first~for~#1~(\token_to_str:N \__bnvs_if_resolve_Z:nncTF/1) }
+          \__bnvs_gset:nnnn { #1 } { #2 } Z { \q_nil }
+          \prg_return_false:
+        }
+      } {
+        \__bnvs_quark_if_no_value:vTF { #3 } {
+          \BNVS_error:n {Circular~definition:~#1!#2 (Error~recovery~1)}
+          \__bnvs_tl_set:cn { #3 } { 1 }
+          \__bnvs_gset_resolved:nnnv { #1 } { #2 } Z { #3 }
+          \prg_return_true:
+        } {
+          \__bnvs_if_resolve:vcTF { #3 } { #3 } {
+            \__bnvs_gset_resolved:nnnv { #1 } { #2 } Z { #3 }
+\BNVS_DEBUG_log_if_resolve_Z_nncTF:nn { ... } { ...TRUE/B }
+            \prg_return_true:
+          } {
+\BNVS_DEBUG_log_if_resolve_Z_nncTF:nn { ... } { ...FALSE/A }
+            \prg_return_false:
+          }
+        }
+      }
+    } {
+\BNVS_DEBUG_log_if_resolve_Z_nncTF:nn { ... } { ...FALSE/B }
+\BNVS_DEBUG_log_tl:nc a { #3 }
+\BNVS_DEBUG_log_g:nn a {}
+\BNVS_coverage:n { ... FALSE/B }
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_Z } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_Z:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_Z:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_Z_nncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_Z:nncTF }
+  \__bnvs_if_resolve_Z:nncTF { #1 } { #2 } { #3 } {
+    \BNVS_end_tl_put_right:cv { #3 } { #3 }
+\BNVS_DEBUG_log_if_append_Z_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_Z_nncTF:nn { ... } { ...FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_Z } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_L:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_L:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_L_nncTF:nn { } { ... }
+  \__bnvs_if_get_resolved:nnncTF { #1 } { #2 } L { #3 } {
+\BNVS_DEBUG_log_if_resolve_L_nncTF:nn { } { ...TRUE/CACHED }
+\BNVS_coverage:n { ... TRUE/CACHED }
+    \prg_return_true:
+  } {
+    \__bnvs_if_get:nnncTF { #1 } { #2 } L { #3 } {
+      \__bnvs_quark_if_nil:vTF { #3 } {
+        \__bnvs_gset:nnnn { #1 } { #2 } L { \q_no_value }
+\BNVS_DEBUG_log_if_resolve_L_nncTF:nn { ... } { ...BUILD... }
+        \__bnvs_if_resolve_Z:nncTF { #1 } { #2 } { #3 } {
+          \__bnvs_tl_put_right:cn { #3 } { - ( }
+          \__bnvs_if_append_A:nncTF { #1 } { #2 } { #3 } {
+            \__bnvs_tl_put_right:cn { #3 } { ) + 1 }
+            \__bnvs_round:c { #3 }
+            \__bnvs_gset_resolved:nnnv { #1 } { #2 } L { #3 }
+            \__bnvs_gset:nnnn       { #1 } { #2 } L { \q_nil }
+\BNVS_DEBUG_log_if_resolve_L_nncTF:nn { ... } { ...TRUE }
+            \prg_return_true:
+          } {
+            \BNVS_error:n {
+Unavailable~first~for~#1~(\__bnvs_if_resolve_L:nncTF/2) }
+            \prg_return_false:
+          }
+        } {
+          \BNVS_error:n {
+Unavailable~last~for~#1~(\__bnvs_if_resolve_L:nncTF/1) }
+          \prg_return_false:
+        }
+      } {
+        \__bnvs_quark_if_no_value:vTF { #3 } {
+          \BNVS_error:n {Circular~definition:~#1!#2 (Error~recovery~1)}
+          \__bnvs_gset_resolved:nnnn { #1 } { #2 } L 1
+          \__bnvs_tl_set:cn { #3 } 1
+          \prg_return_true:
+        } {
+          \__bnvs_if_resolve:vcTF { #3 } { #3 } {
+            \__bnvs_gset_resolved:nnnv { #1 } { #2 } L { #3 }
+\BNVS_DEBUG_log_if_resolve_L_nncTF:nn { ... } { ...TRUE }
+            \prg_return_true:
+          } {
+\BNVS_DEBUG_log_if_resolve_L_nncTF:nn { ... } { ...FALSE/A }
+            \prg_return_false:
+          }
+        }
+      }
+    } {
+\BNVS_DEBUG_log_if_resolve_L_nncTF:nn { ... } { ...FALSE/B }
+\BNVS_coverage:n { ...FALSE/B }
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_L } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_L:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_L:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_L_nncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_L:nncTF }
+  \__bnvs_if_resolve_L:nncTF { #1 } { #2 } { #3 } {
+    \BNVS_end_tl_put_right:cv { #3 } { #3 }
+\BNVS_DEBUG_log_if_append_L_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_L_nncTF:nn { ... } { ...FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_L } { T, F, TF }
+
+\BNVS_new_conditional:cpnn { if_resolve_first:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_first:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_first_nncTF:nn { } { ... }
+  \__bnvs_if_resolve_V:nncTF { #1 } { #2.first } { #3 }
+    { \prg_return_true: }
+    { \__bnvs_if_resolve_A:nncTF { #1 } { #2 } { #3 }
+        { \prg_return_true: }
+        { \__bnvs_if_resolve_v:nncTF { #1 } { #2.1 } { #3 }
+            { \prg_return_true: } { \prg_return_false: }
+        }
+    }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_first } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_first:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_first:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_first_nncTF:nn { } { ... }
+  \__bnvs_if_append_N:nnncTF { #1 } { #2 } { 1 } { #3 } { \prg_return_true: } {
+    \__bnvs_if_append_A:nncTF { #1 } { #2 } { #3 }
+      { \prg_return_true: } { \prg_return_false: }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_first } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_last:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_last:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_last_nncTF:nn { } { ... }
+  \__bnvs_if_resolve_Z:nncTF { #1 } { #2 } { #3 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_last } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_last:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_last:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_last_nncTF:nn { } { ... }
+  \__bnvs_if_append_Z:nncTF { #1 } { #2 } { #3 }
+    { \prg_return_true: } {\prg_return_false: }
+}
+\BNVS_new_conditional_vvc:cn { if_append_last } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_length:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_length:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_length_nncTF:nn { } { ... }
+  \__bnvs_if_resolve_L:nncTF { #1 } { #2 } { #3 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_length } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_length:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_length:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_length_nncTF:nn { } { ... }
+  \__bnvs_if_append_L:nncTF { #1 } { #2 } { #3 }
+    { \prg_return_true: } {\prg_return_false: }
+}
+\BNVS_new_conditional_vvc:cn { if_append_length } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_range:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_range:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_range_nncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_range:nncTF }
+  \__bnvs_if_resolve_A:nncTF { #1 } { #2 } a {
+    \BNVS_tl_use:Nv \int_compare:nNnT a < 0 {
+      \__bnvs_tl_set:cn a { 0 }
+    }
+    \__bnvs_if_resolve_Z:nncTF { #1 } { #2 } { b } {
+      \BNVS_tl_use:Nv \int_compare:nNnT { b } < 0 {
+        \__bnvs_tl_set:cn { b } { 0 }
+      }
+      \__bnvs_tl_put_right:cn a { - }
+      \__bnvs_tl_put_right:cv a { b }
+      \BNVS_end_tl_put_right:cv { #3 } a
+\BNVS_DEBUG_log_if_append_range_nncTF:nn { ... } { ...TRUE/A-Z }
+      \prg_return_true:
+    } {
+      \BNVS_end_tl_put_right:cv { #3 } a
+      \__bnvs_tl_put_right:cn { #3 } { - }
+\BNVS_DEBUG_log_if_append_range_nncTF:nn { ... } { ...TRUE/A- }
+      \prg_return_true:
+    }
+  } {
+    \__bnvs_if_resolve_Z:nncTF { #1 } { #2 } { b } {
+      \BNVS_tl_use:Nv \int_compare:nNnT { b } < 0 {
+        \__bnvs_tl_set:cn { b } { 0 }
+      }
+      \__bnvs_tl_put_left:cn { b } { - }
+      \BNVS_end_tl_put_right:cv { #3 } { b }
+\BNVS_DEBUG_log_if_append_range_nncTF:nn { ... } { ...TRUE/-Z }
+      \prg_return_true:
+    } {
+      \__bnvs_if_resolve_V:nncTF { #1 } { #2 } { b } {
+      \BNVS_tl_use:Nv \int_compare:nNnT { b } < 0 {
+        \__bnvs_tl_set:cn { b } { 0 }
+      }
+        \BNVS_end_tl_put_right:cv { #3 } { b }
+        \__bnvs_tl_put_right:cn { #3 } { - }
+\BNVS_DEBUG_log_if_append_range_nncTF:nn { ... } { ...TRUE/V }
+        \prg_return_true:
+      } {
+\BNVS_DEBUG_log_if_append_range_nncTF:nn { ... } { ...FALSE }
+        \BNVS_end:
+        \prg_return_false:
+      }
+    }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_range } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_range:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_range_nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_range_nncTF:nn { } { ... }
+  \__bnvs_tl_clear:c { #3 }
+  \__bnvs_if_append_range:nncTF { #1 } { #2 } { #3 } {
+\BNVS_DEBUG_log_if_resolve_range_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_resolve_range_nncTF:nn { ... } { ...FALSE }
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_range } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_previous:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_previous:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_previous_nncTF:nn { } { ... }
+  \__bnvs_if_get_resolved:nnncTF { #1 } { #2 } P { #3 } {
+\BNVS_DEBUG_log_if_resolve_previous_nncTF:nn { ... } { ...TRUE/CACHED }
+    \prg_return_true:
+  } {
+    \__bnvs_if_resolve_A:nncTF { #1 } { #2 } { #3 } {
+      \__bnvs_tl_put_right:cn { #3 } { -1 }
+      \__bnvs_round:c { #3 }
+      \__bnvs_gset_resolved:nnnv { #1 } { #2 } P { #3 }
+\BNVS_DEBUG_log_if_resolve_previous_nncTF:nn { ... } { ...TRUE }
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log_if_resolve_previous_nncTF:nn { ... } { ...FALSE }
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_previous } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_previous:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_previous:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_previous_nncTF:nn { } { ... }
+\BNVS_DEBUG_begin:n { if_append_previous:nncTF }
+  \__bnvs_if_resolve_previous:nncTF { #1 } { #2 } { #3 } {
+    \BNVS_end_tl_put_right:cv { #3 } { #3 }
+\BNVS_DEBUG_log_if_append_previous_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_previous_nncTF:nn { ... } { ...FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_previous } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_next:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_next:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_next_nncTF:nn { } { ... }
+  \__bnvs_if_get_resolved:nnncTF { #1 } { #2 } N { #3 } {
+\BNVS_DEBUG_log_if_resolve_next_nncTF:nn { ... } { ...TRUE/CACHED }
+    \prg_return_true:
+  } {
+    \__bnvs_if_resolve_Z:nncTF { #1 } { #2 } { #3 } {
+      \__bnvs_tl_put_right:cn { #3 } { +1 }
+      \__bnvs_round:c { #3 }
+      \__bnvs_gset_resolved:nnnv { #1 } { #2 } N { #3 }
+\BNVS_DEBUG_log_if_resolve_next_nncTF:nn { ... } { ...TRUE }
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log_if_resolve_next_nncTF:nn { ... } { ...FALSE }
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_next } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_next:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_next:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_next_nncTF:nn { } { ... }
+\BNVS_DEBUG_begin:n { if_append_next:nncTF }
+  \__bnvs_if_resolve_next:nncTF { #1 } { #2 } { #3 } {
+    \BNVS_end_tl_put_right:cv { #3 } { #3 }
+\BNVS_DEBUG_log_if_append_next_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+    \BNVS_end:
+\BNVS_DEBUG_log_if_append_next_nncTF:nn { ... } { ...FALSE }
+    \prg_return_true:
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_next } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_v:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_resolve_v:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_resolve_v_nncTF:nn { } { ... }
+\BNVS_coverage:n { if_resolve_v:nncTF }
+  \__bnvs_if_get:nnncTF { #1 } { #2 } v { #3 } {
+    \__bnvs_quark_if_no_value:vTF { #3 } {
+      \BNVS_error:n {Circular~definition:~#1!#2 (Error~recovery~1)}
+      \__bnvs_gset:nnnn { #1 } { #2 } V 1
+      \__bnvs_gset:nnnn { #1 } { #2 } v 1
+      \__bnvs_tl_set:cn { #3 } 1
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log_if_resolve_v_nncTF:nn { ... } { ...TRUE/ALREADY }
+\BNVS_coverage:n { ...TRUE/ALREADY }
+      \prg_return_true:
+    }
+  } {
+    \__bnvs_gset:nnnn { #1 } { #2 } v { \q_no_value }
+    \__bnvs_if_resolve_V:nncTF { #1 } { #2 } { #3 } {
+\BNVS_DEBUG_log_if_resolve_v_nncTF:nn { ... } { ...TRUE/VALUE }
+\BNVS_coverage:n { ...TRUE/VALUE }
+      \__bnvs_gset:nnnv { #1 } { #2 } v { #3 }
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log_if_resolve_v_nncTF:nn { ... } { ...FALSE }
+\BNVS_coverage:n { ...FALSE }
+      \__bnvs_gunset:nnn { #1 } { #2 } v
+      \prg_return_false:
+    }
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_resolve_v } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_v:nnc } #1 #2 #3 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnc a { if_append_v:nncTF } { #1 } { #2 } { #3 }
+\BNVS_DEBUG_log_if_append_v_nncTF:nn { } { ... }
+\BNVS_DEBUG_begin:n { if_append_v:nncTF }
+  \__bnvs_if_resolve_v:nncTF { #1 } { #2 } { #3 } {
+    \BNVS_end_tl_put_right:cv { #3 } { #3 }
+\BNVS_DEBUG_log_if_append_v_nncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_v_nncTF:nn { ... } { ...FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvc:cn { if_append_v } { T, F, TF }
+\BNVS_new_conditional:cpnn { index_can:nn } #1 #2 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnn a { index_can:nnTF } { #1 } { #2 }
+  \__bnvs_is_gset:nnnTF { #1 } { #2 } V {
+\BNVS_DEBUG_log_index_can_nnTF:nn { } { ...TRUE/V}
+    \prg_return_true:
+  } {
+    \__bnvs_is_gset:nnnTF { #1 } { #2 } A {
+\BNVS_DEBUG_log_index_can_nnTF:nn { } { ...TRUE/A}
+      \prg_return_true:
+    } {
+      \__bnvs_is_gset:nnnTF { #1 } { #2 } Z {
+\BNVS_DEBUG_log_index_can_nnTF:nn { } { ...TRUE/Z}
+        \prg_return_true:
+      } {
+\BNVS_DEBUG_log_index_can_nnTF:nn { } { ...FALSE}
+        \prg_return_false:
+      }
+    }
+  }
+}
+\BNVS_new_conditional:cpnn { index_can:vv } #1 #2 { T, F, TF } {
+  \BNVS_tl_use:Nvv \__bnvs_index_can:nnTF { #1 } { #2 }
+    { \prg_return_true: } { \prg_return_false: }
+}
+\BNVS_new_conditional:cpnn { if_resolve_N:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnnnc a { if_resolve_N:nnncTF } { #1 } { #2 } { N } { #3 } { #4 }
+\BNVS_DEBUG_log_if_resolve_N_nnncTF:nn { } { ... }
+\BNVS_coverage:n { if_resolve_N:nnncTF }
+  \__bnvs_if_resolve_v:nncTF { #1 } { #2.#3 } { #4 } {
+\BNVS_DEBUG_log_if_resolve_N_nnncTF:nn { ... } { ...TRUE/v }
+\BNVS_coverage:n { ...TRUE/v }
+      \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_resolve_N_nnncTF:nn { ... } { ...FALSE/v }
+\BNVS_coverage:n { ...FALSE/v }
+    \__bnvs_if_resolve_first:nncTF { #1 } { #2 } { #4 } {
+      \__bnvs_tl_put_right:cn { #4 } { + #3 - 1 }
+      \__bnvs_round:c { #4 }
+\BNVS_DEBUG_log_if_resolve_N_nnncTF:nn { ... } { ...TRUE/FIRST }
+\BNVS_coverage:n { ...TRUE/FIRST }
+      \prg_return_true:
+    } {
+      \__bnvs_if_resolve_V:nncTF { #1 } { #2 } { #4 } {
+        \__bnvs_tl_put_right:cn { #4 } { + #3 - 1 }
+        \__bnvs_round:c { #4 }
+\BNVS_DEBUG_log_if_resolve_N_nnncTF:nn { ... } { ...TRUE/V }
+\BNVS_coverage:n { ...TRUE/V }
+        \prg_return_true:
+      } {
+        \__bnvs_if_resolve_v:nncTF { #1 } { #2 } { #4 } {
+          \__bnvs_tl_put_right:cn { #4 } { + #3 - 1 }
+          \__bnvs_round:c { #4 }
+\BNVS_DEBUG_log_if_resolve_N_nnncTF:nn { ... } { ...TRUE/v }
+\BNVS_coverage:n { ...TRUE/v }
+          \prg_return_true:
+        } {
+\BNVS_DEBUG_log_if_resolve_N_nnncTF:nn { ... } { ...FALSE }
+\BNVS_coverage:n { ...FALSE }
+          \prg_return_false:
+        }
+      }
+    }
+  }
+}
+\BNVS_new_conditional:cpnn { if_resolve_N:nnvc } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_tl_use:nv {
+    \__bnvs_if_resolve_N:nnncTF { #1 } { #2 }
+  } { #3 } { #4 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_resolve_N:vvvc } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_tl_use:nvv {
+    \BNVS_tl_use:Nv \__bnvs_if_resolve_N:nnncTF { #1 }
+  } { #2 } { #3 } { #4 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_append_N:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnnnc a { if_append_N:nnncTF } { #1 } { #2 } { N } { #3 } { #4 }
+\BNVS_DEBUG_log_if_append_N_nnncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_N:nnncTF }
+  \__bnvs_if_resolve_N:nnncTF { #1 } { #2 } { #3 } { #4 } {
+    \BNVS_end_tl_put_right:cv { #4 } { #4 }
+\BNVS_DEBUG_log_if_append_N_nnncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+    \BNVS_end:
+\BNVS_DEBUG_log_if_append_N_nnncTF:nn { ... } { ...FALSE }
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_append_N:vvvc } #1 #2 #3 #4 { T, F, TF } {
+  \BNVS_tl_use:nvv {
+    \BNVS_tl_use:Nv \__bnvs_if_append_N:nnncTF { #1 }
+  } { #2 } { #3 } { #4 } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_resolve_v_incr:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnnnc a { if_resolve_v_incr_nnncTF } { #1 } { #2 } { INCR } { #3 } { #4 }
+\BNVS_DEBUG_log_if_resolve_v_incr_nnncTF:nn { } { ... }
+\BNVS_coverage:n { if_resolve_v_incr_nnncTF }
+  \__bnvs_if_resolve:ncTF { #3 } { #4 } {
+    \BNVS_tl_use:Nv \int_compare:nNnTF { #4 } = 0 {
+      \__bnvs_if_resolve_v:nncTF { #1 } { #2 } { #4 } {
+\BNVS_DEBUG_log_if_resolve_v_incr_nnncTF:nn { ... } { ...TRUE/0 }
+\BNVS_DEBUG_log_tl:nc a { #4 }
+\BNVS_coverage:n { ...TRUE/0 }
+        \prg_return_true:
+      } {
+\BNVS_DEBUG_log_if_resolve_v_incr_nnncTF:nn { ... } { ...FALSE/A }
+\BNVS_coverage:n { ...FALSE/A }
+        \prg_return_false:
+      }
+    } {
+      \__bnvs_tl_put_right:cn { #4 } { + }
+      \__bnvs_if_append_v:nncTF { #1 } { #2 } { #4 } {
+        \__bnvs_round:c { #4 }
+        \__bnvs_gset:nnnv { #1 } { #2 } v { #4 }
+\BNVS_DEBUG_log_if_resolve_v_incr_nnncTF:nn { ... } { ...TRUE/<>0 }
+\BNVS_DEBUG_log_tl:nc a { #4 }
+\BNVS_coverage:n { ...TRUE/<>0 }
+        \prg_return_true:
+      } {
+\BNVS_DEBUG_log_if_resolve_v_incr_nnncTF:nn { ... } { ...FALSE/B }
+\BNVS_coverage:n { ...FALSE/B }
+        \prg_return_false:
+      }
+    }
+  } {
+\BNVS_DEBUG_log_if_resolve_v_incr_nnncTF:nn { ... } { ...FALSE/C }
+\BNVS_coverage:n { ...FALSE/C }
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_append_v_incr:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnnnc a { if_append_v_incr_nnncTF } { #1 } { #2 } { INCR } { #3 } { #4 }
+\BNVS_DEBUG_log_if_append_v_incr_nnncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_v_incr:nnncTF }
+  \__bnvs_if_resolve_v_incr:nnncTF { #1 } { #2 } { #3 } { #4 } {
+    \BNVS_end_tl_put_right:cv { #4 } { #4 }
+\BNVS_DEBUG_log_if_append_v_incr_nnncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_v_incr_nnncTF:nn { } { ...FALSE }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvnc:cn { if_append_v_incr } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_resolve_v_post:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnnnc a { if_resolve_v_post:nnncTF } { #1 } { #2 } { INCR } { #3 } { #4 }
+\BNVS_DEBUG_log_if_resolve_v_post_nnncTF:nn { } { ... }
+  \__bnvs_if_resolve_v:nncTF { #1 } { #2 } { #4 } {
+    \BNVS_DEBUG_begin:n { if_resolve_v_post:nnncTF }
+    \__bnvs_if_resolve:ncTF { #3 } a {
+      \BNVS_coverage:n { => if_resolve:ncTF }
+      \BNVS_tl_use:Nv \int_compare:nNnTF a = 0 {
+        \BNVS_end:
+\BNVS_DEBUG_log_if_resolve_v_post_nnncTF:nn { ... } { ...TRUE/0 }
+\BNVS_DEBUG_log_tl:nc a { #4 }
+\BNVS_coverage:n { ...TRUE/0 }
+        \prg_return_true:
+      } {
+        \__bnvs_tl_put_right:cn a +
+        \__bnvs_tl_put_right:cv a { #4 }
+        \__bnvs_round:c a
+        \BNVS_end_gset:nnnv { #1 } { #2 } v a
+\BNVS_DEBUG_log_if_resolve_v_post_nnncTF:nn { ... } { ...TRUE/<>0 }
+\BNVS_DEBUG_log_tl:nc a { #4 }
+\BNVS_coverage:n { ...TRUE/<>0 }
+        \prg_return_true:
+      }
+    } {
+\BNVS_DEBUG_log_if_resolve_v_post_nnncTF:nn { ... } { ...FALSE/A }
+\BNVS_coverage:n { ...FALSE/A }
+      \BNVS_end:
+      \prg_return_false:
+    }
+  } {
+\BNVS_DEBUG_log_if_resolve_v_post_nnncTF:nn { ... } { ...FALSE/B }
+\BNVS_coverage:n { if_resolve_v_post:nnncTF }
+\BNVS_coverage:n { ...FALSE/B }
+      \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvvc:cn { if_resolve_v_post } { T, F, TF }
+\BNVS_new_conditional:cpnn { if_append_v_post:nnnc } #1 #2 #3 #4 { T, F, TF } {
+\BNVS_DEBUG_log_set_IT:ncnnnnc a { if_append_v_post:nnncTF } { #1 } { #2 } { INCR } { #3 } { #4 }
+\BNVS_DEBUG_log_if_append_v_post_nnncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append_v_post:nnnncTF }
+  \__bnvs_if_resolve_v_post:nnncTF { #1 } { #2 } { #3 } { #4 } {
+    \BNVS_end_tl_put_right:cv { #4 } { #4 }
+\BNVS_DEBUG_log_if_append_v_post_nnncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_tl:nc a { #4 }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_append_v_post_nnncTF:nn { ... } { ...FALSE }
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vvnc:cn { if_append_v_post } { T, F, TF }
+\BNVS_new_conditional_vvvc:cn { if_append_v_post } { T, F, TF }
+\BNVS_new:cpn { split_pop_XP:TFF } #1 #2 #3 {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...POP~XP... }
+  \__bnvs_split_if_pop_left:cTF I {
+    \cs_set:Npn \BNVS_split_F:n ##1 {
+      \BNVS_fatal:n { split_pop_XP:TFF/##1 }
+    }
+    \__bnvs_split_if_pop_left:cTn K {
+      \__bnvs_split_if_pop_left:cTn S {
+        \__bnvs_split_if_pop_left:cTn P {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...POPED~XP... }
+\BNVS_DEBUG_log_seq:nc a { split }
+          \__bnvs_tl_if_blank:vTF S {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...COMPLETE/1... }
+\BNVS_DEBUG_log_tl:nc s I
+\BNVS_DEBUG_log_tl:nc s K
+\BNVS_DEBUG_log_tl:nc s S
+\BNVS_DEBUG_log_tl:nc s P
+\BNVS_DEBUG_log_seq:nxc s { \__bnvs_tl_use:c P } P
+            #2
+          } {
+            \BNVS_tl_use:nv {
+              \regex_match:NnT \c__bnvs_A_reserved_Z_regex
+            } S {
+              \__bnvs_tl_if_eq:cnF S { pauses } {
+                \__bnvs_tl_if_eq:cnF S { slideinframe } {
+\BNVS_error:x { Use~of~reserved~``\__bnvs_tl_use:c T'' }
+                }
+              }
+            }
+            \__bnvs_tl_if_blank:vTF K {
+              \__bnvs_tl_set:cv I { I_last }
+            } {
+              \__bnvs_tl_set:cv { I_last } I
+            }
+            \__bnvs_tl_if_empty:cTF P {
+              \__bnvs_seq_clear:c P
+            } {
+              \__bnvs_seq_set_split:cnv P { . } P
+            }
+\BNVS_DEBUG_log_resolution:nn { ... } { ...COMPLETE/2... }
+\BNVS_DEBUG_log_tl:nc s I
+\BNVS_DEBUG_log_tl:nc s K
+\BNVS_DEBUG_log_tl:nc s S
+\BNVS_DEBUG_log_seq:nxc s { \__bnvs_tl_use:c P => } P
+            #1
+          }
+        } P
+      } S
+    } K
+  } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...EMPTY }
+    #3
+  }
+}
+\BNVS_new:cpn { split_end_return_or_pop_GNURO:T } #1 {
+\BNVS_DEBUG_log_resolution:nn { ... } { => split_end_return_or_pop_GNURO:T }
+\BNVS_DEBUG_log_seq:nc a { split }
+  \cs_set:Npn \BNVS_split_F:n ##1 {
+    \BNVS_end_unreachable_return_false:n {
+      split_end_return_or_pop_GNURO: ##1
+    }
+  }
+  \__bnvs_split_if_pop_left:cT G {
+    \__bnvs_split_if_pop_left:cT N {
+      \__bnvs_split_if_pop_left:cT U {
+        \__bnvs_split_if_pop_left:cT R {
+          \__bnvs_split_if_pop_left:cT O {
+\BNVS_DEBUG_log_resolution:nn { ... } { => return_or_pop_GNURO:T }
+\BNVS_DEBUG_log_seq:nc a { split }
+\BNVS_coverage:n { if_resolve:ncTF / return_or_pop_GNURO:T }
+            #1
+          }
+        }
+      }
+    }
+  }
+}
+\BNVS_new:cpn { split_end_return_or_pop_XPGNURO:T } #1 {
+  \cs_set:Npn \BNVS_split_F:n ##1 {
+    \BNVS_end_unreachable_return_false:n {
+      split_end_return_or_pop_XPGNURO:T ##1
+    }
+  }
+  \__bnvs_split_if_pop_left:cTn a {
+    \__bnvs_split_if_pop_left:cTn a {
+      \__bnvs_split_if_pop_left:cTn a {
+        \__bnvs_split_if_pop_left:cTn a {
+          \__bnvs_split_if_pop_left:cTn a {
+            \__bnvs_split_if_pop_left:cTn a {
+              \__bnvs_split_if_pop_left:cTn a {
+                \__bnvs_split_if_pop_left:cTn a {
+                  \__bnvs_split_if_pop_left:cTn a {
+\BNVS_DEBUG_log_resolution:nn { ... } { =>  split_end_return_or_pop_XPGNURO:T }
+\BNVS_DEBUG_log_seq:nc a { split }
+                    #1
+                  } { T/9 }
+                } { T/8 }
+              } { T/7 }
+            } { T/6 }
+          } { T/5 }
+        } { T/4 }
+      } { T/3 }
+    } { T/2 }
+  } { T/1 }
+}
+\BNVS_int_new:c { split }
+\BNVS_new_conditional:cpnn { if_append:nc } #1 #2 { TF } {
+\BNVS_DEBUG_log_set:ncnnc a { if_append:ncTF } { QUERY } { #1 } { #2 }
+\BNVS_DEBUG_log_if_append_ncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_append:nc }
+  \__bnvs_if_resolve:ncTF { #1 } { #2 } {
+    \BNVS_end_tl_put_right:cv { #2 } { #2 }
+\BNVS_DEBUG_log_if_append_ncTF:nn { ... } { ...TRUE }
+    \prg_return_true:
+  } {
+    \BNVS_end:
+\BNVS_DEBUG_log_if_append_ncTF:nn { ... } { ...FALSE }
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vc:cn { if_append } { T, F, TF }
+\cs_new:Npn \BNVS_end_unreachable_return_false:n #1 {
+  \BNVS_error:n { UNREACHABLE/#1 }
+  \BNVS_end:
+  \prg_return_false:
+}
+\cs_new:Npn \BNVS_end_unreachable_return_false:x #1 {
+  \BNVS_error:x { UNREACHABLE/#1 }
+  \BNVS_end:
+  \prg_return_false:
+}
+\BNVS_new:cpn { split_pop_spec_or_end_return: } {
+  \__bnvs_split_pop_XP:TFF {
+    \__bnvs_split_end_return_or_pop_XPGNURO:T {
+      \__bnvs_prepare_context:N \c_true_bool
+      \__bnvs_build_T:
+      \__bnvs_resolve_loop_or_end_return_iadd:n { 1 }
+    }
+  } {
+    \__bnvs_split_pop_XP:TFF {
+      \__bnvs_split_end_return_or_pop_GNURO:T { % GNURO
+        \__bnvs_tl_if_eq:cnTF N 0 {
+          \__bnvs_build_T:
+          \__bnvs_resolve_loop_N_or_end_return:
+        } {
+          \__bnvs_tl_if_empty:cTF N {
+            \__bnvs_tl_if_blank:vTF U {
+              \__bnvs_tl_if_blank:vTF R {
+                \__bnvs_tl_if_blank:vTF O {
+                  \__bnvs_prepare_context:N \c_false_bool
+                  \__bnvs_build_T:
+                  \BNVS_tl_use:Nv
+                  \__bnvs_if_resolve_counter:ncTF T a {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...COUNTER... }
+\BNVS_coverage:n { resolve_loop_or_end_return: / COUNTER }
+                    \__bnvs_tl_put_right:cv { ans } a
+                    \__bnvs_resolve_loop_or_end_return:
+                  } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...NO~COUNTER... }
+\BNVS_coverage:n { resolve_loop_or_end_return: / ...NO~COUNTER... }
+                    \__bnvs_tl_if_empty:cTF { suffix } {
+                      \__bnvs_resolve_loop_or_end_return_v:
+                    } {
+                      \__bnvs_resolve_loop_or_end_return_suffix:
+                    }
+                  }
+                } {
+                  \__bnvs_prepare_context:N \c_true_bool
+                  \__bnvs_build_T:
+                  \BNVS_use:c { resolve_loop_or_end_return[...++]: }
+                }
+              } {
+                \__bnvs_prepare_context:N \c_true_bool
+                \__bnvs_build_T:
+                \__bnvs_resolve_loop_R_or_end_return:
+              }
+            } {
+              \__bnvs_if_resolve:vcTF R R {
+                \__bnvs_prepare_context:N \c_true_bool
+                \__bnvs_build_T:
+                \BNVS_tl_use:Nv
+                  \__bnvs_resolve_loop_or_end_return_iadd:n R
+              } {
+                \BNVS_error_ans:x { Error~in~\__bnvs_tl_use:c R }
+                \__bnvs_resolve_loop_or_end_return:
+              }
+            }
+          } {
+            \__bnvs_tl_if_empty:cF G {
+              \__bnvs_tl_put_left:cn N -
+            }
+            \__bnvs_build_T:
+            \__bnvs_resolve_loop_N_or_end_return:
+          }
+        }
+      }
+    } {
+\BNVS_end_unreachable_return_false:n { resolve_loop_or_end_return:/3 }
+    } {
+\BNVS_end_unreachable_return_false:n { resolve_loop_or_end_return:/2 }
+    }
+  } {
+    \__bnvs_if_resolve_end_return_true:
+  }
+}
+\BNVS_new:cpn { resolve_init_or_end_return: } {
+\BNVS_DEBUG_log_resolution:nn { ... } { => resolve_init_or_end_return: ... }
+\BNVS_DEBUG_log_seq:nc a { split }
+\BNVS_coverage:n { resolve_init_or_end_return: }
+  \__bnvs_split_if_pop_left:cTF a {
+    \__bnvs_tl_put_right:cv { ans } a
+    \__bnvs_split_pop_spec_or_end_return:
+  } {
+\BNVS_end_unreachable_return_false:n { resolve_init_or_end_return:/1 }
+  }
+}
+\BNVS_new_conditional:cpnn { if_resolve:nc } #1 #2 { TF } {
+\BNVS_DEBUG_log_set:ncnnc a { resolution } { QUERY } { #1 } { #2 }
+\BNVS_DEBUG_log_resolution:nn { } { ... }
+\BNVS_coverage:n { resolution }
+  \__bnvs_if_call:TF {
+    \BNVS_DEBUG_begin:n { if_resolve:ncTF }
+    \__bnvs_if_regex_split:cnTF { XPXPGNURO } { #1 } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...SPLIT... }
+\BNVS_DEBUG_log_seq:nc a { split }
+      \BNVS_set:cpn { if_resolve_end_return_true: } {
+        \__bnvs_resolution_round_ans:
+        \BNVS_end_tl_set:cv { #2 } { ans }
+\BNVS_DEBUG_log_resolution:nn { ... } { ...FINAL_TRUE }
+        \prg_return_true:
+      }
+      \BNVS_set:cpn { if_resolve_end_return_false: } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...FINAL_FALSE }
+        \BNVS_error:n { Unsupported~query: #1}
+        \BNVS_end:
+        \prg_return_false:
+      }
+      \BNVS_set:cpn { resolution_round_ans: } { \__bnvs_round:c { ans } }
+      \__bnvs_tl_clear_ans:
+      \__bnvs_resolve_init_or_end_return:
+    } {
+\BNVS_DEBUG_log_resolution:nn { } { ...DIRECT/TRUE }
+\BNVS_coverage:n { DIRECT/TRUE }
+      \__bnvs_tl_set:cn { ans } { #1 }
+      \__bnvs_round:c { ans }
+      \BNVS_end_tl_set:cv { #2 } { ans }
+\BNVS_DEBUG_log_tl:nc a { ans }
+      \prg_return_true:
+    }
+  } {
+    \BNVS_error:n { TOO_MANY_NESTED_CALLS/Resolution }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional_vc:cn { if_resolve } { T, F, TF }
+\BNVS_new:cpn { build_T: } {
+  \__bnvs_tl_set_eq:cc T S
+  \__bnvs_seq_map_inline:cn P {
+    \__bnvs_tl_put_right:cn T { . ##1 }
+  }
+\BNVS_DEBUG_log_f:nc a { build_T: }
+\BNVS_DEBUG_log_tl:nc a T
+}
+\BNVS_new:cpn { build_tag_head: } {
+  \__bnvs_tl_set_eq:cc T S
+  \__bnvs_seq_map_inline:cn { P_head } {
+    \__bnvs_tl_put_right:cn T { . ##1 }
+  }
+\BNVS_DEBUG_log_f:nc a { build_tag_head: }
+\BNVS_DEBUG_log_tl:nc a T
+\BNVS_coverage:n { build_tag_head: }
+}
+\clist_map_inline:nn {
+  n, reset, reset_all, v, first, last, length,
+  previous, next, range, assign, only
+} {
+  \bool_new:c { l__bnvs_#1_bool }
+}
+\BNVS_new_conditional:cpnn { if:c } #1 { p, T, F, TF } {
+  \bool_if:cTF { l__bnvs_#1_bool } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { bool_if_exist:c } #1 { p, T, F, TF } {
+  \bool_if_exist:cTF { l__bnvs_#1_bool } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { prepare_context:N } #1 {
+  \clist_map_inline:nn {
+    reset, reset_all, first, last, length,
+    previous, next, range, assign, only
+  } {
+    \__bnvs_set_false:c { ##1 }
+  }
+  \__bnvs_seq_clear:c { P_head }
+  \__bnvs_seq_clear:c { P_tail }
+  \__bnvs_tl_clear:c N
+  \__bnvs_tl_clear:c { suffix }
+  \BNVS_set:cpn { prepare_context_N:n } ##1 {
+    \tl_if_blank:nF { ##1 } {
+      \__bnvs_tl_if_empty:cF N {
+       \__bnvs_seq_put_right:cv { P_head } N
+        \__bnvs_tl_clear:c N
+      }
+      \__bnvs_seq_put_right:cn { P_head } { ##1 }
+    }
+  }
+  \__bnvs_seq_map_inline:cn P {
+    \__bnvs_bool_if_exist:cTF { ##1 } {
+      \__bnvs_set_true:c { ##1 }
+      \clist_if_in:nnF { reset, reset_all } { ##1 } {
+        \bool_if:NT #1 {
+          \BNVS_error:n {Unexpected~##1~in~assignment }
+        }
+        \__bnvs_tl_set:cn { suffix } { ##1 }
+      }
+      \BNVS_set:cpn { prepare_context_N:n } ####1 {
+        \tl_if_blank:nF { ####1 } {
+          \BNVS_error:n {Unexpected~####1 }
+        }
+      }
+    } {
+      \regex_match:NnTF \c__bnvs_A_index_Z_regex { ##1 } {
+        \__bnvs_tl_if_empty:cF N {
+           \__bnvs_seq_put_right:cv { P_head } N
+        }
+        \__bnvs_tl_set:cn N { ##1 }
+      } {
+        \regex_match:NnTF \c__bnvs_A_reserved_Z_regex { ##1 } {
+          \BNVS_error:n { Unsupported~##1 }
+        } {
+          \__bnvs_prepare_context_N:n { ##1 }
+        }
+      }
+    }
+  }
+  \__bnvs_seq_set_eq:cc P { P_head }
+}
+\BNVS_new:cpn { resolve_loop_or_end_return: } {
+\BNVS_DEBUG_log_resolution:nn { ... } { => resolve_loop_or_end_return: ... }
+\BNVS_DEBUG_log_seq:nc a { split }
+\BNVS_coverage:n { resolve_loop_or_end_return: }
+  \__bnvs_split_if_pop_left:cTF a {
+    \__bnvs_tl_put_right:cv { ans } a
+    \__bnvs_tl_if_empty:cTF a {
+      \__bnvs_seq_if_empty:cTF { split } {
+        \__bnvs_if_resolve_end_return_true:
+      } {
+        \__bnvs_if_resolve_end_return_false:
+      }
+    } {
+      \__bnvs_split_pop_spec_or_end_return:
+    }
+  } {
+\BNVS_end_unreachable_return_false:n { resolve_loop_or_end_return:/1 }
+  }
+}
+\BNVS_new_conditional:cpnn { if_suffix: } { T, F, TF } {
+  \__bnvs_tl_if_empty:cTF { suffix } {
+    \__bnvs_seq_pop_right:ccTF P { suffix } {
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  } {
+    \prg_return_true:
+  }
+}
+\BNVS_set:cpn { if_resolve_V_loop_or_end_return_true:F } #1 {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...if_resolve_V_loop_or_end_return_true:F }
+\BNVS_DEBUG_log_tl:nc a I
+\BNVS_DEBUG_log_tl:nc a T
+\BNVS_DEBUG_log_tl:nc a { suffix }
+\BNVS_coverage:n { if_resolve_V_loop_or_end_return_true:F }
+  \__bnvs_build_T:
+  \__bnvs_tl_set:cx a {
+     \__bnvs_tl_use:c T . \__bnvs_tl_use:c { suffix }
+  }
+  \__bnvs_if_resolve_v:vvcTF I a a {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...TRUE/DIRECT(v) }
+\BNVS_DEBUG_log_tl:nc a a
+    \__bnvs_tl_put_right:cv { ans } a
+    \__bnvs_resolve_loop_or_end_return:
+  } {
+    \__bnvs_if_resolve_V:vvcTF I a a {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...TRUE/DIRECT(V) }
+\BNVS_DEBUG_log_tl:nc a a
+      \__bnvs_tl_put_right:cv { ans } a
+      \__bnvs_resolve_loop_or_end_return:
+    } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...FALSE/... }
+      #1
+    }
+  }
+}
+\BNVS_new:cpn { path_branch_loop_or_end_return: } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...BRANCH~LOOP }
+\BNVS_DEBUG_log_tl:nc a a
+\BNVS_coverage:n { path_branch_loop_or_end_return: }
+  \__bnvs_if_call:TF {
+    \__bnvs_if_path_branch:TF {
+      \__bnvs_path_branch_end_return:
+    } {
+      \__bnvs_if_get:vvncTF I T V a {
+        \__bnvs_if_ISP:cccTF I a P {
+          \__bnvs_tl_set_eq:cc T a
+          \__bnvs_seq_merge:cc P { P_tail }
+          \__bnvs_seq_clear:c { P_tail }
+          \__bnvs_seq_set_eq:cc { P_head } P
+          \__bnvs_path_branch_IT_loop_or_end_return:
+        } {
+          \__bnvs_path_branch_head_to_tail_end_return:
+        }
+      } {
+        \__bnvs_path_branch_head_to_tail_end_return:
+      }
+    }
+  } {
+    \__bnvs_path_branch_end_return_false:n {
+      Too~many~calls.
+    }
+  }
+}
+\BNVS_new:cpn { path_branch_end_return: } {
+  \__bnvs_resolve_loop_or_end_return:
+}
+\BNVS_new:cpn { set_if_path_branch:n } {
+  \prg_set_conditional:Npnn \__bnvs_if_path_branch: { TF }
+}
+\BNVS_new:cpn { path_branch_head_to_tail_end_return: } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...HEAD->TAIL }
+  \__bnvs_seq_pop_right:ccTF { P_head } a {
+    \__bnvs_seq_put_left:cv { P_tail } a
+    \__bnvs_build_tag_head:
+    \__bnvs_path_branch_IT_loop_or_end_return:
+  } {
+    \__bnvs_build_T:
+    \__bnvs_seq_set_eq:cc { P_head } { P_tail }
+    \__bnvs_seq_clear:c { P_tail }
+    \__bnvs_is_gset:vxnTF I {
+      \__bnvs_tl_use:c T.1
+    } V {
+      \__bnvs_tl_set:cn N 1
+      \__bnvs_resolve_loop_N_or_end_return:
+    } {
+      \__bnvs_gset:vvnn       I T V 0
+      \__bnvs_gset_resolved:vvnn I T V 0
+      \__bnvs_path_branch_IT_loop_or_end_return:
+    }
+  }
+}
+\BNVS_new:cpn { path_branch_IT_loop_or_end_return: } {
+\BNVS_DEBUG_log_resolution:nn { ... } { .../IT_loop }
+  \__bnvs_build_tag_head:
+  \__bnvs_if_resolve_v:vvcTF I T a {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...TRUE/DIRECT(v) }
+\BNVS_DEBUG_log_tl:nc a a
+    \__bnvs_tl_put_right:cv { ans } a
+    \__bnvs_resolve_loop_or_end_return:
+  } {
+    \__bnvs_if_resolve_V:vvcTF I T a {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...TRUE/DIRECT(V) }
+\BNVS_DEBUG_log_tl:nc a a
+      \__bnvs_tl_put_right:cv { ans } a
+      \__bnvs_resolve_loop_or_end_return:
+    } {
+      \__bnvs_path_branch_loop_or_end_return:
+    }
+  }
+}
+\BNVS_new:cpn { resolve_loop_N_or_end_return: } {
+\BNVS_DEBUG_log:nx a { ▃▃▃▃▃~CASE~....<index> }
+\BNVS_DEBUG_log_tl:nc a N
+  % known, id, tag, path, suffix
+  \__bnvs_set_if_path_branch:n {
+\BNVS_DEBUG_log_resolution:nn { ... } { =>if_path_branch:n... }
+\BNVS_coverage:n { if_path_branch:n }
+    \__bnvs_if_append_N:vvvcTF I T N { ans } {
+\BNVS_DEBUG_log_resolution:nn { ... } { /....<index> }
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  }
+  \__bnvs_path_branch_loop_or_end_return:
+}
+\BNVS_new:cpn { resolve_loop_reset: } {
+  \__bnvs_if:cTF { reset_all } {
+    \__bnvs_set_false:c { reset_all }
+    \__bnvs_set_false:c { reset }
+    \__bnvs_gunset:vvn I T v
+    \__bnvs_gunset_resolved:
+  } {
+    \__bnvs_if:cT { reset } {
+      \__bnvs_set_false:c { reset }
+      \__bnvs_gunset:vvn I T v
+    }
+  }
+\BNVS_DEBUG_log_f:nncn a {} { resolve_loop_reset: } { ...DONE }
+\BNVS_DEBUG_log_tl:nc a I
+\BNVS_DEBUG_log_tl:nc a T
+}
+\BNVS_new:cpn { resolve_loop_or_end_return_v: } {
+\BNVS_DEBUG_log_resolution:nn a { ... => resolve_loop_or_end_return_v: }
+\BNVS_coverage:n { resolve_loop_or_end_return_v: }
+\BNVS_DEBUG_log:nn a { ▃▃▃▃▃~CASE~... }
+  \__bnvs_resolve_loop_reset:
+  \__bnvs_set_if_path_branch:n {
+\BNVS_DEBUG_log_resolution:nn { ... } { => if_path_branch:n... }
+\BNVS_coverage:n { if_path_branch:n }
+    \__bnvs_if_append_v:vvcTF I T { ans } {
+\BNVS_DEBUG_log_resolution:nn { ... } { .../OK(v) }
+      \prg_return_true:
+    } {
+      \__bnvs_if_append_V:vvcTF I T { ans } {
+\BNVS_DEBUG_log_resolution:nn { ... } { .../OK(V) }
+        \prg_return_true:
+      } {
+        \prg_return_false:
+      }
+    }
+  }
+  \__bnvs_path_branch_loop_or_end_return:
+}
+\BNVS_new:cpn { resolve_loop_or_end_return_suffix: } {
+\BNVS_DEBUG_log:nx a { ▃▃▃▃▃~CASE~....\__bnvs_tl_use:c { suffix } }
+ \__bnvs_if_resolve_V_loop_or_end_return_true:F {
+    \__bnvs_set_if_path_branch:n {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...if_path_branch:n... }
+\BNVS_coverage:n { if_path_branch:n }
+      \BNVS_use:c {
+        if_append_ \__bnvs_tl_use:c { suffix } :vvcTF
+      } I T { ans } {
+\BNVS_DEBUG_log_resolution:nn { ... } { .../OK(<suffix>) }
+\BNVS_DEBUG_tl:nc r { suffix }
+        \__bnvs_if:cT { range } {
+          \BNVS_set:cpn { resolution_round_ans: } { }
+        }
+        \prg_return_true:
+      } {
+        \prg_return_false:
+      }
+    }
+    \__bnvs_path_branch_loop_or_end_return:
+  }
+}
+\BNVS_new:cpn { resolve_loop_or_end_return[...++]: } {
+  \__bnvs_if:cTF { reset } {
+\BNVS_DEBUG_log:nn a { ▃▃▃▃▃~CASE~....reset++ }
+    \cs_set:Npn \BNVS_resolve_loop: {
+      NO~....reset++~for
+        ~\__bnvs_tl_use:c I!\__bnvs_tl_use:c T
+    }
+  } {
+\BNVS_DEBUG_log:nn a { ▃▃▃▃▃~CASE~...(.reset_all)++ }
+    \cs_set:Npn \BNVS_resolve_loop: {
+      \BNVS_error_ans:x {
+        NO~...(.reset_all)++~for
+          ~\__bnvs_tl_use:c I!\__bnvs_tl_use:c T
+      }
+    }
+  }
+  \__bnvs_build_T:
+  \__bnvs_resolve_loop_reset:
+  \__bnvs_if_append_v_post:vvncTF I T { 1 } { ans } {
+\BNVS_DEBUG_log:nn a { ▃▃▃▃▃~OK~post }
+  } {
+\BNVS_DEBUG_on:
+\BeanovesLogG
+    \BNVS_error_ans:x {
+      Problem~with~\__bnvs_tl_use:c I!\__bnvs_tl_use:c T~use.
+    }
+  }
+  \__bnvs_resolve_loop_or_end_return:
+}
+\BNVS_new:cpn { resolve_loop_R_or_end_return: } {
+  \__bnvs_if_resolve:vcTF R R {
+\BNVS_DEBUG_log:nn a { ▃▃▃▃▃~CASE~...=... }
+    \__bnvs_is_gset:vvnF I T V {
+      \__bnvs_gset:vvnv I T V R
+    }
+    \__bnvs_gset:vvnv I T v R
+    \__bnvs_if_append_v:vvcTF I T { ans } {
+\BNVS_DEBUG_log_resolution:nn { ... } { => ...=... }
+    } {
+      \BNVS_error_ans:n { No~...=... }
+    }
+  } {
+    \BNVS_error_ans:x { Error~in~\__bnvs_tl_use:c R. }
+  }
+  \__bnvs_resolve_loop_or_end_return:
+}
+\BNVS_new:cpn { resolve_loop_or_end_return_iadd:n } #1 {
+  \__bnvs_if_resolve:ncTF { #1 } { rhs } {
+    \__bnvs_resolve_loop_reset:
+    \__bnvs_if_append_v_incr:vvncTF I T { #1 } { ans } {
+\BNVS_DEBUG_log_resolution:nn { ... } { ...+=... }
+\BNVS_DEBUG_log_tl:nc a I
+\BNVS_DEBUG_log_tl:nc a T
+    } {
+      \BNVS_error_ans:n { No~...+=... }
+    }
+  } {
+    \BNVS_error_ans:x { Error~in~\__bnvs_tl_use:c { rhs } }
+  }
+  \__bnvs_resolve_loop_or_end_return:
+}
+\BNVS_new:cpn { resolve_query_end_return_true: } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...TRUE }
+  \BNVS_end:
+  \prg_return_true:
+}
+\BNVS_new:cpn { resolve_query_end_return_false: } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...FALSE }
+  \BNVS_end:
+  \prg_return_false:
+}
+\BNVS_new:cpn { resolve_query_end_return_false:n } #1 {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...FALSE }
+  \BNVS_end:
+  \prg_return_false:
+}
+\BNVS_new:cpn { if_resolve_query_return_false:n } #1 {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...FALSE }
+  \prg_return_false:
+}
+\BNVS_new:cpn { resolve_query_error_return_false:n } #1 {
+  \BNVS_error:n { #1 }
+  \__bnvs_if_resolve_query_return_false:
+}
+\BNVS_generate_variant:cn { resolve_query_error_return_false:n } { x }
+\BNVS_new:cpn { if_resolve_query_return_unreachable: } {
+  \__bnvs_resolve_query_error_return_false:n { UNREACHABLE }
+}
+\BNVS_new:cpn { if_blank:cTF } #1 {
+  \BNVS_tl_use:Nc \tl_if_blank:VTF { #1 }
+}
+\BNVS_new_conditional:cpnn { match_if_pop_left:c } #1 { T, F, TF } {
+  \BNVS_tl_use:nc {
+    \BNVS_seq_use:Nc \seq_pop_left:NNTF { match }
+  } { #1 } {
+\BNVS_DEBUG_log_f:nncn m { } { match_if_pop_left:cTF } { ...TRUE }
+\BNVS_DEBUG_log_tl:nc m { #1 }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_f:nncn m { } { match_if_pop_left:cTF } { ...FALSE }
+    \prg_return_false:
+  }
+}
+\cs_set_eq:NN \BNVS_match_F:n \use_none:n
+\BNVS_new:cpn { match_if_pop_left:cTn } #1 #2 #3 {
+  \__bnvs_match_if_pop_left:cTF { #1 } { #2 } { \BNVS_match_F:n { #3 } }
+}
+\BNVS_set:cpn { match_if_pop_left:cT } #1 #2 {
+  \__bnvs_match_if_pop_left:cTn { #1 } { #2 } { #1 }
+}
+\BNVS_new_conditional:cpnn { if_resolve_query_branch: } { T, F, TF } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...MATCH~BRANCH... }
+  \cs_set:Npn \BNVS_match_f:n ##1 {
+    \BNVS_error:n { Unreachable~##1 ( if_resolve_query:ncTF ) }
+  }
+  \__bnvs_match_if_pop_left:cT V {
+    \__bnvs_match_if_pop_left:cT V {
+      \__bnvs_if_blank:cTF V {
+        \__bnvs_match_if_pop_left:cT A {
+          \__bnvs_match_if_pop_left:cT Z {
+            \__bnvs_match_if_pop_left:cT L {
+              \__bnvs_if_blank:cTF A {
+                \__bnvs_match_if_pop_left:cT L {
+                  \__bnvs_match_if_pop_left:cT Z {
+                    \__bnvs_if_blank:cTF L {
+                      \__bnvs_match_if_pop_left:cT Z {
+                        \__bnvs_match_if_pop_left:cT L {
+                          \__bnvs_if_blank:cTF L {
+                            \BNVS_use:c { if_resolve_query_return[:Z]: }
+                          } {
+                            \BNVS_use:c { if_resolve_query_return[:Z::L]: }
+                          }
+                        }
+                      }
+                    } {
+                      \__bnvs_if_blank:cTF Z {
+\__bnvs_resolve_query_error_return_false:n { Missing~first~or~last }
+                      } {
+                        \BNVS_use:c { if_resolve_query_return[:Z::L]: }
+                      }
+                    }
+                  }
+                }
+              } {
+                \__bnvs_if_blank:cTF Z {
+                  \__bnvs_if_blank:cTF L {
+                    \BNVS_use:c { if_resolve_query_return[A:]: }
+                  } {
+                    \BNVS_use:c { if_resolve_query_return[A::L]: }
+                  }
+                } {
+                  \__bnvs_if_blank:cTF L {
+                    \BNVS_use:c { if_resolve_query_return[A:Z]: }
+                  } {
+                    \__bnvs_if_resolve_query_return_unreachable:
+                  }
+                }
+              }
+            }
+          }
+        }
+      } {
+        \BNVS_use:c { if_resolve_query_return[V]: }
+      }
+    }
+  }
+}
+\BNVS_new:cpn { if_resolve_query_return[V]: } {
+  \__bnvs_if_resolve:vcTF { V } { ans } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...[V]...TRUE }
+    \prg_return_true:
+  } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...[V]...FALSE }
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { if_resolve_query_return[A:Z]: } {
+  \__bnvs_if_resolve:vcTF { A } { ans } {
+    \__bnvs_tl_put_right:cn { ans } { - }
+    \__bnvs_if_append:vcTF { Z } { ans } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...[A:Z]...TRUE }
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...[A:Z]...FALSE/A }
+      \prg_return_false:
+    }
+  } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...[A:Z]...FALSE/A }
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { if_resolve_query_return[A::L]: } {
+  \__bnvs_if_resolve:vcTF A A {
+    \__bnvs_if_resolve:vcTF L { ans } {
+      \__bnvs_tl_put_right:cn { ans } +
+      \__bnvs_tl_put_right:cv { ans } A
+      \__bnvs_tl_put_right:cn { ans } { -1 }
+      \__bnvs_round:c { ans }
+      \__bnvs_tl_put_left:cn { ans } -
+      \__bnvs_tl_put_left:cv { ans } A
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { if_resolve_query_return[A:]: } {
+  \__bnvs_if_resolve:vcTF A { ans } {
+    \__bnvs_tl_put_right:cn { ans } -
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { if_resolve_query_return[:Z::L]: } {
+  \__bnvs_if_resolve:vcTF Z Z {
+    \__bnvs_if_resolve:vcTF L { ans } {
+      \__bnvs_tl_put_left:cn  { ans } { 1-}
+      \__bnvs_tl_put_right:cn { ans } +
+      \__bnvs_tl_put_right:cv { ans } Z
+      \__bnvs_round:c { ans }
+      \__bnvs_tl_put_right:cn { ans } -
+      \__bnvs_tl_put_right:cv { ans } Z
+      \prg_return_true:
+    } {
+      \prg_return_false:
+    }
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new:cpn { if_resolve_query_return[:]: } {
+  \__bnvs_tl_set:cn { ans } { - }
+  \prg_return_true:
+}
+\BNVS_new:cpn { if_resolve_query_return[:Z]: } {
+  \__bnvs_tl_set:cn { ans } -
+  \__bnvs_if_append:vcTF Z { ans } {
+    \prg_return_true:
+  } {
+    \prg_return_false:
+  }
+}
+\BNVS_new_conditional:cpnn { if_resolve_query:nc } #1 #2 { T, F, TF } {
+\BNVS_DEBUG_log_set:ncnnc a { if_resolve_query:ncTF } { QUERY } { #1 } { #2 }
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { } { ... }
+\BNVS_set:cpn { error:n } ##1 {
+  \BNVS_error:n { #1 / ##1 }
+}
+  \__bnvs_greset_call:
+  \__bnvs_match_if_once:NnTF \c__bnvs_A_cln_Z_regex { #1 } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...MATCH... }
+\BNVS_DEBUG_log_seq:nc a { match }
+    \BNVS_DEBUG_begin:n { if_resolve_query:nc }
+    \__bnvs_if_resolve_query_branch:TF {
+      \BNVS_end_tl_set:cv { #2 } { ans }
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...TRUE }
+\BNVS_DEBUG_log_tl:nc a { #2 }
+      \prg_return_true:
+    } {
+\BNVS_DEBUG_log_if_resolve_query_ncTF:nn { ... } { ...FALSE }
+      \BNVS_end:
+      \prg_return_false:
+    }
+  } {
+    \BNVS_error:n { Syntax~error:~#1 }
+    \BNVS_end:
+    \prg_return_false:
+  }
+}
+\regex_const:Nn \c__bnvs_comma_regex { \s* , \s* }
+\BNVS_new_conditional:cpnn { if_resolve_queries:nc } #1 #2 { TF } {
+\BNVS_DEBUG_log_set:ncnnc a { if_resolve_queries:ncTF } { Q5s } { #1 } { #2 }
+\BNVS_DEBUG_log_if_resolve_queries_ncTF:nn { } { ... }
+  \BNVS_DEBUG_begin:n { if_resolve_queries:ncTF }
+  \__bnvs_seq_clear:c { ans }
+  \regex_split:NnN \c__bnvs_comma_regex { #1 } \l__bnvs_query_seq
+  \BNVS_set:cpn { if_resolve_queries_end_return: } {
+    \__bnvs_seq_if_empty:cTF { ans } {
+      \BNVS_end:
+      \__bnvs_tl_clear_ans:
+\BNVS_DEBUG_log_if_resolve_queries_ncTF:nn { } { ...DONE/Empty }
+\BNVS_coverage:n { if_resolve_queries:ncTF/Empty }
+    } {
+\BNVS_DEBUG_log_if_resolve_queries_ncTF:nn { } { ...DONE/Nonempty }
+\BNVS_DEBUG_log_seq:nc a { ans }
+      \exp_args:NNnx
+      \BNVS_end:
+      \__bnvs_tl_put_right:cn { #2 }
+      { \__bnvs_seq_use:cn { ans } , }
+    }
+\BNVS_coverage:n { if_resolve_queries:ncTF/TRUE }
+    \prg_return_true:
+  }
+  \__bnvs_seq_map_inline:cn { query } {
+    \__bnvs_tl_clear_ans:
+    \__bnvs_if_resolve_query:ncTF { ##1 } { ans } {
+      \__bnvs_tl_if_empty:cF { ans } {
+        \__bnvs_seq_put_right:cv { ans } { ans }
+      }
+    } {
+      \seq_map_break:n {
+        \BNVS_set:cpn { if_resolve_queries_end_return: } {
+          \BNVS_error:n { Circular/Undefined~dependency~in~#1}
+          \exp_args:Nnx
+          \use:n {
+            \BNVS_end:
+            \__bnvs_tl_put_right:cn { #2 }
+          } { \__bnvs_seq_use:cn { ans } , }
+          \prg_return_false:
+        }
+      }
+    }
+  }
+  \__bnvs_if_resolve_queries_end_return:
+}
+\NewDocumentCommand \BeanovesResolve { O{} m } {
+  \BNVS_DEBUG_begin:n { BeanovesResolve }
+  \keys_define:nn { BeanovesResolve } {
+    in:N .tl_set:N = \l__bnvs_resolve_in_tl,
+    in:N .initial:n = { },
+    show .bool_set:N = \l__bnvs_resolve_show_bool,
+    show .default:n = true,
+    show .initial:n = false,
+  }
+  \keys_set:nn { BeanovesResolve } { #1 }
+  \__bnvs_tl_clear_ans:
+  \__bnvs_if_resolve_queries:ncTF { #2 } { ans } {
+    \__bnvs_tl_if_empty:cTF { resolve_in } {
+      \bool_if:nTF { \l__bnvs_resolve_show_bool } {
+        \BNVS_tl_use:Nv \BNVS_end: { ans }
+      } {
+        \BNVS_end:
+      }
+    } {
+      \bool_if:nTF { \l__bnvs_resolve_show_bool } {
+        \cs_set:Npn \BNVS_end:Nn ##1 ##2 {
+          \BNVS_end:
+          \tl_set:Nn ##1 { ##2 }
+          ##2
+        }
+        \BNVS_tl_use:nv {
+          \exp_last_unbraced:NV \BNVS_end:Nn \l__bnvs_resolve_in_tl
+        } { ans }
+      } {
+        \cs_set:Npn \BNVS_end:Nn ##1 ##2 {
+          \BNVS_end:
+          \tl_set:Nn ##1 { ##2 }
+        }
+        \BNVS_tl_use:nv {
+          \exp_last_unbraced:NV \BNVS_end:Nn \l__bnvs_resolve_in_tl
+        } { ans }
+      }
+    }
+  } {}
+}
+\makeatletter
+\NewDocumentCommand \BeanovesReset { O{} m } {
+\BNVS_DEBUG_log:nx B { \token_to_str:N \BeanovesReset... }
+  \tl_if_empty:NTF \@currenvir {
+    \BNVS_error:x {No~\token_to_str:N \BeanovesReset{}~in~the~preamble.}
+  } {
+    \tl_if_eq:NnT \@currenvir { document } {
+     \BNVS_error:x {No~\token_to_str:N \BeanovesReset{}~at~the~top~level.}
+    }
+    \BNVS_DEBUG_begin:n { BeanovesReset }
+    \__bnvs_set_true:c { reset }
+    \__bnvs_set_false:c { provide }
+    \keys_define:nn { BeanovesReset } {
+      all .bool_set:N = \l__bnvs_reset_all_bool,
+      all .default:n = true,
+      all .initial:n = false,
+      only .bool_set:N = \l__bnvs_only_bool,
+      only .default:n = true,
+      only .initial:n = false,
+    }
+    \keys_set:nn { BeanovesReset } { #1 }
+    \__bnvs_tl_clear:c { root }
+    \__bnvs_int_zero:c { i }
+\BNVS_DEBUG_log:nx B { ...\token_to_str:N \BeanovesReset... }
+\BNVS_DEBUG_log:nn B { #2 }
+    \__bnvs_provide_off:
+    \__bnvs_root_keyval:nc { #2 } a
+    \BNVS_end_tl_set:cv { I_last } { I_last }
+    \ignorespaces
+  }
+}
+\makeatother
+\BNVS_DEBUG_off:
+\ExplSyntaxOff
+%% 
+%% beanoves --- beamer named overlay specifications
+%% 
+%% Copyright (C) 2024 by Jérôme LAURENS <jerome.laurens@u-bourgogne.fr>
+%% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License (LPPL), either
+%% version 1.3c of this license or (at your option) any later
+%% version.  The latest version of this license is in the file:
+%% 
+%% https://www.latex-project.org/lppl.txt
+%% 
+%% This work is "maintained" (as per LPPL maintenance status) by
+%% Jérôme LAURENS.
+%% 
+%% This work consists of the file  beanoves.dtx
+%% and the derived files           beanoves.ins,
+%%                                 beanoves.pdf,
+%%                                 beanoves.sty and
+%%                                 beanoves-debug.sty.
+%% 
+%%
+%% End of file `beanoves-debug.sty'.
